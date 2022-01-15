@@ -1,0 +1,95 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "Desktop-Default",
+            "hidden": true,
+            "displayName": "Default Config",
+            "description": "Default build using Ninja generator",
+            "generator": "Ninja",
+            "toolchainFile": "${sourceDir}/../vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "cacheVariables": {
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake"
+            }
+        },
+        {
+            "name": "OSX-Only",
+            "hidden": true,
+            "inherits": "Desktop-Default",
+            "displayName": "OSX-only configuration",
+            "description": "This build is only available on OSX",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "OSX-GCC",
+            "hidden": true,
+            "inherits": "OSX-Only",
+            "displayName": "OSX-GCC-Base",
+            "description": "OSX Configuration Using GCC",
+            "cacheVariables": {
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/x64-osx-gcc.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-osx-gcc"
+            }
+        },
+        {
+            "name": "OSX-LLVM",
+            "hidden": true,
+            "inherits": "OSX-Only",
+            "displayName": "OSX-LLVM-Base",
+            "description": "OSX Configuration Using LLVM",
+            "cacheVariables": {
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/x64-osx-llvm.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-osx-llvm"
+            }
+        },
+        {
+            "name": "OSX-LLVM-Debug",
+            "displayName": "Mac LLVM Debug Configuration",
+            "inherits": "OSX-LLVM",
+            "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_COVERAGE": "TRUE"
+            }
+        },
+        {
+            "name": "OSX-LLVM-Release",
+            "displayName": "Mac LLVM Release Configuration",
+            "inherits": "OSX-LLVM",
+            "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "BUILD_COVERAGE": "FALSE"
+            }
+        },
+        {
+            "name": "OSX-GCC-Debug",
+            "displayName": "Mac GCC Debug Configuration",
+            "inherits": "OSX-GCC",
+            "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_COVERAGE": "TRUE"
+            }
+        },
+        {
+            "name": "OSX-GCC-Release",
+            "displayName": "Mac GCC Release Configuration",
+            "inherits": "OSX-GCC",
+            "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "BUILD_COVERAGE": "FALSE"
+            }
+        }
+    ]
+}

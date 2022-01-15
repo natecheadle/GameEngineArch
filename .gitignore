@@ -1,0 +1,13 @@
+#ignore build/install output
+out
+build
+install
+obj
+bin
+
+#ignore IDE specific files
+.vscode
+.vs
+.idea
+CMakeSettings.json
+*.bin
