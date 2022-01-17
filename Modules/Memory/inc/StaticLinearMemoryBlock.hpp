@@ -5,8 +5,6 @@ namespace nate::Modules::Memory {
     template <size_t SIZE>
     class StaticLinearMemoryBlock {
       private:
-        typedef typename std::array<std::uint8_t, SIZE>::iterator MemIterator;
-
         std::array<std::uint8_t, SIZE> m_Memory;
         size_t                         m_NextBlockLocation;
 
@@ -30,14 +28,7 @@ namespace nate::Modules::Memory {
             }
 
             T* pObject = new ((void*)(&m_Memory[m_NextBlockLocation])) T(std::forward<Args>(args)...);
-            if (pObject)
-            {
-                m_NextBlockLocation += sizeof(T);
-            }
-            else
-            {
-                return nullptr;
-            }
+            m_NextBlockLocation += sizeof(T);
 
             return pObject;
         }
