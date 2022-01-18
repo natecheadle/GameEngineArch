@@ -1,36 +1,33 @@
-#include <array>
 #include <cassert>
 #include <cstdint>
 #include <functional>
 #include <memory>
 
 namespace nate::Modules::Memory {
-    template <typename T, size_t SIZE>
+    template <typename T, std::uint8_t* BEGIN, size_t SIZE>
     class StaticPoolMemoryBlock {
       private:
-        static_assert(sizeof(T) >= sizeof(size_t), "sizeof(T) must be greater than or equal to sizeof(size_t)");
+        static_assert(
+            sizeof(T) >= sizeof(std::uint8_t*),
+            "sizeof(T) must be greater than or equal to sizeof(std::uint8_t*)");
 
-        static constexpr size_t MemorySizeT = sizeof(T) * SIZE;
-
-        std::array<std::uint8_t, MemorySizeT> m_Memory;
-
-        size_t m_NextBlockLocation;
-        size_t m_UsedBlocks;
+        std::uint8_t* m_NextLocation;
+        size_t        m_UsedBlocks;
 
       public:
         StaticPoolMemoryBlock()
-            : m_NextBlockLocation(0)
+            : m_NextLocation(BEGIN)
             , m_UsedBlocks(0)
         {
-            for (size_t i = 0; i < m_Memory.size(); i += sizeof(T))
+            for (std::uint8_t* pLoc = BEGIN; pLoc < BEGIN + SIZE; pLoc += sizeof(T))
             {
-                size_t* pNext = reinterpret_cast<size_t*>(&m_Memory[i]);
-                *pNext        = i + sizeof(T);
+                std::uint8_t* pNext = pLoc + sizeof(T);
+                memcpy(pLoc, &pNext, sizeof(std::uint8_t*));
             }
         }
 
         size_t UsedSize() const { return m_UsedBlocks * sizeof(T); }
-        size_t RemainingSize() const { return MemorySizeT - UsedSize(); }
+        size_t RemainingSize() const { return SIZE - UsedSize(); }
 
         template <typename... Args>
         std::unique_ptr<T, std::function<void(T*)>> MakeObject(Args&&... args)
@@ -40,24 +37,23 @@ namespace nate::Modules::Memory {
                 return nullptr;
             }
 
-            size_t nextBlockLocation = *(reinterpret_cast<size_t*>(&m_Memory[m_NextBlockLocation]));
+            std::uint8_t* nextLocation = m_NextLocation;
 
-            T* pObject = new ((void*)(&m_Memory[m_NextBlockLocation])) T(std::forward<Args>(args)...);
+            T* pObject = new (reinterpret_cast<void*>(nextLocation)) T(std::forward<Args>(args)...);
 
-            m_NextBlockLocation = nextBlockLocation;
+            m_NextLocation = nextLocation;
 
             auto destroyObject = [&](T* pObjectToDelete) {
                 // Destroy Object
                 pObjectToDelete->~T();
 
                 // Calculate where it was in the pool.
-                auto   pObjectLocation = reinterpret_cast<std::uint8_t*>(pObjectToDelete);
-                size_t objectLocation  = std::distance(&m_Memory[0], pObjectLocation);
+                auto pObjectLocation = reinterpret_cast<std::uint8_t*>(pObjectToDelete);
 
-                *(reinterpret_cast<size_t*>(&m_Memory[objectLocation])) = m_NextBlockLocation;
-                m_NextBlockLocation                                     = objectLocation;
+                memcpy(pObjectLocation, &m_NextLocation, sizeof(std::uint8_t*));
+                m_NextLocation = pObjectLocation;
 
-                assert(m_NextBlockLocation % sizeof(T) == 0);
+                assert(std::distance(BEGIN, m_NextLocation) % sizeof(T) == 0);
                 --m_UsedBlocks;
             };
 

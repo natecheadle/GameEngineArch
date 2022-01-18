@@ -4,7 +4,14 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 namespace nate::Test {
+    namespace {
+        constexpr size_t MemorySize = 1024;
+        std::uint8_t     MemoryBuffer[1024];
+    } // namespace
+
     class TestObject {
         size_t m_Value;
 
@@ -21,7 +28,7 @@ namespace nate::Test {
 
     TEST(StaticMemoryBlock_Tests, TestLinearMemBlock)
     {
-        Modules::Memory::StaticLinearMemoryBlock<1024> memBlock;
+        Modules::Memory::StaticLinearMemoryBlock<MemoryBuffer, MemorySize> memBlock;
 
         auto myObject = memBlock.MakeObject<TestObject, int>(10);
         ASSERT_EQ(10, myObject->GetValue());
@@ -36,7 +43,7 @@ namespace nate::Test {
 
     TEST(StaticMemoryBlock_Tests, TestPoolMemBlock)
     {
-        Modules::Memory::StaticPoolMemoryBlock<TestObject, 1024> memBlock;
+        Modules::Memory::StaticPoolMemoryBlock<TestObject, MemoryBuffer, MemorySize> memBlock;
 
         auto myObject = memBlock.MakeObject<int>(10);
         ASSERT_EQ(10, myObject->GetValue());
@@ -57,7 +64,7 @@ namespace nate::Test {
 
     TEST(StaticMemoryBlock_Tests, TestStackMemBlock)
     {
-        Modules::Memory::StaticStackMemoryBlock<1024> memBlock;
+        Modules::Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
         {
             auto myObject = memBlock.MakeObject<TestObject, int>(10);
             ASSERT_EQ(10, myObject->GetValue());
