@@ -43,6 +43,7 @@ namespace nate::Modules::Memory {
         template <typename T, typename... Args>
         T* MakeObject(Args&&... args)
         {
+
             if ((sizeof(T) + sizeof(std::uint8_t*)) > RemainingSize())
             {
                 return nullptr;
