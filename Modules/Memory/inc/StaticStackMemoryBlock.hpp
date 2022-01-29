@@ -25,15 +25,18 @@ namespace nate::Modules::Memory {
 
         void Release(size_t numOfObjects)
         {
-            for (size_t i = 0; i < numOfObjects; i++)
+            if (numOfObjects >= m_TotalObjectCount)
             {
-                if (std::distance(BEGIN, m_CurrentLoc) <= sizeof(std::uint8_t*))
+                Reset();
+                return;
+            }
+            else
+            {
+                for (size_t i = 0; i < numOfObjects; i++)
                 {
-                    Reset();
-                    return;
+                    memcpy(&m_CurrentLoc, m_CurrentLoc - sizeof(std::uint8_t*), sizeof(std::uint8_t*));
+                    m_TotalObjectCount--;
                 }
-
-                memcpy(&m_CurrentLoc, m_CurrentLoc - sizeof(std::uint8_t*), sizeof(std::uint8_t*));
             }
         }
 
@@ -54,7 +57,7 @@ namespace nate::Modules::Memory {
             std::uint8_t* newLoc = m_CurrentLoc + sizeof(T) + sizeof(std::uint8_t*);
             memcpy(newLoc - sizeof(std::uint8_t*), &m_CurrentLoc, sizeof(std::uint8_t*));
             m_CurrentLoc = newLoc;
-
+            m_TotalObjectCount++;
             return pObject;
         }
     };
