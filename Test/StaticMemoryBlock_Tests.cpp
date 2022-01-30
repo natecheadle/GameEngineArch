@@ -43,7 +43,7 @@ namespace nate::Test {
         }
     };
 
-    TEST(StaticMemoryBlock_Tests, TestLinearMemBlock)
+    TEST(StaticMemoryBlock_Tests, ValidateLinearMemoryBlockBasicCreateDelete)
     {
         Modules::Memory::StaticLinearMemoryBlock<MemoryBuffer, MemorySize> memBlock;
 
@@ -54,6 +54,8 @@ namespace nate::Test {
         auto myObject2 = memBlock.MakeObject<TestObject<8>, size_t>(30);
         myObject2->Validate(30, *myObject2);
 
+        ASSERT_EQ(sizeof(TestObject<2>) + sizeof(TestObject<4>) + sizeof(TestObject<8>), memBlock.UsedSize());
+
         memBlock.Reset();
         ASSERT_EQ(0, memBlock.UsedSize());
 
@@ -61,7 +63,46 @@ namespace nate::Test {
         ASSERT_EQ(nullptr, myObject4);
     }
 
-    TEST(StaticMemoryBlock_Tests, TestPoolMemBlock)
+    TEST(StaticMemoryBlock_Tests, ValidateLinearMemoryExceedSize)
+    {
+        Modules::Memory::StaticLinearMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        auto myObject = memBlock.MakeObject<TestObject<1024>, size_t>(1);
+        ASSERT_EQ(nullptr, myObject);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateStackMemoryBlockBasicCreateDelete)
+    {
+        Modules::Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+        auto myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+        myObject->Validate(10, *myObject);
+        auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+        myObject2->Validate(30, *myObject2);
+
+        memBlock.Release(2);
+        ASSERT_EQ(sizeof(TestObject<2>) + sizeof(size_t), memBlock.UsedSize());
+
+        myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(40);
+        myObject1->Validate(40, *myObject1);
+        myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(50);
+        myObject2->Validate(50, *myObject2);
+
+        myObject->Validate(10, *myObject);
+
+        memBlock.Release(4);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateStackMemoryExceedSize)
+    {
+        Modules::Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        auto myObject = memBlock.MakeObject<TestObject<1024>, size_t>(1);
+        ASSERT_EQ(nullptr, myObject);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
     {
         Modules::Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
 
@@ -82,35 +123,34 @@ namespace nate::Test {
         myObject2->Validate(50, *myObject2);
     }
 
-    TEST(StaticMemoryBlock_Tests, TestStackMemBlock)
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
     {
-        Modules::Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+        Modules::Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
+
+        std::vector<std::unique_ptr<TestObject<2>, std::function<void(TestObject<2>*)>>> objects;
+
+        static constexpr size_t maxObjects = MemorySize / sizeof(TestObject<2>);
+
+        objects.reserve(maxObjects);
+
+        for (size_t i = 0; i < maxObjects; ++i)
         {
-            auto myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
-            myObject->Validate(10, *myObject);
-            auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
-            myObject1->Validate(20, *myObject1);
-            auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
-            myObject2->Validate(30, *myObject2);
+            auto myObject = memBlock.MakeObject<size_t>(10 * i);
+            myObject->Validate(10 * i, *myObject);
+            ASSERT_EQ((i + 1) * sizeof(TestObject<2>), memBlock.UsedSize());
 
-            memBlock.Release(2);
-            ASSERT_EQ(sizeof(TestObject<2>) + sizeof(size_t), memBlock.UsedSize());
-
-            myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(40);
-            myObject1->Validate(40, *myObject1);
-            myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(50);
-            myObject2->Validate(50, *myObject2);
-
-            myObject->Validate(10, *myObject);
-
-            memBlock.Release(4);
-
-            auto myObject4 = memBlock.MakeObject<TestObject<1024>, size_t>(1);
-            ASSERT_EQ(nullptr, myObject4);
+            objects.push_back(std::move(myObject));
         }
+
+        auto myObject = memBlock.MakeObject<size_t>(10);
+        ASSERT_EQ(nullptr, myObject);
+
+        ASSERT_NO_THROW(objects.clear());
+
+        ASSERT_EQ(0, memBlock.UsedSize());
     }
 
-    TEST(StaticMemoryBlock_Tests, TestFreeMemoryBlock_Basic)
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockBasicCreateDelete)
     {
         Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
         {
@@ -118,68 +158,135 @@ namespace nate::Test {
             myObject->Validate(10, *myObject);
             {
                 auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+                myObject1->Validate(20, *myObject1);
+                ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>), memBlock.UsedSize());
                 {
                     auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
                     myObject2->Validate(30, *myObject2);
+
+                    ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>) * 2, memBlock.UsedSize());
                 }
                 myObject1->Validate(20, *myObject1);
             }
+            myObject->Validate(10, *myObject);
+
             ASSERT_EQ(sizeof(TestObject<4>), memBlock.UsedSize());
-
-            auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(40);
-            myObject1->Validate(40, *myObject1);
-            auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(50);
-            myObject2->Validate(50, *myObject2);
-
-            myObject->Validate(10, *myObject);
-
-            myObject1.reset();
-
-            auto myObject3 = memBlock.MakeObject<TestObject<8>, size_t>(5);
-            myObject3->Validate(5, *myObject3);
-            myObject3.reset();
-
-            myObject->Validate(10, *myObject);
-            myObject2->Validate(50, *myObject2);
         }
 
         ASSERT_EQ(0, memBlock.UsedSize());
     }
 
-    TEST(StaticMemoryBlock_Tests, TestFreeMemoryBlock_Advanced)
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockDeleteOutOfOrder)
     {
-
         Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
-        {
-            auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
-            myObject->Validate(10, *myObject);
-            auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(40);
-            myObject1->Validate(40, *myObject1);
-            auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(50);
-            myObject2->Validate(50, *myObject2);
 
-            myObject1.reset();
-            ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>), memBlock.UsedSize());
+        auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
+        myObject->Validate(10, *myObject);
+        ASSERT_EQ(sizeof(TestObject<4>), memBlock.UsedSize());
 
-            myObject2.reset();
-            ASSERT_EQ(sizeof(TestObject<4>), memBlock.UsedSize());
+        auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>), memBlock.UsedSize());
 
-            auto myObject3 = memBlock.MakeObject<TestObject<4>, size_t>(20);
-            myObject3->Validate(20, *myObject3);
+        auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+        myObject2->Validate(30, *myObject2);
+        ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>) * 2, memBlock.UsedSize());
 
-            myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(30);
-            myObject1->Validate(30, *myObject1);
+        myObject1.reset();
+        myObject.reset();
+        myObject2.reset();
 
-            myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(80);
-            myObject2->Validate(80, *myObject2);
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
 
-            auto myObject4 = memBlock.MakeObject<TestObject<2>, size_t>(100);
-            myObject4->Validate(100, *myObject4);
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockCreateObjectFragmentedMemory)
+    {
+        Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
 
-            myObject2.reset();
+        auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        ASSERT_EQ(sizeof(TestObject<2>), memBlock.UsedSize());
 
-            myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(25);
-            myObject2->Validate(25, *myObject2);
-        }
+        auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+        myObject2->Validate(30, *myObject2);
+        ASSERT_EQ(sizeof(TestObject<2>) * 2, memBlock.UsedSize());
+
+        myObject1.reset();
+
+        auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
+        myObject->Validate(10, *myObject);
+        ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>), memBlock.UsedSize());
+
+        myObject2->Validate(30, *myObject2);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockCreateObjectVeryFragmentedMemory)
+    {
+        Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        ASSERT_EQ(sizeof(TestObject<2>), memBlock.UsedSize());
+
+        auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+        myObject2->Validate(30, *myObject2);
+        ASSERT_EQ(sizeof(TestObject<2>) * 2, memBlock.UsedSize());
+
+        auto myObject3 = memBlock.MakeObject<TestObject<2>, size_t>(40);
+        myObject3->Validate(40, *myObject3);
+        ASSERT_EQ(sizeof(TestObject<2>) * 3, memBlock.UsedSize());
+
+        auto myObject4 = memBlock.MakeObject<TestObject<2>, size_t>(50);
+        myObject4->Validate(50, *myObject4);
+        ASSERT_EQ(sizeof(TestObject<2>) * 4, memBlock.UsedSize());
+
+        myObject1.reset();
+        myObject3.reset();
+
+        auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
+        myObject->Validate(10, *myObject);
+        ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>) * 2, memBlock.UsedSize());
+
+        myObject2->Validate(30, *myObject2);
+        myObject4->Validate(50, *myObject4);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockCreateObjectSameSizeFragmentedMemory)
+    {
+        Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        ASSERT_EQ(sizeof(TestObject<2>), memBlock.UsedSize());
+
+        auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+        myObject2->Validate(30, *myObject2);
+        ASSERT_EQ(sizeof(TestObject<2>) * 2, memBlock.UsedSize());
+
+        auto myObject3 = memBlock.MakeObject<TestObject<2>, size_t>(40);
+        myObject3->Validate(40, *myObject3);
+        ASSERT_EQ(sizeof(TestObject<2>) * 3, memBlock.UsedSize());
+
+        auto myObject4 = memBlock.MakeObject<TestObject<2>, size_t>(50);
+        myObject4->Validate(50, *myObject4);
+        ASSERT_EQ(sizeof(TestObject<2>) * 4, memBlock.UsedSize());
+
+        myObject1.reset();
+        myObject3.reset();
+
+        auto myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+        myObject->Validate(10, *myObject);
+        ASSERT_EQ(sizeof(TestObject<2>) * 3, memBlock.UsedSize());
+
+        myObject2->Validate(30, *myObject2);
+        myObject4->Validate(50, *myObject4);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockExceedSize)
+    {
+        Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        auto myObject = memBlock.MakeObject<TestObject<1024>, size_t>(1);
+        ASSERT_EQ(nullptr, myObject);
     }
 } // namespace nate::Test
