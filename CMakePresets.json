@@ -58,7 +58,7 @@
             "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "BUILD_COVERAGE": "TRUE"
+                "BUILD_COVERAGE": "ON"
             }
         },
         {
@@ -68,7 +68,7 @@
             "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "BUILD_COVERAGE": "FALSE"
+                "BUILD_COVERAGE": "OFF"
             }
         },
         {
@@ -78,7 +78,7 @@
             "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "BUILD_COVERAGE": "TRUE"
+                "BUILD_COVERAGE": "ON"
             }
         },
         {
@@ -88,7 +88,7 @@
             "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "BUILD_COVERAGE": "FALSE"
+                "BUILD_COVERAGE": "OFF"
             }
         }
     ]
