@@ -85,46 +85,7 @@ namespace nate::Modules::Memory {
             }
 
             T*   pObject      = new (reinterpret_cast<void*>(nextLoc.pHeader)) T(std::forward<Args>(args)...);
-            auto deleteObject = [&](T* pObject) {
-                pObject->~T();
-                size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
-
-                HeaderPair prevLoc = GetPreviousLocation(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
-
-                if (prevLoc.pPrevHeader == nullptr)
-                {
-                    auto pFirstLoc = reinterpret_cast<EmptySizeHeader*>(m_FirstLoc);
-                    if (reinterpret_cast<std::uint8_t*>(pObject) == m_FirstLoc - sizeT)
-                    {
-                        prevLoc.pHeader->pNext = pFirstLoc->pNext;
-                        prevLoc.pHeader->Size  = sizeT + pFirstLoc->Size;
-                    }
-                    else
-                    {
-                        prevLoc.pHeader->pNext = m_FirstLoc;
-                        prevLoc.pHeader->Size  = sizeT;
-                    }
-
-                    m_FirstLoc = reinterpret_cast<std::uint8_t*>(prevLoc.pHeader);
-                }
-                else if (reinterpret_cast<std::uint8_t*>(pObject) == prevLoc.pPrevHeader->pNext - sizeT)
-                {
-                    size_t size =
-                        std::distance(reinterpret_cast<std::uint8_t*>(prevLoc.pHeader), prevLoc.pHeader->pNext);
-                    prevLoc.pPrevHeader->Size += size + prevLoc.pHeader->Size;
-                    prevLoc.pPrevHeader->pNext = prevLoc.pHeader->pNext;
-                }
-                else
-                {
-                    auto pNew   = reinterpret_cast<EmptySizeHeader*>(pObject);
-                    pNew->Size  = sizeT;
-                    pNew->pNext = prevLoc.pPrevHeader->pNext;
-
-                    prevLoc.pPrevHeader->pNext = reinterpret_cast<std::uint8_t*>(pObject);
-                }
-
-                m_UsedSize -= sizeT;
-            };
+            auto deleteObject = [&](T* pObject) { DeleteObject(pObject); };
 
             m_UsedSize += TSize;
 
@@ -132,6 +93,57 @@ namespace nate::Modules::Memory {
         }
 
       private:
+        template <typename T>
+        void DeleteObject(T* pObject)
+        {
+            pObject->~T();
+            size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
+
+            HeaderPair prevLoc = GetPreviousLocation(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
+
+            if (prevLoc.pPrevHeader == nullptr)
+            {
+                if (reinterpret_cast<std::uint8_t*>(pObject) == m_FirstLoc - sizeT)
+                {
+                    auto pFirstLoc         = reinterpret_cast<EmptySizeHeader*>(m_FirstLoc);
+                    prevLoc.pHeader->pNext = pFirstLoc->pNext;
+                    prevLoc.pHeader->Size  = sizeT + pFirstLoc->Size;
+                }
+                else
+                {
+                    prevLoc.pHeader->pNext = m_FirstLoc;
+                    prevLoc.pHeader->Size  = sizeT;
+                }
+
+                m_FirstLoc = reinterpret_cast<std::uint8_t*>(prevLoc.pHeader);
+            }
+            else if (reinterpret_cast<std::uint8_t*>(pObject) == prevLoc.pPrevHeader->pNext - sizeT)
+            {
+                if (prevLoc.pHeader->pNext == nullptr)
+                {
+                    prevLoc.pPrevHeader->Size += sizeT + prevLoc.pHeader->Size;
+                    prevLoc.pPrevHeader->pNext = nullptr;
+                }
+                else
+                {
+                    size_t size =
+                        std::distance(reinterpret_cast<std::uint8_t*>(prevLoc.pHeader), prevLoc.pHeader->pNext);
+                    prevLoc.pPrevHeader->Size += size + prevLoc.pHeader->Size;
+                    prevLoc.pPrevHeader->pNext = prevLoc.pHeader->pNext;
+                }
+            }
+            else
+            {
+                auto pNew   = reinterpret_cast<EmptySizeHeader*>(pObject);
+                pNew->Size  = sizeT;
+                pNew->pNext = prevLoc.pPrevHeader->pNext;
+
+                prevLoc.pPrevHeader->pNext = reinterpret_cast<std::uint8_t*>(pObject);
+            }
+
+            m_UsedSize -= sizeT;
+        }
+
         HeaderPair GetNextValidFreeLocation(size_t sizeReq)
         {
             HeaderPair returnVal;
@@ -166,14 +178,12 @@ namespace nate::Modules::Memory {
             returnVal.pHeader     = reinterpret_cast<EmptySizeHeader*>(m_FirstLoc);
             returnVal.pPrevHeader = nullptr;
 
-            while (reinterpret_cast<EmptySizeHeader*>(pObject) < returnVal.pHeader)
+            while (reinterpret_cast<EmptySizeHeader*>(pObject) > returnVal.pHeader)
             {
                 pObject               = returnVal.pHeader->pNext;
                 returnVal.pPrevHeader = returnVal.pHeader;
                 returnVal.pHeader     = reinterpret_cast<EmptySizeHeader*>(returnVal.pHeader->pNext);
             }
-
-            assert(pObject);
 
             return returnVal;
         }

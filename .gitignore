@@ -4,6 +4,7 @@ build
 install
 obj
 bin
+*.profraw
 
 #ignore IDE specific files
 .vscode

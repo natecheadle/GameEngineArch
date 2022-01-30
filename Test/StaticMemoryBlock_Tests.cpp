@@ -27,7 +27,7 @@ namespace nate::Test {
             }
         }
 
-        ~TestObject() {}
+        ~TestObject() { std::memset(&m_Value[0], 0x00, sizeof(m_Value)); }
 
         size_t                          GetValue(size_t loc) const { return m_Value.at(loc); }
         const std::array<size_t, SIZE>& GetValue() const { return m_Value; }
@@ -110,13 +110,13 @@ namespace nate::Test {
         }
     }
 
-    TEST(StaticMemoryBlock_Tests, TestFreeMemoryBlock)
+    TEST(StaticMemoryBlock_Tests, TestFreeMemoryBlock_Basic)
     {
         Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
         {
             auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
+            myObject->Validate(10, *myObject);
             {
-                myObject->Validate(10, *myObject);
                 auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(20);
                 {
                     auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(30);
@@ -141,6 +141,45 @@ namespace nate::Test {
 
             myObject->Validate(10, *myObject);
             myObject2->Validate(50, *myObject2);
+        }
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, TestFreeMemoryBlock_Advanced)
+    {
+
+        Modules::Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+        {
+            auto myObject = memBlock.MakeObject<TestObject<4>, size_t>(10);
+            myObject->Validate(10, *myObject);
+            auto myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(40);
+            myObject1->Validate(40, *myObject1);
+            auto myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(50);
+            myObject2->Validate(50, *myObject2);
+
+            myObject1.reset();
+            ASSERT_EQ(sizeof(TestObject<4>) + sizeof(TestObject<2>), memBlock.UsedSize());
+
+            myObject2.reset();
+            ASSERT_EQ(sizeof(TestObject<4>), memBlock.UsedSize());
+
+            auto myObject3 = memBlock.MakeObject<TestObject<4>, size_t>(20);
+            myObject3->Validate(20, *myObject3);
+
+            myObject1 = memBlock.MakeObject<TestObject<2>, size_t>(30);
+            myObject1->Validate(30, *myObject1);
+
+            myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(80);
+            myObject2->Validate(80, *myObject2);
+
+            auto myObject4 = memBlock.MakeObject<TestObject<2>, size_t>(100);
+            myObject4->Validate(100, *myObject4);
+
+            myObject2.reset();
+
+            myObject2 = memBlock.MakeObject<TestObject<2>, size_t>(25);
+            myObject2->Validate(25, *myObject2);
         }
     }
 } // namespace nate::Test
