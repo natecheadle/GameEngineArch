@@ -6,6 +6,9 @@
 #include <memory>
 
 namespace nate::Modules::Memory {
+    template <typename T>
+    using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
+
     template <std::uint8_t* BEGIN, size_t SIZE>
     class StaticFreeMemoryBlock {
       private:
@@ -40,7 +43,7 @@ namespace nate::Modules::Memory {
         size_t RemainingSize() const { return SIZE - m_UsedSize; }
 
         template <typename T, typename... Args>
-        std::unique_ptr<T, std::function<void(T*)>> MakeObject(Args&&... args)
+        unique_ptr<T> MakeObject(Args&&... args)
         {
             static_assert(sizeof(T) >= sizeof(EmptySizeHeader), "T is too small.");
 

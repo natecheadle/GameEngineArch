@@ -4,6 +4,9 @@
 #include <memory>
 
 namespace nate::Modules::Memory {
+    template <typename T>
+    using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
+
     template <typename T, std::uint8_t* BEGIN, size_t SIZE>
     class StaticPoolMemoryBlock {
       private:
@@ -30,7 +33,7 @@ namespace nate::Modules::Memory {
         size_t RemainingSize() const { return SIZE - UsedSize(); }
 
         template <typename... Args>
-        std::unique_ptr<T, std::function<void(T*)>> MakeObject(Args&&... args)
+        unique_ptr<T> MakeObject(Args&&... args)
         {
             if (RemainingSize() == 0)
             {
@@ -48,7 +51,7 @@ namespace nate::Modules::Memory {
                 pObjectToDelete->~T();
 
                 // Calculate where it was in the pool.
-                auto pObjectLocation = reinterpret_cast<std::uint8_t*>(pObjectToDelete);
+                auto* pObjectLocation = reinterpret_cast<std::uint8_t*>(pObjectToDelete);
 
                 memcpy(pObjectLocation, &m_NextLocation, sizeof(std::uint8_t*));
                 m_NextLocation = pObjectLocation;
@@ -58,7 +61,7 @@ namespace nate::Modules::Memory {
             };
 
             ++m_UsedBlocks;
-            return std::unique_ptr<T, std::function<void(T*)>>(pObject, destroyObject);
+            return unique_ptr<T>(pObject, destroyObject);
         }
     };
 } // namespace nate::Modules::Memory
