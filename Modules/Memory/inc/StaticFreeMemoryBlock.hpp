@@ -96,13 +96,9 @@ namespace nate::Modules::Memory {
         }
 
       private:
-        template <typename T>
-        void DeleteObject(T* pObject)
+        void RemoveObjectFromList(std::uint8_t* pObject, size_t sizeT)
         {
-            pObject->~T();
-            size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
-
-            HeaderPair prevLoc = GetPreviousLocation(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
+            HeaderPair prevLoc = GetPreviousLocation(pObject, sizeT);
 
             if (prevLoc.pPrevHeader == nullptr)
             {
@@ -145,6 +141,14 @@ namespace nate::Modules::Memory {
             }
 
             m_UsedSize -= sizeT;
+        }
+
+        template <typename T>
+        void DeleteObject(T* pObject)
+        {
+            pObject->~T();
+            constexpr size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
+            RemoveObjectFromList(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
         }
 
         HeaderPair GetNextValidFreeLocation(size_t sizeReq)
