@@ -26,12 +26,14 @@ namespace nate::Modules::Memory {
 
         static constexpr std::uint8_t* END = BEGIN + SIZE;
 
-        std::uint8_t* m_FirstLoc;
-        size_t        m_UsedSize;
+        std::uint8_t* const m_InitialLoc;
+        std::uint8_t*       m_FirstLoc;
+        size_t              m_UsedSize;
 
       public:
         StaticFreeMemoryBlock()
-            : m_FirstLoc(BEGIN)
+            : m_InitialLoc(BEGIN + reinterpret_cast<std::uintptr_t>(BEGIN) % sizeof(std::uint8_t*))
+            , m_FirstLoc(m_InitialLoc)
             , m_UsedSize(0)
         {
             auto pFirstHeader   = reinterpret_cast<EmptySizeHeader*>(m_FirstLoc);
