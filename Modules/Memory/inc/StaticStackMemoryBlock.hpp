@@ -7,19 +7,21 @@ namespace nate::Modules::Memory {
       private:
         static constexpr std::uint8_t* END = BEGIN + SIZE;
 
-        std::uint8_t* m_CurrentLoc;
-        size_t        m_TotalObjectCount;
+        std::uint8_t* const m_InitialLoc;
+        std::uint8_t*       m_CurrentLoc;
+        size_t              m_TotalObjectCount;
 
       public:
         StaticStackMemoryBlock()
-            : m_CurrentLoc(BEGIN)
+            : m_InitialLoc(BEGIN + reinterpret_cast<std::uintptr_t>(BEGIN) % sizeof(std::uint8_t*))
+            , m_CurrentLoc(m_InitialLoc)
             , m_TotalObjectCount(0)
         {
         }
 
         void Reset()
         {
-            m_CurrentLoc       = BEGIN;
+            m_CurrentLoc       = m_InitialLoc;
             m_TotalObjectCount = 0;
         }
 
@@ -28,7 +30,6 @@ namespace nate::Modules::Memory {
             if (numOfObjects >= m_TotalObjectCount)
             {
                 Reset();
-                return;
             }
             else
             {
@@ -40,7 +41,7 @@ namespace nate::Modules::Memory {
             }
         }
 
-        size_t UsedSize() const { return std::distance(BEGIN, m_CurrentLoc); }
+        size_t UsedSize() const { return std::distance(m_InitialLoc, m_CurrentLoc); }
         size_t RemainingSize() const { return std::distance(m_CurrentLoc, END); }
 
         template <typename T, typename... Args>

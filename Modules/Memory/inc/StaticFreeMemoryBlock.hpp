@@ -6,6 +6,9 @@
 #include <memory>
 
 namespace nate::Modules::Memory {
+    template <typename T>
+    using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
+
     template <std::uint8_t* BEGIN, size_t SIZE>
     class StaticFreeMemoryBlock {
       private:
@@ -23,12 +26,14 @@ namespace nate::Modules::Memory {
 
         static constexpr std::uint8_t* END = BEGIN + SIZE;
 
-        std::uint8_t* m_FirstLoc;
-        size_t        m_UsedSize;
+        std::uint8_t* const m_InitialLoc;
+        std::uint8_t*       m_FirstLoc;
+        size_t              m_UsedSize;
 
       public:
         StaticFreeMemoryBlock()
-            : m_FirstLoc(BEGIN)
+            : m_InitialLoc(BEGIN + reinterpret_cast<std::uintptr_t>(BEGIN) % sizeof(std::uint8_t*))
+            , m_FirstLoc(m_InitialLoc)
             , m_UsedSize(0)
         {
             auto pFirstHeader   = reinterpret_cast<EmptySizeHeader*>(m_FirstLoc);
@@ -40,7 +45,7 @@ namespace nate::Modules::Memory {
         size_t RemainingSize() const { return SIZE - m_UsedSize; }
 
         template <typename T, typename... Args>
-        std::unique_ptr<T, std::function<void(T*)>> MakeObject(Args&&... args)
+        unique_ptr<T> MakeObject(Args&&... args)
         {
             static_assert(sizeof(T) >= sizeof(EmptySizeHeader), "T is too small.");
 
@@ -93,13 +98,9 @@ namespace nate::Modules::Memory {
         }
 
       private:
-        template <typename T>
-        void DeleteObject(T* pObject)
+        void RemoveObjectFromList(std::uint8_t* pObject, size_t sizeT)
         {
-            pObject->~T();
-            size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
-
-            HeaderPair prevLoc = GetPreviousLocation(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
+            HeaderPair prevLoc = GetPreviousLocation(pObject, sizeT);
 
             if (prevLoc.pPrevHeader == nullptr)
             {
@@ -142,6 +143,14 @@ namespace nate::Modules::Memory {
             }
 
             m_UsedSize -= sizeT;
+        }
+
+        template <typename T>
+        void DeleteObject(T* pObject)
+        {
+            pObject->~T();
+            constexpr size_t sizeT = (sizeof(T) + sizeof(T) % sizeof(EmptySizeHeader));
+            RemoveObjectFromList(reinterpret_cast<std::uint8_t*>(pObject), sizeT);
         }
 
         HeaderPair GetNextValidFreeLocation(size_t sizeReq)
