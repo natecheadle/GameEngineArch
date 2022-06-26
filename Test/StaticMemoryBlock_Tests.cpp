@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cmath>
+#include <cstring>
 
 using namespace nate::Modules;
 namespace nate::Test {

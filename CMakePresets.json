@@ -91,6 +91,51 @@
                 "CMAKE_BUILD_TYPE": "Release",
                 "BUILD_COVERAGE": "OFF"
             }
+        },
+        {
+            "name": "Windows-Only",
+            "inherits": "Desktop-Default",
+            "hidden": true,
+            "displayName": "Windows-only configuration",
+            "description": "This build is only available on Windows",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "Windows-MSVC",
+            "inherits": "Windows-Only",
+            "hidden": true,
+            "displayName": "Windows-only configuration",
+            "description": "This build is only available on Windows",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": {
+                    "type": "STRING",
+                    "value": "x64-windows"
+                }
+            }
+        },
+        {
+            "name": "Windows-MSVC-Debug",
+            "displayName": "Windows MSVC Debug Configuration",
+            "inherits": "Windows-MSVC",
+            "binaryDir": "${sourceDir}/build/MSVC/Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_COVERAGE": "OFF"
+            }
+        },
+        {
+            "name": "Windows-MSVC-Release",
+            "displayName": "Windows MSVC Release Configuration",
+            "inherits": "Windows-MSVC",
+            "binaryDir": "${sourceDir}/build/MSVC/Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "BUILD_COVERAGE": "OFF"
+            }
         }
     ]
 }
