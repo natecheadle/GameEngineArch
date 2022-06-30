@@ -5,7 +5,9 @@
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dist_sink.h>
+#if defined(_WIN32)
 #include <spdlog/sinks/msvc_sink.h>
+#endif
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
 
@@ -15,13 +17,15 @@
 #include <memory>
 #include <string>
 
-namespace amc::Shared {
+namespace nate::Modules::Debug {
     class LogManager : public ILogManager {
         std::map<std::string, std::unique_ptr<Logger>> m_Loggers;
         std::shared_ptr<spdlog::sinks::dist_sink_mt>   m_Sink;
 
-        std::shared_ptr<spdlog::sinks::stdout_sink_mt>                            m_StdOutSink;
-        std::shared_ptr<spdlog::sinks::msvc_sink_mt>                              m_DebugSink;
+        std::shared_ptr<spdlog::sinks::stdout_sink_mt> m_StdOutSink;
+#if defined(_WIN32)
+        std::shared_ptr<spdlog::sinks::msvc_sink_mt> m_DebugSink;
+#endif
         std::map<std::string, std::shared_ptr<spdlog::sinks::basic_file_sink_mt>> m_FileSinks;
         std::list<std::unique_ptr<LogBuffer>>                                     m_BufferSinks;
 
@@ -35,7 +39,15 @@ namespace amc::Shared {
 
         void EnableDebugConsoleLogging() override;
         void DisableDebugConsoleLogging() override;
-        bool IsDebugConsoleLoggingEnabled() const override { return m_DebugSink != nullptr; }
+
+        bool IsDebugConsoleLoggingEnabled() const override
+        {
+#if defined(_WIN32)
+            return m_DebugSink != nullptr;
+#else
+            return false;
+#endif
+        }
 
         void AttachFileLogging(const std::string& filePath) override;
         void DetachFileLogging(const std::string& filePath) override;
@@ -55,4 +67,4 @@ namespace amc::Shared {
       private:
         std::list<std::unique_ptr<LogBuffer>>::iterator GetBufferLogger(ILogBuffer* pLogger);
     };
-} // namespace amc::Shared
+} // namespace nate::Modules::Debug

@@ -5,7 +5,7 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/spdlog.h>
 
-namespace amc::Shared {
+namespace nate::Modules::Debug {
 
     class LogBuffer : public ILogBuffer {
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_Sink;
@@ -22,4 +22,4 @@ namespace amc::Shared {
 
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> GetSink() const { return m_Sink; }
     };
-} // namespace amc::Shared
+} // namespace nate::Modules::Debug

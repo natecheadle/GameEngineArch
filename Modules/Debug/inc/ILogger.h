@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace amc::Shared {
+namespace nate::Modules::Debug {
 
     class ILogManager;
 
@@ -35,4 +35,4 @@ namespace amc::Shared {
         ILogger()  = default;
         ~ILogger() = default;
     };
-} // namespace amc::Shared
+} // namespace nate::Modules::Debug

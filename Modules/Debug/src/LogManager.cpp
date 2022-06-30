@@ -9,7 +9,7 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 
-namespace amc::Shared {
+namespace nate::Modules::Debug {
     LogManager::LogManager()
         : m_Sink(std::make_shared<spdlog::sinks::dist_sink_mt>())
     {
@@ -18,7 +18,9 @@ namespace amc::Shared {
     LogManager::~LogManager()
     {
         m_StdOutSink.reset();
+#if defined(_WIN32)
         m_DebugSink.reset();
+#endif
         m_FileSinks.clear();
         m_BufferSinks.clear();
 
@@ -53,20 +55,24 @@ namespace amc::Shared {
 
     void LogManager::EnableDebugConsoleLogging()
     {
+#if defined(_WIN32)
         if (!m_DebugSink)
         {
             m_DebugSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
             m_Sink->add_sink(m_DebugSink);
         }
+#endif
     }
 
     void LogManager::DisableDebugConsoleLogging()
     {
+#if defined(_WIN32)
         if (m_DebugSink)
         {
             m_Sink->remove_sink(m_DebugSink);
             m_DebugSink.reset();
         }
+#endif
     }
 
     void LogManager::AttachFileLogging(const std::string& filePath)
@@ -162,4 +168,4 @@ namespace amc::Shared {
         }
         return m_BufferSinks.end();
     }
-} // namespace amc::Shared
+} // namespace nate::Modules::Debug

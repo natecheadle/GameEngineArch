@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace amc::Shared {
+namespace nate::Modules::Debug {
 
     class ILogBuffer {
       public:
@@ -14,4 +14,4 @@ namespace amc::Shared {
         ILogBuffer()  = default;
         ~ILogBuffer() = default;
     };
-} // namespace amc::Shared
+} // namespace nate::Modules::Debug
