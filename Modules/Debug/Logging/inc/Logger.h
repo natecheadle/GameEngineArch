@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace nate::Modules::Debug {
+namespace nate::Modules::Debug::Logging {
 
     class ILogManager;
 
@@ -38,4 +38,4 @@ namespace nate::Modules::Debug {
 
         ILogManager* GetManager() const override { return m_pManager; }
     };
-} // namespace nate::Modules::Debug
+} // namespace nate::Modules::Debug::Logging

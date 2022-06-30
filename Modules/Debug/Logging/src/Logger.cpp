@@ -2,7 +2,7 @@
 
 #include "LogManager.h"
 
-namespace nate::Modules::Debug {
+namespace nate::Modules::Debug::Logging {
     Logger::Logger(ILogManager* pManager, const std::string& moduleName, spdlog::sink_ptr sink)
         : m_pManager(pManager)
     {
@@ -53,4 +53,4 @@ namespace nate::Modules::Debug {
 
     void Logger::Flush() const { m_Logger->flush(); }
 
-} // namespace nate::Modules::Debug
+} // namespace nate::Modules::Debug::Logging

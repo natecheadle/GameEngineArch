@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace nate::Modules::Debug {
+namespace nate::Modules::Debug::Logging {
 
     class ILogManager {
       public:
@@ -36,4 +36,4 @@ namespace nate::Modules::Debug {
         virtual ILogger*              InitializeLogger(const std::string& moduleName) = 0;
         virtual ILogger*              GetLogger(const std::string& moduleName) const  = 0;
     };
-} // namespace nate::Modules::Debug
+} // namespace nate::Modules::Debug::Logging

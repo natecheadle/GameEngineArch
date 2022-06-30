@@ -9,7 +9,7 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 
-namespace nate::Modules::Debug {
+namespace nate::Modules::Debug::Logging {
     LogManager::LogManager()
         : m_Sink(std::make_shared<spdlog::sinks::dist_sink_mt>())
     {
@@ -168,4 +168,4 @@ namespace nate::Modules::Debug {
         }
         return m_BufferSinks.end();
     }
-} // namespace nate::Modules::Debug
+} // namespace nate::Modules::Debug::Logging
