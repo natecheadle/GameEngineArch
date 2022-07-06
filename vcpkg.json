@@ -3,6 +3,7 @@
     "name": "shared",
     "version": "0.15.2",
     "dependencies": [
-        "gtest"
+        "gtest",
+        "glfw3"
     ]
 }
