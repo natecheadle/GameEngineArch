@@ -4,8 +4,7 @@ project("Modules_GUI")
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} STATIC
-    "src/GLFWWindow.cpp"
-    "src/IWindow.cpp")
+    "src/Window_GLFW.cpp")
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)

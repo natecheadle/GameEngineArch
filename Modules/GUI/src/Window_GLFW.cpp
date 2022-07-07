@@ -1,4 +1,8 @@
-#include "GLFWWindow.h"
+#include "Window_GLFW.h"
+
+#include "KeyModifiers.hpp"
+#include "Keys.h"
+#include "WindowSize.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -16,15 +20,14 @@
 
 namespace nate::Modules::GUI {
 
-    std::atomic<size_t> GLFWWindow::WindowCount = 0;
+    std::atomic<size_t> Window_GLFW::WindowCount = 0;
 
     std::map<GLFWwindow*, std::function<void(int key, int scancode, int action, int mods)>>
-                                                 GLFWWindow::KeyPressCallbacks;
-    std::map<GLFWwindow*, std::function<void()>> GLFWWindow::OnCloseCallbacks;
+                                                 Window_GLFW::KeyPressCallbacks;
+    std::map<GLFWwindow*, std::function<void()>> Window_GLFW::OnCloseCallbacks;
 
-    GLFWWindow::GLFWWindow(int width, int height, std::string name)
-        : m_InitialWidth(width)
-        , m_InitialHeight(height)
+    Window_GLFW::Window_GLFW(const WindowSize& size, std::string name)
+        : m_InitialSize(size)
         , m_Name(std::move(name))
     {
         if (glfwInit() == GLFW_FALSE)
@@ -33,22 +36,35 @@ namespace nate::Modules::GUI {
         }
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        m_pWindow = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+        m_pWindow = glfwCreateWindow(size.Width(), size.Height(), name.c_str(), NULL, NULL);
         if (!m_pWindow)
             return;
 
         ++WindowCount;
 
-        glfwSetKeyCallback(m_pWindow, &GLFWWindow::KeyPressCallBack);
-        glfwSetWindowCloseCallback(m_pWindow, &GLFWWindow::OnCloseCallback);
+        glfwSetKeyCallback(m_pWindow, &Window_GLFW::KeyPressCallBack);
+        glfwSetWindowCloseCallback(m_pWindow, &Window_GLFW::OnCloseCallback);
+        glfwSetMouseButtonCallback(m_pWindow, &Window_GLFW::OnMouseClickCallback);
+        glfwSetWindowSizeCallback(m_pWindow, &Window_GLFW::OnWindowResizeCallback);
 
         KeyPressCallbacks.insert({m_pWindow, [this](int key, int scancode, int action, int mods) {
-                                      KeyPressCallBack(key, scancode, action, mods);
+                                      if (m_OnKeyPressFuncs.empty())
+                                          return;
+                                      auto it = m_OnKeyPressFuncs.find(TranslateKey(key));
+                                      if (it == m_OnKeyPressFuncs.end())
+                                          return;
+
+                                      it->second(TranslateAction(action), TranslateKeyMods(mods), scancode);
                                   }});
-        OnCloseCallbacks.insert({m_pWindow, [this]() { OnCloseCallback(); }});
+        OnCloseCallbacks.insert({m_pWindow, [this]() { m_OnCloseFunc(); }});
+        OnResizeCallbacks.insert({m_pWindow, [this](int width, int height) { m_OnResize({width, height}); }});
+        OnMouseClickCallbacks.insert(
+            {m_pWindow, [this](int button, int action, int mods) {
+                 m_OnMouseClick(TranslateMouseButton(button), TranslateAction(action), TranslateKeyMods(mods));
+             }});
     }
 
-    GLFWWindow::~GLFWWindow()
+    Window_GLFW::~Window_GLFW()
     {
         auto* pWindow = m_pWindow;
         m_pWindow     = nullptr;
@@ -62,7 +78,7 @@ namespace nate::Modules::GUI {
         }
     }
 
-    void GLFWWindow::AttachKeyCallback(Key key, std::function<void(KeyState state, KeyModifiers modifiers)> callback)
+    void Window_GLFW::AttachKeyCallback(Key key, KeyPressFunc callback)
     {
         auto it = m_OnKeyPressFuncs.find(key);
         if (it == m_OnKeyPressFuncs.end())
@@ -74,41 +90,35 @@ namespace nate::Modules::GUI {
             it->second = std::move(callback);
         }
     }
-    void GLFWWindow::ClearKeyCallback(Key key) { m_OnKeyPressFuncs.erase(key); }
+    void Window_GLFW::ClearKeyCallback(Key key) { m_OnKeyPressFuncs.erase(key); }
 
-    void GLFWWindow::AttachOnCloseCallback(std::function<void()> callback) { m_OnCloseFunc = std::move(callback); }
+    void Window_GLFW::AttachOnCloseCallback(CloseFunc callback) { m_OnCloseFunc = std::move(callback); }
 
-    void GLFWWindow::ClearOnCloseCallback() { m_OnCloseFunc = std::function<void()>(); }
+    void Window_GLFW::ClearOnCloseCallback() { m_OnCloseFunc = CloseFunc(); }
 
-    void GLFWWindow::AttachOnResizeCallback(std::function<void(int width, int height)> callback)
-    {
-        m_OnResize = std::move(callback);
-    }
-    void GLFWWindow::ClearOnResizeCallback() { m_OnResize = std::function<void(int width, int height)>(); }
+    void Window_GLFW::AttachOnResizeCallback(ResizeFunc callback) { m_OnResize = std::move(callback); }
 
-    void GLFWWindow::AttachMouseCallback(std::function<void(MouseButton button, KeyState state)> callback)
-    {
-        m_OnMouseClick = std::move(callback);
-    }
+    void Window_GLFW::ClearOnResizeCallback() { m_OnResize = ResizeFunc(); }
 
-    void GLFWWindow::ClearMouseCallback()
-    {
-        m_OnMouseClick = std::function<void(MouseButton button, KeyState state)>();
-    }
+    void Window_GLFW::AttachMouseCallback(MouseClickFunc callback) { m_OnMouseClick = std::move(callback); }
 
-    void GLFWWindow::Close() const { glfwSetWindowShouldClose(m_pWindow, GLFW_TRUE); }
-    bool GLFWWindow::ShouldClose() const { return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE; }
+    void Window_GLFW::ClearMouseCallback() { m_OnMouseClick = MouseClickFunc(); }
 
-    bool        GLFWWindow::IsValid() const { return m_pWindow == nullptr; }
-    std::string GLFWWindow::LastError() const
+    void Window_GLFW::Close() const { glfwSetWindowShouldClose(m_pWindow, GLFW_TRUE); }
+
+    bool Window_GLFW::ShouldClose() const { return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE; }
+
+    bool Window_GLFW::IsValid() const { return m_pWindow == nullptr; }
+
+    std::string Window_GLFW::LastError() const
     {
         static const char* lastError;
         glfwGetError(&lastError);
         return std::string(lastError);
     }
-    const std::string& GLFWWindow::Name() const { return m_Name; }
+    const std::string& Window_GLFW::Name() const { return m_Name; }
 
-    void* GLFWWindow::NativeHandle() const
+    void* Window_GLFW::NativeHandle() const
     {
 #if __linux__
         if (!IsValid())
@@ -127,11 +137,9 @@ namespace nate::Modules::GUI {
 #endif
     }
 
-    int GLFWWindow::InitialWidth() const { return m_InitialWidth; }
+    WindowSize Window_GLFW::InitialSize() const { return m_InitialSize; }
 
-    int GLFWWindow::InitialHeight() const { return m_InitialHeight; }
-
-    CursorPosition GLFWWindow::QueryCursorPosition() const
+    CursorPosition Window_GLFW::QueryCursorPosition() const
     {
         double xpos{0.0};
         double ypos{0.0};
@@ -140,7 +148,7 @@ namespace nate::Modules::GUI {
         return CursorPosition(xpos, ypos);
     }
 
-    KeyState GLFWWindow::QueryKeyState(Key key) const
+    KeyState Window_GLFW::QueryKeyState(Key key) const
     {
         switch (glfwGetKey(m_pWindow, TranslateKey(key)))
         {
@@ -152,7 +160,7 @@ namespace nate::Modules::GUI {
         return KeyState::Released;
     }
 
-    WindowSize GLFWWindow::QueryWindowSize() const
+    WindowSize Window_GLFW::QueryWindowSize() const
     {
         int width{0};
         int height{0};
@@ -160,20 +168,7 @@ namespace nate::Modules::GUI {
         return WindowSize(width, height);
     }
 
-    void GLFWWindow::KeyPressCallBack(int key, int, int action, int mods)
-    {
-        if (m_OnKeyPressFuncs.empty())
-            return;
-        auto it = m_OnKeyPressFuncs.find(TranslateKey(key));
-        if (it == m_OnKeyPressFuncs.end())
-            return;
-
-        it->second(TranslateAction(action), TranslateKeyMods(mods));
-    }
-
-    void GLFWWindow::OnCloseCallback() { m_OnCloseFunc(); }
-
-    void GLFWWindow::KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+    void Window_GLFW::KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
     {
         auto it = KeyPressCallbacks.find(pWindow);
         if (it != KeyPressCallbacks.end())
@@ -181,7 +176,7 @@ namespace nate::Modules::GUI {
             it->second(key, scancode, action, mods);
         }
     }
-    void GLFWWindow::OnCloseCallback(GLFWwindow* pWindow)
+    void Window_GLFW::OnCloseCallback(GLFWwindow* pWindow)
     {
         auto it = OnCloseCallbacks.find(pWindow);
         if (it != OnCloseCallbacks.end())
@@ -190,7 +185,24 @@ namespace nate::Modules::GUI {
         }
     }
 
-    int GLFWWindow::TranslateKey(Key key)
+    void Window_GLFW::OnMouseClickCallback(GLFWwindow* pWindow, int button, int action, int mods)
+    {
+        auto it = OnMouseClickCallbacks.find(pWindow);
+        if (it != OnMouseClickCallbacks.end())
+        {
+            it->second(button, action, mods);
+        }
+    }
+    void Window_GLFW::OnWindowResizeCallback(GLFWwindow* pWindow, int width, int height)
+    {
+        auto it = OnResizeCallbacks.find(pWindow);
+        if (it != OnResizeCallbacks.end())
+        {
+            it->second(width, height);
+        }
+    }
+
+    int Window_GLFW::TranslateKey(Key key)
     {
         switch (key)
         {
@@ -257,7 +269,7 @@ namespace nate::Modules::GUI {
         return 0;
     }
 
-    Key GLFWWindow::TranslateKey(int key)
+    Key Window_GLFW::TranslateKey(int key)
     {
         switch (key)
         {
@@ -322,7 +334,7 @@ namespace nate::Modules::GUI {
         return Key::LAST;
     }
 
-    static KeyState TranslateAction(int action)
+    KeyState Window_GLFW::TranslateAction(int action)
     {
         switch (action)
         {
@@ -333,7 +345,8 @@ namespace nate::Modules::GUI {
         assert(false);
         return KeyState::Released;
     }
-    static KeyModifiers TranslateKeyMods(int mods)
+
+    KeyModifiers Window_GLFW::TranslateKeyMods(int mods)
     {
         return KeyModifiers(
             (mods & GLFW_MOD_SHIFT) == 1,
@@ -342,5 +355,17 @@ namespace nate::Modules::GUI {
             (mods & GLFW_MOD_SUPER) == GLFW_MOD_SUPER,
             (mods & GLFW_MOD_CAPS_LOCK) == GLFW_MOD_CAPS_LOCK,
             (mods & GLFW_MOD_NUM_LOCK) == GLFW_MOD_NUM_LOCK);
+    }
+
+    MouseButton Window_GLFW::TranslateMouseButton(int button)
+    {
+        switch (button)
+        {
+        case GLFW_MOUSE_BUTTON_LEFT: return MouseButton::Left;
+        case GLFW_MOUSE_BUTTON_RIGHT: return MouseButton::Right;
+        case GLFW_MOUSE_BUTTON_MIDDLE: return MouseButton::Middle;
+        }
+        assert(false);
+        return MouseButton::Left;
     }
 } // namespace nate::Modules::GUI
