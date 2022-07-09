@@ -23,8 +23,10 @@ namespace nate::Modules::GUI {
     std::atomic<size_t> Window_GLFW::WindowCount = 0;
 
     std::map<GLFWwindow*, std::function<void(int key, int scancode, int action, int mods)>>
-                                                 Window_GLFW::KeyPressCallbacks;
-    std::map<GLFWwindow*, std::function<void()>> Window_GLFW::OnCloseCallbacks;
+                                                                                 Window_GLFW::KeyPressCallbacks;
+    std::map<GLFWwindow*, std::function<void()>>                                 Window_GLFW::OnCloseCallbacks;
+    std::map<GLFWwindow*, std::function<void(int width, int height)>>            Window_GLFW::OnResizeCallbacks;
+    std::map<GLFWwindow*, std::function<void(int button, int action, int mods)>> Window_GLFW::OnMouseClickCallbacks;
 
     Window_GLFW::Window_GLFW(const WindowSize& size, std::string name)
         : m_InitialSize(size)
@@ -104,11 +106,13 @@ namespace nate::Modules::GUI {
 
     void Window_GLFW::ClearMouseCallback() { m_OnMouseClick = MouseClickFunc(); }
 
+    void Window_GLFW::PollEvents() const { glfwPollEvents(); }
+
     void Window_GLFW::Close() const { glfwSetWindowShouldClose(m_pWindow, GLFW_TRUE); }
 
     bool Window_GLFW::ShouldClose() const { return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE; }
 
-    bool Window_GLFW::IsValid() const { return m_pWindow == nullptr; }
+    bool Window_GLFW::IsValid() const { return m_pWindow != nullptr; }
 
     std::string Window_GLFW::LastError() const
     {

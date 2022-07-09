@@ -32,6 +32,7 @@ namespace nate::Modules::GUI {
         virtual void AttachMouseCallback(MouseClickFunc callback) = 0;
         virtual void ClearMouseCallback()                         = 0;
 
+        virtual void PollEvents() const  = 0;
         virtual void Close() const       = 0;
         virtual bool ShouldClose() const = 0;
 

@@ -50,6 +50,7 @@ namespace nate::Modules::GUI {
         void AttachMouseCallback(MouseClickFunc callback) override;
         void ClearMouseCallback() override;
 
+        void PollEvents() const override;
         void Close() const override;
         bool ShouldClose() const override;
 

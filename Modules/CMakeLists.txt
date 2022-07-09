@@ -3,7 +3,8 @@ project("Modules")
 add_subdirectory("Memory")
 add_subdirectory("Jobs")
 add_subdirectory("GUI")
+add_subdirectory("Render")
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Memory Modules_Jobs)
+target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Memory Modules_Jobs Modules_GUI Modules_Render)

@@ -4,6 +4,13 @@
     "version": "0.15.2",
     "dependencies": [
         "gtest",
-        "glfw3"
+        "glfw3",
+        {
+            "name": "bgfx",
+            "default-features": false,
+            "features": [
+                "tools"
+            ]
+        }
     ]
 }
