@@ -27,7 +27,8 @@ namespace nate::Modules::Jobs {
         bool IsPaused() const { return m_ShouldPause; }
         bool IsExecuting() const;
 
-        std::future_status Join(std::chrono::milliseconds timeout);
+        std::future_status Join(std::chrono::milliseconds timeout) const;
+        void               Join() const;
 
       protected:
         virtual void ExecuteJob() = 0;

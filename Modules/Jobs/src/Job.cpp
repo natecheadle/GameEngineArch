@@ -29,7 +29,9 @@ namespace nate::Modules::Jobs {
         return m_Job.valid() && m_Job.wait_for(std::chrono::milliseconds(0)) == std::future_status::timeout;
     }
 
-    std::future_status Job::Join(std::chrono::milliseconds timeout) { return m_Job.wait_for(timeout); }
+    std::future_status Job::Join(std::chrono::milliseconds timeout) const { return m_Job.wait_for(timeout); }
+
+    void Job::Join() const { m_Job.wait(); }
 
     void Job::Yield()
     {
