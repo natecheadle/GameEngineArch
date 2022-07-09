@@ -25,7 +25,11 @@ namespace nate::Test {
         {
         }
 
-        ~TestJob() override = default;
+        ~TestJob() override
+        {
+            Stop();
+            Join();
+        }
 
         long long GetResult()
         {
