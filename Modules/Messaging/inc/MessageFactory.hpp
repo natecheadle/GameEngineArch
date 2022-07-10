@@ -18,7 +18,7 @@ namespace nate::Modules::Messaging {
             std::unique_ptr<DATA> pData)
         {
             return m_DataMessagePool
-                .MakeBaseOtherObject<DataMessage<ID_T, DATA>, Message<ID_T>, ID_T, std::unique_ptr<DATA>>(
+                .template MakeBaseOtherObject<DataMessage<ID_T, DATA>, Message<ID_T>, ID_T, std::unique_ptr<DATA>>(
                     std::move(id),
                     std::move(pData));
         }
@@ -26,7 +26,7 @@ namespace nate::Modules::Messaging {
         template <class ID_T>
         std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> CreateMessage(ID_T id)
         {
-            return m_DataMessagePool.MakeOtherObject<Message<ID_T>, ID_T>(std::move(id));
+            return m_DataMessagePool.template MakeOtherObject<Message<ID_T>, ID_T>(std::move(id));
         }
     };
 }; // namespace nate::Modules::Messaging

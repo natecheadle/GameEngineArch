@@ -26,9 +26,17 @@ namespace nate::Test {
 
     struct TestData
     {
-        int TestItem1;
-        int TestItem2;
-        int TestItem3;
+        TestData() = default;
+        TestData(int item1, int item2, int item3)
+            : TestItem1(item1)
+            , TestItem2(item2)
+            , TestItem3(item3)
+        {
+        }
+
+        int TestItem1{0};
+        int TestItem2{0};
+        int TestItem3{0};
     };
 
     using TestMessage     = Messaging::Message<MessageID>;
