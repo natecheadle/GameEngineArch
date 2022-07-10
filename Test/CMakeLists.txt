@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
     "StaticMemoryBlock_Tests.cpp"
     "Jobs_Tests.cpp" 
     "Logging_Tests.cpp"
+    "Messaging_Tests.cpp"
 )
 
 find_package(GTest CONFIG REQUIRED)
