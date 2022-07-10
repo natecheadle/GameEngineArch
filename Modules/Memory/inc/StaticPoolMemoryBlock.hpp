@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <type_traits>
 
 namespace nate::Modules::Memory {
     template <typename T>
@@ -39,6 +40,21 @@ namespace nate::Modules::Memory {
         template <typename... Args>
         unique_ptr<T> MakeObject(Args&&... args)
         {
+            return MakeOtherObject<T, Args...>(std::forward<Args>(std::move(args))...);
+        }
+
+        template <class OTHER, typename... Args>
+        std::unique_ptr<OTHER, std::function<void(OTHER*)>> MakeOtherObject(Args&&... args)
+        {
+            return MakeBaseOtherObject<OTHER, OTHER, Args...>(std::forward<Args>(std::move(args))...);
+        }
+
+        template <class OTHER, class OTHER_BASE, typename... Args>
+        std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>> MakeBaseOtherObject(Args&&... args)
+        {
+            static_assert(sizeof(OTHER) <= sizeof(T), "Cannot build object OTHER in pool because it exceed sizeof(T)");
+            static_assert(std::is_base_of_v<OTHER_BASE, OTHER>, "OTHER_BASE must be a base class of OTHER");
+
             if (RemainingSize() == 0)
             {
                 return nullptr;
@@ -46,13 +62,14 @@ namespace nate::Modules::Memory {
 
             std::uint8_t* nextLocation = m_NextLocation;
 
-            T* pObject = new (reinterpret_cast<void*>(nextLocation)) T(std::forward<Args>(args)...);
+            OTHER_BASE* pObject =
+                new (reinterpret_cast<void*>(nextLocation)) OTHER(std::forward<Args>(std::move(args))...);
 
             m_NextLocation = nextLocation;
 
-            auto destroyObject = [&](T* pObjectToDelete) {
+            auto destroyObject = [&](OTHER_BASE* pObjectToDelete) {
                 // Destroy Object
-                pObjectToDelete->~T();
+                pObjectToDelete->~OTHER_BASE();
 
                 // Calculate where it was in the pool.
                 auto* pObjectLocation = reinterpret_cast<std::uint8_t*>(pObjectToDelete);
@@ -65,7 +82,7 @@ namespace nate::Modules::Memory {
             };
 
             ++m_UsedBlocks;
-            return unique_ptr<T>(pObject, destroyObject);
+            return std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>>(pObject, destroyObject);
         }
     };
 } // namespace nate::Modules::Memory

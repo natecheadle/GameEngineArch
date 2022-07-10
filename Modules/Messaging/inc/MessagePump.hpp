@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DataMessage.hpp"
 #include "Message.hpp"
 #include "MessageSubscribers.hpp"
 
@@ -38,6 +39,15 @@ namespace nate::Modules::Messaging {
             return std::async(std::launch::async, &MessagePump<ID_T>::PushMessageUniqueSync, this, std::move(pMessage));
         }
 
+        std::future<void> PushMessage(std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
+        {
+            return std::async(
+                std::launch::async,
+                &MessagePump<ID_T>::PushMessageUniqueCustomDeleterSync,
+                this,
+                std::move(pMessage));
+        }
+
         bool Subscribe(void* subscriber, ID_T messageID, std::function<void(const Message<ID_T>* msg)> callback)
         {
             std::shared_lock<std::shared_mutex> lock(m_SubscriberMutex);
@@ -58,7 +68,7 @@ namespace nate::Modules::Messaging {
 
         void Unsubscribe(void* subscriber, ID_T messageID)
         {
-            std::shared_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            std::unique_lock<std::shared_mutex> lock(m_SubscriberMutex);
 
             auto it = m_MessagesSubcriptions.find(messageID);
             if (it != m_MessagesSubcriptions.end())
@@ -66,6 +76,16 @@ namespace nate::Modules::Messaging {
                 it->second.Unsubscribe(subscriber);
             }
         }
+
+        void Unsubscribe(void* subscriber)
+        {
+            std::unique_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            for (auto& subscribers : m_MessagesSubcriptions)
+            {
+                subscribers.Unsubscribe(subscriber);
+            }
+        }
+
         bool IsSubscribed(void* subscriber, ID_T messageID)
         {
             std::shared_lock<std::shared_mutex> lock(m_SubscriberMutex);
@@ -81,5 +101,10 @@ namespace nate::Modules::Messaging {
 
       private:
         void PushMessageUniqueSync(std::unique_ptr<Message<ID_T>> pMessage) { PushMessageSync(pMessage.get()); }
+        void PushMessageUniqueCustomDeleterSync(
+            std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
+        {
+            PushMessageSync(pMessage.get());
+        }
     };
 } // namespace nate::Modules::Messaging

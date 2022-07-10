@@ -5,6 +5,7 @@
 #include <map>
 #include <mutex>
 #include <shared_mutex>
+#include <functional>
 
 namespace nate::Modules::Messaging {
     template <class ID_T>
