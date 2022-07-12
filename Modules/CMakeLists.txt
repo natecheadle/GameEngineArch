@@ -4,7 +4,15 @@ add_subdirectory("Memory")
 add_subdirectory("Jobs")
 add_subdirectory("GUI")
 add_subdirectory("Render")
+add_subdirectory("Debug")
+add_subdirectory("Messaging")
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Memory Modules_Jobs Modules_GUI Modules_Render)
+target_link_libraries(${PROJECT_NAME} INTERFACE 
+    Modules_Memory 
+    Modules_Jobs 
+    Modules_Debug 
+    Modules_Messaging
+    Modules_GUI 
+    Modules_Render)

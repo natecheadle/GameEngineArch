@@ -11,6 +11,8 @@
             "features": [
                 "tools"
             ]
-        }
+        },
+        "spdlog",
+        "fmt"
     ]
 }
