@@ -16,7 +16,10 @@ namespace nate::Modules::Render {
         m_pWindow = pWindow;
         Start();
     }
-    void Renderer::RenderFrame() { bgfx::renderFrame(); }
+    void Renderer::RenderFrame()
+    {
+        bgfx::renderFrame();
+    }
 
     void Renderer::ExecuteJob()
     {
@@ -40,9 +43,6 @@ namespace nate::Modules::Render {
 
         while (!ShouldStop() && !m_pWindow->ShouldClose())
         {
-            m_pWindow->PollEvents(); // TODO this is crashing
-            size = m_pWindow->QueryWindowSize();
-
             bgfx::touch(kClearView);
             // Use debug font to print information about this example.
             bgfx::dbgTextClear();
