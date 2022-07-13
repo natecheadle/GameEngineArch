@@ -1,16 +1,19 @@
 #pragma once
 
+#include <NullMutex.hpp>
+
 #include <cassert>
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <type_traits>
 
 namespace nate::Modules::Memory {
     template <typename T>
     using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
 
-    template <typename T, std::uint8_t* BEGIN, size_t SIZE>
+    template <typename T, std::uint8_t* BEGIN, size_t SIZE, typename MUTEX = NullMutex>
     class StaticPoolMemoryBlock {
       private:
         static_assert(
@@ -20,6 +23,7 @@ namespace nate::Modules::Memory {
         std::uint8_t* const m_InitialLoc;
         std::uint8_t*       m_NextLocation;
         size_t              m_UsedBlocks;
+        MUTEX               m_Mutex;
 
       public:
         StaticPoolMemoryBlock()
@@ -34,8 +38,16 @@ namespace nate::Modules::Memory {
             }
         }
 
-        size_t UsedSize() const { return m_UsedBlocks * sizeof(T); }
-        size_t RemainingSize() const { return SIZE - UsedSize(); }
+        size_t UsedSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivUsedSize();
+        }
+        size_t RemainingSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivRemainingSize();
+        }
 
         template <typename... Args>
         unique_ptr<T> MakeObject(Args&&... args)
@@ -52,10 +64,12 @@ namespace nate::Modules::Memory {
         template <class OTHER, class OTHER_BASE, typename... Args>
         std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>> MakeBaseOtherObject(Args&&... args)
         {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+
             static_assert(sizeof(OTHER) <= sizeof(T), "Cannot build object OTHER in pool because it exceed sizeof(T)");
             static_assert(std::is_base_of_v<OTHER_BASE, OTHER>, "OTHER_BASE must be a base class of OTHER");
 
-            if (RemainingSize() == 0)
+            if (PrivRemainingSize() == 0)
             {
                 return nullptr;
             }
@@ -67,7 +81,9 @@ namespace nate::Modules::Memory {
 
             m_NextLocation = nextLocation;
 
-            auto destroyObject = [&](OTHER_BASE* pObjectToDelete) {
+            auto destroyObject = [this](OTHER_BASE* pObjectToDelete) {
+                std::unique_lock<MUTEX> lock(m_Mutex);
+
                 // Destroy Object
                 pObjectToDelete->~OTHER_BASE();
 
@@ -84,5 +100,9 @@ namespace nate::Modules::Memory {
             ++m_UsedBlocks;
             return std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>>(pObject, destroyObject);
         }
+
+      private:
+        size_t PrivUsedSize() { return m_UsedBlocks * sizeof(T); }
+        size_t PrivRemainingSize() { return SIZE - UsedSize(); }
     };
 } // namespace nate::Modules::Memory
