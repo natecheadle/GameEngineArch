@@ -371,4 +371,54 @@ namespace nate::Test {
 
         ASSERT_EQ(0, memBlock.UsedSize());
     }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadStackMemoryBlock)
+    {
+        Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        size_t                                   numOfBlocks = 10;
+        std::vector<std::future<TestObject<2>*>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() {
+                TestObject<2>* myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+                TestObject<2>::Validate(10, *myObject);
+                return myObject;
+            });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+        memBlock.Release(numOfBlocks);
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadLinearMemoryBlock)
+    {
+        Memory::StaticLinearMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        size_t                                   numOfBlocks = 10;
+        std::vector<std::future<TestObject<2>*>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() {
+                TestObject<2>* myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+                TestObject<2>::Validate(10, *myObject);
+                return myObject;
+            });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+        memBlock.Reset();
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
 } // namespace nate::Test
