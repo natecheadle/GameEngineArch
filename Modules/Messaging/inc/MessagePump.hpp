@@ -34,18 +34,21 @@ namespace nate::Modules::Messaging {
             it->second.PushMessage(pMessage);
         }
 
-        std::future<void> PushMessage(std::unique_ptr<Message<ID_T>> pMessage)
-        {
-            return std::async(std::launch::async, &MessagePump<ID_T>::PushMessageUniqueSync, this, std::move(pMessage));
-        }
-
-        std::future<void> PushMessage(std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
+        std::future<void> PushMessage(Message<ID_T> message)
         {
             return std::async(
                 std::launch::async,
-                &MessagePump<ID_T>::PushMessageUniqueCustomDeleterSync,
-                this,
-                std::move(pMessage));
+                [this](Message<ID_T> message) { PushMessageSync(&message); },
+                message);
+        }
+
+        template <class DATA>
+        std::future<void> PushDataMessage(DataMessage<ID_T, DATA> message)
+        {
+            return std::async(
+                std::launch::async,
+                [this](DataMessage<ID_T, DATA> message) { PushMessageSync(&message); },
+                std::move(message));
         }
 
         bool Subscribe(void* subscriber, ID_T messageID, std::function<void(const Message<ID_T>* msg)> callback)
@@ -97,14 +100,6 @@ namespace nate::Modules::Messaging {
             }
 
             return false;
-        }
-
-      private:
-        void PushMessageUniqueSync(std::unique_ptr<Message<ID_T>> pMessage) { PushMessageSync(pMessage.get()); }
-        void PushMessageUniqueCustomDeleterSync(
-            std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
-        {
-            PushMessageSync(pMessage.get());
         }
     };
 } // namespace nate::Modules::Messaging
