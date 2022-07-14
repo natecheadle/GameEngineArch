@@ -42,8 +42,8 @@ namespace nate::Test {
             const std::array<size_t, SIZE>& privArray = object.GetValue();
             for (size_t i = 0; i < privArray.size(); ++i)
             {
-                ASSERT_EQ(privArray.at(i), object.GetValue(i));
-                ASSERT_EQ(object.GetValue(i), std::pow(2, i) * initVal);
+                EXPECT_EQ(privArray.at(i), object.GetValue(i));
+                EXPECT_EQ(object.GetValue(i), std::pow(2, i) * initVal);
             }
         }
     };
@@ -124,6 +124,10 @@ namespace nate::Test {
         Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(40);
         myObject1->Validate(40, *myObject1);
         Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(50);
+        myObject2->Validate(50, *myObject2);
+
+        myObject->Validate(10, *myObject);
+        myObject1->Validate(40, *myObject1);
         myObject2->Validate(50, *myObject2);
     }
 
@@ -331,19 +335,7 @@ namespace nate::Test {
 
     TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadPoolMemoryBlock)
     {
-        std::unique_ptr<Debug::Logging::ILogManager> logManager{nullptr};
-        Debug::Logging::ILogger*                     pLogger{nullptr};
-        std::string                                  LoggerName{"TestLogger"};
-        ASSERT_NO_THROW(logManager = Debug::Logging::ILogManager::Factory());
-        ASSERT_NO_THROW(pLogger = logManager->InitializeLogger(LoggerName));
-        ASSERT_NE(nullptr, pLogger);
-
-        ASSERT_NO_THROW(pLogger->SetLogLevel(Debug::Logging::LogLevel::Trace));
-
-        ASSERT_NO_THROW(logManager->EnableStdOutLogging());
-        ASSERT_TRUE(logManager->IsStdOutLoggingEnabled());
-
-        Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize, std::mutex> memBlock(pLogger);
+        Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize, std::mutex> memBlock;
 
         size_t                                                      numOfBlocks = 10;
         std::vector<std::future<Memory::unique_ptr<TestObject<2>>>> objects(numOfBlocks);

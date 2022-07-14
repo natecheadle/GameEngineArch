@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Generic Modules_Debug_Logging)
+target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Generic)

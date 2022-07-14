@@ -1,9 +1,6 @@
 #pragma once
 
-#include <ILogger.h>
 #include <NullMutex.hpp>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 
 #include <cassert>
 #include <chrono>
@@ -29,14 +26,12 @@ namespace nate::Modules::Memory {
         std::uint8_t*            m_NextLocation;
         size_t                   m_UsedBlocks;
         MUTEX                    m_Mutex;
-        Debug::Logging::ILogger* m_pLogger;
 
       public:
-        StaticPoolMemoryBlock(Debug::Logging::ILogger* pLogger = nullptr)
+        StaticPoolMemoryBlock()
             : m_InitialLoc(BEGIN + reinterpret_cast<std::uintptr_t>(BEGIN) % sizeof(std::uint8_t*))
             , m_NextLocation(m_InitialLoc)
             , m_UsedBlocks(0)
-            , m_pLogger(pLogger)
         {
             for (std::uint8_t* pLoc = m_InitialLoc; pLoc < m_InitialLoc + SIZE; pLoc += sizeof(T))
             {
@@ -72,8 +67,6 @@ namespace nate::Modules::Memory {
         std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>> MakeBaseOtherObject(Args&&... args)
         {
             std::unique_lock<MUTEX> lock(AcquireMutex());
-            if (m_pLogger)
-                m_pLogger->PushTraceLog(fmt::format("Creating object on thread {}", std::this_thread::get_id()));
 
             static_assert(sizeof(OTHER) <= sizeof(T), "Cannot build object OTHER in pool because it exceed sizeof(T)");
             static_assert(std::is_base_of_v<OTHER_BASE, OTHER>, "OTHER_BASE must be a base class of OTHER");
@@ -83,18 +76,16 @@ namespace nate::Modules::Memory {
                 return nullptr;
             }
 
-            std::uint8_t* nextLocation = m_NextLocation;
+            std::uint8_t* nextLocation{nullptr};
+            memcpy(&nextLocation, m_NextLocation, sizeof(std::uint8_t*));
 
             OTHER_BASE* pObject =
-                new (reinterpret_cast<void*>(nextLocation)) OTHER(std::forward<Args>(std::move(args))...);
+                new (reinterpret_cast<void*>(m_NextLocation)) OTHER(std::forward<Args>(std::move(args))...);
 
             m_NextLocation = nextLocation;
 
             auto destroyObject = [this](OTHER_BASE* pObjectToDelete) {
                 std::unique_lock<MUTEX> lock(AcquireMutex());
-
-                if (m_pLogger)
-                    m_pLogger->PushTraceLog(fmt::format("Deleting object on thread {}", std::this_thread::get_id()));
 
                 // Destroy Object
                 pObjectToDelete->~OTHER_BASE();
@@ -110,10 +101,6 @@ namespace nate::Modules::Memory {
             };
 
             ++m_UsedBlocks;
-
-            if (m_pLogger)
-                m_pLogger->PushTraceLog(
-                    fmt::format("Finished creating object on thread {}", std::this_thread::get_id()));
             return std::unique_ptr<OTHER_BASE, std::function<void(OTHER_BASE*)>>(pObject, destroyObject);
         }
 
@@ -123,13 +110,8 @@ namespace nate::Modules::Memory {
             std::unique_lock<MUTEX> lock(m_Mutex, std::defer_lock);
             while (!lock.try_lock())
             {
-                if (m_pLogger)
-                    m_pLogger->PushTraceLog(
-                        fmt::format("Failed to acquire lock on thread {}", std::this_thread::get_id()));
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
-            if (m_pLogger)
-                m_pLogger->PushTraceLog(fmt::format("Acquired lock on thread {}", std::this_thread::get_id()));
             return std::move(lock);
         }
         size_t PrivUsedSize() { return m_UsedBlocks * sizeof(T); }
