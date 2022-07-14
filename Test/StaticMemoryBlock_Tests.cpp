@@ -1,3 +1,4 @@
+#include <LogManager.h>
 #include <StaticFreeMemoryBlock.hpp>
 #include <StaticLinearMemoryBlock.hpp>
 #include <StaticPoolMemoryBlock.hpp>
@@ -8,6 +9,8 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <future>
+#include <vector>
 
 using namespace nate::Modules;
 namespace nate::Test {
@@ -39,11 +42,13 @@ namespace nate::Test {
             const std::array<size_t, SIZE>& privArray = object.GetValue();
             for (size_t i = 0; i < privArray.size(); ++i)
             {
-                ASSERT_EQ(privArray.at(i), object.GetValue(i));
-                ASSERT_EQ(object.GetValue(i), std::pow(2, i) * initVal);
+                EXPECT_EQ(privArray.at(i), object.GetValue(i));
+                EXPECT_EQ(object.GetValue(i), std::pow(2, i) * initVal);
             }
         }
     };
+
+    // TODO need to update tests to add multithreaded tests.
 
     TEST(StaticMemoryBlock_Tests, ValidateLinearMemoryBlockBasicCreateDelete)
     {
@@ -119,6 +124,10 @@ namespace nate::Test {
         Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(40);
         myObject1->Validate(40, *myObject1);
         Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(50);
+        myObject2->Validate(50, *myObject2);
+
+        myObject->Validate(10, *myObject);
+        myObject1->Validate(40, *myObject1);
         myObject2->Validate(50, *myObject2);
     }
 
@@ -287,5 +296,129 @@ namespace nate::Test {
 
         Memory::unique_ptr<TestObject<1024>> myObject = memBlock.MakeObject<TestObject<1024>, size_t>(1);
         ASSERT_EQ(nullptr, myObject);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadFreeMemoryBlock)
+    {
+        Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize, std::mutex> memBlock;
+
+        size_t                                                      numOfBlocks = 10;
+        std::vector<std::future<Memory::unique_ptr<TestObject<4>>>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() { return std::move(memBlock.MakeObject<TestObject<4>, size_t>(10)); });
+            objects[i]  = std::move(future);
+        }
+
+        std::vector<std::future<void>> deleteFutures(numOfBlocks);
+        for (size_t i = 0; i < numOfBlocks; i++)
+        {
+            auto future = std::async(
+                [](std::future<Memory::unique_ptr<TestObject<4>>> future) {
+                    auto pObject = future.get();
+                    ASSERT_NE(nullptr, pObject.get());
+                    TestObject<4>::Validate(10, *pObject);
+                    pObject.reset();
+                },
+                std::move(objects[i]));
+            deleteFutures[i] = std::move(future);
+        }
+
+        for (auto& future : deleteFutures)
+        {
+            future.wait();
+        }
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadPoolMemoryBlock)
+    {
+        Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize, std::mutex> memBlock;
+
+        size_t                                                      numOfBlocks = 10;
+        std::vector<std::future<Memory::unique_ptr<TestObject<2>>>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() { return std::move(memBlock.MakeObject(10)); });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+
+        std::vector<std::future<void>> deleteFutures(numOfBlocks);
+        for (size_t i = 0; i < numOfBlocks; i++)
+        {
+            auto future = std::async(
+                [](std::future<Memory::unique_ptr<TestObject<2>>> future) {
+                    auto pObject = future.get();
+                    ASSERT_NE(nullptr, pObject.get());
+                    TestObject<2>::Validate(10, *pObject);
+                    pObject.reset();
+                },
+                std::move(objects[i]));
+            deleteFutures[i] = std::move(future);
+        }
+
+        for (auto& future : deleteFutures)
+        {
+            future.wait();
+        }
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadStackMemoryBlock)
+    {
+        Memory::StaticStackMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        size_t                                   numOfBlocks = 10;
+        std::vector<std::future<TestObject<2>*>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() {
+                TestObject<2>* myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+                TestObject<2>::Validate(10, *myObject);
+                return myObject;
+            });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+        memBlock.Release(numOfBlocks);
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadLinearMemoryBlock)
+    {
+        Memory::StaticLinearMemoryBlock<MemoryBuffer, MemorySize> memBlock;
+
+        size_t                                   numOfBlocks = 10;
+        std::vector<std::future<TestObject<2>*>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() {
+                TestObject<2>* myObject = memBlock.MakeObject<TestObject<2>, size_t>(10);
+                TestObject<2>::Validate(10, *myObject);
+                return myObject;
+            });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+        memBlock.Reset();
+
+        ASSERT_EQ(0, memBlock.UsedSize());
     }
 } // namespace nate::Test

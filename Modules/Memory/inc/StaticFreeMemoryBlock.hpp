@@ -1,17 +1,20 @@
 #pragma once
 
+#include <NullMutex.hpp>
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iterator>
 #include <memory>
+#include <mutex>
 
 namespace nate::Modules::Memory {
     template <typename T>
     using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
 
-    template <std::uint8_t* BEGIN, size_t SIZE>
+    template <std::uint8_t* BEGIN, size_t SIZE, typename MUTEX = NullMutex>
     class StaticFreeMemoryBlock {
       private:
         struct EmptySizeHeader
@@ -31,6 +34,7 @@ namespace nate::Modules::Memory {
         std::uint8_t* const m_InitialLoc;
         std::uint8_t*       m_FirstLoc;
         size_t              m_UsedSize;
+        MUTEX               m_Mutex;
 
       public:
         StaticFreeMemoryBlock()
@@ -43,15 +47,25 @@ namespace nate::Modules::Memory {
             pFirstHeader->Size  = SIZE - sizeof(EmptySizeHeader);
         }
 
-        size_t UsedSize() const { return m_UsedSize; }
-        size_t RemainingSize() const { return SIZE - m_UsedSize; }
+        size_t UsedSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivUsedSize();
+        }
+        size_t RemainingSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivRemainingSize();
+        }
 
         template <typename T, typename... Args>
         unique_ptr<T> MakeObject(Args&&... args)
         {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+
             static_assert(sizeof(T) >= sizeof(EmptySizeHeader), "T is too small.");
 
-            if (sizeof(T) > RemainingSize())
+            if (sizeof(T) > PrivRemainingSize())
             {
                 return nullptr;
             }
@@ -92,7 +106,10 @@ namespace nate::Modules::Memory {
             }
 
             T*   pObject      = new (reinterpret_cast<void*>(nextLoc.pHeader)) T(std::forward<Args>(args)...);
-            auto deleteObject = [&](T* pObject) { DeleteObject(pObject); };
+            auto deleteObject = [this](T* pObject) {
+                std::unique_lock<MUTEX> lock(m_Mutex);
+                DeleteObject(pObject);
+            };
 
             m_UsedSize += TSize;
 
@@ -100,6 +117,9 @@ namespace nate::Modules::Memory {
         }
 
       private:
+        size_t PrivUsedSize() { return m_UsedSize; }
+        size_t PrivRemainingSize() { return SIZE - m_UsedSize; }
+
         void RemoveObjectFromList(std::uint8_t* pObject, size_t sizeT)
         {
             HeaderPair prevLoc = GetPreviousLocation(pObject, sizeT);

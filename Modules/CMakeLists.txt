@@ -4,6 +4,7 @@ add_subdirectory("Memory")
 add_subdirectory("Jobs")
 add_subdirectory("Debug")
 add_subdirectory("Messaging")
+add_subdirectory("Generic")
 
 add_library(${PROJECT_NAME} INTERFACE)
 
