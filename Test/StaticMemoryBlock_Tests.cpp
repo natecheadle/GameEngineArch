@@ -1,3 +1,4 @@
+#include <LogManager.h>
 #include <StaticFreeMemoryBlock.hpp>
 #include <StaticLinearMemoryBlock.hpp>
 #include <StaticPoolMemoryBlock.hpp>
@@ -8,6 +9,8 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <future>
+#include <vector>
 
 using namespace nate::Modules;
 namespace nate::Test {
@@ -45,7 +48,7 @@ namespace nate::Test {
         }
     };
 
-    //TODO need to update tests to add multithreaded tests.
+    // TODO need to update tests to add multithreaded tests.
 
     TEST(StaticMemoryBlock_Tests, ValidateLinearMemoryBlockBasicCreateDelete)
     {
@@ -289,5 +292,91 @@ namespace nate::Test {
 
         Memory::unique_ptr<TestObject<1024>> myObject = memBlock.MakeObject<TestObject<1024>, size_t>(1);
         ASSERT_EQ(nullptr, myObject);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadFreeMemoryBlock)
+    {
+        Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize, std::mutex> memBlock;
+
+        size_t                                                      numOfBlocks = 10;
+        std::vector<std::future<Memory::unique_ptr<TestObject<4>>>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() { return std::move(memBlock.MakeObject<TestObject<4>, size_t>(10)); });
+            objects[i]  = std::move(future);
+        }
+
+        std::vector<std::future<void>> deleteFutures(numOfBlocks);
+        for (size_t i = 0; i < numOfBlocks; i++)
+        {
+            auto future = std::async(
+                [](std::future<Memory::unique_ptr<TestObject<4>>> future) {
+                    auto pObject = future.get();
+                    ASSERT_NE(nullptr, pObject.get());
+                    TestObject<4>::Validate(10, *pObject);
+                    pObject.reset();
+                },
+                std::move(objects[i]));
+            deleteFutures[i] = std::move(future);
+        }
+
+        for (auto& future : deleteFutures)
+        {
+            future.wait();
+        }
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidateMultipleThreadPoolMemoryBlock)
+    {
+        std::unique_ptr<Debug::Logging::ILogManager> logManager{nullptr};
+        Debug::Logging::ILogger*                     pLogger{nullptr};
+        std::string                                  LoggerName{"TestLogger"};
+        ASSERT_NO_THROW(logManager = Debug::Logging::ILogManager::Factory());
+        ASSERT_NO_THROW(pLogger = logManager->InitializeLogger(LoggerName));
+        ASSERT_NE(nullptr, pLogger);
+
+        ASSERT_NO_THROW(pLogger->SetLogLevel(Debug::Logging::LogLevel::Trace));
+
+        ASSERT_NO_THROW(logManager->EnableStdOutLogging());
+        ASSERT_TRUE(logManager->IsStdOutLoggingEnabled());
+
+        Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize, std::mutex> memBlock(pLogger);
+
+        size_t                                                      numOfBlocks = 10;
+        std::vector<std::future<Memory::unique_ptr<TestObject<2>>>> objects(numOfBlocks);
+
+        for (size_t i = 0; i < numOfBlocks; ++i)
+        {
+            auto future = std::async([&]() { return std::move(memBlock.MakeObject(10)); });
+            objects[i]  = std::move(future);
+        }
+        for (auto& object : objects)
+        {
+            object.wait();
+        }
+
+        std::vector<std::future<void>> deleteFutures(numOfBlocks);
+        for (size_t i = 0; i < numOfBlocks; i++)
+        {
+            auto future = std::async(
+                [](std::future<Memory::unique_ptr<TestObject<2>>> future) {
+                    auto pObject = future.get();
+                    ASSERT_NE(nullptr, pObject.get());
+                    TestObject<2>::Validate(10, *pObject);
+                    pObject.reset();
+                },
+                std::move(objects[i]));
+            deleteFutures[i] = std::move(future);
+        }
+
+        for (auto& future : deleteFutures)
+        {
+            future.wait();
+        }
+
+        ASSERT_EQ(0, memBlock.UsedSize());
     }
 } // namespace nate::Test
