@@ -1,8 +1,9 @@
 #pragma once
 
-#include "DataMessage.hpp"
+#include "LargeDataMessage.hpp"
 #include "Message.hpp"
 #include "MessageSubscribers.hpp"
+#include "SmallDataMessage.hpp"
 
 #include <future>
 #include <map>
@@ -34,18 +35,27 @@ namespace nate::Modules::Messaging {
             it->second.PushMessage(pMessage);
         }
 
-        std::future<void> PushMessage(std::unique_ptr<Message<ID_T>> pMessage)
-        {
-            return std::async(std::launch::async, &MessagePump<ID_T>::PushMessageUniqueSync, this, std::move(pMessage));
-        }
-
-        std::future<void> PushMessage(std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
+        std::future<void> PushMessage(Message<ID_T> message)
         {
             return std::async(
                 std::launch::async,
-                &MessagePump<ID_T>::PushMessageUniqueCustomDeleterSync,
-                this,
-                std::move(pMessage));
+                [this](Message<ID_T> message) { PushMessageSync(&message); },
+                message);
+        }
+
+        template <class DATA>
+        std::future<void> PushMessage(LargeDataMessage<ID_T, DATA> message)
+        {
+            return std::async(std::launch::async, [this, message = std::move(message)] { PushMessageSync(&message); });
+        }
+
+        template <class DATA>
+        std::future<void> PushMessage(SmallDataMessage<ID_T, DATA> message)
+        {
+            return std::async(
+                std::launch::async,
+                [this](SmallDataMessage<ID_T, DATA> message) { PushMessageSync(&message); },
+                message);
         }
 
         bool Subscribe(void* subscriber, ID_T messageID, std::function<void(const Message<ID_T>* msg)> callback)
@@ -97,14 +107,6 @@ namespace nate::Modules::Messaging {
             }
 
             return false;
-        }
-
-      private:
-        void PushMessageUniqueSync(std::unique_ptr<Message<ID_T>> pMessage) { PushMessageSync(pMessage.get()); }
-        void PushMessageUniqueCustomDeleterSync(
-            std::unique_ptr<Message<ID_T>, std::function<void(Message<ID_T>*)>> pMessage)
-        {
-            PushMessageSync(pMessage.get());
         }
     };
 } // namespace nate::Modules::Messaging

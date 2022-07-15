@@ -1,10 +1,13 @@
 #pragma once
 
+#include <NullMutex.hpp>
+
 #include <array>
 #include <cstdint>
+#include <mutex>
 
 namespace nate::Modules::Memory {
-    template <std::uint8_t* BEGIN, size_t SIZE>
+    template <std::uint8_t* BEGIN, size_t SIZE, typename MUTEX = NullMutex>
     class StaticStackMemoryBlock {
       private:
         static constexpr std::uint8_t* END = BEGIN + SIZE;
@@ -12,6 +15,7 @@ namespace nate::Modules::Memory {
         std::uint8_t* const m_InitialLoc;
         std::uint8_t*       m_CurrentLoc;
         size_t              m_TotalObjectCount;
+        MUTEX               m_Mutex;
 
       public:
         StaticStackMemoryBlock()
@@ -23,34 +27,32 @@ namespace nate::Modules::Memory {
 
         void Reset()
         {
-            m_CurrentLoc       = m_InitialLoc;
-            m_TotalObjectCount = 0;
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            PrivReset();
         }
 
         void Release(size_t numOfObjects)
         {
-            if (numOfObjects >= m_TotalObjectCount)
-            {
-                Reset();
-            }
-            else
-            {
-                for (size_t i = 0; i < numOfObjects; i++)
-                {
-                    memcpy(&m_CurrentLoc, m_CurrentLoc - sizeof(std::uint8_t*), sizeof(std::uint8_t*));
-                    m_TotalObjectCount--;
-                }
-            }
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            PrivRelease(numOfObjects);
         }
 
-        size_t UsedSize() const { return std::distance(m_InitialLoc, m_CurrentLoc); }
-        size_t RemainingSize() const { return std::distance(m_CurrentLoc, END); }
+        size_t UsedSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivUsedSize();
+        }
+        size_t RemainingSize()
+        {
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            return PrivRemainingSize();
+        }
 
         template <typename T, typename... Args>
         T* MakeObject(Args&&... args)
         {
-
-            if ((sizeof(T) + sizeof(std::uint8_t*)) > RemainingSize())
+            std::unique_lock<MUTEX> lock(m_Mutex);
+            if ((sizeof(T) + sizeof(std::uint8_t*)) > PrivRemainingSize())
             {
                 return nullptr;
             }
@@ -63,5 +65,31 @@ namespace nate::Modules::Memory {
             m_TotalObjectCount++;
             return pObject;
         }
+
+      private:
+        void PrivReset()
+        {
+            m_CurrentLoc       = m_InitialLoc;
+            m_TotalObjectCount = 0;
+        }
+
+        void PrivRelease(size_t numOfObjects)
+        {
+            if (numOfObjects >= m_TotalObjectCount)
+            {
+                PrivReset();
+            }
+            else
+            {
+                for (size_t i = 0; i < numOfObjects; i++)
+                {
+                    memcpy(&m_CurrentLoc, m_CurrentLoc - sizeof(std::uint8_t*), sizeof(std::uint8_t*));
+                    m_TotalObjectCount--;
+                }
+            }
+        }
+
+        size_t PrivUsedSize() { return std::distance(m_InitialLoc, m_CurrentLoc); }
+        size_t PrivRemainingSize() { return std::distance(m_CurrentLoc, END); }
     };
 } // namespace nate::Modules::Memory

@@ -1,4 +1,3 @@
-#include <MessageFactory.hpp>
 #include <MessagePump.hpp>
 
 #include <gtest/gtest.h>
@@ -22,6 +21,7 @@ namespace nate::Test {
         DoLongC,
 
         Data,
+        SmallData,
     };
 
     struct TestData
@@ -39,19 +39,14 @@ namespace nate::Test {
         int TestItem3{0};
     };
 
-    using TestMessage     = Messaging::Message<MessageID>;
-    using TestPump        = Messaging::MessagePump<MessageID>;
-    using TestDataMessage = Messaging::DataMessage<MessageID, TestData>;
-
-    namespace {
-        constexpr size_t MemorySize = 32;
-        std::uint8_t     DataMessageMemoryBuffer[MemorySize * sizeof(Messaging::GenericDataMessage)];
-    } // namespace
+    using TestMessage          = Messaging::Message<MessageID>;
+    using TestPump             = Messaging::MessagePump<MessageID>;
+    using TestLargeDataMessage = Messaging::LargeDataMessage<MessageID, TestData>;
+    using TestSmallDataMessage = Messaging::SmallDataMessage<MessageID, std::int64_t>;
 
     class MessagePump_Tests : public testing::Test {
       protected:
-        TestPump                                                       m_MessagePump;
-        Messaging::MessageFactory<DataMessageMemoryBuffer, MemorySize> m_MessageFactory;
+        TestPump m_MessagePump;
 
         std::atomic<int> m_DoACallCount{0};
         std::atomic<int> m_DoBCallCount{0};
@@ -62,6 +57,7 @@ namespace nate::Test {
         std::atomic<int> m_DoLongCCallCount{0};
 
         std::atomic<int> m_DoDataCount{0};
+        std::atomic<int> m_DoSmallDataCount{0};
 
         void SetUp()
         {
@@ -75,6 +71,10 @@ namespace nate::Test {
 
             EXPECT_TRUE(m_MessagePump.Subscribe(this, MessageID::Data, [this](const TestMessage* pMessage) {
                 DoData(pMessage);
+            }));
+
+            EXPECT_TRUE(m_MessagePump.Subscribe(this, MessageID::SmallData, [this](const TestMessage* pMessage) {
+                DoSmallData(pMessage);
             }));
         }
         void TearDown() {}
@@ -101,10 +101,19 @@ namespace nate::Test {
 
         void DoData(const TestMessage* pMessage)
         {
-            auto pDataMessage = dynamic_cast<const TestDataMessage*>(pMessage);
+            const auto* pDataMessage = dynamic_cast<const TestLargeDataMessage*>(pMessage);
             if (pDataMessage)
             {
                 m_DoDataCount++;
+            }
+        }
+
+        void DoSmallData(const TestMessage* pMessage)
+        {
+            const auto* pDataMessage = dynamic_cast<const TestSmallDataMessage*>(pMessage);
+            if (pDataMessage)
+            {
+                m_DoSmallDataCount++;
             }
         }
     };
@@ -133,9 +142,9 @@ namespace nate::Test {
 
     TEST_F(MessagePump_Tests, TestDoABCASync)
     {
-        std::future<void> aFut = m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoA));
-        std::future<void> bFut = m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoB));
-        std::future<void> cFut = m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoC));
+        std::future<void> aFut = m_MessagePump.PushMessage(TestMessage(MessageID::DoA));
+        std::future<void> bFut = m_MessagePump.PushMessage(TestMessage(MessageID::DoB));
+        std::future<void> cFut = m_MessagePump.PushMessage(TestMessage(MessageID::DoC));
 
         aFut.wait();
         bFut.wait();
@@ -152,9 +161,9 @@ namespace nate::Test {
         for (size_t i = 0; i < 10; ++i)
         {
             size_t initital       = i * 3;
-            futures[initital]     = std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoA)));
-            futures[initital + 1] = std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoB)));
-            futures[initital + 2] = std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoC)));
+            futures[initital]     = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoA)));
+            futures[initital + 1] = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoB)));
+            futures[initital + 2] = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoC)));
         }
 
         for (auto& future : futures)
@@ -172,12 +181,10 @@ namespace nate::Test {
         std::vector<std::future<void>> futures(30);
         for (size_t i = 0; i < 10; ++i)
         {
-            size_t initital   = i * 3;
-            futures[initital] = std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoLongA)));
-            futures[initital + 1] =
-                std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoLongB)));
-            futures[initital + 2] =
-                std::move(m_MessagePump.PushMessage(std::make_unique<TestMessage>(MessageID::DoLongC)));
+            size_t initital       = i * 3;
+            futures[initital]     = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoLongA)));
+            futures[initital + 1] = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoLongB)));
+            futures[initital + 2] = std::move(m_MessagePump.PushMessage(TestMessage(MessageID::DoLongC)));
         }
 
         for (auto& future : futures)
@@ -202,21 +209,27 @@ namespace nate::Test {
         EXPECT_TRUE(m_MessagePump.IsSubscribed(this, MessageID::DoLongC));
     }
 
-    TEST_F(MessagePump_Tests, ValidateSendMessageFromFactory)
+    TEST_F(MessagePump_Tests, ValidateAsyncDataMessages)
     {
-        auto              pMessage = m_MessageFactory.CreateMessage(MessageID::DoA);
-        std::future<void> aFut     = m_MessagePump.PushMessage(std::move(pMessage));
-        aFut.wait();
+        std::future<void> largeFut =
+            m_MessagePump.PushMessage(TestLargeDataMessage(MessageID::Data, std::make_unique<TestData>(10, 20, 30)));
+        std::future<void> smallFut = m_MessagePump.PushMessage(TestSmallDataMessage(MessageID::SmallData, 10));
 
-        EXPECT_EQ(1, m_DoACallCount);
+        largeFut.wait();
+        smallFut.wait();
+
+        EXPECT_EQ(1, m_DoSmallDataCount);
+        EXPECT_EQ(1, m_DoDataCount);
     }
 
-    TEST_F(MessagePump_Tests, ValidateSendDataMessageFromFactory)
+    TEST_F(MessagePump_Tests, ValidateDataMessages)
     {
-        auto pMessage = m_MessageFactory.CreateDataMessage(MessageID::Data, std::make_unique<TestData>(1, 2, 3));
-        std::future<void> aFut = m_MessagePump.PushMessage(std::move(pMessage));
-        aFut.wait();
+        TestLargeDataMessage largeMsg(MessageID::Data, std::make_unique<TestData>(10, 20, 30));
+        TestSmallDataMessage smallMsg(MessageID::SmallData, 10);
+        m_MessagePump.PushMessageSync(&largeMsg);
+        m_MessagePump.PushMessageSync(&smallMsg);
 
+        EXPECT_EQ(1, m_DoSmallDataCount);
         EXPECT_EQ(1, m_DoDataCount);
     }
 } // namespace nate::Test
