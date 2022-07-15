@@ -1,8 +1,9 @@
 #pragma once
 
-#include "DataMessage.hpp"
+#include "LargeDataMessage.hpp"
 #include "Message.hpp"
 #include "MessageSubscribers.hpp"
+#include "SmallDataMessage.hpp"
 
 #include <future>
 #include <map>
@@ -43,12 +44,18 @@ namespace nate::Modules::Messaging {
         }
 
         template <class DATA>
-        std::future<void> PushDataMessage(DataMessage<ID_T, DATA> message)
+        std::future<void> PushMessage(LargeDataMessage<ID_T, DATA> message)
+        {
+            return std::async(std::launch::async, [this, message = std::move(message)] { PushMessageSync(&message); });
+        }
+
+        template <class DATA>
+        std::future<void> PushMessage(SmallDataMessage<ID_T, DATA> message)
         {
             return std::async(
                 std::launch::async,
-                [this](DataMessage<ID_T, DATA> message) { PushMessageSync(&message); },
-                std::move(message));
+                [this](SmallDataMessage<ID_T, DATA> message) { PushMessageSync(&message); },
+                message);
         }
 
         bool Subscribe(void* subscriber, ID_T messageID, std::function<void(const Message<ID_T>* msg)> callback)

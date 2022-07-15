@@ -6,15 +6,21 @@
 
 namespace nate::Modules::Messaging {
     template <class ID_T, class DATA>
-    class DataMessage : public Message<ID_T> {
+    class LargeDataMessage : public Message<ID_T> {
       public:
-        DataMessage(ID_T id, std::unique_ptr<DATA> pData)
+        LargeDataMessage(ID_T id, std::unique_ptr<DATA> pData)
             : Message<ID_T>(id)
             , m_pData(std::move(pData))
         {
         }
 
-        virtual ~DataMessage() = default;
+        LargeDataMessage(LargeDataMessage&& other)
+            : Message<ID_T>(other)
+            , m_pData(std::move(other.m_pData))
+        {
+        }
+
+        virtual ~LargeDataMessage() = default;
 
         std::unique_ptr<DATA> ReleaseData() { return std::move(m_pData); }
         DATA*                 GetData() const { return m_pData.get(); }
@@ -23,5 +29,5 @@ namespace nate::Modules::Messaging {
         std::unique_ptr<DATA> m_pData;
     };
 
-    using GenericDataMessage = DataMessage<std::int64_t, std::int64_t>;
+    using GenericDataMessage = LargeDataMessage<std::int64_t, std::int64_t>;
 } // namespace nate::Modules::Messaging
