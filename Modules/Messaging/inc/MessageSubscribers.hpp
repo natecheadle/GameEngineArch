@@ -8,16 +8,16 @@
 #include <shared_mutex>
 
 namespace nate::Modules::Messaging {
-    template <class ID_T>
+    template <class ID_T, class MUTEX>
     class MessageSubscribers {
         std::map<void*, std::function<void(const Message<ID_T>* msg)>> m_Subscribers;
-        std::shared_mutex                                              m_SubscriberMutex;
+        MUTEX                                                          m_SubscriberMutex;
 
       public:
         MessageSubscribers() = default;
         ~MessageSubscribers()
         {
-            std::unique_lock<std::shared_mutex> lock;
+            std::unique_lock<MUTEX> lock;
             m_Subscribers.clear();
         }
 
@@ -36,7 +36,7 @@ namespace nate::Modules::Messaging {
 
         bool Subscribe(void* subscriber, std::function<void(const Message<ID_T>* msg)> callback)
         {
-            std::unique_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
 
             auto it = m_Subscribers.find(subscriber);
             if (it != m_Subscribers.end())
@@ -50,19 +50,19 @@ namespace nate::Modules::Messaging {
 
         void Unsubscribe(void* subscriber)
         {
-            std::unique_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
             m_Subscribers.erase(subscriber);
         }
 
         bool IsSubscribed(void* subscriber)
         {
-            std::shared_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
             return m_Subscribers.find(subscriber) != m_Subscribers.end();
         }
 
         void PushMessage(const Message<ID_T>* msg)
         {
-            std::shared_lock<std::shared_mutex> lock(m_SubscriberMutex);
+            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
             for (auto& subscriber : m_Subscribers)
             {
                 subscriber.second(msg);
