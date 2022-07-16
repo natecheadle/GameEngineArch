@@ -7,5 +7,5 @@ add_compile_definitions(
 )
 
 add_subdirectory("Modules")
-add_subdirectory("Test/UnitTests")
-add_subdirectory("Test/FunctionalTests")
+add_subdirectory("Test")
+add_subdirectory("App")

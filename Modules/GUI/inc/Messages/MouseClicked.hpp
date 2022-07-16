@@ -3,7 +3,6 @@
 #include "../MouseClickedInfo.hpp"
 #include "../WindowMessages.hpp"
 
-#include <Security/SecACL.h>
 #include <SmallDataMessage.hpp>
 
 namespace nate::Modules::GUI {
