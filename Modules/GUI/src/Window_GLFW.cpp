@@ -59,9 +59,9 @@ namespace nate::Modules::GUI {
         KeyPressCallbacks.insert(
             {m_pWindow, [this](int key, int scancode, int action, int mods) {
                  std::unique_lock<DebugMutex> lock(m_MessageDataMutex);
-                 std::get<KeyPressedInfo>(m_MessageData) =
+                 m_MessageData.KeyPressInfo =
                      KeyPressedInfo(TranslateKey(key), TranslateKeyMods(mods), TranslateAction(action), scancode);
-                 KeyPressed keyPressed(&std::get<KeyPressedInfo>(m_MessageData));
+                 KeyPressed keyPressed(&m_MessageData.KeyPressInfo);
                  m_MessagePump.PushMessageSync(&keyPressed);
              }});
         OnCloseCallbacks.insert({m_pWindow, [this]() {
@@ -69,15 +69,17 @@ namespace nate::Modules::GUI {
                                      m_MessagePump.PushMessageSync(&windowClosed);
                                  }});
         OnResizeCallbacks.insert({m_pWindow, [this](int width, int height) {
-                                      WindowResized windowResized({width, height});
+                                      std::unique_lock<DebugMutex> lock(m_MessageDataMutex);
+                                      m_MessageData.WindowSizeInfo = WindowSize(width, height);
+                                      WindowResized windowResized(&m_MessageData.WindowSizeInfo);
                                       m_MessagePump.PushMessageSync(&windowResized);
                                   }});
         OnMouseClickCallbacks.insert(
             {m_pWindow, [this](int button, int action, int mods) {
                  std::unique_lock<DebugMutex> lock(m_MessageDataMutex);
-                 std::get<MouseClickedInfo>(m_MessageData) =
+                 m_MessageData.MouseClickInfo =
                      MouseClickedInfo(TranslateMouseButton(button), TranslateKeyMods(mods), TranslateAction(action));
-                 MouseClicked mouseClicked(&std::get<MouseClickedInfo>(m_MessageData));
+                 MouseClicked mouseClicked(&m_MessageData.MouseClickInfo);
                  m_MessagePump.PushMessageSync(&mouseClicked);
              }});
     }

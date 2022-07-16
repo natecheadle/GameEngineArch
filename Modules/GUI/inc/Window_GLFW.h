@@ -6,12 +6,12 @@
 #include "Keys.h"
 #include "MouseClickedInfo.hpp"
 #include "WindowMessagePump.h"
+#include "WindowSize.hpp"
 
 #include <DebugMutex.hpp>
 
 #include <atomic>
 #include <map>
-#include <variant>
 
 typedef struct GLFWwindow GLFWwindow;
 namespace nate::Modules::GUI {
@@ -27,10 +27,14 @@ namespace nate::Modules::GUI {
         const WindowSize  m_InitialSize;
         const std::string m_Name;
 
-        GLFWwindow*                                    m_pWindow{nullptr};
-        WindowMessagePump                              m_MessagePump;
-        std::variant<KeyPressedInfo, MouseClickedInfo> m_MessageData;
-        DebugMutex                                     m_MessageDataMutex;
+        GLFWwindow*       m_pWindow{nullptr};
+        WindowMessagePump m_MessagePump;
+        union {
+            WindowSize       WindowSizeInfo;
+            KeyPressedInfo   KeyPressInfo;
+            MouseClickedInfo MouseClickInfo;
+        } m_MessageData{WindowSize(0, 0)};
+        DebugMutex m_MessageDataMutex;
 
       public:
         Window_GLFW(const WindowSize& size, std::string name);

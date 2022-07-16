@@ -6,10 +6,10 @@
 #include <SmallDataMessage.hpp>
 
 namespace nate::Modules::GUI {
-    class WindowResized : public Messaging::SmallDataMessage<WindowMessages, WindowSize> {
+    class WindowResized : public Messaging::SmallDataMessage<WindowMessages, WindowSize*> {
       public:
-        WindowResized(WindowSize size)
-            : Messaging::SmallDataMessage<WindowMessages, WindowSize>(WindowMessages::WindowResized, size)
+        WindowResized(WindowSize* size)
+            : Messaging::SmallDataMessage<WindowMessages, WindowSize*>(WindowMessages::WindowResized, size)
         {
         }
     };

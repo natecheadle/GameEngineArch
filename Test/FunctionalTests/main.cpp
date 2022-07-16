@@ -23,8 +23,8 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 {
     assert(pMessage->ID() == GUI::WindowMessages::WindowResized);
     const auto* pResized = DebugCast<const GUI::WindowResized*>(pMessage);
-    std::cout << "Window Resized...New Width = " << pResized->GetData().Width()
-              << " New Height = " << pResized->GetData().Height() << "\r\n";
+    std::cout << "Window Resized...New Width = " << pResized->GetData()->Width()
+              << " New Height = " << pResized->GetData()->Height() << "\r\n";
 }
 
 int main()
