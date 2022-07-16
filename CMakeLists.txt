@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
 project(GameEngine)
 
+add_compile_definitions(
+    PUBLIC
+      $<$<CONFIG:Debug>:DEBUG>
+)
+
 add_subdirectory("Modules")
 add_subdirectory("Test/UnitTests")
 add_subdirectory("Test/FunctionalTests")

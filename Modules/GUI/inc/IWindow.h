@@ -3,7 +3,10 @@
 #include "CursorPosition.hpp"
 #include "KeyModifiers.hpp"
 #include "Keys.h"
+#include "WindowMessages.hpp"
 #include "WindowSize.hpp"
+
+#include <Message.hpp>
 
 #include <functional>
 #include <memory>
@@ -13,24 +16,13 @@ namespace nate::Modules::GUI {
 
     class IWindow {
       public:
-        using ResizeFunc     = std::function<void(WindowSize)>;
-        using CloseFunc      = std::function<void()>;
-        using KeyPressFunc   = std::function<void(KeyState, KeyModifiers, int scanCode)>;
-        using MouseClickFunc = std::function<void(MouseButton, KeyState, KeyModifiers)>;
-
+        IWindow()          = default;
         virtual ~IWindow() = default;
 
-        virtual void AttachKeyCallback(Key key, KeyPressFunc callBack) = 0;
-        virtual void ClearKeyCallback(Key key)                         = 0;
-
-        virtual void AttachOnCloseCallback(CloseFunc callback) = 0;
-        virtual void ClearOnCloseCallback()                    = 0;
-
-        virtual void AttachOnResizeCallback(ResizeFunc callback) = 0;
-        virtual void ClearOnResizeCallback()                     = 0;
-
-        virtual void AttachMouseCallback(MouseClickFunc callback) = 0;
-        virtual void ClearMouseCallback()                         = 0;
+        virtual void SubscribeToMessage(
+            void*                                                          subscriber,
+            WindowMessages                                                 id,
+            std::function<void(const Messaging::Message<WindowMessages>*)> callback) = 0;
 
         virtual void PollEvents() const  = 0;
         virtual void Close() const       = 0;

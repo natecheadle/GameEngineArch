@@ -2,10 +2,16 @@
 
 #include "IWindow.h"
 #include "KeyModifiers.hpp"
+#include "KeyPressedInfo.hpp"
 #include "Keys.h"
+#include "MouseClickedInfo.hpp"
+#include "WindowMessagePump.h"
+
+#include <DebugMutex.hpp>
 
 #include <atomic>
 #include <map>
+#include <variant>
 
 typedef struct GLFWwindow GLFWwindow;
 namespace nate::Modules::GUI {
@@ -21,34 +27,25 @@ namespace nate::Modules::GUI {
         const WindowSize  m_InitialSize;
         const std::string m_Name;
 
-        std::map<Key, KeyPressFunc> m_OnKeyPressFuncs;
-        CloseFunc                   m_OnCloseFunc;
-        ResizeFunc                  m_OnResize;
-        MouseClickFunc              m_OnMouseClick;
-
-        GLFWwindow* m_pWindow{nullptr};
+        GLFWwindow*                                    m_pWindow{nullptr};
+        WindowMessagePump                              m_MessagePump;
+        std::variant<KeyPressedInfo, MouseClickedInfo> m_MessageData;
+        DebugMutex                                     m_MessageDataMutex;
 
       public:
         Window_GLFW(const WindowSize& size, std::string name);
         ~Window_GLFW();
 
-        Window_GLFW(Window_GLFW&& other) = delete;
+        Window_GLFW(Window_GLFW&& other)            = delete;
         Window_GLFW& operator=(Window_GLFW&& other) = delete;
 
-        Window_GLFW(const Window_GLFW& other) = delete;
+        Window_GLFW(const Window_GLFW& other)            = delete;
         Window_GLFW& operator=(const Window_GLFW& other) = delete;
 
-        void AttachKeyCallback(Key key, KeyPressFunc callback) override;
-        void ClearKeyCallback(Key key) override;
-
-        void AttachOnCloseCallback(CloseFunc callback) override;
-        void ClearOnCloseCallback() override;
-
-        void AttachOnResizeCallback(ResizeFunc callback) override;
-        void ClearOnResizeCallback() override;
-
-        void AttachMouseCallback(MouseClickFunc callback) override;
-        void ClearMouseCallback() override;
+        void SubscribeToMessage(
+            void*                                                          subscriber,
+            WindowMessages                                                 id,
+            std::function<void(const Messaging::Message<WindowMessages>*)> callback) override;
 
         void PollEvents() const override;
         void Close() const override;

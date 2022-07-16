@@ -1,21 +1,22 @@
 #pragma once
 
+#include <cstdint>
 namespace nate::Modules::GUI {
-    enum class MouseButton
+    enum class MouseButton : std::uint16_t
     {
         Left,
         Middle,
         Right,
     };
 
-    enum class KeyState
+    enum class KeyState : std::uint16_t
     {
         Released,
         Pressed,
         Repeat,
     };
 
-    enum class Key
+    enum class Key : std::uint16_t
     {
         // Numbers
         Zero,

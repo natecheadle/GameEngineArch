@@ -1,10 +1,17 @@
 #include "Window_GLFW.h"
 
 #include "KeyModifiers.hpp"
+#include "KeyPressedInfo.hpp"
 #include "Keys.h"
+#include "Messages/KeyPressed.hpp"
+#include "Messages/MouseClicked.hpp"
+#include "Messages/WindowClosed.hpp"
+#include "Messages/WindowResized.hpp"
 #include "WindowSize.hpp"
 
 #include <GLFW/glfw3.h>
+
+#include <mutex>
 
 #if __linux__
 #define GLFW_EXPOSE_NATIVE_X11
@@ -49,20 +56,29 @@ namespace nate::Modules::GUI {
         glfwSetMouseButtonCallback(m_pWindow, &Window_GLFW::OnMouseClickCallback);
         glfwSetWindowSizeCallback(m_pWindow, &Window_GLFW::OnWindowResizeCallback);
 
-        KeyPressCallbacks.insert({m_pWindow, [this](int key, int scancode, int action, int mods) {
-                                      if (m_OnKeyPressFuncs.empty())
-                                          return;
-                                      auto it = m_OnKeyPressFuncs.find(TranslateKey(key));
-                                      if (it == m_OnKeyPressFuncs.end())
-                                          return;
-
-                                      it->second(TranslateAction(action), TranslateKeyMods(mods), scancode);
+        KeyPressCallbacks.insert(
+            {m_pWindow, [this](int key, int scancode, int action, int mods) {
+                 std::unique_lock<DebugMutex> lock(m_MessageDataMutex);
+                 std::get<KeyPressedInfo>(m_MessageData) =
+                     KeyPressedInfo(TranslateKey(key), TranslateKeyMods(mods), TranslateAction(action), scancode);
+                 KeyPressed keyPressed(&std::get<KeyPressedInfo>(m_MessageData));
+                 m_MessagePump.PushMessageSync(&keyPressed);
+             }});
+        OnCloseCallbacks.insert({m_pWindow, [this]() {
+                                     WindowClosed windowClosed;
+                                     m_MessagePump.PushMessageSync(&windowClosed);
+                                 }});
+        OnResizeCallbacks.insert({m_pWindow, [this](int width, int height) {
+                                      WindowResized windowResized({width, height});
+                                      m_MessagePump.PushMessageSync(&windowResized);
                                   }});
-        OnCloseCallbacks.insert({m_pWindow, [this]() { m_OnCloseFunc(); }});
-        OnResizeCallbacks.insert({m_pWindow, [this](int width, int height) { m_OnResize({width, height}); }});
         OnMouseClickCallbacks.insert(
             {m_pWindow, [this](int button, int action, int mods) {
-                 m_OnMouseClick(TranslateMouseButton(button), TranslateAction(action), TranslateKeyMods(mods));
+                 std::unique_lock<DebugMutex> lock(m_MessageDataMutex);
+                 std::get<MouseClickedInfo>(m_MessageData) =
+                     MouseClickedInfo(TranslateMouseButton(button), TranslateKeyMods(mods), TranslateAction(action));
+                 MouseClicked mouseClicked(&std::get<MouseClickedInfo>(m_MessageData));
+                 m_MessagePump.PushMessageSync(&mouseClicked);
              }});
     }
 
@@ -80,39 +96,33 @@ namespace nate::Modules::GUI {
         }
     }
 
-    void Window_GLFW::AttachKeyCallback(Key key, KeyPressFunc callback)
+    void Window_GLFW::SubscribeToMessage(
+        void*                                                          subscriber,
+        WindowMessages                                                 id,
+        std::function<void(const Messaging::Message<WindowMessages>*)> callback)
     {
-        auto it = m_OnKeyPressFuncs.find(key);
-        if (it == m_OnKeyPressFuncs.end())
-        {
-            m_OnKeyPressFuncs.insert({key, std::move(callback)});
-        }
-        else
-        {
-            it->second = std::move(callback);
-        }
+        m_MessagePump.Subscribe(subscriber, id, std::move(callback));
     }
-    void Window_GLFW::ClearKeyCallback(Key key) { m_OnKeyPressFuncs.erase(key); }
 
-    void Window_GLFW::AttachOnCloseCallback(CloseFunc callback) { m_OnCloseFunc = std::move(callback); }
+    void Window_GLFW::PollEvents() const
+    {
+        glfwPollEvents();
+    }
 
-    void Window_GLFW::ClearOnCloseCallback() { m_OnCloseFunc = CloseFunc(); }
+    void Window_GLFW::Close() const
+    {
+        glfwSetWindowShouldClose(m_pWindow, GLFW_TRUE);
+    }
 
-    void Window_GLFW::AttachOnResizeCallback(ResizeFunc callback) { m_OnResize = std::move(callback); }
+    bool Window_GLFW::ShouldClose() const
+    {
+        return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE;
+    }
 
-    void Window_GLFW::ClearOnResizeCallback() { m_OnResize = ResizeFunc(); }
-
-    void Window_GLFW::AttachMouseCallback(MouseClickFunc callback) { m_OnMouseClick = std::move(callback); }
-
-    void Window_GLFW::ClearMouseCallback() { m_OnMouseClick = MouseClickFunc(); }
-
-    void Window_GLFW::PollEvents() const { glfwPollEvents(); }
-
-    void Window_GLFW::Close() const { glfwSetWindowShouldClose(m_pWindow, GLFW_TRUE); }
-
-    bool Window_GLFW::ShouldClose() const { return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE; }
-
-    bool Window_GLFW::IsValid() const { return m_pWindow != nullptr; }
+    bool Window_GLFW::IsValid() const
+    {
+        return m_pWindow != nullptr;
+    }
 
     std::string Window_GLFW::LastError() const
     {
@@ -120,7 +130,10 @@ namespace nate::Modules::GUI {
         glfwGetError(&lastError);
         return std::string(lastError);
     }
-    const std::string& Window_GLFW::Name() const { return m_Name; }
+    const std::string& Window_GLFW::Name() const
+    {
+        return m_Name;
+    }
 
     void* Window_GLFW::NativeHandle() const
     {
@@ -141,7 +154,10 @@ namespace nate::Modules::GUI {
 #endif
     }
 
-    WindowSize Window_GLFW::InitialSize() const { return m_InitialSize; }
+    WindowSize Window_GLFW::InitialSize() const
+    {
+        return m_InitialSize;
+    }
 
     CursorPosition Window_GLFW::QueryCursorPosition() const
     {
