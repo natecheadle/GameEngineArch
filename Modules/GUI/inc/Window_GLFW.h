@@ -46,10 +46,9 @@ namespace nate::Modules::GUI {
         Window_GLFW(const Window_GLFW& other)            = delete;
         Window_GLFW& operator=(const Window_GLFW& other) = delete;
 
-        void SubscribeToMessage(
-            void*                                                          subscriber,
-            WindowMessages                                                 id,
-            std::function<void(const Messaging::Message<WindowMessages>*)> callback) override;
+        void SubscribeToMessage(void* subscriber, WindowMessages id, std::function<void(const WindowMessage*)> callback)
+            override;
+        void Unsubsribe(void* subscriber) override;
 
         void PollEvents() const override;
         void Close() const override;

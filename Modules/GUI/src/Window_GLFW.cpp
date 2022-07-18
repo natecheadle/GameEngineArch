@@ -99,11 +99,16 @@ namespace nate::Modules::GUI {
     }
 
     void Window_GLFW::SubscribeToMessage(
-        void*                                                          subscriber,
-        WindowMessages                                                 id,
-        std::function<void(const Messaging::Message<WindowMessages>*)> callback)
+        void*                                     subscriber,
+        WindowMessages                            id,
+        std::function<void(const WindowMessage*)> callback)
     {
         m_MessagePump.Subscribe(subscriber, id, std::move(callback));
+    }
+
+    void Window_GLFW::Unsubsribe(void* subscriber)
+    {
+        m_MessagePump.Unsubscribe(subscriber);
     }
 
     void Window_GLFW::PollEvents() const

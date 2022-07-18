@@ -94,7 +94,7 @@ namespace nate::Modules::Messaging {
             std::unique_lock<MUTEX> lock(m_SubscriberMutex);
             for (auto& subscribers : m_MessagesSubcriptions)
             {
-                subscribers.Unsubscribe(subscriber);
+                subscribers.second.Unsubscribe(subscriber);
             }
         }
 

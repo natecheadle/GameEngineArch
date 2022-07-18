@@ -3,6 +3,7 @@
 #include <IWindow.h>
 #include <Job.h>
 
+#include <atomic>
 #include <thread>
 
 namespace nate::Modules::Render {
@@ -10,11 +11,11 @@ namespace nate::Modules::Render {
         : public IRenderer
         , private Jobs::Job {
       public:
-        virtual ~Renderer() { Stop(); }
+        virtual ~Renderer() { PrivShutdown(); }
 
         void Initialize(GUI::IWindow* pWindow) override;
         bool IsRunning() const override { return IsExecuting(); }
-        void Shutdown() override { Stop(); }
+        void Shutdown() override { PrivShutdown(); }
 
         static void RenderFrame();
 
@@ -22,6 +23,8 @@ namespace nate::Modules::Render {
         void ExecuteJob() final;
 
       private:
-        GUI::IWindow* m_pWindow;
+        void              PrivShutdown();
+        GUI::IWindow*     m_pWindow;
+        std::atomic<bool> m_WindowShouldClose;
     };
 } // namespace nate::Modules::Render

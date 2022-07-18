@@ -12,13 +12,6 @@
 
 using namespace nate::Modules;
 
-bool ShouldClose = false;
-void OnShouldClose(const Messaging::Message<GUI::WindowMessages>* pMessage)
-{
-    assert(pMessage->ID() == GUI::WindowMessages::WindowClosed);
-    ShouldClose = true;
-}
-
 void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 {
     assert(pMessage->ID() == GUI::WindowMessages::WindowResized);
@@ -31,7 +24,6 @@ int main()
 {
     GUI::Window_GLFW window({800, 600}, "Test Window");
     assert(window.IsValid());
-    window.SubscribeToMessage(&window, GUI::WindowMessages::WindowClosed, &OnShouldClose);
     window.SubscribeToMessage(&window, GUI::WindowMessages::WindowResized, &OnWindowResize);
 
     Render::Renderer renderer;

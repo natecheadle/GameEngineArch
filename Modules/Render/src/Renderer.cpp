@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 #include "logo.h"
 
@@ -8,6 +9,7 @@
 #include <bx/bx.h>
 
 namespace nate::Modules::Render {
+
     void Renderer::Initialize(GUI::IWindow* pWindow)
     {
         // Call bgfx::renderFrame before bgfx::init to signal to bgfx not to create a render thread.
@@ -16,6 +18,7 @@ namespace nate::Modules::Render {
         m_pWindow = pWindow;
         Start();
     }
+
     void Renderer::RenderFrame()
     {
         bgfx::renderFrame();
@@ -24,6 +27,10 @@ namespace nate::Modules::Render {
     void Renderer::ExecuteJob()
     {
         bgfx::PlatformData platformData;
+        m_pWindow->SubscribeToMessage(this, GUI::WindowMessages::WindowClosed, [this](const GUI::WindowMessage*) {
+            m_WindowShouldClose = true;
+        });
+
         platformData.nwh     = m_pWindow->NativeHandle();
         GUI::WindowSize size = m_pWindow->QueryWindowSize();
 
@@ -41,7 +48,7 @@ namespace nate::Modules::Render {
         bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR);
         bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
 
-        while (!ShouldStop() && !m_pWindow->ShouldClose())
+        while (!ShouldStop() && !m_WindowShouldClose)
         {
             bgfx::touch(kClearView);
             // Use debug font to print information about this example.
@@ -90,5 +97,11 @@ namespace nate::Modules::Render {
         }
 
         bgfx::shutdown();
+    }
+
+    void Renderer::PrivShutdown()
+    {
+        Stop();
+        m_pWindow->Unsubsribe(this);
     }
 } // namespace nate::Modules::Render

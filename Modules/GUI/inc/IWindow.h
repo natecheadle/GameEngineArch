@@ -14,15 +14,17 @@
 
 namespace nate::Modules::GUI {
 
+    using WindowMessage = Messaging::Message<WindowMessages>;
     class IWindow {
       public:
         IWindow()          = default;
         virtual ~IWindow() = default;
 
         virtual void SubscribeToMessage(
-            void*                                                          subscriber,
-            WindowMessages                                                 id,
-            std::function<void(const Messaging::Message<WindowMessages>*)> callback) = 0;
+            void*                                     subscriber,
+            WindowMessages                            id,
+            std::function<void(const WindowMessage*)> callback) = 0;
+        virtual void Unsubsribe(void* subscriber)               = 0;
 
         virtual void PollEvents() const  = 0;
         virtual void Close() const       = 0;
