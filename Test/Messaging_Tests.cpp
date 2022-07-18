@@ -40,13 +40,14 @@ namespace nate::Test {
     };
 
     using TestMessage          = Messaging::Message<MessageID>;
-    using TestPump             = Messaging::MessagePump<MessageID>;
+    using TestPump_ST          = Messaging::MessagePump<MessageID>;
+    using TestPump_MT          = Messaging::MessagePump<MessageID, std::shared_mutex>;
     using TestLargeDataMessage = Messaging::LargeDataMessage<MessageID, TestData>;
     using TestSmallDataMessage = Messaging::SmallDataMessage<MessageID, std::int64_t>;
 
     class MessagePump_Tests : public testing::Test {
       protected:
-        TestPump m_MessagePump;
+        TestPump_MT m_MessagePump;
 
         std::atomic<int> m_DoACallCount{0};
         std::atomic<int> m_DoBCallCount{0};
