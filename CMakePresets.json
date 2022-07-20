@@ -60,7 +60,8 @@
       "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_COVERAGE": "ON"
+        "BUILD_COVERAGE": "ON",
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Debug/vcpkg_installed/x64-osx-llvm/tools/bgfx/"
       }
     },
     {
@@ -70,7 +71,8 @@
       "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "BUILD_COVERAGE": "OFF"
+        "BUILD_COVERAGE": "OFF",
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Debug/vcpkg_installed/x64-osx-llvm/tools/bgfx/"
       }
     },
     {
