@@ -7,5 +7,6 @@ add_executable(${PROJECT_NAME}
     "main.cpp")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Modules)
+target_compile_definitions(${PROJECT_NAME} PRIVATE "APP_OUT_DIR=\"${CMAKE_CURRENT_BINARY_DIR}\"")
 
 BUILD_SHADERS("Shaders/fs_cubes.sc" "Shaders/vs_cubes.sc")
