@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} STATIC
     "src/Renderer.cpp"
-    "Shader/src/Shader.cpp")
+    "Shader/src/Shader.cpp"
+    "Shader/src/BGFX_Shader.cpp")
     
 find_package(bgfx CONFIG REQUIRED)
 

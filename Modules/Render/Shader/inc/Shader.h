@@ -1,25 +1,26 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
-
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <string_view>
+#include <vector>
 
 namespace nate::Modules::Render {
     class Shader {
-      public:
-        Shader(std::string_view name, std::filesystem::path shadersPath);
-        ~Shader();
+      protected:
+        Shader(std::filesystem::path shadersPath);
 
-        bgfx::ShaderHandle           Handle() const { return m_Handle; }
-        const std::filesystem::path& Path() const { return m_Path; }
+      public:
+        virtual ~Shader();
+
+        const std::filesystem::path&     Path() const { return m_Path; }
+        const std::vector<std::uint8_t>& ShaderData() const { return m_Data; }
 
       private:
-        std::filesystem::path m_Path;
-        bgfx::ShaderHandle    m_Handle;
+        std::vector<std::uint8_t> m_Data;
+        std::filesystem::path     m_Path;
 
-        static bgfx::ShaderHandle    CreateHandle(const std::filesystem::path& path);
-        static std::filesystem::path GetFullPath(std::string_view name, std::filesystem::path shadersPath);
+        static std::vector<std::uint8_t> ReadFileData(const std::filesystem::path& path);
     };
 } // namespace nate::Modules::Render

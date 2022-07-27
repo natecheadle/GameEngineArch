@@ -1,11 +1,10 @@
 #include "Renderer.h"
 
+#include "BGFX_Shader.h"
 #include "CursorPosition.hpp"
 #include "Keys.h"
-#include "Shader.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
-#include "logo.h"
 
 #include <DebugCast.hpp>
 #include <Messages/MouseClicked.hpp>
@@ -54,6 +53,12 @@ namespace nate::Modules::Render {
         m_ShaderLoc  = std::move(shaderLoc);
         m_WindowSize = m_pWindow->QueryWindowSize();
         Start();
+    }
+
+    void Renderer::RenderObject(const Object3D* pObject)
+    {
+        std::unique_lock<std::mutex> lock(m_RenderObjectsMutex);
+        m_ObjectsToRender.push(pObject);
     }
 
     void Renderer::RenderFrame()
@@ -110,8 +115,8 @@ namespace nate::Modules::Render {
             bgfx::createVertexBuffer(bgfx::makeRef(cube_vertices, sizeof(cube_vertices)), pos_col_vert_layout);
         bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(cube_tri_list, sizeof(cube_tri_list)));
 
-        Render::Shader      fragmentShader("fs_cubes.sc.bin", m_ShaderLoc);
-        Render::Shader      vertexShader("vs_cubes.sc.bin", m_ShaderLoc);
+        Render::BGFX_Shader fragmentShader("fs_cubes.sc.bin", m_ShaderLoc);
+        Render::BGFX_Shader vertexShader("vs_cubes.sc.bin", m_ShaderLoc);
         bgfx::ProgramHandle program = bgfx::createProgram(vertexShader.Handle(), fragmentShader.Handle(), true);
 
         m_RendererInitialized = true;
