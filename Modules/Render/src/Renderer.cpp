@@ -3,6 +3,7 @@
 #include "BGFX_Shader.h"
 #include "CursorPosition.hpp"
 #include "Keys.h"
+#include "Matrix4x4.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 
@@ -28,20 +29,6 @@ namespace nate::Modules::Render {
             uint32_t abgr;
         };
 
-        PosColorVertex cube_vertices[] = {
-            {-1.0f, 1.0f,  1.0f,  0xff000000},
-            {1.0f,  1.0f,  1.0f,  0xff0000ff},
-            {-1.0f, -1.0f, 1.0f,  0xff00ff00},
-            {1.0f,  -1.0f, 1.0f,  0xff00ffff},
-            {-1.0f, 1.0f,  -1.0f, 0xffff0000},
-            {1.0f,  1.0f,  -1.0f, 0xffff00ff},
-            {-1.0f, -1.0f, -1.0f, 0xffffff00},
-            {1.0f,  -1.0f, -1.0f, 0xffffffff},
-        };
-
-        const uint16_t cube_tri_list[] = {
-            0, 1, 2, 1, 3, 2, 4, 6, 5, 5, 6, 7, 0, 2, 4, 4, 2, 6, 1, 5, 3, 5, 7, 3, 0, 4, 1, 4, 5, 1, 2, 3, 6, 6, 3, 7,
-        };
     } // namespace
 
     void Renderer::Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc)
@@ -53,12 +40,6 @@ namespace nate::Modules::Render {
         m_ShaderLoc  = std::move(shaderLoc);
         m_WindowSize = m_pWindow->QueryWindowSize();
         Start();
-    }
-
-    void Renderer::RenderObject(const Object3D* pObject)
-    {
-        std::unique_lock<std::mutex> lock(m_RenderObjectsMutex);
-        m_ObjectsToRender.push(pObject);
     }
 
     void Renderer::RenderFrame()
@@ -111,9 +92,11 @@ namespace nate::Modules::Render {
             .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
             .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
             .end();
-        bgfx::VertexBufferHandle vbh =
-            bgfx::createVertexBuffer(bgfx::makeRef(cube_vertices, sizeof(cube_vertices)), pos_col_vert_layout);
-        bgfx::IndexBufferHandle ibh = bgfx::createIndexBuffer(bgfx::makeRef(cube_tri_list, sizeof(cube_tri_list)));
+        bgfx::VertexBufferHandle vbh = bgfx::createVertexBuffer(
+            bgfx::makeRef(m_pObject->Points().data(), (uint32_t)m_pObject->PointsSize()),
+            pos_col_vert_layout);
+        bgfx::IndexBufferHandle ibh =
+            bgfx::createIndexBuffer(bgfx::makeRef(m_pObject->Indices().data(), m_pObject->IndecesSize()));
 
         Render::BGFX_Shader fragmentShader("fs_cubes.sc.bin", m_ShaderLoc);
         Render::BGFX_Shader vertexShader("vs_cubes.sc.bin", m_ShaderLoc);
@@ -148,27 +131,27 @@ namespace nate::Modules::Render {
 
                 m_LastPosition = position;
             }
+            Matrix4x4 view;
+            view.SetToIdentity();
+            view.Rotate(m_CamPitch, m_CamYaw, 0.0);
+            view.Translate(0.0, 0.0, -5.0);
+            view.Invert();
 
-            float cam_rotation[16];
-            bx::mtxRotateXYZ(cam_rotation, m_CamPitch, m_CamYaw, 0.0f);
+            Matrix4x4 proj;
+            bx::mtxProj(
+                proj.Data().data(),
+                60.0f,
+                float(width) / float(height),
+                0.1f,
+                100.0f,
+                bgfx::getCaps()->homogeneousDepth);
 
-            float cam_translation[16];
-            bx::mtxTranslate(cam_translation, 0.0f, 0.0f, -5.0f);
+            bgfx::setViewTransform(0, view.Data().data(), proj.Data().data());
 
-            float cam_transform[16];
-            bx::mtxMul(cam_transform, cam_translation, cam_rotation);
+            Matrix4x4 model;
+            model.SetToIdentity();
 
-            float view[16];
-            bx::mtxInverse(view, cam_transform);
-
-            float proj[16];
-            bx::mtxProj(proj, 60.0f, float(width) / float(height), 0.1f, 100.0f, bgfx::getCaps()->homogeneousDepth);
-
-            bgfx::setViewTransform(0, view, proj);
-
-            float model[16];
-            bx::mtxIdentity(model);
-            bgfx::setTransform(model);
+            bgfx::setTransform(model.Data().data());
 
             bgfx::setVertexBuffer(0, vbh);
             bgfx::setIndexBuffer(ibh);

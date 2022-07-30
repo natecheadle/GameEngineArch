@@ -1,3 +1,5 @@
+#pragma once
+
 namespace nate::Modules::Render {
     class Vector3D {
       private:
@@ -6,7 +8,7 @@ namespace nate::Modules::Render {
         float m_Z;
 
       public:
-        Vector3D(float x, float y, float z)
+        Vector3D(float x, float y, float z) noexcept
             : m_X(x)
             , m_Y(y)
             , m_Z(z)
@@ -14,7 +16,7 @@ namespace nate::Modules::Render {
             static_assert(sizeof(Vector3D) == 3 * sizeof(float), "Vector3D must be packed tightly");
         }
 
-        Vector3D()
+        Vector3D() noexcept
             : m_X(0.0)
             , m_Y(0.0)
             , m_Z(0.0)

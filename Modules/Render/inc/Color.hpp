@@ -10,8 +10,8 @@ namespace nate::Modules::Render {
         } CololValUnion;
 
       public:
-        Colour(std::uint32_t val) { CololValUnion.ColorVal = val; }
-        Colour() { CololValUnion.ColorVal = 0; }
+        Colour(std::uint32_t val) noexcept { CololValUnion.ColorVal = val; }
+        Colour() noexcept { CololValUnion.ColorVal = 0; }
 
         std::uint32_t RawValue() const { return CololValUnion.ColorVal; }
         std::uint8_t  Byte0() const { return CololValUnion.Bytes[0]; }
