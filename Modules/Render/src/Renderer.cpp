@@ -15,6 +15,7 @@
 #include <bx/bx.h>
 #include <bx/math.h>
 
+#include <chrono>
 #include <mutex>
 #include <shared_mutex>
 
@@ -171,6 +172,12 @@ namespace nate::Modules::Render {
     void Renderer::PrivShutdown()
     {
         Stop();
+        while (IsRunning())
+        {
+            bgfx::renderFrame();
+            Join(std::chrono::milliseconds(10));
+        }
+
         m_pWindow->Unsubsribe(this);
     }
 } // namespace nate::Modules::Render

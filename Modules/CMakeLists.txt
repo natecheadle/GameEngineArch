@@ -7,6 +7,7 @@ add_subdirectory("Render")
 add_subdirectory("Debug")
 add_subdirectory("Messaging")
 add_subdirectory("Generic")
+add_subdirectory("App")
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -16,4 +17,5 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
     Modules_Debug 
     Modules_Messaging
     Modules_GUI 
-    Modules_Render)
+    Modules_Render
+    Modules_App)

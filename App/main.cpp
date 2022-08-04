@@ -1,5 +1,8 @@
+#include "IWindow.h"
 #include "WindowMessages.hpp"
+#include "WindowSize.hpp"
 
+#include <App.h>
 #include <DebugCast.hpp>
 #include <Messages/WindowResized.hpp>
 #include <Renderer.h>
@@ -10,6 +13,7 @@
 #include <chrono>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -39,13 +43,25 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
               << " New Height = " << pResized->GetData()->Height() << "\r\n";
 }
 
+class TestApp : public App::App {
+  public:
+    TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
+        : App(std::move(pWindow), std::move(pRenderer))
+    {
+    }
+
+  protected:
+    void UpdateApp() override {}
+};
+
 int main()
 {
     try
     {
-        GUI::Window_GLFW window({800, 600}, "Test Window");
-        assert(window.IsValid());
-        window.SubscribeToMessage(&window, GUI::WindowMessages::WindowResized, &OnWindowResize);
+        std::unique_ptr<GUI::IWindow> pWindow =
+            std::make_unique<GUI::Window_GLFW>(GUI::WindowSize(800, 600), "Test Window");
+        assert(pWindow->IsValid());
+        pWindow->SubscribeToMessage(pWindow.get(), GUI::WindowMessages::WindowResized, &OnWindowResize);
 
         std::filesystem::path shader_dir(APP_OUT_DIR);
         shader_dir /= "Shaders";
@@ -53,38 +69,17 @@ int main()
         std::vector<Render::VertexPoint3D> points(cube_vertices, cube_vertices + 8);
         std::vector<std::uint16_t>         indices(cube_tri_list, cube_tri_list + 36);
         Render::Object3D                   cube(std::move(points), std::move(indices));
-        Render::Renderer                   renderer;
-        renderer.RenderObject(&cube);
-        renderer.Initialize(&window, std::move(shader_dir));
+        std::unique_ptr<Render::IRenderer> pRenderer = std::make_unique<Render::Renderer>();
+        pRenderer->RenderObject(&cube);
+        pRenderer->Initialize(pWindow.get(), std::move(shader_dir));
 
-        while (!renderer.IsInitialized() && renderer.IsRunning())
-        {
-            std::this_thread::yield();
-            Render::Renderer::RenderFrame();
-        }
-
-        while (renderer.IsRunning())
-        {
-            window.PollEvents();
-
-            if (window.ShouldClose())
-                renderer.Shutdown();
-
-            Render::Renderer::RenderFrame();
-        }
-
-        if (renderer.RenderingFailed())
-        {
-            std::cerr << renderer.GetFailure().what();
-            return 1;
-        }
-
-        window.Close();
+        TestApp app(std::move(pWindow), std::move(pRenderer));
+        return app.Run();
     }
     catch (const std::exception& e)
     {
         std::cerr << e.what();
-        return 1;
     }
-    return 0;
+
+    return 1;
 }

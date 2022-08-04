@@ -24,17 +24,17 @@ namespace nate::Modules::Render {
         virtual ~Renderer() { PrivShutdown(); }
 
         void Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc) override;
-        bool IsInitialized() const { return m_RendererInitialized; }
+        bool IsInitialized() const override { return m_RendererInitialized; }
         bool IsRunning() const override { return IsExecuting(); }
         void Shutdown() override { PrivShutdown(); }
 
-        bool                  RenderingFailed() const { return IsFailed(); }
-        const std::exception& GetFailure() const { return GetCaughtException(); }
+        bool                  RenderingFailed() const override { return IsFailed(); }
+        const std::exception& GetFailure() const override { return GetCaughtException(); }
 
-        void AttachCamera(const Camera3D* pCamera) { m_pCamera = pCamera; }
-        void RenderObject(const Object3D* pObject) { m_pObject = pObject; }
+        void AttachCamera(const Camera3D* pCamera) override { m_pCamera = pCamera; }
+        void RenderObject(const Object3D* pObject) override { m_pObject = pObject; }
 
-        static void RenderFrame();
+        void RenderFrame() override;
 
       protected:
         void ExecuteJob() final;
