@@ -4,6 +4,7 @@
 
 #include <App.h>
 #include <DebugCast.hpp>
+#include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
 #include <Renderer.h>
 #include <Shader.h>
@@ -44,14 +45,92 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 }
 
 class TestApp : public App::App {
+    std::shared_mutex                 m_CallbackMutex;
+    GUI::MouseClickedInfo             m_LastMouseClick;
+    GUI::CursorPosition               m_LastPosition;
+    GUI::WindowSize                   m_WindowSize;
+    float                             m_CamYaw{0.0};
+    float                             m_CamPitch{0.0};
+    std::unique_ptr<Render::Object3D> m_pCube;
+    std::unique_ptr<Render::Camera3D> m_pCamera;
+
   public:
     TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
         : App(std::move(pWindow), std::move(pRenderer))
     {
+
+        GetWindow()->SubscribeToMessage(
+            this,
+            GUI::WindowMessages::MouseClicked,
+            [this](const GUI::WindowMessage* pMessage) {
+                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+
+                m_LastMouseClick = *(DebugCast<const GUI::MouseClicked*>(pMessage)->GetData());
+            });
+        GetWindow()->SubscribeToMessage(
+            this,
+            GUI::WindowMessages::WindowResized,
+            [this](const GUI::WindowMessage* pMessage) {
+                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+
+                m_WindowSize = *(DebugCast<const GUI::WindowResized*>(pMessage)->GetData());
+            });
     }
 
   protected:
-    void UpdateApp() override {}
+    void Initialize() override
+    {
+        m_pCube = std::make_unique<Render::Object3D>(
+            std::vector<Render::VertexPoint3D>(cube_vertices, cube_vertices + 8),
+            std::vector<std::uint16_t>(cube_tri_list, cube_tri_list + 36));
+        m_pCamera = std::make_unique<Render::Camera3D>();
+
+        GetRenderer()->AttachCamera(m_pCamera.get());
+        GetRenderer()->RenderObject(m_pCube.get());
+    }
+
+    void Shutdown() override
+    {
+        m_pCamera.reset();
+        m_pCube.reset();
+    }
+
+    void UpdateApp() override
+    { // simple input code for orbit camera
+        GUI::KeyState    lastKeyState{GUI::KeyState::Released};
+        GUI::MouseButton lastMouseButton{GUI::MouseButton::Left};
+        int              width{0};
+        int              height{0};
+        {
+            std::shared_lock<std::shared_mutex> lock(m_CallbackMutex);
+            lastKeyState    = m_LastMouseClick.KeyState();
+            lastMouseButton = m_LastMouseClick.Button();
+            width           = m_WindowSize.Width();
+            height          = m_WindowSize.Height();
+        }
+        if (lastKeyState == GUI::KeyState::Pressed && lastMouseButton == GUI::MouseButton::Left)
+        {
+            GUI::CursorPosition position = GetWindow()->QueryCursorPosition();
+
+            static constexpr float rot_scale = 0.01;
+            double                 delta_x   = position.XPos() - m_LastPosition.XPos();
+            double                 delta_y   = position.YPos() - m_LastPosition.YPos();
+            m_CamYaw += float(-delta_x) * rot_scale;
+            m_CamPitch += float(-delta_y) * rot_scale;
+
+            m_LastPosition = position;
+        }
+
+        Render::Matrix4x4 view;
+        view.SetToIdentity();
+        view.Rotate(m_CamPitch, m_CamYaw, 0.0);
+        view.Translate(0.0, 0.0, -5.0);
+        view.Invert();
+
+        m_pCamera->View(view);
+
+        GetRenderer()->RenderObject(m_pCube.get());
+    }
 };
 
 int main()
@@ -66,15 +145,13 @@ int main()
         std::filesystem::path shader_dir(APP_OUT_DIR);
         shader_dir /= "Shaders";
 
-        std::vector<Render::VertexPoint3D> points(cube_vertices, cube_vertices + 8);
-        std::vector<std::uint16_t>         indices(cube_tri_list, cube_tri_list + 36);
-        Render::Object3D                   cube(std::move(points), std::move(indices));
         std::unique_ptr<Render::IRenderer> pRenderer = std::make_unique<Render::Renderer>();
-        pRenderer->RenderObject(&cube);
         pRenderer->Initialize(pWindow.get(), std::move(shader_dir));
 
         TestApp app(std::move(pWindow), std::move(pRenderer));
-        return app.Run();
+        int     code = app.Run();
+        app.Close();
+        return code;
     }
     catch (const std::exception& e)
     {

@@ -31,8 +31,10 @@ namespace nate::Modules::Render {
         bool                  RenderingFailed() const override { return IsFailed(); }
         const std::exception& GetFailure() const override { return GetCaughtException(); }
 
+        // Must be called during App::UpdateApp or App::Initialize
         void AttachCamera(const Camera3D* pCamera) override { m_pCamera = pCamera; }
-        void RenderObject(const Object3D* pObject) override { m_pObject = pObject; }
+        // Must be called during App::UpdateApp or App::Initialize
+        void RenderObject(const Object3D* pObject) override { m_Objects.push(pObject); }
 
         void RenderFrame() override;
 
@@ -43,15 +45,10 @@ namespace nate::Modules::Render {
         void                  PrivShutdown();
         GUI::IWindow*         m_pWindow{nullptr};
         std::filesystem::path m_ShaderLoc;
-        std::shared_mutex     m_CallbackMutex;
-        GUI::MouseClickedInfo m_LastMouseClick;
-        GUI::CursorPosition   m_LastPosition;
-        GUI::WindowSize       m_WindowSize;
-        float                 m_CamYaw{0.0};
-        float                 m_CamPitch{0.0};
-        std::atomic<bool>     m_WindowShouldClose{false};
-        std::atomic<bool>     m_RendererInitialized{false};
-        const Object3D*       m_pObject;
-        const Camera3D*       m_pCamera;
+
+        std::atomic<bool>           m_WindowShouldClose{false};
+        std::atomic<bool>           m_RendererInitialized{false};
+        std::queue<const Object3D*> m_Objects;
+        const Camera3D*             m_pCamera;
     };
 } // namespace nate::Modules::Render

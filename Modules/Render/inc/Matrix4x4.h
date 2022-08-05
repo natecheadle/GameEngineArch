@@ -18,7 +18,8 @@ namespace nate::Modules::Render {
         void SetToIdentity();
         void Clear();
 
-        MatrixData& Data() { return m_Data; }
+        MatrixData&       Data() { return m_Data; }
+        const MatrixData& Data() const { return m_Data; }
 
         void Rotate(float pitch, float yaw, float roll);
         void Rotate(const Vector3D& value);
