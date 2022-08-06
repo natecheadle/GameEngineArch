@@ -1,21 +1,41 @@
 #include "Renderer.h"
 
+#include "BGFX_Shader.h"
+#include "CursorPosition.hpp"
+#include "Keys.h"
+#include "Matrix4x4.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
-#include "logo.h"
 
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
 #include <bx/bx.h>
+#include <bx/math.h>
+
+#include <chrono>
+#include <mutex>
+#include <shared_mutex>
 
 namespace nate::Modules::Render {
 
-    void Renderer::Initialize(GUI::IWindow* pWindow)
+    namespace {
+        struct PosColorVertex
+        {
+            float    x;
+            float    y;
+            float    z;
+            uint32_t abgr;
+        };
+
+    } // namespace
+
+    void Renderer::Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc)
     {
         // Call bgfx::renderFrame before bgfx::init to signal to bgfx not to create a render thread.
         // Most graphics APIs must be used on the same thread that created the window.
         bgfx::renderFrame();
-        m_pWindow = pWindow;
+        m_pWindow   = pWindow;
+        m_ShaderLoc = std::move(shaderLoc);
         Start();
     }
 
@@ -45,56 +65,43 @@ namespace nate::Modules::Render {
             return;
 
         const bgfx::ViewId kClearView = 0;
-        bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR);
-        bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
+        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x6495EDFF, 1.0f, 0);
+        bgfx::setViewRect(0, 0, 0, size.Width(), size.Height());
+
+        // TODO shaders should be part of the material attached to the object
+        Render::BGFX_Shader fragmentShader("fs_cubes.sc.bin", m_ShaderLoc);
+        Render::BGFX_Shader vertexShader("vs_cubes.sc.bin", m_ShaderLoc);
+        bgfx::ProgramHandle program = bgfx::createProgram(vertexShader.Handle(), fragmentShader.Handle(), true);
+
+        m_RendererInitialized = true;
 
         while (!ShouldStop() && !m_WindowShouldClose)
         {
-            bgfx::touch(kClearView);
-            // Use debug font to print information about this example.
-            bgfx::dbgTextClear();
-            bgfx::dbgTextImage(
-                bx::max<uint16_t>(uint16_t(size.Width() / 2 / 8), 20) - 20,
-                bx::max<uint16_t>(uint16_t(size.Height() / 2 / 16), 6) - 6,
-                40,
-                12,
-                s_logo,
-                160);
-            bgfx::dbgTextPrintf(0, 0, 0x0f, "Press F1 to toggle stats.");
-            bgfx::dbgTextPrintf(
-                0,
-                1,
-                0x0f,
-                "Color can be changed with ANSI \x1b[9;me\x1b[10;ms\x1b[11;mc\x1b[12;ma\x1b[13;mp\x1b[14;me\x1b[0m "
-                "code "
-                "too.");
-            bgfx::dbgTextPrintf(
-                80,
-                1,
-                0x0f,
-                "\x1b[;0m    \x1b[;1m    \x1b[; 2m    \x1b[; 3m    \x1b[; 4m    \x1b[; 5m    \x1b[; 6m    \x1b[; 7m    "
-                "\x1b[0m");
-            bgfx::dbgTextPrintf(
-                80,
-                2,
-                0x0f,
-                "\x1b[;8m    \x1b[;9m    \x1b[;10m    \x1b[;11m    \x1b[;12m    \x1b[;13m    \x1b[;14m    \x1b[;15m    "
-                "\x1b[0m");
-            const bgfx::Stats* stats = bgfx::getStats();
-            bgfx::dbgTextPrintf(
-                0,
-                2,
-                0x0f,
-                "Backbuffer %dW x %dH in pixels, debug text %dW x %dH in characters.",
-                stats->width,
-                stats->height,
-                stats->textWidth,
-                stats->textHeight);
-            // Enable stats or debug text.
-            bgfx::setDebug(BGFX_DEBUG_STATS);
-            // Advance to next frame. Main thread will be kicked to process submitted rendering primitives.
+            GUI::WindowSize size = m_pWindow->QueryWindowSize();
+
+            if (m_pCamera)
+            {
+                Matrix4x4 proj = m_pCamera->CreateProjection(size.Width(), size.Height());
+                bgfx::setViewTransform(0, m_pCamera->View().Data().data(), proj.Data().data());
+            }
+
+            while (!m_Objects.empty())
+            {
+                const Object3D* pObject = m_Objects.front();
+                m_Objects.pop();
+
+                bgfx::setTransform(pObject->Transformation().Data().data());
+
+                bgfx::setVertexBuffer(0, pObject->VertexBufferHandle());
+                bgfx::setIndexBuffer(pObject->IndexBufferHandle());
+
+                bgfx::submit(0, program);
+            }
+
             bgfx::frame();
         }
+
+        bgfx::destroy(program);
 
         bgfx::shutdown();
     }
@@ -102,6 +109,12 @@ namespace nate::Modules::Render {
     void Renderer::PrivShutdown()
     {
         Stop();
+        while (IsRunning())
+        {
+            bgfx::renderFrame();
+            Join(std::chrono::milliseconds(10));
+        }
+
         m_pWindow->Unsubsribe(this);
     }
 } // namespace nate::Modules::Render
