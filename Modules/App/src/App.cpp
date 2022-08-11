@@ -41,10 +41,6 @@ namespace nate::Modules::App {
             timePoint2     = std::chrono::steady_clock::now();
             auto time_span = duration_cast<std::chrono::nanoseconds>(timePoint2 - timePoint1);
             timePoint1     = timePoint2;
-            if (time_span > std::chrono::milliseconds(50))
-            {
-                std::cout << "time_span = " << double(time_span.count()) / 1e9 << " seconds \n";
-            }
 
             UpdateApp(time_span);
 
