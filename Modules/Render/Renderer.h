@@ -1,5 +1,5 @@
-#include "../3D/Camera3D.h"
-#include "../3D/Object3D.h"
+#include "3D/Camera/Camera3D.h"
+#include "3D/Object3D.h"
 #include "CursorPosition.hpp"
 #include "IRenderer.h"
 #include "KeyPressedInfo.hpp"

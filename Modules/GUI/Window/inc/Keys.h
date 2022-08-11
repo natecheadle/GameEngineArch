@@ -4,9 +4,12 @@
 namespace nate::Modules::GUI {
     enum class MouseButton : std::uint16_t
     {
+        None,
         Left,
         Middle,
         Right,
+
+        LAST
     };
 
     enum class KeyState : std::uint16_t
@@ -14,10 +17,14 @@ namespace nate::Modules::GUI {
         Released,
         Pressed,
         Repeat,
+
+        LAST
     };
 
     enum class Key : std::uint16_t
     {
+        None,
+
         // Numbers
         Zero,
         One,
@@ -71,7 +78,13 @@ namespace nate::Modules::GUI {
         Backspace,
         Insert,
         Delete,
+        Shift,
+        Control,
+        Alt,
+        Super,
+        CapsLock,
+        NumLock,
 
-        LAST,
+        LAST
     };
 } // namespace nate::Modules::GUI

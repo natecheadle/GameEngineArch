@@ -24,7 +24,7 @@ namespace nate::Modules::GUI {
             void*                                     subscriber,
             WindowMessages                            id,
             std::function<void(const WindowMessage*)> callback) = 0;
-        virtual void Unsubsribe(void* subscriber)               = 0;
+        virtual void Unsubscribe(void* subscriber)              = 0;
 
         virtual void PollEvents() const  = 0;
         virtual void Close() const       = 0;

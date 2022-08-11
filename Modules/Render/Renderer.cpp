@@ -1,9 +1,9 @@
 #include "Renderer.h"
 
-#include "BGFX_Shader.h"
 #include "CursorPosition.hpp"
 #include "Keys.h"
 #include "Matrix4x4.h"
+#include "Shader/BGFX_Shader.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 
@@ -82,7 +82,9 @@ namespace nate::Modules::Render {
             if (m_pCamera)
             {
                 Matrix4x4 proj = m_pCamera->CreateProjection(size.Width(), size.Height());
-                bgfx::setViewTransform(0, m_pCamera->View().Data().data(), proj.Data().data());
+                Matrix4x4 view = m_pCamera->View();
+                view.Invert();
+                bgfx::setViewTransform(0, view.Data().data(), proj.Data().data());
             }
 
             while (!m_Objects.empty())
@@ -115,6 +117,6 @@ namespace nate::Modules::Render {
             Join(std::chrono::milliseconds(10));
         }
 
-        m_pWindow->Unsubsribe(this);
+        m_pWindow->Unsubscribe(this);
     }
 } // namespace nate::Modules::Render

@@ -1,6 +1,7 @@
 #include "App.h"
 
 #include <cassert>
+#include <chrono>
 #include <iostream>
 #include <thread>
 
@@ -29,13 +30,23 @@ namespace nate::Modules::App {
 
         Initialize();
 
+        std::chrono::time_point<std::chrono::steady_clock> timePoint1 = std::chrono::steady_clock::now();
+        std::chrono::time_point<std::chrono::steady_clock> timePoint2 = std::chrono::steady_clock::now();
         while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
         {
             m_pWindow->PollEvents();
             if (m_pWindow->ShouldClose())
                 break;
 
-            UpdateApp();
+            timePoint2     = std::chrono::steady_clock::now();
+            auto time_span = duration_cast<std::chrono::nanoseconds>(timePoint2 - timePoint1);
+            timePoint1     = timePoint2;
+            if (time_span > std::chrono::milliseconds(50))
+            {
+                std::cout << "time_span = " << double(time_span.count()) / 1e9 << " seconds \n";
+            }
+
+            UpdateApp(time_span);
 
             if (m_pRenderer->RenderingFailed())
             {
