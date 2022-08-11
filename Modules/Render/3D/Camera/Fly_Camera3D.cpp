@@ -39,22 +39,22 @@ namespace nate::Modules::Render {
 
     void Fly_Camera3D::PanUp(float value)
     {
-        Translate({value, 0, 0});
+        Translate({0, -value, 0});
     }
 
     void Fly_Camera3D::PanDown(float value)
     {
-        Translate({-value, 0, 0});
+        Translate({0, value, 0});
     }
 
     void Fly_Camera3D::PanLeft(float value)
     {
-        Translate({0, -value, 0});
+        Translate({value, 0, 0});
     }
 
     void Fly_Camera3D::PanRight(float value)
     {
-        Translate({0, value, 0});
+        Translate({-value, 0, 0});
     }
 
     void Fly_Camera3D::RotatePitch(float value)
@@ -102,6 +102,26 @@ namespace nate::Modules::Render {
         if (m_PanRightMap.IsMappedKey(key, mods))
         {
             PanRight();
+        }
+        if (m_RotatePitchMap.IsMappedKey(key, mods))
+        {
+            RotatePitch();
+        }
+        if (m_RotateRollMap.IsMappedKey(key, mods))
+        {
+            RotateRoll();
+        }
+        if (m_RotateYawMap.IsMappedKey(key, mods))
+        {
+            RotateYaw();
+        }
+        if (m_ZoomInMap.IsMappedKey(key, mods))
+        {
+            ZoomIn();
+        }
+        if (m_ZoomOutMap.IsMappedKey(key, mods))
+        {
+            ZoomOut();
         }
     }
 } // namespace nate::Modules::Render
