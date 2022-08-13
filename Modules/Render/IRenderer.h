@@ -14,7 +14,9 @@ namespace nate::Modules::Render {
         virtual void Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc) = 0;
         virtual bool IsInitialized() const                                              = 0;
         virtual bool IsRunning() const                                                  = 0;
+        virtual void Stop()                                                             = 0;
         virtual void Shutdown()                                                         = 0;
+        virtual bool WaitingForShutdown() const                                         = 0;
 
         virtual bool                  RenderingFailed() const = 0;
         virtual const std::exception& GetFailure() const      = 0;

@@ -26,7 +26,9 @@ namespace nate::Modules::Render {
         void Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc) override;
         bool IsInitialized() const override { return m_RendererInitialized; }
         bool IsRunning() const override { return IsExecuting(); }
+        void Stop() override { Jobs::Job::Stop(); }
         void Shutdown() override { PrivShutdown(); }
+        bool WaitingForShutdown() const override { return m_WaitingForShutdown; }
 
         bool                  RenderingFailed() const override { return IsFailed(); }
         const std::exception& GetFailure() const override { return GetCaughtException(); }
@@ -48,6 +50,8 @@ namespace nate::Modules::Render {
 
         std::atomic<bool>           m_WindowShouldClose{false};
         std::atomic<bool>           m_RendererInitialized{false};
+        std::atomic<bool>           m_ShouldShutdown{false};
+        std::atomic<bool>           m_WaitingForShutdown{false};
         std::queue<const Object3D*> m_Objects;
         const Camera3D*             m_pCamera;
     };

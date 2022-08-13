@@ -15,6 +15,12 @@ namespace nate::Modules::App {
 
     void App::Close()
     {
+        m_pRenderer->Stop();
+        while (!m_pRenderer->WaitingForShutdown())
+        {
+            m_pRenderer->RenderFrame();
+            std::this_thread::yield();
+        }
         Shutdown();
         m_pRenderer->Shutdown();
         m_pWindow->Close();
@@ -51,6 +57,12 @@ namespace nate::Modules::App {
             }
 
             m_pRenderer->RenderFrame();
+        }
+        m_pRenderer->Stop();
+        while (!m_pRenderer->WaitingForShutdown())
+        {
+            m_pRenderer->RenderFrame();
+            std::this_thread::yield();
         }
 
         Shutdown();
