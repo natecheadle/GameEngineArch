@@ -19,9 +19,9 @@ namespace nate::Modules::Render {
         GUI::KeyMapping m_ZoomInMap;
         GUI::KeyMapping m_ZoomOutMap;
 
-        float m_ZoomSpeed{1.0};
-        float m_PanSpeed{1.0};
-        float m_RotateSpeed{1.0};
+        float m_ZoomSpeed{0.1};
+        float m_PanSpeed{0.1};
+        float m_RotateSpeed{0.1};
 
         bool IsPanningUp{false};
         bool IsPanningDown{false};
