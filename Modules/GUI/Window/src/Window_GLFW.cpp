@@ -106,7 +106,7 @@ namespace nate::Modules::GUI {
         m_MessagePump.Subscribe(subscriber, id, std::move(callback));
     }
 
-    void Window_GLFW::Unsubsribe(void* subscriber)
+    void Window_GLFW::Unsubscribe(void* subscriber)
     {
         m_MessagePump.Unsubscribe(subscriber);
     }
@@ -287,8 +287,15 @@ namespace nate::Modules::GUI {
         case Key::Backspace: return GLFW_KEY_BACKSPACE;
         case Key::Insert: return GLFW_KEY_INSERT;
         case Key::Delete: return GLFW_KEY_DELETE;
+        case Key::Shift: return GLFW_KEY_LEFT_SHIFT;
+        case Key::Control: return GLFW_KEY_LEFT_CONTROL;
+        case Key::Alt: return GLFW_KEY_LEFT_ALT;
+        case Key::Super: return GLFW_KEY_LEFT_SUPER;
+        case Key::CapsLock: return GLFW_KEY_CAPS_LOCK;
+        case Key::NumLock: return GLFW_KEY_NUM_LOCK;
 
-        case Key::LAST: assert(false);
+        case Key::LAST:
+        case Key::None: assert(false);
         }
 
         assert(false);
@@ -354,6 +361,16 @@ namespace nate::Modules::GUI {
         case GLFW_KEY_BACKSPACE: return Key::Backspace;
         case GLFW_KEY_INSERT: return Key::Insert;
         case GLFW_KEY_DELETE: return Key::Delete;
+        case GLFW_KEY_LEFT_SHIFT:
+        case GLFW_KEY_RIGHT_SHIFT: return Key::Shift;
+        case GLFW_KEY_LEFT_CONTROL:
+        case GLFW_KEY_RIGHT_CONTROL: return Key::Control;
+        case GLFW_KEY_LEFT_ALT:
+        case GLFW_KEY_RIGHT_ALT: return Key::Alt;
+        case GLFW_KEY_LEFT_SUPER:
+        case GLFW_KEY_RIGHT_SUPER: return Key::Super;
+        case GLFW_KEY_CAPS_LOCK: return Key::CapsLock;
+        case GLFW_KEY_NUM_LOCK: return Key::NumLock;
         }
 
         assert(false);

@@ -48,7 +48,7 @@ namespace nate::Modules::GUI {
 
         void SubscribeToMessage(void* subscriber, WindowMessages id, std::function<void(const WindowMessage*)> callback)
             override;
-        void Unsubsribe(void* subscriber) override;
+        void Unsubscribe(void* subscriber) override;
 
         void PollEvents() const override;
         void Close() const override;

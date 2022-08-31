@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Keys.h"
+
+#include <array>
 #include <bitset>
 
 namespace nate::Modules::GUI {
@@ -16,7 +19,7 @@ namespace nate::Modules::GUI {
     };
 
     class KeyModifiers {
-        std::bitset<static_cast<size_t>(KeyModifier::LAST)> m_Modifiers;
+        std::bitset<static_cast<size_t>(KeyModifier::LAST)> m_Modifiers{0};
 
       public:
         KeyModifiers() = default;
@@ -38,7 +41,7 @@ namespace nate::Modules::GUI {
 
         ~KeyModifiers() = default;
 
-        KeyModifiers(const KeyModifiers& other) = default;
+        KeyModifiers(const KeyModifiers& other)            = default;
         KeyModifiers& operator=(const KeyModifiers& other) = default;
 
         bool operator==(const KeyModifiers& other) const = default;
@@ -49,5 +52,10 @@ namespace nate::Modules::GUI {
         bool IsSuperPressed() const { return m_Modifiers[static_cast<size_t>(KeyModifier::Super)]; }
         bool IsCapsLockPressed() const { return m_Modifiers[static_cast<size_t>(KeyModifier::CapsLock)]; }
         bool IsNumLockPressed() const { return m_Modifiers[static_cast<size_t>(KeyModifier::NumLock)]; }
+        bool IsAnyPressed() const { return m_Modifiers.any(); }
+        bool IsModifierPressed(const KeyModifiers& other)
+        {
+            return (m_Modifiers.to_ulong() & other.m_Modifiers.to_ulong()) != 0;
+        }
     };
 } // namespace nate::Modules::GUI

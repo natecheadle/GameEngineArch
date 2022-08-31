@@ -2,12 +2,13 @@
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 
+#include <3D/Camera/Fly_Camera3D.h>
 #include <App.h>
 #include <DebugCast.hpp>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
 #include <Renderer.h>
-#include <Shader.h>
+#include <Shader/Shader.h>
 #include <Window_GLFW.h>
 
 #include <cassert>
@@ -45,14 +46,14 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 }
 
 class TestApp : public App::App {
-    std::shared_mutex                 m_CallbackMutex;
-    GUI::MouseClickedInfo             m_LastMouseClick;
-    GUI::CursorPosition               m_LastPosition;
-    GUI::WindowSize                   m_WindowSize;
-    float                             m_CamYaw{0.0};
-    float                             m_CamPitch{0.0};
-    std::unique_ptr<Render::Object3D> m_pCube;
-    std::unique_ptr<Render::Camera3D> m_pCamera;
+    std::shared_mutex                     m_CallbackMutex;
+    GUI::MouseClickedInfo                 m_LastMouseClick;
+    GUI::CursorPosition                   m_LastPosition;
+    GUI::WindowSize                       m_WindowSize;
+    float                                 m_CamYaw{0.0};
+    float                                 m_CamPitch{0.0};
+    std::unique_ptr<Render::Object3D>     m_pCube;
+    std::unique_ptr<Render::Fly_Camera3D> m_pCamera;
 
   public:
     TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
@@ -83,7 +84,8 @@ class TestApp : public App::App {
         m_pCube = std::make_unique<Render::Object3D>(
             std::vector<Render::VertexPoint3D>(cube_vertices, cube_vertices + 8),
             std::vector<std::uint16_t>(cube_tri_list, cube_tri_list + 36));
-        m_pCamera = std::make_unique<Render::Camera3D>();
+        m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
+        m_pCamera->Translate({0, 0, -5});
 
         GetRenderer()->AttachCamera(m_pCamera.get());
         GetRenderer()->RenderObject(m_pCube.get());
@@ -95,42 +97,7 @@ class TestApp : public App::App {
         m_pCube.reset();
     }
 
-    void UpdateApp() override
-    { // simple input code for orbit camera
-        GUI::KeyState    lastKeyState{GUI::KeyState::Released};
-        GUI::MouseButton lastMouseButton{GUI::MouseButton::Left};
-        int              width{0};
-        int              height{0};
-        {
-            std::shared_lock<std::shared_mutex> lock(m_CallbackMutex);
-            lastKeyState    = m_LastMouseClick.KeyState();
-            lastMouseButton = m_LastMouseClick.Button();
-            width           = m_WindowSize.Width();
-            height          = m_WindowSize.Height();
-        }
-        if (lastKeyState == GUI::KeyState::Pressed && lastMouseButton == GUI::MouseButton::Left)
-        {
-            GUI::CursorPosition position = GetWindow()->QueryCursorPosition();
-
-            static constexpr float rot_scale = 0.01;
-            double                 delta_x   = position.XPos() - m_LastPosition.XPos();
-            double                 delta_y   = position.YPos() - m_LastPosition.YPos();
-            m_CamYaw += float(-delta_x) * rot_scale;
-            m_CamPitch += float(-delta_y) * rot_scale;
-
-            m_LastPosition = position;
-        }
-
-        Render::Matrix4x4 view;
-        view.SetToIdentity();
-        view.Rotate(m_CamPitch, m_CamYaw, 0.0);
-        view.Translate(0.0, 0.0, -5.0);
-        view.Invert();
-
-        m_pCamera->View(view);
-
-        GetRenderer()->RenderObject(m_pCube.get());
-    }
+    void UpdateApp(std::chrono::nanoseconds /*time*/) override { GetRenderer()->RenderObject(m_pCube.get()); }
 };
 
 int main()
