@@ -17,10 +17,10 @@ namespace nate::Modules::Render
     class RendererSM_ShuttingDown;
 
     class RendererSM_Processing_ConfiguringView
-        : public sc::simple_state<RendererSM_Processing_ConfiguringView, RendererSM_Processing>
+        : public sc::state<RendererSM_Processing_ConfiguringView, RendererSM_Processing>
     {
       public:
-        RendererSM_Processing_ConfiguringView();
+        RendererSM_Processing_ConfiguringView(my_context ctx);
         ~RendererSM_Processing_ConfiguringView() = default;
 
         typedef mpl::list<

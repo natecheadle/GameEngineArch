@@ -45,15 +45,16 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
               << " New Height = " << pResized->GetData()->Height() << "\r\n";
 }
 
-class TestApp : public App::App {
+class TestApp : public App::App
+{
     std::shared_mutex                     m_CallbackMutex;
     GUI::MouseClickedInfo                 m_LastMouseClick;
     GUI::CursorPosition                   m_LastPosition;
     GUI::WindowSize                       m_WindowSize;
     float                                 m_CamYaw{0.0};
     float                                 m_CamPitch{0.0};
-    std::unique_ptr<Render::Object3D>     m_pCube;
-    std::unique_ptr<Render::Fly_Camera3D> m_pCamera;
+    std::shared_ptr<Render::Object3D>     m_pCube;
+    std::shared_ptr<Render::Fly_Camera3D> m_pCamera;
 
   public:
     TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
@@ -81,14 +82,11 @@ class TestApp : public App::App {
   protected:
     void Initialize() override
     {
-        m_pCube = std::make_unique<Render::Object3D>(
+        m_pCube = std::make_shared<Render::Object3D>(
             std::vector<Render::VertexPoint3D>(cube_vertices, cube_vertices + 8),
             std::vector<std::uint16_t>(cube_tri_list, cube_tri_list + 36));
-        m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
+        m_pCamera = std::make_shared<Render::Fly_Camera3D>(GetWindow());
         m_pCamera->Translate({0, 0, -5});
-
-        GetRenderer()->AttachCamera(m_pCamera.get());
-        GetRenderer()->RenderObject(m_pCube.get());
     }
 
     void Shutdown() override
@@ -97,7 +95,11 @@ class TestApp : public App::App {
         m_pCube.reset();
     }
 
-    void UpdateApp(std::chrono::nanoseconds /*time*/) override { GetRenderer()->RenderObject(m_pCube.get()); }
+    void UpdateApp(std::chrono::nanoseconds /*time*/) override
+    {
+        GetRenderer()->AttachCamera(m_pCamera);
+        GetRenderer()->RenderObject(m_pCube);
+    }
 };
 
 int main()

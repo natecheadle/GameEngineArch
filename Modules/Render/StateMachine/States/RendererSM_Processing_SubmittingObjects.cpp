@@ -6,7 +6,8 @@
 
 namespace nate::Modules::Render
 {
-    RendererSM_Processing_SubmittingObjects::RendererSM_Processing_SubmittingObjects()
+    RendererSM_Processing_SubmittingObjects::RendererSM_Processing_SubmittingObjects(my_context ctx)
+        : my_base(std::move(ctx))
     {
         // TODO shaders should be part of the material attached to the object
         Render::BGFX_Shader fragmentShader("fs_cubes.sc.bin", context<RendererSM>().ShaderDir());

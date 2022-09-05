@@ -3,7 +3,7 @@
 #include "StateMachine/RendererSM.h"
 
 #include <boost/mpl/list.hpp>
-#include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/state.hpp>
 #include <boost/statechart/transition.hpp>
 
 namespace mpl = boost::mpl;
@@ -17,10 +17,10 @@ namespace nate::Modules::Render
     class RendererSM_StartInitialization;
     class RendererSM_EV_InitializationFailed;
 
-    class RendererSM_Initializing : public sc::simple_state<RendererSM_Initializing, RendererSM>
+    class RendererSM_Initializing : public sc::state<RendererSM_Initializing, RendererSM>
     {
       public:
-        RendererSM_Initializing();
+        RendererSM_Initializing(my_context ctx);
         ~RendererSM_Initializing() = default;
 
         typedef mpl::list<

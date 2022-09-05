@@ -2,7 +2,8 @@
 
 namespace nate::Modules::Render
 {
-    RendererSM_Processing_ConfiguringView::RendererSM_Processing_ConfiguringView()
+    RendererSM_Processing_ConfiguringView::RendererSM_Processing_ConfiguringView(my_context ctx)
+        : my_base(std::move(ctx))
     {
         GUI::WindowSize size = context<RendererSM>().Window()->QueryWindowSize();
 

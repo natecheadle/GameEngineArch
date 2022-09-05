@@ -5,7 +5,8 @@
 #include <iostream>
 #include <thread>
 
-namespace nate::Modules::App {
+namespace nate::Modules::App
+{
 
     App::App(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
         : m_pWindow(std::move(pWindow))
@@ -15,12 +16,6 @@ namespace nate::Modules::App {
 
     void App::Close()
     {
-        m_pRenderer->Stop();
-        while (!m_pRenderer->WaitingForShutdown())
-        {
-            m_pRenderer->RenderFrame();
-            std::this_thread::yield();
-        }
         Shutdown();
         m_pRenderer->Shutdown();
         m_pWindow->Close();
@@ -28,11 +23,7 @@ namespace nate::Modules::App {
 
     int App::Run()
     {
-        while (!m_pRenderer->IsInitialized() && m_pRenderer->IsRunning())
-        {
-            std::this_thread::yield();
-            m_pRenderer->RenderFrame();
-        }
+        m_pRenderer->StartRendering();
 
         Initialize();
 
@@ -58,14 +49,8 @@ namespace nate::Modules::App {
 
             m_pRenderer->RenderFrame();
         }
-        m_pRenderer->Stop();
-        while (!m_pRenderer->WaitingForShutdown())
-        {
-            m_pRenderer->RenderFrame();
-            std::this_thread::yield();
-        }
 
-        Shutdown();
+        Close();
 
         return 0;
     }

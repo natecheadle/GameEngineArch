@@ -4,7 +4,8 @@
 
 namespace nate::Modules::Render
 {
-    RendererSM_Initializing::RendererSM_Initializing()
+    RendererSM_Initializing::RendererSM_Initializing(my_context ctx)
+        : my_base(ctx)
     {
         bgfx::PlatformData platformData;
 

@@ -16,7 +16,8 @@ add_library(${PROJECT_NAME} STATIC
     "StateMachine/States/RendererSM_Processing_ConfiguringView.cpp"
     "StateMachine/States/RendererSM_Processing_SubmittingObjects.cpp"
     "StateMachine/States/RendererSM_Processing_WaitingForFrame.cpp"
-    "StateMachine/States/RendererSM_ShuttingDown.cpp")
+    "StateMachine/States/RendererSM_ShuttingDown.cpp"
+    "StateMachine/States/RendererSM_Initialized.cpp")
     
 find_package(bgfx CONFIG REQUIRED)
 find_package(Boost REQUIRED)

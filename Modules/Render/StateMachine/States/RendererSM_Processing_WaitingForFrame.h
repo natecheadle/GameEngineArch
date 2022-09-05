@@ -2,7 +2,7 @@
 
 #include "StateMachine/RendererSM.h"
 
-#include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/state.hpp>
 #include <boost/statechart/transition.hpp>
 
 namespace sc = boost::statechart;
@@ -16,10 +16,10 @@ namespace nate::Modules::Render
     class RendererSM_ShuttingDown;
 
     class RendererSM_Processing_WaitingForFrame
-        : public sc::simple_state<RendererSM_Processing_WaitingForFrame, RendererSM_Processing>
+        : public sc::state<RendererSM_Processing_WaitingForFrame, RendererSM_Processing>
     {
       public:
-        RendererSM_Processing_WaitingForFrame();
+        RendererSM_Processing_WaitingForFrame(my_context ctx);
         ~RendererSM_Processing_WaitingForFrame() = default;
 
         typedef mpl::list<
