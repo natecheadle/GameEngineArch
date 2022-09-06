@@ -21,13 +21,26 @@
 
 namespace nate::Modules::Render
 {
-    void Renderer::Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc)
+    void Renderer::Initialize(GUI::IWindow* pWindow)
     {
         // Call bgfx::renderFrame before bgfx::init to signal to bgfx not to create a render thread.
         // Most graphics APIs must be used on the same thread that created the window.
         bgfx::renderFrame();
-        m_pRendererSM = std::make_unique<RendererSM>(pWindow, std::move(shaderLoc));
+        m_pRendererSM = std::make_unique<RendererSM>(pWindow);
         Start();
+    }
+
+    bool Renderer::IsInitialized() const
+    {
+        if (!m_pRendererSM)
+            return false;
+
+        while (!m_pRendererSM->IsInitialized())
+        {
+            bgfx::renderFrame();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        return true;
     }
 
     Renderer::~Renderer()
@@ -80,12 +93,17 @@ namespace nate::Modules::Render
     {
         assert(m_pRendererSM);
 
-        while (!m_pRendererSM->IsInitialized())
-        {
-            std::this_thread::yield();
-            bgfx::renderFrame();
-        }
-
         m_pRendererSM->StartRunning();
+    }
+
+    bgfx::ShaderHandle Renderer::CreateShader(const std::vector<std::uint8_t>& data)
+    {
+        assert(m_pRendererSM);
+        return m_pRendererSM->CreateShader(data);
+    }
+    bgfx::ProgramHandle Renderer::CreateProgram(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex)
+    {
+        assert(m_pRendererSM);
+        return m_pRendererSM->CreateProgram(fragment, vertex);
     }
 } // namespace nate::Modules::Render

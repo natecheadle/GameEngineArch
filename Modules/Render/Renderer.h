@@ -1,7 +1,8 @@
+#pragma once
+
 #include "3D/Camera/Camera3D.h"
 #include "3D/Object3D.h"
 #include "CursorPosition.hpp"
-#include "IRenderer.h"
 #include "KeyPressedInfo.hpp"
 #include "MouseClickedInfo.hpp"
 #include "StateMachine/RendererSM.h"
@@ -23,28 +24,29 @@
 namespace nate::Modules::Render
 {
     class RendererSM;
-    class Renderer
-        : public IRenderer
-        , private Jobs::Job
+    class Renderer : private Jobs::Job
     {
       public:
         virtual ~Renderer();
 
-        void Initialize(GUI::IWindow* pWindow, std::filesystem::path shaderLoc) override;
-        bool IsRunning() const override { return IsExecuting(); }
-        void StartRendering() override;
+        void Initialize(GUI::IWindow* pWindow);
+        bool IsInitialized() const;
+        bool IsRunning() const { return IsExecuting(); }
+        void StartRendering();
 
-        void Shutdown() override;
+        void Shutdown();
 
-        bool                  RenderingFailed() const override { return IsFailed(); }
-        const std::exception& GetFailure() const override { return GetCaughtException(); }
+        bool                  RenderingFailed() const { return IsFailed(); }
+        const std::exception& GetFailure() const { return GetCaughtException(); }
 
         // Must be called during App::UpdateApp
-        void AttachCamera(std::shared_ptr<const Camera3D> pCamera) override;
+        void AttachCamera(std::shared_ptr<const Camera3D> pCamera);
         // Must be called during App::UpdateApp
-        void RenderObject(std::shared_ptr<const Object3D> pObject) override;
+        void RenderObject(std::shared_ptr<const Object3D> pObject);
 
-        void RenderFrame() override;
+        void                RenderFrame();
+        bgfx::ShaderHandle  CreateShader(const std::vector<std::uint8_t>& data);
+        bgfx::ProgramHandle CreateProgram(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex);
 
       protected:
         void ExecuteJob() final;

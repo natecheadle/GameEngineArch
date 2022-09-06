@@ -21,6 +21,10 @@ namespace nate::Modules::Render
         ~RendererSM_Initialized() = default;
 
         typedef sc::transition<RendererSM_EV_StartRunning, RendererSM_Processing> reactions;
+
+      private:
+        void BuildShaders();
+        void BuildPrograms();
     };
 } // namespace nate::Modules::Render
 

@@ -8,6 +8,7 @@ namespace nate::Modules::Render
         : my_base(std::move(ctx))
     {
         bgfx::frame();
+        context<RendererSM>().IncrementFrame();
         context<RendererSM>().PostEvent(RendererSM_EV_FrameRenderered());
     }
 } // namespace nate::Modules::Render

@@ -8,7 +8,7 @@
 namespace nate::Modules::App
 {
 
-    App::App(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
+    App::App(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::Renderer> pRenderer)
         : m_pWindow(std::move(pWindow))
         , m_pRenderer(std::move(pRenderer))
     {
@@ -23,9 +23,12 @@ namespace nate::Modules::App
 
     int App::Run()
     {
-        m_pRenderer->StartRendering();
+        while (!m_pRenderer->IsInitialized())
+            std::this_thread::yield();
 
         Initialize();
+
+        m_pRenderer->StartRendering();
 
         std::chrono::time_point<std::chrono::steady_clock> timePoint1 = std::chrono::steady_clock::now();
         std::chrono::time_point<std::chrono::steady_clock> timePoint2 = std::chrono::steady_clock::now();

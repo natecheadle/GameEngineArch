@@ -1,21 +1,17 @@
 #include "BGFX_Shader.h"
 
+#include "Renderer.h"
+
 #include <fmt/format.h>
 
 #include <cassert>
 
-namespace nate::Modules::Render {
-    BGFX_Shader::BGFX_Shader(std::string_view name, std::filesystem::path shadersPath)
+namespace nate::Modules::Render
+{
+    BGFX_Shader::BGFX_Shader(std::string_view name, std::filesystem::path shadersPath, Renderer* pRenderer)
         : Shader(GetFullPath(name, std::move(shadersPath)))
-        , m_Handle(CreateHandle(ShaderData()))
+        , m_Handle(pRenderer->CreateShader(ShaderData()))
     {
-    }
-
-    bgfx::ShaderHandle BGFX_Shader::CreateHandle(const std::vector<std::uint8_t>& data)
-    {
-        assert(data.size() <= (size_t)std::numeric_limits<uint32_t>::max());
-        const bgfx::Memory* mem = bgfx::makeRef(data.data(), (uint32_t)data.size());
-        return bgfx::createShader(mem);
     }
 
     std::filesystem::path BGFX_Shader::GetFullPath(std::string_view name, std::filesystem::path shadersPath)

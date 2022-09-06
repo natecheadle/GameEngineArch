@@ -11,6 +11,7 @@ add_library(${PROJECT_NAME} STATIC
     "3D/Camera/Fly_Camera3D.cpp"
     "3D/Object3D.cpp"
     "Matrix4x4.cpp"
+    "Material/Material.cpp"
     "StateMachine/RendererSM.cpp"
     "StateMachine/States/RendererSM_Initializing.cpp"
     "StateMachine/States/RendererSM_Processing_ConfiguringView.cpp"

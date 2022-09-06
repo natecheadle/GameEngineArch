@@ -9,11 +9,6 @@ namespace nate::Modules::Render
     RendererSM_Processing_SubmittingObjects::RendererSM_Processing_SubmittingObjects(my_context ctx)
         : my_base(std::move(ctx))
     {
-        // TODO shaders should be part of the material attached to the object
-        Render::BGFX_Shader fragmentShader("fs_cubes.sc.bin", context<RendererSM>().ShaderDir());
-        Render::BGFX_Shader vertexShader("vs_cubes.sc.bin", context<RendererSM>().ShaderDir());
-        bgfx::ProgramHandle program = bgfx::createProgram(vertexShader.Handle(), fragmentShader.Handle(), true);
-
         auto queue = context<RendererSM>().GetQueue();
         while (!queue.first.empty())
         {
@@ -27,7 +22,7 @@ namespace nate::Modules::Render
             bgfx::setVertexBuffer(0, pObject->VertexBufferHandle());
             bgfx::setIndexBuffer(pObject->IndexBufferHandle());
 
-            bgfx::submit(0, program);
+            bgfx::submit(0, pObject->GetMaterial()->GetProgram());
         }
         context<RendererSM>().PostEvent(RendererSM_EV_ObjectsSubmitted());
     }
