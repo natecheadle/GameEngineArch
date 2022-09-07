@@ -98,9 +98,6 @@ class TestApp : public App::App
             std::make_shared<Render::Material>(std::move(fragmentShader), std::move(vertexShader), GetRenderer()));
         m_pCamera = std::make_shared<Render::Fly_Camera3D>(GetWindow());
         m_pCamera->Translate({0, 0, -5});
-
-        GetRenderer()->AttachCamera(m_pCamera);
-        GetRenderer()->RenderObject(m_pCube);
     }
 
     void Shutdown() override

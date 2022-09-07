@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <mutex>
+#include <thread>
 
 namespace nate::Modules::Render
 {
@@ -17,85 +18,30 @@ namespace nate::Modules::Render
 
     void RendererSM::SetCamera(std::shared_ptr<const Camera3D> pCamera)
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        if (m_PushingQueue_ID == 0)
-        {
-            std::unique_lock<std::mutex> camLock(m_Camera0Mutex);
-            m_pCamera0 = std::move(pCamera);
-        }
-        else
-        {
-            std::unique_lock<std::mutex> camLock(m_Camera1Mutex);
-            m_pCamera1 = std::move(pCamera);
-        }
+        m_pCamera = std::move(pCamera);
     }
 
-    std::pair<std::shared_ptr<const Camera3D>, std::unique_lock<std::mutex>> RendererSM::GetCamera()
+    std::shared_ptr<const Camera3D> RendererSM::GetCamera()
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        if (m_PushingQueue_ID == 0)
-        {
-            std::unique_lock<std::mutex> camLock(m_Camera0Mutex);
-            return std::move(std::pair<std::shared_ptr<const Camera3D>, std::unique_lock<std::mutex>>(
-                m_pCamera0,
-                std::move(camLock)));
-        }
-        std::unique_lock<std::mutex> camLock(m_Camera1Mutex);
-        return std::move(
-            std::pair<std::shared_ptr<const Camera3D>, std::unique_lock<std::mutex>>(m_pCamera1, std::move(camLock)));
+        return m_pCamera;
     }
 
     void RendererSM::PushObjects(std::span<std::shared_ptr<const Object3D>> objects)
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        if (m_PushingQueue_ID == 0)
+        for (auto& object : objects)
         {
-            std::unique_lock<std::mutex> queue_lock(m_ObjectQueue0_Mutex);
-            for (auto& object : objects)
-            {
-                m_ObjectQueue0.push(std::move(object));
-            }
-        }
-        else
-        {
-            std::unique_lock<std::mutex> queue_lock(m_ObjectQueue1_Mutex);
-            for (auto& object : objects)
-            {
-                m_ObjectQueue1.push(std::move(object));
-            }
+            m_ObjectQueue.push(std::move(object));
         }
     }
 
     void RendererSM::PushObject(std::shared_ptr<const Object3D> object)
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        if (m_PushingQueue_ID == 0)
-        {
-            std::unique_lock<std::mutex> queue_lock(m_ObjectQueue0_Mutex);
-            m_ObjectQueue0.push(std::move(object));
-        }
-        else
-        {
-            std::unique_lock<std::mutex> queue_lock(m_ObjectQueue1_Mutex);
-            m_ObjectQueue1.push(std::move(object));
-        }
+        m_ObjectQueue.push(std::move(object));
     }
 
-    std::pair<std::queue<std::shared_ptr<const Object3D>>&, std::unique_lock<std::mutex>> RendererSM::GetQueue()
+    std::queue<std::shared_ptr<const Object3D>>& RendererSM::GetQueue()
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        if (m_PushingQueue_ID == 0)
-        {
-            std::unique_lock<std::mutex> queue_lock(m_ObjectQueue0_Mutex);
-            return std::move(std::pair<std::queue<std::shared_ptr<const Object3D>>&, std::unique_lock<std::mutex>>(
-                m_ObjectQueue0,
-                std::move(queue_lock)));
-        }
-
-        std::unique_lock<std::mutex> queue_lock(m_ObjectQueue1_Mutex);
-        return std::move(std::pair<std::queue<std::shared_ptr<const Object3D>>&, std::unique_lock<std::mutex>>(
-            m_ObjectQueue1,
-            std::move(queue_lock)));
+        return m_ObjectQueue;
     }
 
     void RendererSM::PostEvent(const sc::event_base& ev)
@@ -162,9 +108,28 @@ namespace nate::Modules::Render
         return pReturn;
     }
 
-    void RendererSM::IncrementFrame()
+    void RendererSM::WaitSubmission()
     {
-        std::unique_lock<std::mutex> lock(m_IDMutex);
-        m_PushingQueue_ID = (m_PushingQueue_ID + 1) % 2;
+        std::unique_lock<std::mutex> lock(m_SubmitObjects_Mutex);
+        m_IsWiatingSubmission = true;
+        m_SubmitObjects_Condition.wait(lock);
+    }
+
+    void RendererSM::SubmitObjects()
+    {
+        bool isWaiting = false;
+        do
+        {
+            {
+                std::unique_lock<std::mutex> lock(m_SubmitObjects_Mutex);
+                isWaiting = m_IsWiatingSubmission;
+            }
+            if (!isWaiting)
+            {
+                std::this_thread::yield();
+            }
+        } while (!isWaiting);
+
+        m_SubmitObjects_Condition.notify_all();
     }
 } // namespace nate::Modules::Render

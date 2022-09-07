@@ -27,6 +27,14 @@ namespace nate::Modules::Render
     class Renderer : private Jobs::Job
     {
       public:
+        enum class RenderResult
+        {
+            NoContext,
+            Render,
+            Timeout,
+            Exiting,
+        };
+
         virtual ~Renderer();
 
         void Initialize(GUI::IWindow* pWindow);
@@ -44,7 +52,7 @@ namespace nate::Modules::Render
         // Must be called during App::UpdateApp
         void RenderObject(std::shared_ptr<const Object3D> pObject);
 
-        void                RenderFrame();
+        RenderResult        RenderFrame();
         bgfx::ShaderHandle  CreateShader(const std::vector<std::uint8_t>& data);
         bgfx::ProgramHandle CreateProgram(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex);
 

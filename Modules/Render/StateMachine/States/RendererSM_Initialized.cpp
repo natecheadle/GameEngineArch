@@ -17,7 +17,7 @@ namespace nate::Modules::Render
             BuildPrograms();
             std::this_thread::yield();
         }
-        context<RendererSM>().IncrementFrame();
+
         context<RendererSM>().PostEvent(RendererSM_EV_StartRunning());
     }
 

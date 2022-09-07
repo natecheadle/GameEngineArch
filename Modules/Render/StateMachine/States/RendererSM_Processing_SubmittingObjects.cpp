@@ -10,10 +10,10 @@ namespace nate::Modules::Render
         : my_base(std::move(ctx))
     {
         auto queue = context<RendererSM>().GetQueue();
-        while (!queue.first.empty())
+        while (!queue.empty())
         {
-            const Object3D* pObject = queue.first.front().get();
-            queue.first.pop();
+            const Object3D* pObject = queue.front().get();
+            queue.pop();
             if (!pObject)
                 continue;
 

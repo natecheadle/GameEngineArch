@@ -63,9 +63,10 @@ namespace nate::Modules::Render
         m_pRendererSM->PushObject(std::move(pObject));
     }
 
-    void Renderer::RenderFrame()
+    Renderer::RenderResult Renderer::RenderFrame()
     {
-        bgfx::renderFrame();
+        m_pRendererSM->SubmitObjects();
+        return static_cast<RenderResult>(bgfx::renderFrame());
     }
 
     void Renderer::ExecuteJob()

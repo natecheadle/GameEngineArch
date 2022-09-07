@@ -43,15 +43,12 @@ namespace nate::Modules::Render
             bgfx::ProgramHandle     Handle;
         };
 
-        std::mutex                                  m_ObjectQueue0_Mutex;
-        std::queue<std::shared_ptr<const Object3D>> m_ObjectQueue0;
-        std::mutex                                  m_Camera0Mutex;
-        std::shared_ptr<const Camera3D>             m_pCamera0;
+        std::mutex              m_SubmitObjects_Mutex;
+        bool                    m_IsWiatingSubmission;
+        std::condition_variable m_SubmitObjects_Condition;
 
-        std::mutex                                  m_ObjectQueue1_Mutex;
-        std::queue<std::shared_ptr<const Object3D>> m_ObjectQueue1;
-        std::mutex                                  m_Camera1Mutex;
-        std::shared_ptr<const Camera3D>             m_pCamera1;
+        std::queue<std::shared_ptr<const Object3D>> m_ObjectQueue;
+        std::shared_ptr<const Camera3D>             m_pCamera;
 
         std::mutex                  m_ShaderQueue_Mutex;
         std::queue<ShaderContext*>  m_CreateShaderQueue;
@@ -59,9 +56,6 @@ namespace nate::Modules::Render
         std::queue<ProgramContext*> m_ProgramQueue;
 
         std::mutex m_PostEvent_Mutex;
-
-        std::mutex m_IDMutex;
-        int        m_PushingQueue_ID;
 
         GUI::IWindow* m_pWindow;
 
@@ -87,16 +81,17 @@ namespace nate::Modules::Render
         bool IsInitialized() const { return m_IsInitialized; }
         bool IsShutdown() const { return m_IsShutdown; }
         bool ShouldStart() const { return m_StartRunning; }
+        void SubmitObjects();
 
         bgfx::ShaderHandle  CreateShader(const std::vector<std::uint8_t>& data);
         bgfx::ProgramHandle CreateProgram(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex);
 
       private:
-        std::pair<std::shared_ptr<const Camera3D>, std::unique_lock<std::mutex>>              GetCamera();
-        std::pair<std::queue<std::shared_ptr<const Object3D>>&, std::unique_lock<std::mutex>> GetQueue();
-        void ShutdownComplete() { m_IsShutdown = true; }
-        void InitializationComplete() { m_IsInitialized = true; }
-        void IncrementFrame();
+        std::shared_ptr<const Camera3D>              GetCamera();
+        std::queue<std::shared_ptr<const Object3D>>& GetQueue();
+        void                                         ShutdownComplete() { m_IsShutdown = true; }
+        void                                         InitializationComplete() { m_IsInitialized = true; }
+        void                                         WaitSubmission();
 
         ShaderContext*  PopShaderContext();
         ProgramContext* PopProgramContext();
