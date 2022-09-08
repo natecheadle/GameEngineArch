@@ -132,4 +132,11 @@ namespace nate::Modules::Render
 
         m_SubmitObjects_Condition.notify_all();
     }
+
+    void RendererSM::ClearAllObjects()
+    {
+        std::unique_lock<std::mutex> lock(m_SubmitObjects_Mutex);
+        m_pCamera.reset();
+        m_ObjectQueue = std::queue<std::shared_ptr<const Object3D>>();
+    }
 } // namespace nate::Modules::Render

@@ -92,6 +92,7 @@ namespace nate::Modules::Render
         void                                         ShutdownComplete() { m_IsShutdown = true; }
         void                                         InitializationComplete() { m_IsInitialized = true; }
         void                                         WaitSubmission();
+        void                                         ClearAllObjects();
 
         ShaderContext*  PopShaderContext();
         ProgramContext* PopProgramContext();
@@ -99,6 +100,7 @@ namespace nate::Modules::Render
         static bgfx::ShaderHandle  GetShaderHandle(const std::vector<std::uint8_t>& data);
         static bgfx::ProgramHandle GetProgramHandle(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex);
 
+        friend class RendererSM_ShuttingDown;
         friend class RendererSM_Shutdown;
         friend class RendererSM_Processing_SubmittingObjects;
         friend class RendererSM_Processing_ConfiguringView;

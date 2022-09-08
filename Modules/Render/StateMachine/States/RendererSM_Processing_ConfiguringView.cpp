@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <thread>
 
-
 namespace nate::Modules::Render
 {
     RendererSM_Processing_ConfiguringView::RendererSM_Processing_ConfiguringView(my_context ctx)
@@ -18,7 +17,7 @@ namespace nate::Modules::Render
         Matrix4x4                       proj    = pCamera->CreateProjection(size.Width(), size.Height());
         Matrix4x4                       view    = pCamera->View();
         view.Invert();
-        bgfx::setViewTransform(0, view.Data().data(), proj.Data().data());
+        // bgfx::setViewTransform(0, view.Data().data(), proj.Data().data());
 
         context<RendererSM>().PostEvent(RendererSM_EV_ViewUpdated());
     }

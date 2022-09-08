@@ -30,25 +30,26 @@ namespace nate::Modules::App
 
         m_pRenderer->StartRendering();
 
-        std::chrono::time_point<std::chrono::steady_clock> timePoint1 = std::chrono::steady_clock::now();
-        std::chrono::time_point<std::chrono::steady_clock> timePoint2 = std::chrono::steady_clock::now();
+        std::chrono::nanoseconds period{0};
         while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
         {
+            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
             m_pWindow->PollEvents();
             if (m_pWindow->ShouldClose())
                 break;
 
-            timePoint2     = std::chrono::steady_clock::now();
-            auto time_span = duration_cast<std::chrono::nanoseconds>(timePoint2 - timePoint1);
-            timePoint1     = timePoint2;
-
-            UpdateApp(time_span);
+            UpdateApp(period);
 
             if (m_pRenderer->RenderingFailed())
             {
                 std::cerr << m_pRenderer->GetFailure().what();
                 return 1;
             }
+
+            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
+            period                             = duration_cast<std::chrono::nanoseconds>(begin - end);
+            std::chrono::nanoseconds sleepTime = std::chrono::nanoseconds(std::int64_t(1.0 / 60.0 * 1e9)) - period;
+            std::this_thread::sleep_for(sleepTime);
 
             m_pRenderer->RenderFrame();
         }

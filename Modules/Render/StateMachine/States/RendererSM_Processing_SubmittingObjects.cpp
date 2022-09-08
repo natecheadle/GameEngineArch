@@ -16,13 +16,14 @@ namespace nate::Modules::Render
             queue.pop();
             if (!pObject)
                 continue;
+            /*
+                        bgfx::setTransform(pObject->Transformation().Data().data());
 
-            bgfx::setTransform(pObject->Transformation().Data().data());
+                        bgfx::setVertexBuffer(0, pObject->VertexBufferHandle());
+                        bgfx::setIndexBuffer(pObject->IndexBufferHandle());
 
-            bgfx::setVertexBuffer(0, pObject->VertexBufferHandle());
-            bgfx::setIndexBuffer(pObject->IndexBufferHandle());
-
-            bgfx::submit(0, pObject->GetMaterial()->GetProgram());
+                        bgfx::submit(0, pObject->GetMaterial()->GetProgram());
+            */
         }
         context<RendererSM>().PostEvent(RendererSM_EV_ObjectsSubmitted());
     }

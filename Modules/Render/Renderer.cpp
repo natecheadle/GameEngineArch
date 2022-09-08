@@ -78,10 +78,11 @@ namespace nate::Modules::Render
     {
         if (m_pRendererSM)
         {
-            m_pRendererSM->PostEvent(RendererSM_EV_ShutdownRequested());
-            bgfx::renderFrame();
+            m_pRendererSM->SubmitObjects();
             while (!m_pRendererSM->IsShutdown())
             {
+                m_pRendererSM->PostEvent(RendererSM_EV_ShutdownRequested());
+                bgfx::renderFrame();
                 std::this_thread::yield();
             }
 
@@ -100,6 +101,7 @@ namespace nate::Modules::Render
     bgfx::ShaderHandle Renderer::CreateShader(const std::vector<std::uint8_t>& data)
     {
         assert(m_pRendererSM);
+
         return m_pRendererSM->CreateShader(data);
     }
     bgfx::ProgramHandle Renderer::CreateProgram(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex)
