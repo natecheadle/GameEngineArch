@@ -2,6 +2,7 @@
 
 #include "Renderer.h"
 
+#include <bgfx/bgfx.h>
 #include <fmt/format.h>
 
 #include <cassert>
@@ -12,6 +13,11 @@ namespace nate::Modules::Render
         : Shader(GetFullPath(name, std::move(shadersPath)))
         , m_Handle(pRenderer->CreateShader(ShaderData()))
     {
+    }
+
+    BGFX_Shader::~BGFX_Shader()
+    {
+        bgfx::destroy(m_Handle);
     }
 
     std::filesystem::path BGFX_Shader::GetFullPath(std::string_view name, std::filesystem::path shadersPath)

@@ -14,7 +14,7 @@ namespace nate::Modules::Render
     {
       public:
         BGFX_Shader(std::string_view name, std::filesystem::path shadersPath, Renderer* pRenderer);
-        ~BGFX_Shader() = default;
+        ~BGFX_Shader();
 
         bgfx::ShaderHandle Handle() const { return m_Handle; }
 

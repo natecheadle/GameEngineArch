@@ -16,6 +16,7 @@ namespace nate::Modules::Render
 
       public:
         Material(std::unique_ptr<Shader> fragment, std::unique_ptr<Shader> vertex, Renderer* pRenderer);
+        ~Material();
 
         bgfx::ProgramHandle GetProgram() const { return m_Program; }
     };

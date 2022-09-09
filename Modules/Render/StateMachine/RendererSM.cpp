@@ -83,7 +83,7 @@ namespace nate::Modules::Render
 
     bgfx::ProgramHandle RendererSM::GetProgramHandle(bgfx::ShaderHandle fragment, bgfx::ShaderHandle vertex)
     {
-        return bgfx::createProgram(fragment, vertex, false);
+        return bgfx::createProgram(vertex, fragment, false);
     }
 
     RendererSM::ShaderContext* RendererSM::PopShaderContext()
