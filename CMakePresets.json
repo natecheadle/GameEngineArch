@@ -126,20 +126,22 @@
       "name": "Windows-MSVC-Debug",
       "displayName": "Windows MSVC Debug Configuration",
       "inherits": "Windows-MSVC",
-      "binaryDir": "${sourceDir}/out/build/MSVC/Debug",
+      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_COVERAGE": "OFF"
+        "BUILD_COVERAGE": "OFF",
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/MSVC/Debug/vcpkg_installed/x64-windows/tools/bgfx/"
       }
     },
     {
       "name": "Windows-MSVC-Release",
       "displayName": "Windows MSVC Release Configuration",
       "inherits": "Windows-MSVC",
-      "binaryDir": "${sourceDir}/out/build/MSVC/Release",
+      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "BUILD_COVERAGE": "OFF"
+        "BUILD_COVERAGE": "OFF",
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/MSVC/Release/vcpkg_installed/x64-windows/tools/bgfx/"
       }
     }
   ]

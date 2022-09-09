@@ -13,6 +13,7 @@
             ]
         },
         "spdlog",
-        "fmt"
+        "fmt",
+        "boost-statechart"
     ]
 }

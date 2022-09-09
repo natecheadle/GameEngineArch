@@ -10,11 +10,20 @@ add_library(${PROJECT_NAME} STATIC
     "3D/Camera/Camera3D.cpp"
     "3D/Camera/Fly_Camera3D.cpp"
     "3D/Object3D.cpp"
-    "Matrix4x4.cpp")
+    "Matrix4x4.cpp"
+    "Material/Material.cpp"
+    "StateMachine/RendererSM.cpp"
+    "StateMachine/States/RendererSM_Initializing.cpp"
+    "StateMachine/States/RendererSM_Processing_ConfiguringView.cpp"
+    "StateMachine/States/RendererSM_Processing_SubmittingObjects.cpp"
+    "StateMachine/States/RendererSM_Processing_WaitingForFrame.cpp"
+    "StateMachine/States/RendererSM_ShuttingDown.cpp"
+    "StateMachine/States/RendererSM_Initialized.cpp")
     
 find_package(bgfx CONFIG REQUIRED)
+find_package(Boost REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC bgfx::bgfx)
-target_link_libraries(${PROJECT_NAME} PRIVATE Modules_GUI Modules_Jobs bgfx::bx bgfx::iqa bgfx::astc Modules_Generic)
+target_link_libraries(${PROJECT_NAME} PRIVATE Modules_GUI Modules_Jobs bgfx::bx bgfx::iqa bgfx::astc Modules_Generic Boost::boost)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

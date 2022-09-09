@@ -1,4 +1,5 @@
 #include "IWindow.h"
+#include "Shader/BGFX_Shader.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 
@@ -19,6 +20,7 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <utility>
 
 nate::Modules::Render::VertexPoint3D cube_vertices[] = {
     {{-1.0f, 1.0f, 1.0f},   0xff000000},
@@ -45,18 +47,19 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
               << " New Height = " << pResized->GetData()->Height() << "\r\n";
 }
 
-class TestApp : public App::App {
+class TestApp : public App::App
+{
     std::shared_mutex                     m_CallbackMutex;
     GUI::MouseClickedInfo                 m_LastMouseClick;
     GUI::CursorPosition                   m_LastPosition;
     GUI::WindowSize                       m_WindowSize;
     float                                 m_CamYaw{0.0};
     float                                 m_CamPitch{0.0};
-    std::unique_ptr<Render::Object3D>     m_pCube;
-    std::unique_ptr<Render::Fly_Camera3D> m_pCamera;
+    std::shared_ptr<Render::Object3D>     m_pCube;
+    std::shared_ptr<Render::Fly_Camera3D> m_pCamera;
 
   public:
-    TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::IRenderer> pRenderer)
+    TestApp(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::Renderer> pRenderer)
         : App(std::move(pWindow), std::move(pRenderer))
     {
 
@@ -81,14 +84,20 @@ class TestApp : public App::App {
   protected:
     void Initialize() override
     {
-        m_pCube = std::make_unique<Render::Object3D>(
-            std::vector<Render::VertexPoint3D>(cube_vertices, cube_vertices + 8),
-            std::vector<std::uint16_t>(cube_tri_list, cube_tri_list + 36));
-        m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
-        m_pCamera->Translate({0, 0, -5});
+        std::filesystem::path shader_dir(APP_OUT_DIR);
+        shader_dir /= "Shaders";
 
-        GetRenderer()->AttachCamera(m_pCamera.get());
-        GetRenderer()->RenderObject(m_pCube.get());
+        std::unique_ptr<Render::Shader> fragmentShader{
+            std::make_unique<Render::BGFX_Shader>("fs_cubes.sc.bin", shader_dir, GetRenderer())};
+        std::unique_ptr<Render::Shader> vertexShader{
+            std::make_unique<Render::BGFX_Shader>("vs_cubes.sc.bin", shader_dir, GetRenderer())};
+
+        m_pCube = std::make_shared<Render::Object3D>(
+            std::vector<Render::VertexPoint3D>(cube_vertices, cube_vertices + 8),
+            std::vector<std::uint16_t>(cube_tri_list, cube_tri_list + 36),
+            std::make_shared<Render::Material>(std::move(fragmentShader), std::move(vertexShader), GetRenderer()));
+        m_pCamera = std::make_shared<Render::Fly_Camera3D>(GetWindow());
+        m_pCamera->Translate({0, 0, -5});
     }
 
     void Shutdown() override
@@ -97,7 +106,11 @@ class TestApp : public App::App {
         m_pCube.reset();
     }
 
-    void UpdateApp(std::chrono::nanoseconds /*time*/) override { GetRenderer()->RenderObject(m_pCube.get()); }
+    void UpdateApp(std::chrono::nanoseconds /*time*/) override
+    {
+        GetRenderer()->AttachCamera(m_pCamera);
+        GetRenderer()->RenderObject(m_pCube);
+    }
 };
 
 int main()
@@ -109,11 +122,8 @@ int main()
         assert(pWindow->IsValid());
         pWindow->SubscribeToMessage(pWindow.get(), GUI::WindowMessages::WindowResized, &OnWindowResize);
 
-        std::filesystem::path shader_dir(APP_OUT_DIR);
-        shader_dir /= "Shaders";
-
-        std::unique_ptr<Render::IRenderer> pRenderer = std::make_unique<Render::Renderer>();
-        pRenderer->Initialize(pWindow.get(), std::move(shader_dir));
+        std::unique_ptr<Render::Renderer> pRenderer = std::make_unique<Render::Renderer>();
+        pRenderer->Initialize(pWindow.get());
 
         TestApp app(std::move(pWindow), std::move(pRenderer));
         int     code = app.Run();
