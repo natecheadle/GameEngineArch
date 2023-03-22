@@ -1,8 +1,0 @@
-{
-    "default": {
-        "bgfx": {
-            "baseline": "1.115.8108.305",
-            "port-version": 1
-        }
-    }
-}
