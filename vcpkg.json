@@ -7,7 +7,7 @@
         "glfw3",
         {
             "name": "bgfx",
-            "default-features": false,
+            "default-features": true,
             "features": [
                 "tools"
             ]
