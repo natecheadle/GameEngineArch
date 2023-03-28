@@ -14,8 +14,10 @@
 #include <map>
 
 typedef struct GLFWwindow GLFWwindow;
-namespace nate::Modules::GUI {
-    class Window_GLFW : public IWindow {
+namespace nate::Modules::GUI
+{
+    class Window_GLFW : public IWindow
+    {
 
         static std::atomic<size_t> WindowCount;
         static std::map<GLFWwindow*, std::function<void(int key, int scancode, int action, int mods)>>

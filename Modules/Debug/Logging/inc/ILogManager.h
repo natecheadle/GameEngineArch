@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 
-namespace nate::Modules::Debug::Logging {
+namespace nate::Modules::Debug::Logging
+{
 
-    class ILogManager {
+    class ILogManager
+    {
       public:
         ILogManager()          = default;
         virtual ~ILogManager() = default;

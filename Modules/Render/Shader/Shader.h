@@ -6,8 +6,10 @@
 #include <string_view>
 #include <vector>
 
-namespace nate::Modules::Render {
-    class Shader {
+namespace nate::Modules::Render
+{
+    class Shader
+    {
       protected:
         Shader(std::filesystem::path shadersPath);
 

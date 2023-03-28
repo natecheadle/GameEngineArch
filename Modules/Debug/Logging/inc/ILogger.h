@@ -2,7 +2,8 @@
 
 #include <string_view>
 
-namespace nate::Modules::Debug::Logging {
+namespace nate::Modules::Debug::Logging
+{
 
     class ILogManager;
 
@@ -15,7 +16,8 @@ namespace nate::Modules::Debug::Logging {
         Off     = 4,
     };
 
-    class ILogger {
+    class ILogger
+    {
       public:
         virtual const std::string& GetModuleName() const = 0;
 

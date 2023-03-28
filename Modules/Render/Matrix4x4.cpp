@@ -2,7 +2,8 @@
 
 #include <bx/math.h>
 
-namespace nate::Modules::Render {
+namespace nate::Modules::Render
+{
     Matrix4x4::Matrix4x4()
     {
         Clear();

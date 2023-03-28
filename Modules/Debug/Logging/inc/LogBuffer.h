@@ -5,9 +5,11 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/spdlog.h>
 
-namespace nate::Modules::Debug::Logging {
+namespace nate::Modules::Debug::Logging
+{
 
-    class LogBuffer : public ILogBuffer {
+    class LogBuffer : public ILogBuffer
+    {
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> m_Sink;
 
       public:

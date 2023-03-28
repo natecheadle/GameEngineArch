@@ -5,7 +5,8 @@
 #include "KeyPressedInfo.hpp"
 #include "Keys.h"
 
-namespace nate::Modules::Render {
+namespace nate::Modules::Render
+{
     Fly_Camera3D::Fly_Camera3D(GUI::IWindow* pWindow)
         : Camera3D(pWindow)
     {

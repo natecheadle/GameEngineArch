@@ -5,8 +5,10 @@
 #include "IWindow.h"
 #include "KeyMapping.hpp"
 
-namespace nate::Modules::Render {
-    class Fly_Camera3D : public Camera3D {
+namespace nate::Modules::Render
+{
+    class Fly_Camera3D : public Camera3D
+    {
         GUI::KeyMapping m_PanUpMap;
         GUI::KeyMapping m_PanDownMap;
         GUI::KeyMapping m_PanLeftMap;

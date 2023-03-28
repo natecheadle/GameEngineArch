@@ -10,11 +10,12 @@
 #include <future>
 #include <map>
 #include <mutex>
-#include <shared_mutex>
 
-namespace nate::Modules::Messaging {
+namespace nate::Modules::Messaging
+{
     template <class ID_T, class MUTEX = NullMutex>
-    class MessagePump {
+    class MessagePump
+    {
         std::map<ID_T, MessageSubscribers<ID_T, MUTEX>> m_MessagesSubcriptions;
         MUTEX                                           m_SubscriberMutex;
 
@@ -28,7 +29,7 @@ namespace nate::Modules::Messaging {
 
         void PushMessageSync(const Message<ID_T>* pMessage)
         {
-            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
 
             auto it = m_MessagesSubcriptions.find(pMessage->ID());
             if (it == m_MessagesSubcriptions.end())

@@ -17,8 +17,10 @@
 #include <memory>
 #include <string>
 
-namespace nate::Modules::Debug::Logging {
-    class LogManager : public ILogManager {
+namespace nate::Modules::Debug::Logging
+{
+    class LogManager : public ILogManager
+    {
         std::map<std::string, std::unique_ptr<Logger>> m_Loggers;
         std::shared_ptr<spdlog::sinks::dist_sink_mt>   m_Sink;
 

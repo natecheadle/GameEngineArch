@@ -12,10 +12,12 @@
 #include <memory>
 #include <string>
 
-namespace nate::Modules::GUI {
+namespace nate::Modules::GUI
+{
 
     using WindowMessage = Messaging::Message<WindowMessages>;
-    class IWindow {
+    class IWindow
+    {
       public:
         IWindow()          = default;
         virtual ~IWindow() = default;

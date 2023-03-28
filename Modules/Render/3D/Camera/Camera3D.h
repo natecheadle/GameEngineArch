@@ -11,8 +11,10 @@
 #include <chrono>
 #include <functional>
 
-namespace nate::Modules::Render {
-    class Camera3D {
+namespace nate::Modules::Render
+{
+    class Camera3D
+    {
         Matrix4x4     m_View;
         float         m_FieldOfView;
         float         m_Near;

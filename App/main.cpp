@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -49,7 +50,7 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 
 class TestApp : public App::App
 {
-    std::shared_mutex                     m_CallbackMutex;
+    std::mutex                            m_CallbackMutex;
     GUI::MouseClickedInfo                 m_LastMouseClick;
     GUI::CursorPosition                   m_LastPosition;
     GUI::WindowSize                       m_WindowSize;
@@ -67,7 +68,7 @@ class TestApp : public App::App
             this,
             GUI::WindowMessages::MouseClicked,
             [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+                std::unique_lock<std::mutex> lock(m_CallbackMutex);
 
                 m_LastMouseClick = *(DebugCast<const GUI::MouseClicked*>(pMessage)->GetData());
             });
@@ -75,7 +76,7 @@ class TestApp : public App::App
             this,
             GUI::WindowMessages::WindowResized,
             [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+                std::unique_lock<std::mutex> lock(m_CallbackMutex);
 
                 m_WindowSize = *(DebugCast<const GUI::WindowResized*>(pMessage)->GetData());
             });
@@ -108,6 +109,7 @@ class TestApp : public App::App
 
     void UpdateApp(std::chrono::nanoseconds /*time*/) override
     {
+        std::cout << "UpdateApp()\n";
         GetRenderer()->AttachCamera(m_pCamera);
         GetRenderer()->RenderObject(m_pCube);
     }

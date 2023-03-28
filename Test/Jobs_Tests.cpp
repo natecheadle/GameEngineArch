@@ -7,9 +7,11 @@
 #include <thread>
 #include <variant>
 
-namespace nate::Test {
+namespace nate::Test
+{
 
-    class TestJob : public Modules::Jobs::Job {
+    class TestJob : public Modules::Jobs::Job
+    {
         std::vector<int>::const_iterator m_CurLoc;
         std::vector<int>::const_iterator m_End;
 

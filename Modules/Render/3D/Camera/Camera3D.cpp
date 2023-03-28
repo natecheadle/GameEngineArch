@@ -12,8 +12,10 @@
 #include <bx/math.h>
 
 #include <cassert>
+#include <chrono>
 
-namespace nate::Modules::Render {
+namespace nate::Modules::Render
+{
     Camera3D::Camera3D(GUI::IWindow* pWindow)
         : m_FieldOfView(60.0)
         , m_Near(0.1)
@@ -62,21 +64,18 @@ namespace nate::Modules::Render {
     void Camera3D::OnMouseClicked(const GUI::WindowMessage* pMessage)
     {
         const auto* pMouseClick = DebugCast<const GUI::MouseClicked*>(pMessage);
-        assert(pMouseClick->GetData());
         OnMouseClicked(*pMouseClick->GetData());
     }
 
     void Camera3D::OnKeyPressed(const GUI::WindowMessage* pMessage)
     {
         const auto* pKeyPressed = DebugCast<const GUI::KeyPressed*>(pMessage);
-        assert(pKeyPressed->GetData());
         OnKeyPressed(*pKeyPressed->GetData());
     }
 
     void Camera3D::OnWindowResized(const GUI::WindowMessage* pMessage)
     {
         const auto* pResized = DebugCast<const GUI::WindowResized*>(pMessage);
-        assert(pResized->GetData());
         OnWindowResized(*pResized->GetData());
     }
 
