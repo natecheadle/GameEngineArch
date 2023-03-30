@@ -63,7 +63,7 @@ namespace nate::Modules::Messaging
 
         bool Subscribe(void* subscriber, ID_T messageID, std::function<void(const Message<ID_T>* msg)> callback)
         {
-            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
             auto                    it = m_MessagesSubcriptions.find(messageID);
             if (it == m_MessagesSubcriptions.end())
             {
@@ -101,7 +101,7 @@ namespace nate::Modules::Messaging
 
         bool IsSubscribed(void* subscriber, ID_T messageID)
         {
-            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
 
             auto it = m_MessagesSubcriptions.find(messageID);
             if (it != m_MessagesSubcriptions.end())

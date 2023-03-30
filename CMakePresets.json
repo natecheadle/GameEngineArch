@@ -31,25 +31,13 @@
       }
     },
     {
-      "name": "OSX-GCC",
-      "hidden": true,
-      "inherits": "OSX-Only",
-      "displayName": "OSX-GCC-Base",
-      "description": "OSX Configuration Using GCC",
-      "cacheVariables": {
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/x64-osx-gcc.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-osx-gcc"
-      }
-    },
-    {
       "name": "OSX-LLVM",
       "hidden": true,
       "inherits": "OSX-Only",
       "displayName": "OSX-LLVM-Base",
       "description": "OSX Configuration Using LLVM",
       "cacheVariables": {
-        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/x64-osx-llvm.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-osx-llvm"
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm"
       }
     },
     {
@@ -60,7 +48,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "BUILD_COVERAGE": "ON",
-        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Debug/vcpkg_installed/x64-osx-llvm/tools/bgfx/"
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Debug/vcpkg_installed/arm64-osx-llvm/tools/bgfx/"
       }
     },
     {
@@ -71,27 +59,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "BUILD_COVERAGE": "OFF",
-        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Debug/vcpkg_installed/x64-osx-llvm/tools/bgfx/"
-      }
-    },
-    {
-      "name": "OSX-GCC-Debug",
-      "displayName": "Mac GCC Debug Configuration",
-      "inherits": "OSX-GCC",
-      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "BUILD_COVERAGE": "ON"
-      }
-    },
-    {
-      "name": "OSX-GCC-Release",
-      "displayName": "Mac GCC Release Configuration",
-      "inherits": "OSX-GCC",
-      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "BUILD_COVERAGE": "OFF"
+        "BGFX_TOOLS_BIN": "${sourceDir}/out/build/Desktop/LLVM/Release/vcpkg_installed/arm64-osx-llvm/tools/bgfx/"
       }
     },
     {

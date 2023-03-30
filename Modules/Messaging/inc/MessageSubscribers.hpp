@@ -7,9 +7,11 @@
 #include <mutex>
 #include <shared_mutex>
 
-namespace nate::Modules::Messaging {
+namespace nate::Modules::Messaging
+{
     template <class ID_T, class MUTEX>
-    class MessageSubscribers {
+    class MessageSubscribers
+    {
         std::map<void*, std::function<void(const Message<ID_T>* msg)>> m_Subscribers;
         MUTEX                                                          m_SubscriberMutex;
 
@@ -56,13 +58,13 @@ namespace nate::Modules::Messaging {
 
         bool IsSubscribed(void* subscriber)
         {
-            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
             return m_Subscribers.find(subscriber) != m_Subscribers.end();
         }
 
         void PushMessage(const Message<ID_T>* msg)
         {
-            std::shared_lock<MUTEX> lock(m_SubscriberMutex);
+            std::unique_lock<MUTEX> lock(m_SubscriberMutex);
             for (auto& subscriber : m_Subscribers)
             {
                 subscriber.second(msg);
