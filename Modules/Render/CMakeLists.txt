@@ -23,7 +23,7 @@ add_library(${PROJECT_NAME} STATIC
 find_package(bgfx CONFIG REQUIRED)
 find_package(Boost REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC bgfx::bgfx)
+target_link_libraries(${PROJECT_NAME} PUBLIC bgfx::bgfx Modules_Generic)
 target_link_libraries(${PROJECT_NAME} PRIVATE Modules_GUI Modules_Jobs bgfx::bx Modules_Generic Boost::boost)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,5 +1,6 @@
 #include "Window_GLFW.h"
 
+#include "IWindow.h"
 #include "KeyModifiers.hpp"
 #include "KeyPressedInfo.hpp"
 #include "Keys.h"
@@ -7,7 +8,10 @@
 #include "Messages/MouseClicked.hpp"
 #include "Messages/WindowClosed.hpp"
 #include "Messages/WindowResized.hpp"
+#include "WindowMessages.hpp"
 #include "WindowSize.hpp"
+
+#include <DebugCast.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -84,10 +88,15 @@ namespace nate::Modules::GUI
                  MouseClicked mouseClicked(&m_MessageData.MouseClickInfo);
                  m_MessagePump.PushMessageSync(&mouseClicked);
              }});
+
+        SubscribeToMessage(this, WindowMessages::KeyPressed, [this](const GUI::WindowMessage* pMesssage) {
+            OnKeyPressed(pMesssage);
+        });
     }
 
     Window_GLFW::~Window_GLFW()
     {
+        Unsubscribe(this);
         auto* pWindow = m_pWindow;
         m_pWindow     = nullptr;
         KeyPressCallbacks.erase(m_pWindow);
@@ -195,6 +204,30 @@ namespace nate::Modules::GUI
         int height{0};
         glfwGetWindowSize(m_pWindow, &width, &height);
         return WindowSize(width, height);
+    }
+
+    void Window_GLFW::InitializeKeyStates(KeyStateMap& val) const
+    {
+        for (auto& key : val)
+        {
+            key.second.first = QueryKeyState(key.first);
+            if (key.second.first == KeyState::Repeat)
+            {
+                key.second.first = KeyState::Pressed;
+            }
+        }
+    }
+
+    void Window_GLFW::OnKeyPressed(const GUI::WindowMessage* pMessage)
+    {
+        const auto* pKeyPressed = DebugCast<const GUI::KeyPressed*>(pMessage);
+
+        m_KeyStates.execute(
+            [pKeyPressed](StaticMap<Key, Key::None, Key::LAST, std::pair<KeyState, KeyModifiers>>& val) -> void {
+                val[pKeyPressed->GetData()->Key()] = {
+                    pKeyPressed->GetData()->KeyState(),
+                    pKeyPressed->GetData()->KeyMods()};
+            });
     }
 
     void Window_GLFW::KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods)

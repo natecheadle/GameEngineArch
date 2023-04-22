@@ -2,20 +2,33 @@
 #include "Keys.h"
 
 #include <array>
+#include <functional>
 #include <utility>
 
-namespace nate::Modules::GUI {
-    class KeyMapping {
+namespace nate::Modules::GUI
+{
+    class KeyMapping
+    {
         MouseButton                                 m_MouseClickMapping{MouseButton::None};
         std::array<std::pair<Key, KeyModifiers>, 2> m_KeyMappings{
             {{Key::None, KeyModifiers()}, {Key::None, KeyModifiers()}}
         };
 
+        std::function<void()> m_ExecuteKeyMappingEvent;
+
       public:
-        KeyMapping() = default;
-        KeyMapping(MouseButton mouseClickMapping, const std::array<std::pair<Key, KeyModifiers>, 2>& keyMappings)
+        KeyMapping(std::function<void()> keyEventFunc)
+            : m_ExecuteKeyMappingEvent(std::move(keyEventFunc))
+        {
+        }
+
+        KeyMapping(
+            MouseButton                                        mouseClickMapping,
+            const std::array<std::pair<Key, KeyModifiers>, 2>& keyMappings,
+            std::function<void()>                              keyEventFunc)
             : m_MouseClickMapping(mouseClickMapping)
             , m_KeyMappings(keyMappings)
+            , m_ExecuteKeyMappingEvent(std::move(keyEventFunc))
         {
         }
 
@@ -33,5 +46,8 @@ namespace nate::Modules::GUI {
                    (m_KeyMappings[1].first != Key::None && m_KeyMappings[1].first == key &&
                     m_KeyMappings[1].second == mods);
         }
+
+        void AttachKeyEvent(std::function<void()> func) { m_ExecuteKeyMappingEvent = std::move(func); }
+        void ExecuteKeyEvent() const { m_ExecuteKeyMappingEvent(); }
     };
 } // namespace nate::Modules::GUI

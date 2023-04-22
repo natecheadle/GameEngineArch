@@ -107,9 +107,11 @@ class TestApp : public App::App
         m_pCube.reset();
     }
 
-    void UpdateApp(std::chrono::nanoseconds /*time*/) override
+    void UpdateApp(std::chrono::nanoseconds time) override
     {
         std::cout << "UpdateApp()\n";
+        // TODO this should be handled automatically
+        m_pCamera->Update(time);
         GetRenderer()->AttachCamera(m_pCamera);
         GetRenderer()->RenderObject(m_pCube);
     }

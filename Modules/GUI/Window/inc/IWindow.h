@@ -7,6 +7,7 @@
 #include "WindowSize.hpp"
 
 #include <Message.hpp>
+#include <StaticMap.hpp>
 
 #include <functional>
 #include <memory>
@@ -15,6 +16,7 @@
 namespace nate::Modules::GUI
 {
 
+    using KeyStateMap   = StaticMap<Key, Key::None, Key::LAST, std::pair<KeyState, KeyModifiers>>;
     using WindowMessage = Messaging::Message<WindowMessages>;
     class IWindow
     {
@@ -42,6 +44,7 @@ namespace nate::Modules::GUI
         virtual KeyState       QueryKeyState(Key key) const = 0;
         virtual WindowSize     QueryWindowSize() const      = 0;
 
-      private:
+        virtual std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const             = 0;
+        virtual void ExecuteWithKeyStates(std::function<void(const KeyStateMap&)> exe) const = 0;
     };
 } // namespace nate::Modules::GUI

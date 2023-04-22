@@ -9,9 +9,12 @@
 #include "WindowSize.hpp"
 
 #include <DebugMutex.hpp>
+#include <MutexProtected.hpp>
+#include <StaticMap.hpp>
 
 #include <atomic>
 #include <map>
+#include <mutex>
 
 typedef struct GLFWwindow GLFWwindow;
 namespace nate::Modules::GUI
@@ -37,6 +40,8 @@ namespace nate::Modules::GUI
             MouseClickedInfo MouseClickInfo;
         } m_MessageData{WindowSize(0, 0)};
         DebugMutex m_MessageDataMutex;
+
+        MutexProtected<std::mutex, KeyStateMap> m_KeyStates;
 
       public:
         Window_GLFW(const WindowSize& size, std::string name);
@@ -66,7 +71,22 @@ namespace nate::Modules::GUI
         KeyState       QueryKeyState(Key key) const override;
         WindowSize     QueryWindowSize() const override;
 
+        std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const override
+        {
+            return m_KeyStates.execute<std::pair<KeyState, KeyModifiers>>(
+                [key](const StaticMap<Key, Key::None, Key::LAST, std::pair<KeyState, KeyModifiers>>& val)
+                    -> std::pair<KeyState, KeyModifiers> { return val[key]; });
+        }
+
+        void ExecuteWithKeyStates(std::function<void(const KeyStateMap&)> exe) const override
+        {
+            m_KeyStates.execute(exe);
+        }
+
       private:
+        void InitializeKeyStates(KeyStateMap& val) const;
+        void OnKeyPressed(const GUI::WindowMessage* pMessage);
+
         static void KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods);
         static void OnCloseCallback(GLFWwindow* pWindow);
         static void OnMouseClickCallback(GLFWwindow* pWindow, int button, int action, int mods);

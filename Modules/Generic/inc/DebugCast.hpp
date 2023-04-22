@@ -1,6 +1,9 @@
+#pragma once
+
 #include <cassert>
 
-namespace nate::Modules {
+namespace nate::Modules
+{
     template <typename D_T, typename B_T>
     D_T DebugCast(B_T pBase)
     {

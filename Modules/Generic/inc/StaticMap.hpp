@@ -1,3 +1,5 @@
+#pragma once
+
 #include <array>
 #include <iterator>
 #include <type_traits>
@@ -71,8 +73,11 @@ namespace nate::Modules
             return *this;
         }
 
-        VALUE&       operator[](KEY key) { return m_Data[static_cast<size_t>(key - Begin)].second; }
-        const VALUE& operator[](KEY key) const { return m_Data[static_cast<size_t>(key - Begin)].second; }
+        VALUE& operator[](KEY key) { return m_Data[static_cast<size_t>(key) - static_cast<size_t>(Begin)].second; }
+        const VALUE& operator[](KEY key) const
+        {
+            return m_Data[static_cast<size_t>(key) - static_cast<size_t>(Begin)].second;
+        }
 
         VALUE&       at(KEY key) { return (*this)[key]; }
         const VALUE& at(KEY key) const { return (*this)[key]; }
