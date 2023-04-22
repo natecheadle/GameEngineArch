@@ -19,10 +19,10 @@ namespace nate::Modules
         DATA_T m_Data;
 
       public:
-        using iterator               = DATA_T::iterator;
-        using const_iterator         = DATA_T::const_iterator;
-        using reverse_iterator       = DATA_T::reverse_iterator;
-        using const_reverse_iterator = DATA_T::const_reverse_iterator;
+        using iterator               = typename DATA_T::iterator;
+        using const_iterator         = typename DATA_T::const_iterator;
+        using reverse_iterator       = typename DATA_T::reverse_iterator;
+        using const_reverse_iterator = typename DATA_T::const_reverse_iterator;
 
         StaticMap(VALUE init = VALUE())
         {
