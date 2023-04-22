@@ -232,22 +232,11 @@ namespace nate::Modules::GUI
 
     void Window_GLFW::KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
     {
-        if (action == GLFW_REPEAT)
-        {
-            std::cout << "Received GLFW_REPEAT\n";
-        }
-
-        auto begin = std::chrono::high_resolution_clock::now();
-
         auto it = KeyPressCallbacks.find(pWindow);
         if (it != KeyPressCallbacks.end())
         {
             it->second(key, scancode, action, mods);
         }
-
-        auto end   = std::chrono::high_resolution_clock::now();
-        auto delta = std::chrono::duration<double>(end - begin);
-        std::cout << "Key pressed callback took " << delta.count() << " seconds.\n";
     }
     void Window_GLFW::OnCloseCallback(GLFWwindow* pWindow)
     {
