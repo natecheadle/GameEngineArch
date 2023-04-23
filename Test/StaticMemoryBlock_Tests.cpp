@@ -1,4 +1,5 @@
 #include <Logging/LogManager.h>
+#include <PoolMemoryBlock.hpp>
 #include <StaticFreeMemoryBlock.hpp>
 #include <StaticLinearMemoryBlock.hpp>
 #include <StaticPoolMemoryBlock.hpp>
@@ -109,7 +110,7 @@ namespace nate::Test
         ASSERT_EQ(nullptr, myObject);
     }
 
-    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
+    TEST(StaticMemoryBlock_Tests, ValidateStaticPoolMemoryBlockBasicCreateDelete)
     {
         Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
 
@@ -134,7 +135,7 @@ namespace nate::Test
         myObject2->Validate(50, *myObject2);
     }
 
-    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
+    TEST(StaticMemoryBlock_Tests, ValidateStaticPoolMemoryExceedSize)
     {
         Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
 
@@ -145,6 +146,58 @@ namespace nate::Test
         objects.reserve(maxObjects);
 
         for (size_t i = 0; i < maxObjects; ++i)
+        {
+            Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10 * i);
+            TestObject<2>::Validate(10 * i, *myObject);
+            ASSERT_EQ((i + 1) * sizeof(TestObject<2>), memBlock.UsedSize());
+
+            objects.push_back(std::move(myObject));
+        }
+
+        Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10);
+        ASSERT_EQ(nullptr, myObject);
+
+        ASSERT_NO_THROW(objects.clear());
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
+    {
+        size_t                                 poolSize{64};
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(poolSize);
+
+        Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10);
+        myObject->Validate(10, *myObject);
+        {
+
+            Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(20);
+            myObject1->Validate(20, *myObject1);
+            Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(30);
+            myObject2->Validate(30, *myObject2);
+        }
+        ASSERT_EQ(sizeof(TestObject<2>), memBlock.UsedSize());
+
+        Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(40);
+        myObject1->Validate(40, *myObject1);
+        Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(50);
+        myObject2->Validate(50, *myObject2);
+
+        myObject->Validate(10, *myObject);
+        myObject1->Validate(40, *myObject1);
+        myObject2->Validate(50, *myObject2);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
+    {
+        size_t                                 dataSize{64};
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(dataSize);
+
+        std::vector<Memory::unique_ptr<TestObject<2>>> objects;
+
+        objects.reserve(dataSize);
+
+        for (size_t i = 0; i < dataSize; ++i)
         {
             Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10 * i);
             TestObject<2>::Validate(10 * i, *myObject);
