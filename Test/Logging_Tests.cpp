@@ -10,9 +10,11 @@
 
 using namespace nate::Modules::Debug;
 
-namespace nate::Test {
+namespace nate::Test
+{
 
-    class Logging_Tests : public testing::Test {
+    class Logging_Tests : public testing::Test
+    {
       protected:
         std::unique_ptr<Logging::ILogManager> logManager{nullptr};
         Logging::ILogger*                     pLogger{nullptr};

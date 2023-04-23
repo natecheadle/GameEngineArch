@@ -6,9 +6,11 @@
 #include <future>
 #include <mutex>
 
-namespace nate::Modules::Jobs {
+namespace nate::Modules::Jobs
+{
 
-    class Job {
+    class Job
+    {
         std::future<void> m_Job;
         std::atomic<bool> m_ShouldStop{false};
         std::atomic<bool> m_ShouldPause{false};

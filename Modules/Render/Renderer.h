@@ -18,7 +18,6 @@
 #include <memory>
 #include <mutex>
 #include <queue>
-#include <shared_mutex>
 #include <thread>
 
 namespace nate::Modules::Render

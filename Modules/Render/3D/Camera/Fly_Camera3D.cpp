@@ -1,13 +1,26 @@
 #include "Fly_Camera3D.h"
 
 #include "3D/Camera/Camera3D.h"
+#include "IWindow.h"
 #include "KeyModifiers.hpp"
 #include "KeyPressedInfo.hpp"
 #include "Keys.h"
 
-namespace nate::Modules::Render {
+#include <functional>
+
+namespace nate::Modules::Render
+{
     Fly_Camera3D::Fly_Camera3D(GUI::IWindow* pWindow)
         : Camera3D(pWindow)
+        , m_PanUpMap([this]() { PanUp(); })
+        , m_PanDownMap([this]() { PanDown(); })
+        , m_PanLeftMap([this]() { PanLeft(); })
+        , m_PanRightMap([this]() { PanRight(); })
+        , m_RotatePitchMap([this]() { RotatePitch(); })
+        , m_RotateYawMap([this]() { RotateYaw(); })
+        , m_RotateRollMap([this]() { RotateRoll(); })
+        , m_ZoomInMap([this]() { ZoomIn(); })
+        , m_ZoomOutMap([this]() { ZoomOut(); })
     {
         m_PanUpMap.KeyMappings({
             {{GUI::Key::W, GUI::KeyModifiers()}, {GUI::Key::Up, GUI::KeyModifiers()}}
@@ -82,46 +95,36 @@ namespace nate::Modules::Render {
         Translate({0, 0, -value});
     }
 
-    void Fly_Camera3D::OnKeyPressed(const GUI::KeyPressedInfo& value)
+    void Fly_Camera3D::Update(std::chrono::nanoseconds /* time */)
     {
-        GUI::Key          key  = value.Key();
-        GUI::KeyModifiers mods = value.KeyMods();
+        Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
+    }
 
-        if (m_PanDownMap.IsMappedKey(key, mods))
-        {
-            PanDown();
-        }
-        if (m_PanUpMap.IsMappedKey(key, mods))
-        {
-            PanUp();
-        }
-        if (m_PanLeftMap.IsMappedKey(key, mods))
-        {
-            PanLeft();
-        }
-        if (m_PanRightMap.IsMappedKey(key, mods))
-        {
-            PanRight();
-        }
-        if (m_RotatePitchMap.IsMappedKey(key, mods))
-        {
-            RotatePitch();
-        }
-        if (m_RotateRollMap.IsMappedKey(key, mods))
-        {
-            RotateRoll();
-        }
-        if (m_RotateYawMap.IsMappedKey(key, mods))
-        {
-            RotateYaw();
-        }
-        if (m_ZoomInMap.IsMappedKey(key, mods))
-        {
-            ZoomIn();
-        }
-        if (m_ZoomOutMap.IsMappedKey(key, mods))
-        {
-            ZoomOut();
-        }
+    void Fly_Camera3D::ExecuteKeyMappings(const GUI::KeyStateMap& keyStates)
+    {
+        auto mappingUpdate = [keyStates](const GUI::KeyMapping& mappings) -> void {
+            for (const auto& mapping : mappings.KeyMappings())
+            {
+                if ((keyStates[mapping.first].first == GUI::KeyState::Pressed ||
+                     keyStates[mapping.first].first == GUI::KeyState::Repeat) &&
+                    keyStates[mapping.first].second == mapping.second)
+                {
+                    mappings.ExecuteKeyEvent();
+                    return;
+                }
+            }
+        };
+
+        mappingUpdate(m_PanUpMap);
+        mappingUpdate(m_PanDownMap);
+        mappingUpdate(m_PanLeftMap);
+        mappingUpdate(m_PanRightMap);
+
+        mappingUpdate(m_RotatePitchMap);
+        mappingUpdate(m_RotateYawMap);
+        mappingUpdate(m_RotateRollMap);
+
+        mappingUpdate(m_ZoomInMap);
+        mappingUpdate(m_ZoomOutMap);
     }
 } // namespace nate::Modules::Render

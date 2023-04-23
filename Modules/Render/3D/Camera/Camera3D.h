@@ -3,6 +3,7 @@
 #include "3D/Vector3D.hpp"
 #include "IWindow.h"
 #include "KeyPressedInfo.hpp"
+#include "Keys.h"
 #include "Matrix4x4.h"
 #include "MouseClickedInfo.hpp"
 #include "WindowMessages.hpp"
@@ -11,17 +12,15 @@
 #include <chrono>
 #include <functional>
 
-namespace nate::Modules::Render {
-    class Camera3D {
+namespace nate::Modules::Render
+{
+    class Camera3D
+    {
         Matrix4x4     m_View;
         float         m_FieldOfView;
         float         m_Near;
         float         m_Far;
         GUI::IWindow* m_pWindow;
-
-        GUI::WindowSize       m_LastWindowSize;
-        GUI::MouseClickedInfo m_LastMouseClickedInfo;
-        GUI::KeyPressedInfo   m_LastKeyPressedInfo;
 
       public:
         virtual ~Camera3D();
@@ -49,20 +48,6 @@ namespace nate::Modules::Render {
         float FieldOfView() const { return m_FieldOfView; }
         void  FieldOfView(float value) { m_FieldOfView = value; }
 
-        const GUI::MouseClickedInfo& GetLastMouseClickInfo() const { return m_LastMouseClickedInfo; }
-        virtual void OnMouseClicked(const GUI::MouseClickedInfo& value) { m_LastMouseClickedInfo = value; }
-
-        const GUI::KeyPressedInfo& GetLastKeyPressedInfo() const { return m_LastKeyPressedInfo; }
-        virtual void               OnKeyPressed(const GUI::KeyPressedInfo& value) { m_LastKeyPressedInfo = value; }
-
-        const GUI::WindowSize& GetLastWindowSize() const { return m_LastWindowSize; }
-        virtual void           OnWindowResized(const GUI::WindowSize& value) { m_LastWindowSize = value; }
-
-      private:
-        void SubscribeToMessage(GUI::WindowMessages message, std::function<void(const GUI::WindowMessage*)> callback);
-
-        void OnMouseClicked(const GUI::WindowMessage* pMessage);
-        void OnKeyPressed(const GUI::WindowMessage* pMessage);
-        void OnWindowResized(const GUI::WindowMessage* pMessage);
+        const GUI::IWindow* Window() const { return m_pWindow; }
     };
 } // namespace nate::Modules::Render

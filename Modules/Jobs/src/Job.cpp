@@ -3,7 +3,8 @@
 #include <exception>
 #include <mutex>
 
-namespace nate::Modules::Jobs {
+namespace nate::Modules::Jobs
+{
     Job::~Job()
     {
         std::unique_lock<std::mutex> lock(m_YieldMutex);

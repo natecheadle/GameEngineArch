@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -43,13 +44,11 @@ void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
 {
     assert(pMessage->ID() == GUI::WindowMessages::WindowResized);
     const auto* pResized = DebugCast<const GUI::WindowResized*>(pMessage);
-    std::cout << "Window Resized...New Width = " << pResized->GetData()->Width()
-              << " New Height = " << pResized->GetData()->Height() << "\r\n";
 }
 
 class TestApp : public App::App
 {
-    std::shared_mutex                     m_CallbackMutex;
+    std::mutex                            m_CallbackMutex;
     GUI::MouseClickedInfo                 m_LastMouseClick;
     GUI::CursorPosition                   m_LastPosition;
     GUI::WindowSize                       m_WindowSize;
@@ -67,7 +66,7 @@ class TestApp : public App::App
             this,
             GUI::WindowMessages::MouseClicked,
             [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+                std::unique_lock<std::mutex> lock(m_CallbackMutex);
 
                 m_LastMouseClick = *(DebugCast<const GUI::MouseClicked*>(pMessage)->GetData());
             });
@@ -75,7 +74,7 @@ class TestApp : public App::App
             this,
             GUI::WindowMessages::WindowResized,
             [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::shared_mutex> lock(m_CallbackMutex);
+                std::unique_lock<std::mutex> lock(m_CallbackMutex);
 
                 m_WindowSize = *(DebugCast<const GUI::WindowResized*>(pMessage)->GetData());
             });
@@ -106,8 +105,10 @@ class TestApp : public App::App
         m_pCube.reset();
     }
 
-    void UpdateApp(std::chrono::nanoseconds /*time*/) override
+    void UpdateApp(std::chrono::nanoseconds time) override
     {
+        // TODO this should be handled automatically
+        m_pCamera->Update(time);
         GetRenderer()->AttachCamera(m_pCamera);
         GetRenderer()->RenderObject(m_pCube);
     }

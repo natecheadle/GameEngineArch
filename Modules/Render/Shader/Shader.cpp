@@ -10,7 +10,8 @@
 #include <stdexcept>
 #include <system_error>
 
-namespace nate::Modules::Render {
+namespace nate::Modules::Render
+{
 
     Shader::Shader(std::filesystem::path shadersPath)
         : m_Path(std::move(shadersPath))

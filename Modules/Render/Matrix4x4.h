@@ -4,10 +4,12 @@
 
 #include <array>
 
-namespace nate::Modules::Render {
+namespace nate::Modules::Render
+{
 
     using MatrixData = std::array<float, 16>;
-    class Matrix4x4 {
+    class Matrix4x4
+    {
 
         MatrixData m_Data;
 

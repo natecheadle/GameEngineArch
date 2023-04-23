@@ -2,7 +2,8 @@
 
 #include "LogManager.h"
 
-namespace nate::Modules::Debug::Logging {
+namespace nate::Modules::Debug::Logging
+{
     Logger::Logger(ILogManager* pManager, const std::string& moduleName, spdlog::sink_ptr sink)
         : m_pManager(pManager)
     {
@@ -17,15 +18,30 @@ namespace nate::Modules::Debug::Logging {
         m_Logger->set_level(spdlog::level::level_enum::trace);
     }
 
-    const std::string& Logger::GetModuleName() const { return m_Logger->name(); }
+    const std::string& Logger::GetModuleName() const
+    {
+        return m_Logger->name();
+    }
 
-    void Logger::PushErrorLog(std::string_view value) const { m_Logger->error(value); }
+    void Logger::PushErrorLog(std::string_view value) const
+    {
+        m_Logger->error(value);
+    }
 
-    void Logger::PushWarningLog(std::string_view value) const { m_Logger->warn(value); }
+    void Logger::PushWarningLog(std::string_view value) const
+    {
+        m_Logger->warn(value);
+    }
 
-    void Logger::PushDebugLog(std::string_view value) const { m_Logger->debug(value); }
+    void Logger::PushDebugLog(std::string_view value) const
+    {
+        m_Logger->debug(value);
+    }
 
-    void Logger::PushTraceLog(std::string_view value) const { m_Logger->trace(value); }
+    void Logger::PushTraceLog(std::string_view value) const
+    {
+        m_Logger->trace(value);
+    }
 
     void Logger::PushLog(LogLevel level, std::string_view value) const
     {
@@ -51,6 +67,9 @@ namespace nate::Modules::Debug::Logging {
         }
     }
 
-    void Logger::Flush() const { m_Logger->flush(); }
+    void Logger::Flush() const
+    {
+        m_Logger->flush();
+    }
 
 } // namespace nate::Modules::Debug::Logging

@@ -9,7 +9,8 @@
 
 using namespace nate::Modules;
 
-namespace nate::Test {
+namespace nate::Test
+{
     enum class MessageID
     {
         DoA,
@@ -41,11 +42,12 @@ namespace nate::Test {
 
     using TestMessage          = Messaging::Message<MessageID>;
     using TestPump_ST          = Messaging::MessagePump<MessageID>;
-    using TestPump_MT          = Messaging::MessagePump<MessageID, std::shared_mutex>;
+    using TestPump_MT          = Messaging::MessagePump<MessageID, std::mutex>;
     using TestLargeDataMessage = Messaging::LargeDataMessage<MessageID, TestData>;
     using TestSmallDataMessage = Messaging::SmallDataMessage<MessageID, std::int64_t>;
 
-    class MessagePump_Tests : public testing::Test {
+    class MessagePump_Tests : public testing::Test
+    {
       protected:
         TestPump_MT m_MessagePump;
 

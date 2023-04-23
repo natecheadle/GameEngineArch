@@ -4,9 +4,17 @@
 #include "Camera3D.h"
 #include "IWindow.h"
 #include "KeyMapping.hpp"
+#include "KeyModifiers.hpp"
+#include "Keys.h"
 
-namespace nate::Modules::Render {
-    class Fly_Camera3D : public Camera3D {
+#include <StaticMap.hpp>
+
+#include <vector>
+
+namespace nate::Modules::Render
+{
+    class Fly_Camera3D : public Camera3D
+    {
         GUI::KeyMapping m_PanUpMap;
         GUI::KeyMapping m_PanDownMap;
         GUI::KeyMapping m_PanLeftMap;
@@ -76,8 +84,7 @@ namespace nate::Modules::Render {
         void ZoomIn(float value);
         void ZoomOut(float value);
 
-      protected:
-        void OnKeyPressed(const GUI::KeyPressedInfo& value) override;
+        void Update(std::chrono::nanoseconds /* time */) override;
 
       private:
         void PanUp() { PanUp(m_PanSpeed); }
@@ -91,5 +98,7 @@ namespace nate::Modules::Render {
 
         void ZoomIn() { ZoomIn(m_ZoomSpeed); }
         void ZoomOut() { ZoomOut(m_ZoomSpeed); }
+
+        void ExecuteKeyMappings(const GUI::KeyStateMap& keyStates);
     };
 } // namespace nate::Modules::Render

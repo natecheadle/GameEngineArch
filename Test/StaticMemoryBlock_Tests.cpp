@@ -13,14 +13,17 @@
 #include <vector>
 
 using namespace nate::Modules;
-namespace nate::Test {
-    namespace {
+namespace nate::Test
+{
+    namespace
+    {
         constexpr size_t MemorySize = 1024;
         std::uint8_t     MemoryBuffer[1024];
     } // namespace
 
     template <size_t SIZE>
-    class TestObject {
+    class TestObject
+    {
         std::array<size_t, SIZE> m_Value;
 
       public:

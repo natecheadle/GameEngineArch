@@ -15,7 +15,6 @@
 #include <exception>
 #include <memory>
 #include <mutex>
-#include <shared_mutex>
 #include <stdexcept>
 #include <thread>
 

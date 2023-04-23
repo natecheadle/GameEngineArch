@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-namespace nate::Modules::GUI {
+namespace nate::Modules::GUI
+{
     enum class MouseButton : std::uint16_t
     {
         None,
