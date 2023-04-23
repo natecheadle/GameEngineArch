@@ -1,4 +1,4 @@
-#include <LogManager.h>
+#include <Logging/LogManager.h>
 #include <StaticFreeMemoryBlock.hpp>
 #include <StaticLinearMemoryBlock.hpp>
 #include <StaticPoolMemoryBlock.hpp>
@@ -35,7 +35,7 @@ namespace nate::Test
             }
         }
 
-        ~TestObject() { std::memset(&m_Value[0], 0x00, sizeof(m_Value)); }
+        ~TestObject() { std::memset(m_Value.data(), 0x00, sizeof(m_Value)); }
 
         size_t                          GetValue(size_t loc) const { return m_Value.at(loc); }
         const std::array<size_t, SIZE>& GetValue() const { return m_Value; }
