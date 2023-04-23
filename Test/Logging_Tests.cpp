@@ -1,6 +1,6 @@
-#include <ILogBuffer.h>
-#include <ILogManager.h>
-#include <ILogger.h>
+#include <Logging/ILogBuffer.h>
+#include <Logging/ILogManager.h>
+#include <Logging/ILogger.h>
 
 #include <gtest/gtest.h>
 
