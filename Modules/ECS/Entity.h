@@ -4,6 +4,8 @@
 
 #include <UID.hpp>
 
+#include <memory>
+
 namespace nate::Modules::ECS
 {
     class Entity
@@ -33,7 +35,7 @@ namespace nate::Modules::ECS
         }
 
         template <class T>
-        Component<T> Get()
+        T* Get()
         {
         }
     };

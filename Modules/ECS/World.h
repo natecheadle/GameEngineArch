@@ -2,13 +2,10 @@
 
 #include "ComponentPool.h"
 
-#include <UID.hpp>
-
 namespace nate::Modules::ECS
 {
     class World
     {
-
       public:
         World()          = default;
         virtual ~World() = default;

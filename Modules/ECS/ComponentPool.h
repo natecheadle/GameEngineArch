@@ -32,6 +32,20 @@ namespace nate::Modules::ECS
         ComponentPool& operator=(const ComponentPool& other) = delete;
         ComponentPool& operator=(ComponentPool&& other)      = default;
 
+        T* GetT(std::uint64_t id) const
+        {
+            auto getComponent = [id](const std::map<std::uint64_t, std::shared_ptr<Component<T>>>& components)
+                -> std::shared_ptr<Component<T>> {
+                auto rslt = components.find(id);
+                if (rslt == components.end())
+                {
+                    return nullptr;
+                }
+                return rslt->second.get();
+            };
+            return m_EntityLookup.template execute<std::shared_ptr<Component<T>>>(getComponent);
+        }
+
         std::shared_ptr<Component<T>> GetComponent(std::uint64_t id) const
         {
             auto getComponent = [id](const std::map<std::uint64_t, std::shared_ptr<Component<T>>>& components)
