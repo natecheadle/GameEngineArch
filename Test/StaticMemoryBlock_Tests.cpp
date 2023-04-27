@@ -1,4 +1,5 @@
 #include <Logging/LogManager.h>
+#include <PoolMemoryBlock.hpp>
 #include <StaticFreeMemoryBlock.hpp>
 #include <StaticLinearMemoryBlock.hpp>
 #include <StaticPoolMemoryBlock.hpp>
@@ -27,6 +28,7 @@ namespace nate::Test
         std::array<size_t, SIZE> m_Value;
 
       public:
+        TestObject() { m_Value.fill(0); }
         TestObject(size_t val)
         {
             for (size_t i = 1; i <= m_Value.size(); ++i)
@@ -109,7 +111,7 @@ namespace nate::Test
         ASSERT_EQ(nullptr, myObject);
     }
 
-    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
+    TEST(StaticMemoryBlock_Tests, ValidateStaticPoolMemoryBlockBasicCreateDelete)
     {
         Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
 
@@ -134,7 +136,7 @@ namespace nate::Test
         myObject2->Validate(50, *myObject2);
     }
 
-    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
+    TEST(StaticMemoryBlock_Tests, ValidateStaticPoolMemoryExceedSize)
     {
         Memory::StaticPoolMemoryBlock<TestObject<2>, MemoryBuffer, MemorySize> memBlock;
 
@@ -159,6 +161,32 @@ namespace nate::Test
         ASSERT_NO_THROW(objects.clear());
 
         ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
+    {
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(8);
+
+        Memory::PoolPointer<TestObject<2>> myObject = memBlock.CreateObject<size_t>(10);
+
+        myObject->Validate(10, *myObject);
+        {
+
+            Memory::PoolPointer<TestObject<2>> myObject1 = memBlock.CreateObject<size_t>(20);
+            myObject1->Validate(20, *myObject1);
+            Memory::PoolPointer<TestObject<2>> myObject2 = memBlock.CreateObject<size_t>(30);
+            myObject2->Validate(30, *myObject2);
+        }
+        ASSERT_EQ(1, memBlock.UsedSize());
+
+        Memory::PoolPointer<TestObject<2>> myObject1 = memBlock.CreateObject<size_t>(40);
+        myObject1->Validate(40, *myObject1);
+        Memory::PoolPointer<TestObject<2>> myObject2 = memBlock.CreateObject<size_t>(50);
+        myObject2->Validate(50, *myObject2);
+
+        myObject->Validate(10, *myObject);
+        myObject1->Validate(40, *myObject1);
+        myObject2->Validate(50, *myObject2);
     }
 
     TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockBasicCreateDelete)
