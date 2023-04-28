@@ -96,7 +96,17 @@ namespace nate::Modules::Memory
         {
             // Pool is full
             if (m_FirstEmptyIndex == m_Data.size())
-                return PoolPointer<T>(m_Data.size(), nullptr);
+            {
+                size_t currentSize = m_Data.size();
+                m_Data.resize(currentSize * 2);
+                for (size_t i = currentSize; i < m_Data.size(); ++i)
+                {
+                    m_Data[i].IsEmpty        = true;
+                    m_Data[i - 1].NextObject = i;
+                    m_Data[i].PreviousObject = i - 1;
+                }
+                m_Data.back().NextObject = m_Data.size();
+            }
 
             size_t         newObjLocation = m_FirstEmptyIndex;
             PoolPointer<T> newObj(newObjLocation, this);

@@ -206,10 +206,11 @@ namespace nate::Test
 
             objects.push_back(std::move(myObject));
         }
-
-        Memory::PoolPointer<TestObject<2>> myObject = memBlock.CreateObject<size_t>(10);
-        ASSERT_EQ(nullptr, myObject.get());
-
+        {
+            Memory::PoolPointer<TestObject<2>> myObject = memBlock.CreateObject<size_t>(10);
+            ASSERT_NE(nullptr, myObject.get());
+            ASSERT_LT(maxObjects, memBlock.MaxSize());
+        }
         ASSERT_NO_THROW(objects.clear());
 
         ASSERT_EQ(0, memBlock.UsedSize());
