@@ -16,9 +16,16 @@ namespace nate::Modules::ECS
     template <class T>
     class ComponentPool
     {
+        struct
+        {
+            union {
+            };
+        };
+        
+
         Memory::PoolMemoryBlock<Component<T>, std::mutex> m_MemData;
 
-        MutexProtected<std::mutex, std::map<std::uint64_t, std::shared_ptr<Component<T>>>> m_EntityLookup;
+        MutexProtected<std::mutex, std::vector<Component<T>> m_EntityLookup;
 
       public:
         ComponentPool(size_t poolSize)

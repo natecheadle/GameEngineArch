@@ -9,24 +9,20 @@ namespace nate::Modules::ECS
     template <class T>
     class Component
     {
-        std::uint64_t m_ID{UID<Component<T>>()};
+        const std::uint64_t m_ID;
         T             m_Data;
 
       public:
-        Component(T init)
-            : m_Data(std::move(init))
+        Component(std::uint64_t id, T init = T())
+            : m_ID(id)
+            , m_Data(std::move(init))
         {
         }
-        Component() = default;
 
         ~Component() = default;
 
-        Component(const Component<T>& other)
-            : m_Data(other.m_Data)
-        {
-        }
-
-        Component(Component<T>&& other) = default;
+        Component(const Component<T>& other) = delete;
+        Component(Component<T>&& other) = delete;
 
         Component<T>& operator=(const Component<T>& other)
         {
