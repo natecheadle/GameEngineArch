@@ -158,10 +158,16 @@ namespace nate::Modules::Memory
             }
             m_UsedSize--;
 
-            // TODO this is wrong need to handle all cases of rebuilding the object
-            m_Data[i].IsEmpty                           = true;
-            m_Data[m_Data[i].PreviousObject].NextObject = m_Data[i].NextObject;
-            m_Data[m_Data[i].NextObject].PreviousObject = m_Data[i].PreviousObject;
+            ObjectAt(i)->~T();
+
+            if (m_Data[i].PreviousObject < m_Data.size())
+            {
+                m_Data[m_Data[i].PreviousObject].NextObject = m_Data[i].NextObject;
+            }
+            if (m_Data[i].NextObject < m_Data.size())
+            {
+                m_Data[m_Data[i].NextObject].PreviousObject = m_Data[i].PreviousObject;
+            }
 
             if (i < m_FirstEmptyIndex)
             {
@@ -183,6 +189,8 @@ namespace nate::Modules::Memory
                     m_Data[i].NextObject = m_Data.size();
                 }
             }
+
+            m_Data[i].IsEmpty = true;
         }
 
         size_t FindPreviousEmptyObject(size_t objI)
