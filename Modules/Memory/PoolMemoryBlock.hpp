@@ -39,6 +39,9 @@ namespace nate::Modules::Memory
         T&       operator*();
         const T& operator*() const;
 
+        T*       get();
+        const T* get() const;
+
       private:
         PoolPointer(size_t poolIndex, PoolMemoryBlock<T>* pPool);
 
@@ -52,10 +55,10 @@ namespace nate::Modules::Memory
 
         struct Data
         {
-            bool   IsEmpty{true};
-            size_t PreviousObject{0};
-            size_t NextObject{0};
-            T      Data{T()};
+            bool                                IsEmpty{true};
+            size_t                              PreviousObject{0};
+            size_t                              NextObject{0};
+            std::array<std::uint8_t, sizeof(T)> Data;
         };
 
         std::map<void*, std::function<void()>> m_OnDestroySubs;
@@ -95,8 +98,7 @@ namespace nate::Modules::Memory
             if (m_FirstEmptyIndex == m_Data.size())
                 return PoolPointer<T>(m_Data.size(), nullptr);
 
-            size_t newObjLocation = m_FirstEmptyIndex;
-            m_FirstEmptyIndex     = m_Data[newObjLocation].NextObject;
+            size_t         newObjLocation = m_FirstEmptyIndex;
             PoolPointer<T> newObj(newObjLocation, this);
             m_Data[newObjLocation].IsEmpty = false;
             m_UsedSize++;
@@ -104,13 +106,18 @@ namespace nate::Modules::Memory
             // Call Constructor at location
             // Pool Pointer is holding the object, but is using the
             // array index instead of a pointer.
-            new (reinterpret_cast<void*>(&m_Data[newObjLocation].Data)) T(std::forward<Args>(std::move(args))...);
+            new (reinterpret_cast<void*>(m_Data[newObjLocation].Data.data())) T(std::forward<Args>(std::move(args))...);
 
             // Pool only has one empty space.
             if (m_Data[m_FirstEmptyIndex].NextObject == m_Data.size())
             {
                 m_FirstEmptyIndex = m_Data.size();
             }
+            else
+            {
+                m_FirstEmptyIndex = m_Data[newObjLocation].NextObject;
+            }
+
             // Pool is empty
             if (m_FirstDataIndex == m_Data.size())
             {
@@ -140,8 +147,8 @@ namespace nate::Modules::Memory
         size_t MaxSize() const { return m_Data.size(); }
 
       private:
-        T*       ObjectAt(size_t i) { return &(m_Data[i].Data); }
-        const T* ObjectAt(size_t i) const { return &(m_Data[i].Data); }
+        T*       ObjectAt(size_t i) { return reinterpret_cast<T*>(m_Data[i].Data.data()); }
+        const T* ObjectAt(size_t i) const { return reinterpret_cast<const T*>(m_Data[i].Data.data()); }
 
         void DestroyObject(size_t i)
         {
@@ -225,7 +232,10 @@ namespace nate::Modules::Memory
         : m_PoolIndex(poolIndex)
         , m_pPool(pPool)
     {
-        m_pPool->SubscribeOnDestroy(this, [this]() { PoolParentDestroyed(); });
+        if (m_pPool)
+        {
+            m_pPool->SubscribeOnDestroy(this, [this]() { PoolParentDestroyed(); });
+        }
     }
 
     template <class T>
@@ -267,17 +277,13 @@ namespace nate::Modules::Memory
     template <class T>
     T* PoolPointer<T>::operator->()
     {
-        assert(m_pPool);
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return m_pPool->ObjectAt(m_PoolIndex);
+        return get();
     }
 
     template <class T>
     const T* PoolPointer<T>::operator->() const
     {
-        assert(m_pPool);
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return m_pPool->ObjectAt(m_PoolIndex);
+        return get();
     }
 
     template <class T>
@@ -294,6 +300,25 @@ namespace nate::Modules::Memory
         assert(m_pPool);
         assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
         return *(m_pPool->ObjectAt(m_PoolIndex));
+    }
+    template <class T>
+    T* PoolPointer<T>::get()
+    {
+        if (!m_pPool)
+            return nullptr;
+
+        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+        return m_pPool->ObjectAt(m_PoolIndex);
+    }
+
+    template <class T>
+    const T* PoolPointer<T>::get() const
+    {
+        if (!m_pPool)
+            return nullptr;
+
+        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+        return m_pPool->ObjectAt(m_PoolIndex);
     }
 
 } // namespace nate::Modules::Memory

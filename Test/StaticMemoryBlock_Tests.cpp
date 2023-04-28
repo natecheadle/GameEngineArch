@@ -189,6 +189,32 @@ namespace nate::Test
         myObject2->Validate(50, *myObject2);
     }
 
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
+    {
+        static constexpr size_t                maxObjects = 16;
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(maxObjects);
+
+        std::vector<Memory::PoolPointer<TestObject<2>>> objects;
+
+        objects.reserve(maxObjects);
+
+        for (size_t i = 0; i < maxObjects; ++i)
+        {
+            Memory::PoolPointer<TestObject<2>> myObject = memBlock.CreateObject<size_t>(10 * i);
+            TestObject<2>::Validate(10 * i, *myObject);
+            ASSERT_EQ((i + 1), memBlock.UsedSize());
+
+            objects.push_back(std::move(myObject));
+        }
+
+        Memory::PoolPointer<TestObject<2>> myObject = memBlock.CreateObject<size_t>(10);
+        ASSERT_EQ(nullptr, myObject.get());
+
+        ASSERT_NO_THROW(objects.clear());
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
     TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockBasicCreateDelete)
     {
         Memory::StaticFreeMemoryBlock<MemoryBuffer, MemorySize> memBlock;
