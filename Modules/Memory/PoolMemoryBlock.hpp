@@ -45,7 +45,8 @@ namespace nate::Modules::Memory
       private:
         PoolPointer(size_t poolIndex, PoolMemoryBlock<T>* pPool);
 
-        void PoolParentDestroyed() { m_pPool = nullptr; }
+        void OnPoolParentDestroyed() { m_pPool = nullptr; }
+        void OnObjectMoved(size_t newLoc) { m_PoolIndex = newLoc; }
     };
 
     template <class T>
@@ -61,11 +62,13 @@ namespace nate::Modules::Memory
             std::array<std::uint8_t, sizeof(T)> Data;
         };
 
-        std::map<void*, std::function<void()>> m_OnDestroySubs;
-        std::vector<Data>                      m_Data;
-        size_t                                 m_FirstDataIndex;
-        size_t                                 m_FirstEmptyIndex;
-        size_t                                 m_UsedSize;
+        std::map<void*, std::function<void()>>        m_OnDestroySubs;
+        std::map<size_t, std::function<void(size_t)>> m_OnMoveSubs;
+
+        std::vector<Data> m_Data;
+        size_t            m_FirstDataIndex;
+        size_t            m_FirstEmptyIndex;
+        size_t            m_UsedSize;
 
       public:
         PoolMemoryBlock(size_t initSize)
@@ -155,6 +158,49 @@ namespace nate::Modules::Memory
 
         size_t UsedSize() const { return m_UsedSize; }
         size_t MaxSize() const { return m_Data.size(); }
+        bool   IsFragmented() const { return m_FirstEmptyIndex != m_UsedSize; }
+        void   Defragment()
+        {
+            // Already Defragrmented
+            if (!IsFragmented())
+                return;
+
+            std::map<size_t, std::function<void(size_t)>> oldSubs(std::move(m_OnMoveSubs));
+            m_OnMoveSubs = std::map<size_t, std::function<void(size_t)>>();
+            size_t newIndex{0};
+            for (size_t i = 0; i < m_Data.size(); ++i)
+            {
+                if (!m_Data[i].IsEmpty)
+                {
+                    m_Data[newIndex].IsEmpty        = false;
+                    m_Data[newIndex].PreviousObject = newIndex - 1;
+                    m_Data[newIndex].NextObject     = newIndex + 1;
+
+                    auto sub = oldSubs.find(i);
+                    if (sub != oldSubs.end())
+                    {
+                        sub->second(newIndex);
+                        m_OnMoveSubs.insert({newIndex, std::move(sub->second)});
+                    }
+                    newIndex++;
+                }
+            }
+
+            m_Data.front().PreviousObject     = m_Data.size();
+            m_Data[m_UsedSize - 1].NextObject = m_Data.size();
+
+            for (size_t i = m_UsedSize; i < m_Data.size(); ++i)
+            {
+                m_Data[i].IsEmpty        = true;
+                m_Data[i].PreviousObject = i - 1;
+                m_Data[i].NextObject     = i + 1;
+            }
+            m_Data[m_UsedSize].PreviousObject = m_Data.size();
+            m_Data.back().NextObject          = m_Data.size();
+
+            m_FirstEmptyIndex = m_UsedSize;
+            m_FirstDataIndex  = 0;
+        }
 
       private:
         T*       ObjectAt(size_t i) { return reinterpret_cast<T*>(m_Data[i].Data.data()); }
@@ -169,6 +215,11 @@ namespace nate::Modules::Memory
             m_UsedSize--;
 
             ObjectAt(i)->~T();
+
+            if (i == m_FirstDataIndex)
+            {
+                m_FirstDataIndex = m_Data[i].NextObject;
+            }
 
             if (m_Data[i].PreviousObject < m_Data.size())
             {
@@ -235,12 +286,27 @@ namespace nate::Modules::Memory
         {
             m_OnDestroySubs.insert_or_assign(pSub, std::move(callback));
         }
+
         void UnsubscribeOnDestroy(void* pSub)
         {
             auto it = m_OnDestroySubs.find(pSub);
             if (it != m_OnDestroySubs.end())
             {
                 m_OnDestroySubs.erase(it);
+            }
+        }
+
+        void SubscribeOnMove(size_t sub, std::function<void(size_t)> callback)
+        {
+            m_OnMoveSubs.insert_or_assign(sub, std::move(callback));
+        }
+
+        void UnsubscribeOnMove(size_t sub)
+        {
+            auto it = m_OnMoveSubs.find(sub);
+            if (it != m_OnMoveSubs.end())
+            {
+                m_OnMoveSubs.erase(it);
             }
         }
     };
@@ -252,7 +318,8 @@ namespace nate::Modules::Memory
     {
         if (m_pPool)
         {
-            m_pPool->SubscribeOnDestroy(this, [this]() { PoolParentDestroyed(); });
+            m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+            m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
         }
     }
 
@@ -263,6 +330,7 @@ namespace nate::Modules::Memory
         {
             m_pPool->DestroyObject(m_PoolIndex);
             m_pPool->UnsubscribeOnDestroy(this);
+            m_pPool->UnsubscribeOnMove(m_PoolIndex);
         }
     }
 
@@ -272,8 +340,14 @@ namespace nate::Modules::Memory
         , m_pPool(other.m_pPool)
     {
         other.m_pPool = nullptr;
-        m_pPool->UnsubscribeOnDestroy(&other);
-        m_pPool->SubscribeOnDestroy(this, [this]() { PoolParentDestroyed(); });
+        if (m_pPool)
+        {
+            m_pPool->UnsubscribeOnDestroy(&other);
+            m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+
+            m_pPool->UnsubscribeOnMove(m_PoolIndex);
+            m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+        }
     }
 
     template <class T>
@@ -288,6 +362,9 @@ namespace nate::Modules::Memory
         other.m_pPool = nullptr;
         m_pPool->UnsubscribeOnDestroy(&other);
         m_pPool->SubscribeOnDestroy(this, this->PoolParentDestroyed());
+
+        m_pPool->UnsubscribeOnMove(m_PoolIndex);
+        m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
 
         return *this;
     }
