@@ -28,6 +28,7 @@ namespace nate::Test
         std::array<size_t, SIZE> m_Value;
 
       public:
+        TestObject() { m_Value.fill(0); }
         TestObject(size_t val)
         {
             for (size_t i = 1; i <= m_Value.size(); ++i)
@@ -164,23 +165,23 @@ namespace nate::Test
 
     TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockBasicCreateDelete)
     {
-        size_t                                 poolSize{64};
-        Memory::PoolMemoryBlock<TestObject<2>> memBlock(poolSize);
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(8);
 
-        Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10);
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10);
+
         myObject->Validate(10, *myObject);
         {
 
-            Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(20);
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject1 = memBlock.CreateObject<size_t>(20);
             myObject1->Validate(20, *myObject1);
-            Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(30);
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject2 = memBlock.CreateObject<size_t>(30);
             myObject2->Validate(30, *myObject2);
         }
-        ASSERT_EQ(sizeof(TestObject<2>), memBlock.UsedSize());
+        ASSERT_EQ(1, memBlock.UsedSize());
 
-        Memory::unique_ptr<TestObject<2>> myObject1 = memBlock.MakeObject<size_t>(40);
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject1 = memBlock.CreateObject<size_t>(40);
         myObject1->Validate(40, *myObject1);
-        Memory::unique_ptr<TestObject<2>> myObject2 = memBlock.MakeObject<size_t>(50);
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject2 = memBlock.CreateObject<size_t>(50);
         myObject2->Validate(50, *myObject2);
 
         myObject->Validate(10, *myObject);
@@ -190,28 +191,107 @@ namespace nate::Test
 
     TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
     {
-        size_t                                 dataSize{64};
-        Memory::PoolMemoryBlock<TestObject<2>> memBlock(dataSize);
+        static constexpr size_t                maxObjects = 16;
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(maxObjects);
 
-        std::vector<Memory::unique_ptr<TestObject<2>>> objects;
+        std::vector<Memory::PoolMemoryBlock<TestObject<2>>::pointer> objects;
 
-        objects.reserve(dataSize);
+        objects.reserve(maxObjects);
 
-        for (size_t i = 0; i < dataSize; ++i)
+        for (size_t i = 0; i < maxObjects; ++i)
         {
-            Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10 * i);
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10 * i);
             TestObject<2>::Validate(10 * i, *myObject);
-            ASSERT_EQ((i + 1) * sizeof(TestObject<2>), memBlock.UsedSize());
+            ASSERT_EQ((i + 1), memBlock.UsedSize());
+
+            objects.push_back(std::move(myObject));
+        }
+        {
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10);
+            ASSERT_NE(nullptr, myObject.get());
+            ASSERT_LT(maxObjects, memBlock.MaxSize());
+        }
+        ASSERT_NO_THROW(objects.clear());
+
+        ASSERT_EQ(0, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryDefragment)
+    {
+        static constexpr size_t                maxObjects = 16;
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(maxObjects);
+
+        std::vector<Memory::PoolMemoryBlock<TestObject<2>>::pointer> objects;
+
+        objects.reserve(maxObjects);
+
+        for (size_t i = 0; i < maxObjects; ++i)
+        {
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10 * i);
+            TestObject<2>::Validate(10 * i, *myObject);
+            ASSERT_EQ((i + 1), memBlock.UsedSize());
+
+            objects.push_back(std::move(myObject));
+        }
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10);
+        ASSERT_NE(nullptr, myObject.get());
+        ASSERT_LT(maxObjects, memBlock.MaxSize());
+
+        ASSERT_NO_THROW(objects.clear());
+
+        ASSERT_TRUE(memBlock.IsFragmented());
+        ASSERT_NO_THROW(memBlock.Defragment());
+        ASSERT_FALSE(memBlock.IsFragmented());
+
+        ASSERT_EQ(1, memBlock.UsedSize());
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryIterator)
+    {
+        static constexpr size_t                maxObjects = 16;
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(maxObjects);
+
+        std::vector<Memory::PoolMemoryBlock<TestObject<2>>::pointer> objects;
+
+        objects.reserve(maxObjects);
+
+        for (size_t i = 0; i < maxObjects; ++i)
+        {
+            Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10 * i);
+            TestObject<2>::Validate(10 * i, *myObject);
+            ASSERT_EQ((i + 1), memBlock.UsedSize());
 
             objects.push_back(std::move(myObject));
         }
 
-        Memory::unique_ptr<TestObject<2>> myObject = memBlock.MakeObject<size_t>(10);
-        ASSERT_EQ(nullptr, myObject);
+        // TODO - This isn't a great test because it relies on the pool iteratating in the same order objects were
+        // built. Need an alternative way to validate.
+        size_t i = 0;
+        for (const auto& val : memBlock)
+        {
+            TestObject<2>::Validate(10 * i, val);
+            i++;
+        }
 
-        ASSERT_NO_THROW(objects.clear());
+        ASSERT_EQ(memBlock.UsedSize(), i);
 
-        ASSERT_EQ(0, memBlock.UsedSize());
+        i = 0;
+        for (auto val = memBlock.begin(); val != memBlock.end(); ++val)
+        {
+            TestObject<2>::Validate(10 * i, *val);
+            i++;
+        }
+
+        ASSERT_EQ(memBlock.UsedSize(), i);
+
+        i = 0;
+        for (auto val = memBlock.cbegin(); val != memBlock.cend(); ++val)
+        {
+            TestObject<2>::Validate(10 * i, *val);
+            i++;
+        }
+
+        ASSERT_EQ(memBlock.UsedSize(), i);
     }
 
     TEST(StaticMemoryBlock_Tests, ValidateFreeMemoryBlockBasicCreateDelete)
