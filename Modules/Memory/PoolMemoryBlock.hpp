@@ -1,59 +1,19 @@
 #pragma once
 
-#include <NullMutex.hpp>
-
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <vector>
 
 namespace nate::Modules::Memory
 {
-    template <class T>
-    class PoolMemoryBlock;
-
-    template <class T>
-    class PoolPointer
-    {
-        friend PoolMemoryBlock<T>;
-
-        size_t              m_PoolIndex;
-        PoolMemoryBlock<T>* m_pPool;
-
-      public:
-        ~PoolPointer();
-
-        PoolPointer(const PoolPointer<T>& other)               = delete;
-        PoolPointer<T>& operator=(const PoolPointer<T>& other) = delete;
-
-        PoolPointer(PoolPointer<T>&& other);
-        PoolPointer<T>& operator=(PoolPointer<T>&& other);
-
-        bool IsPoolDestroyed() { return !m_pPool; }
-
-        T*       operator->();
-        const T* operator->() const;
-
-        T&       operator*();
-        const T& operator*() const;
-
-        T*       get();
-        const T* get() const;
-
-      private:
-        PoolPointer(size_t poolIndex, PoolMemoryBlock<T>* pPool);
-
-        void OnPoolParentDestroyed() { m_pPool = nullptr; }
-        void OnObjectMoved(size_t newLoc) { m_PoolIndex = newLoc; }
-    };
 
     template <class T>
     class PoolMemoryBlock
     {
-        friend PoolPointer<T>;
-
         struct Data
         {
             bool                                IsEmpty{true};
@@ -71,6 +31,229 @@ namespace nate::Modules::Memory
         size_t            m_UsedSize;
 
       public:
+        class pointer
+        {
+            friend PoolMemoryBlock<T>;
+
+            PoolMemoryBlock<T>* m_pPool;
+            size_t              m_PoolIndex;
+
+          public:
+            ~pointer()
+            {
+                if (m_pPool)
+                {
+                    m_pPool->DestroyObject(m_PoolIndex);
+                    m_pPool->UnsubscribeOnDestroy(this);
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                }
+            }
+
+            pointer(const pointer& other)            = delete;
+            pointer& operator=(const pointer& other) = delete;
+
+            pointer(pointer&& other)
+                : m_PoolIndex(other.m_PoolIndex)
+                , m_pPool(other.m_pPool)
+            {
+                other.m_pPool = nullptr;
+                if (m_pPool)
+                {
+                    m_pPool->UnsubscribeOnDestroy(&other);
+                    m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                    m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                }
+            }
+
+            pointer& operator=(pointer&& other)
+            {
+                if (this == &other)
+                    return *this;
+
+                m_PoolIndex = other.m_PoolIndex;
+                m_pPool     = other.m_pPool;
+
+                other.m_pPool = nullptr;
+                m_pPool->UnsubscribeOnDestroy(&other);
+                m_pPool->SubscribeOnDestroy(this, this->PoolParentDestroyed());
+
+                m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+
+                return *this;
+            }
+
+            bool IsPoolDestroyed() { return !m_pPool; }
+
+            T*       operator->() { return get(); }
+            const T* operator->() const { return get(); }
+
+            T& operator*()
+            {
+                assert(m_pPool);
+                assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+                return *(m_pPool->ObjectAt(m_PoolIndex));
+            }
+
+            const T& operator*() const
+            {
+                assert(m_pPool);
+                assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+                return *(m_pPool->ObjectAt(m_PoolIndex));
+            }
+
+            T* get()
+            {
+                if (!m_pPool)
+                    return nullptr;
+
+                assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+                return m_pPool->ObjectAt(m_PoolIndex);
+            }
+            const T* get() const
+            {
+                if (!m_pPool)
+                    return nullptr;
+
+                assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
+                return m_pPool->ObjectAt(m_PoolIndex);
+            }
+
+          private:
+            pointer(PoolMemoryBlock<T>* pPool, size_t poolIndex)
+                : m_pPool(pPool)
+                , m_PoolIndex(poolIndex)
+            {
+                if (m_pPool)
+                {
+                    m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+                    m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                }
+            }
+
+            void OnPoolParentDestroyed() { m_pPool = nullptr; }
+            void OnObjectMoved(size_t newLoc) { m_PoolIndex = newLoc; }
+        };
+
+        class iterator
+        {
+          public:
+            using iterator_category = std::bidirectional_iterator_tag;
+            using difference_type   = std::ptrdiff_t;
+            using value_type        = T;
+            using pointer           = T*;
+            using const_pointer     = const T*;
+            using reference         = T&;
+            using const_reference   = const T&;
+
+          private:
+            PoolMemoryBlock<T>* m_pPool;
+            size_t              m_Index;
+
+          public:
+            iterator(PoolMemoryBlock<T>* pPool, size_t i)
+                : m_pPool(pPool)
+                , m_Index(i)
+            {
+            }
+
+            const_reference operator*() const { return *(m_pPool->ObjectAt(m_Index)); }
+            reference       operator*() { return *(m_pPool->ObjectAt(m_Index)); }
+
+            const_pointer operator->() const { return m_pPool->ObjectAt(m_Index); }
+            pointer       operator->() { return m_pPool->ObjectAt(m_Index); }
+
+            iterator& operator++()
+            {
+                m_Index = m_pPool->m_Data[m_Index].NextObject;
+                return *this;
+            }
+
+            iterator operator++(int)
+            {
+                iterator tmp = *this;
+                m_Index      = m_pPool->m_Data[m_Index].NextObject;
+                return tmp;
+            }
+
+            iterator& operator--()
+            {
+                m_Index = m_pPool->m_Data[m_Index].PreviousObject;
+                return *this;
+            }
+
+            iterator operator--(int)
+            {
+                iterator tmp = *this;
+                m_Index      = m_pPool->m_Data[m_Index].PreviousObject;
+                return tmp;
+            }
+
+            friend bool operator==(const iterator& a, const iterator& b)
+            {
+                return a.m_Index == b.m_Index && a.m_pPool == b.m_pPool;
+            };
+            friend bool operator!=(const iterator& a, const iterator& b) { return !(a == b); };
+        };
+
+        class const_iterator
+        {
+          public:
+            using iterator_category = std::bidirectional_iterator_tag;
+            using difference_type   = std::ptrdiff_t;
+            using value_type        = T;
+            using const_pointer     = const T*;
+            using const_reference   = const T&;
+
+          private:
+            PoolMemoryBlock<T>* m_pPool;
+            size_t              m_Index;
+
+          public:
+            const_iterator(PoolMemoryBlock<T>* pPool, size_t i)
+                : m_pPool(pPool)
+                , m_Index(i)
+            {
+            }
+
+            const_reference operator*() const { return *(m_pPool->ObjectAt(m_Index)); }
+            const_pointer   operator->() const { return m_pPool->ObjectAt(m_Index); }
+
+            const_iterator& operator++()
+            {
+                m_Index = m_pPool->m_Data[m_Index].NextObject;
+                return *this;
+            }
+
+            const_iterator operator++(int)
+            {
+                iterator tmp = *this;
+                m_Index      = m_pPool->m_Data[m_Index].NextObject;
+                return tmp;
+            }
+
+            const_iterator& operator--()
+            {
+                m_Index = m_pPool->m_Data[m_Index].PreviousObject;
+                return *this;
+            }
+
+            const_iterator operator--(int)
+            {
+                iterator tmp = *this;
+                m_Index      = m_pPool->m_Data[m_Index].PreviousObject;
+                return tmp;
+            }
+
+            friend bool operator==(const const_iterator& a, const const_iterator& b)
+            {
+                return a.m_Index == b.m_Index && a.m_pPool == b.m_pPool;
+            };
+            friend bool operator!=(const const_iterator& a, const const_iterator& b) { return !(a == b); };
+        };
+
         PoolMemoryBlock(size_t initSize)
             : m_Data(initSize)
             , m_FirstDataIndex(initSize)
@@ -95,7 +278,7 @@ namespace nate::Modules::Memory
         }
 
         template <typename... Args>
-        PoolPointer<T> CreateObject(Args&&... args)
+        pointer CreateObject(Args&&... args)
         {
             // Pool is full
             if (m_FirstEmptyIndex == m_Data.size())
@@ -111,8 +294,8 @@ namespace nate::Modules::Memory
                 m_Data.back().NextObject = m_Data.size();
             }
 
-            size_t         newObjLocation = m_FirstEmptyIndex;
-            PoolPointer<T> newObj(newObjLocation, this);
+            size_t  newObjLocation = m_FirstEmptyIndex;
+            pointer newObj(this, newObjLocation);
             m_Data[newObjLocation].IsEmpty = false;
             m_UsedSize++;
 
@@ -201,6 +384,11 @@ namespace nate::Modules::Memory
             m_FirstEmptyIndex = m_UsedSize;
             m_FirstDataIndex  = 0;
         }
+
+        iterator       begin() { return iterator(this, m_FirstDataIndex); }
+        iterator       end() { return iterator(this, m_Data.size()); }
+        const_iterator cbegin() { return const_iterator(this, m_FirstDataIndex); }
+        const_iterator cend() { return const_iterator(this, m_Data.size()); }
 
       private:
         T*       ObjectAt(size_t i) { return reinterpret_cast<T*>(m_Data[i].Data.data()); }
@@ -310,110 +498,5 @@ namespace nate::Modules::Memory
             }
         }
     };
-
-    template <class T>
-    PoolPointer<T>::PoolPointer(size_t poolIndex, PoolMemoryBlock<T>* pPool)
-        : m_PoolIndex(poolIndex)
-        , m_pPool(pPool)
-    {
-        if (m_pPool)
-        {
-            m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
-            m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
-        }
-    }
-
-    template <class T>
-    PoolPointer<T>::~PoolPointer()
-    {
-        if (m_pPool)
-        {
-            m_pPool->DestroyObject(m_PoolIndex);
-            m_pPool->UnsubscribeOnDestroy(this);
-            m_pPool->UnsubscribeOnMove(m_PoolIndex);
-        }
-    }
-
-    template <class T>
-    PoolPointer<T>::PoolPointer(PoolPointer<T>&& other)
-        : m_PoolIndex(other.m_PoolIndex)
-        , m_pPool(other.m_pPool)
-    {
-        other.m_pPool = nullptr;
-        if (m_pPool)
-        {
-            m_pPool->UnsubscribeOnDestroy(&other);
-            m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
-
-            m_pPool->UnsubscribeOnMove(m_PoolIndex);
-            m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
-        }
-    }
-
-    template <class T>
-    PoolPointer<T>& PoolPointer<T>::operator=(PoolPointer<T>&& other)
-    {
-        if (this == &other)
-            return *this;
-
-        m_PoolIndex = other.m_PoolIndex;
-        m_pPool     = other.m_pPool;
-
-        other.m_pPool = nullptr;
-        m_pPool->UnsubscribeOnDestroy(&other);
-        m_pPool->SubscribeOnDestroy(this, this->PoolParentDestroyed());
-
-        m_pPool->UnsubscribeOnMove(m_PoolIndex);
-        m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
-
-        return *this;
-    }
-
-    template <class T>
-    T* PoolPointer<T>::operator->()
-    {
-        return get();
-    }
-
-    template <class T>
-    const T* PoolPointer<T>::operator->() const
-    {
-        return get();
-    }
-
-    template <class T>
-    T& PoolPointer<T>::operator*()
-    {
-        assert(m_pPool);
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return *(m_pPool->ObjectAt(m_PoolIndex));
-    }
-
-    template <class T>
-    const T& PoolPointer<T>::operator*() const
-    {
-        assert(m_pPool);
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return *(m_pPool->ObjectAt(m_PoolIndex));
-    }
-    template <class T>
-    T* PoolPointer<T>::get()
-    {
-        if (!m_pPool)
-            return nullptr;
-
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return m_pPool->ObjectAt(m_PoolIndex);
-    }
-
-    template <class T>
-    const T* PoolPointer<T>::get() const
-    {
-        if (!m_pPool)
-            return nullptr;
-
-        assert(!m_pPool->m_Data[m_PoolIndex].IsEmpty);
-        return m_pPool->ObjectAt(m_PoolIndex);
-    }
 
 } // namespace nate::Modules::Memory
