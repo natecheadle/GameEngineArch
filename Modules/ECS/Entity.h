@@ -32,6 +32,7 @@ namespace nate::Modules::ECS
         {
         }
 
+      protected:
         template <typename T>
         void Set(const T& val)
         {

@@ -5,6 +5,7 @@
 #include <PoolMemoryBlock.hpp>
 
 #include <tuple>
+#include <type_traits>
 
 namespace nate::Modules::ECS
 {
@@ -23,10 +24,11 @@ namespace nate::Modules::ECS
         World& operator=(const World& other) = delete;
         World& operator=(World&& other)      = default;
 
-        template <typename... ComponentTypes>
-        Entity<ComponentTypes...> CreateEntity(ComponentTypes&&... args)
+        template <typename T, typename... ComponentTypes>
+        T CreateEntity(ComponentTypes&&... args)
         {
-            return Entity<ComponentTypes...>(CreatePoolObject(std::move(args))...);
+            static_assert(std::is_base_of_v<Entity<ComponentTypes...>, T>, "T must be derive from Entity.");
+            return T(CreatePoolObject(std::move(args))...);
         }
 
       private:
@@ -35,7 +37,7 @@ namespace nate::Modules::ECS
         {
             auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
 
-            return pool.CreateObject<T>(std::move(val));
+            return pool.template CreateObject<T>(std::move(val));
         }
     };
 } // namespace nate::Modules::ECS

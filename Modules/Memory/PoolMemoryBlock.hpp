@@ -500,5 +500,5 @@ namespace nate::Modules::Memory
     };
 
     template <class T>
-    using pool_pointer = PoolMemoryBlock<T>::pointer;
+    using pool_pointer = typename PoolMemoryBlock<T>::pointer;
 } // namespace nate::Modules::Memory
