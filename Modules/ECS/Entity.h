@@ -16,6 +16,12 @@ namespace nate::Modules::ECS
 
         std::uint64_t m_ID{UID<Entity>()};
 
+      protected:
+        Entity(Memory::pool_pointer<ComponentTypes>... args)
+            : m_Components(std::move(args)...)
+        {
+        }
+
       public:
         virtual ~Entity() = default;
 
@@ -26,11 +32,6 @@ namespace nate::Modules::ECS
         Entity& operator=(Entity&& other)      = default;
 
         std::uint64_t ID() const { return m_ID; }
-
-        Entity(Memory::pool_pointer<ComponentTypes>... args)
-            : m_Components(std::move(args)...)
-        {
-        }
 
       protected:
         template <typename T>

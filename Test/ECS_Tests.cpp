@@ -1,4 +1,5 @@
 #include "PoolMemoryBlock.hpp"
+#include "System.h"
 #include "World.h"
 
 #include <gtest/gtest.h>
@@ -49,6 +50,26 @@ namespace nate::Test
         const Velocity& Vel() const { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>().Vel; }
     };
 
+    class TestSystem : public Modules::ECS::System<KinematicData>
+    {
+      public:
+        TestSystem(Modules::Memory::PoolMemoryBlock<KinematicData>* pPool)
+            : Modules::ECS::System<KinematicData>(pPool)
+        {
+        }
+
+        void Process(float timeStep)
+        {
+            auto& pool = GetPool<KinematicData>();
+            for (auto& val : pool)
+            {
+                val.Pos.X += val.Vel.dX * timeStep;
+                val.Pos.Y += val.Vel.dY * timeStep;
+                val.Pos.Z += val.Vel.dZ * timeStep;
+            }
+        }
+    };
+
     TEST(ECS_Tests, InitWorldAndEntity)
     {
         Modules::ECS::World<KinematicData> world;
@@ -57,5 +78,21 @@ namespace nate::Test
 
         TestEntity entity = world.CreateEntity<TestEntity>(KinematicData(init));
         ASSERT_EQ(init, entity.Kinematic());
+    }
+
+    TEST(ECS_Tests, InitWorldAndSystem)
+    {
+        Modules::ECS::World<KinematicData> world;
+        ;
+
+        TestSystem system = world.CreateSystem<TestSystem, KinematicData>();
+        TestEntity entity = world.CreateEntity<TestEntity>(
+            KinematicData(KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})})));
+
+        ASSERT_NO_THROW(system.Process(1.0));
+
+        KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
+
+        ASSERT_EQ(entity.Kinematic(), expect);
     }
 } // namespace nate::Test

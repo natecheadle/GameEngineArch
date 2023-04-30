@@ -1,15 +1,24 @@
 #pragma once
 
+#include <PoolMemoryBlock.hpp>
 #include <UID.hpp>
+
+#include <tuple>
 
 namespace nate::Modules::ECS
 {
+    template <typename... Types>
     class System
     {
-        std::uint64_t m_ID{UID<System>()};
+        std::tuple<Memory::PoolMemoryBlock<Types>*...> m_Pools;
+
+      protected:
+        System(Memory::PoolMemoryBlock<Types>*... args)
+            : m_Pools(std::move(args)...)
+        {
+        }
 
       public:
-        System()          = default;
         virtual ~System() = default;
 
         System(const System& other) = delete;
@@ -18,6 +27,11 @@ namespace nate::Modules::ECS
         System& operator=(const System& other) = delete;
         System& operator=(System&& other)      = default;
 
-        std::uint64_t ID() const { return m_ID; }
+      protected:
+        template <typename T>
+        Memory::PoolMemoryBlock<T>& GetPool()
+        {
+            return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
+        }
     };
 } // namespace nate::Modules::ECS

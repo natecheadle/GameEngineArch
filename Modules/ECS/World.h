@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "System.h"
 
 #include <PoolMemoryBlock.hpp>
 
@@ -31,13 +32,20 @@ namespace nate::Modules::ECS
             return T(CreatePoolObject(std::move(args))...);
         }
 
+        template <typename T, typename... ComponentTypes>
+        T CreateSystem()
+        {
+            static_assert(std::is_base_of_v<System<ComponentTypes...>, T>, "T must be derive from System.");
+            return T(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
+        }
+
       private:
         template <typename T>
         Memory::pool_pointer<T> CreatePoolObject(T&& val)
         {
             auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
 
-            return pool.template CreateObject<T>(std::move(val));
+            return pool.template CreateObject<T>(std::forward<T>(val));
         }
     };
 } // namespace nate::Modules::ECS
