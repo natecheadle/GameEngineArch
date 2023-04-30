@@ -14,7 +14,7 @@ namespace nate::Modules::ECS
     {
         std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
 
-        std::uint64_t m_ID{UID<Entity>()};
+        std::uint64_t m_ID{UID()};
 
       protected:
         Entity(Memory::pool_pointer<ComponentTypes>... args)
