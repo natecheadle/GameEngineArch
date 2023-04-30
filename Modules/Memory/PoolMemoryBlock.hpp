@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <functional>
@@ -10,7 +11,6 @@
 
 namespace nate::Modules::Memory
 {
-
     template <class T>
     class PoolMemoryBlock
     {
@@ -254,7 +254,7 @@ namespace nate::Modules::Memory
             friend bool operator!=(const const_iterator& a, const const_iterator& b) { return !(a == b); };
         };
 
-        PoolMemoryBlock(size_t initSize)
+        PoolMemoryBlock(size_t initSize = 64)
             : m_Data(initSize)
             , m_FirstDataIndex(initSize)
             , m_FirstEmptyIndex(0)
@@ -499,4 +499,6 @@ namespace nate::Modules::Memory
         }
     };
 
+    template <class T>
+    using pool_pointer = PoolMemoryBlock<T>::pointer;
 } // namespace nate::Modules::Memory

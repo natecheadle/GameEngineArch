@@ -1,6 +1,4 @@
-#include "ComponentPool.h"
-
-#include <ComponentPool.h>
+#include "World.h"
 
 #include <gtest/gtest.h>
 
@@ -11,28 +9,17 @@ namespace nate::Test
         float X;
         float Y;
         float Z;
+
+        friend bool operator==(const Position& lhs, const Position& rhs) = default;
     };
 
-    TEST(ECS_Tests, ComponentPoolInitValidation)
+    TEST(ECS_Tests, InitWorldAndEntity)
     {
-        Modules::ECS::ComponentPool<Position> pool(64);
-    }
+        Modules::ECS::World<Position> world;
 
-    TEST(ECS_Tests, ComponentPoolAddValidation)
-    {
-        Modules::ECS::ComponentPool<Position> pool(64);
-        pool.AddComponent(0, {0.0, 0.0, 0.0});
-        auto pComp = pool.GetComponent(0);
-    }
+        Position init(1.0, 2.0, 3.0);
 
-    TEST(ECS_Tests, ComponentPoolAddRemoveValidation)
-    {
-        Modules::ECS::ComponentPool<Position> pool(64);
-        pool.AddComponent(0, {0.0, 0.0, 0.0});
-        auto pComp = pool.GetComponent(0);
-        ASSERT_NE(nullptr, pComp.get());
-        pool.RemoveComponent(0);
-        pComp = pool.GetComponent(0);
-        ASSERT_EQ(nullptr, pComp.get());
+        Modules::ECS::Entity<Position> entity = world.CreateEntity(Position(init));
+        ASSERT_EQ(init, entity.Get<Position>());
     }
 } // namespace nate::Test
