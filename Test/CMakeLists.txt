@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME}
     "Messaging_Tests.cpp"
     "StaticMap_Tests.cpp"
     "ECS_Tests.cpp"
+    "LinearAlg_Tests.cpp"
 )
 
 find_package(GTest CONFIG REQUIRED)
