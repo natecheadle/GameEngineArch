@@ -57,6 +57,14 @@ namespace nate::Modules
 
         T determinant() const
         {
+            if constexpr (SIZE == 1)
+            {
+                return m_Data[0][0];
+            }
+            if constexpr (SIZE == 2)
+            {
+                return m_Data[0][0] * m_Data[1][1] - m_Data[0][1] * m_Data[1][0];
+            }
 
             std::array<Vector<SIZE, T>, SIZE * 2> tmp;
             for (size_t i = 0; i < m_Data.size(); ++i)
@@ -96,38 +104,17 @@ namespace nate::Modules
             return rslt / det;
         }
 
-        SquareMatrix adjunct() const
+        SquareMatrix transpose() const
         {
             SquareMatrix rslt;
             for (size_t i = 0; i < SIZE; ++i)
             {
                 for (size_t j = 0; j < SIZE; ++j)
                 {
-                    rslt[i][j] = cofactor(i, j);
+                    rslt[j][i] = m_Data[i][j];
                 }
             }
-
             return rslt;
-        }
-
-        T cofactor(size_t col, size_t row) const
-        {
-            SquareMatrix<SIZE - 1, T> tmp;
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                for (size_t j = 0; j < SIZE; ++j)
-                {
-                    if (i == col || j == row)
-                    {
-                        continue;
-                    }
-
-                    size_t insertCol          = i > col ? i - 1 : i;
-                    size_t insertRow          = j > row ? j - 1 : j;
-                    tmp[insertCol][insertRow] = m_Data[i][j];
-                }
-            }
-            return (col + row) % 2 == 0 ? tmp.determinant() : -1 * tmp.determinant();
         }
 
         friend bool operator==(const SquareMatrix& lhs, const SquareMatrix& rhs) = default;
@@ -189,37 +176,6 @@ namespace nate::Modules
         friend SquareMatrix& operator+=(SquareMatrix& lhs, const SquareMatrix& rhs)
         {
             lhs = lhs - rhs;
-            return lhs;
-        }
-
-        friend SquareMatrix operator*(const SquareMatrix& lhs, const Vector<SIZE, T>& rhs)
-        {
-            SquareMatrix rslt;
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                for (size_t j = 0; j < SIZE; ++j)
-                {
-                    rslt[i][j] += lhs[i][j] * rhs[i];
-                }
-            }
-            return rslt;
-        }
-
-        friend SquareMatrix& operator*=(SquareMatrix& lhs, const Vector<SIZE, T>& rhs)
-        {
-            lhs = lhs * rhs;
-            return lhs;
-        }
-
-        friend SquareMatrix& operator-=(SquareMatrix& lhs, const Vector<SIZE, T>& rhs)
-        {
-            lhs = lhs - rhs;
-            return lhs;
-        }
-
-        friend SquareMatrix& operator+=(SquareMatrix& lhs, const Vector<SIZE, T>& rhs)
-        {
-            lhs = lhs + rhs;
             return lhs;
         }
 
@@ -361,10 +317,42 @@ namespace nate::Modules
             }
             return os;
         }
-    };
 
-    template <typename T = float>
-    using SquareMatrix4x4 = SquareMatrix<4, T>;
+      private:
+        T matrix_of_minors(size_t col, size_t row) const
+        {
+            SquareMatrix<SIZE - 1, T> tmp;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                for (size_t j = 0; j < SIZE; ++j)
+                {
+                    if (i == col || j == row)
+                    {
+                        continue;
+                    }
+
+                    size_t insertCol          = i > col ? i - 1 : i;
+                    size_t insertRow          = j > row ? j - 1 : j;
+                    tmp[insertCol][insertRow] = m_Data[i][j];
+                }
+            }
+            return (col + row) % 2 == 0 ? tmp.determinant() : -1 * tmp.determinant();
+        }
+
+        SquareMatrix adjunct() const
+        {
+            SquareMatrix rslt;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                for (size_t j = 0; j < SIZE; ++j)
+                {
+                    rslt[i][j] = matrix_of_minors(i, j);
+                }
+            }
+
+            return rslt.transpose();
+        }
+    };
 
     template <typename T = float>
     using SquareMatrix3x3 = SquareMatrix<3, T>;

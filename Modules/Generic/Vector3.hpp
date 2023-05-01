@@ -35,6 +35,8 @@ namespace nate::Modules
         T    Z() const { return Vector<3, T>::at(2); }
         void Z(T val) { Vector<3, T>::at(2) = val; }
 
+        T length() const { return X() * X() + Y() * Y() + Z() * Z(); }
+
         Vector3 cross(const Vector3& other) const
         {
             Vector3 rslt;
