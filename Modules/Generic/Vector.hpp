@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FloatComp.hpp"
+
 #include <fmt/format.h>
 
 #include <array>
@@ -7,6 +9,7 @@
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>
+#include <type_traits>
 
 namespace nate::Modules
 {
@@ -38,8 +41,19 @@ namespace nate::Modules
         Vector& operator=(const Vector& other) = default;
         Vector& operator=(Vector&& other)      = default;
 
-        float*       data() { return m_Data.data(); }
-        const float* data() const { return m_Data.data(); }
+        static constexpr size_t size() { return SIZE; }
+        T*                      data() { return m_Data.data(); }
+        const T*                data() const { return m_Data.data(); }
+
+        T magnitude() const
+        {
+            T sum{0};
+            for (size_t i = 0; i < size(); ++i)
+            {
+                sum += m_Data[i] * m_Data[i];
+            }
+            return std::sqrt(sum);
+        }
 
         T dot(const Vector& other)
         {
@@ -48,6 +62,7 @@ namespace nate::Modules
             {
                 sum += other.at(i) * at(i);
             }
+            return sum;
         }
 
         T&       operator[](size_t i) { return m_Data[i]; }
@@ -64,26 +79,27 @@ namespace nate::Modules
         const_iterator end() const { return m_Data.end(); }
         const_iterator cend() const { return m_Data.cend(); }
 
-        friend bool operator==(const Vector& lhs, const Vector& rhs) = default;
+        friend bool operator==(const Vector& lhs, const Vector& rhs)
+        {
+            bool rslt{true};
+
+            for (size_t i = 0; i < size(); ++i)
+            {
+                rslt = rslt && almost_eq<T>(lhs[i], rhs[i]);
+            }
+            return rslt;
+        }
 
         friend Vector operator-(const Vector& lhs, const Vector& rhs)
         {
             Vector rslt(lhs);
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                rslt[i] -= rhs[i];
-            }
-            return rslt;
+            return rslt -= rhs;
         }
 
         friend Vector operator+(const Vector& lhs, const Vector& rhs)
         {
             Vector rslt(lhs);
-            for (size_t i = 0; i < lhs.size(); ++i)
-            {
-                rslt[i] += rhs[i];
-            }
-            return rslt;
+            return rslt += rhs;
         }
 
         friend Vector& operator-=(Vector& lhs, const Vector& rhs)
@@ -100,6 +116,42 @@ namespace nate::Modules
             for (size_t i = 0; i < lhs.size(); ++i)
             {
                 lhs[i] += rhs[i];
+            }
+            return lhs;
+        }
+
+        friend Vector operator*(const Vector& lhs, T rhs)
+        {
+            Vector rslt(lhs);
+            return rslt *= rhs;
+        }
+
+        friend Vector operator*(T lhs, const Vector& rhs)
+        {
+            Vector rslt(rhs);
+            return rslt *= lhs;
+        }
+
+        friend Vector operator*=(Vector& lhs, T rhs)
+        {
+            for (size_t i = 0; i < size(); ++i)
+            {
+                lhs[i] *= rhs;
+            }
+            return lhs;
+        }
+
+        friend Vector operator/(const Vector& lhs, T rhs)
+        {
+            Vector rslt(lhs);
+            return rslt /= rhs;
+        }
+
+        friend Vector operator/=(Vector& lhs, T rhs)
+        {
+            for (size_t i = 0; i < size(); ++i)
+            {
+                lhs[i] /= rhs;
             }
             return lhs;
         }

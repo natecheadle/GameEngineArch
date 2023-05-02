@@ -7,16 +7,19 @@ namespace nate::Modules
     template <typename T = float>
     class Vector3 : public Vector<3, T>
     {
+        using BASE = Vector<3, T>;
+
+      public:
         Vector3() = default;
 
         Vector3(std::array<T, 3> init)
-            : Vector<3, T>(init)
+            : BASE(init)
         {
         }
 
         template <typename IT>
         Vector3(IT begin, IT end)
-            : Vector<3, T>(begin, end)
+            : BASE(begin, end)
         {
         }
 
@@ -26,25 +29,37 @@ namespace nate::Modules
         Vector3& operator=(const Vector3& other) = default;
         Vector3& operator=(Vector3&& other)      = default;
 
-        T    X() const { return Vector<3, T>::at(0); }
-        void X(T val) { Vector<3, T>::at(0) = val; }
+        T    x() const { return BASE::at(0); }
+        void x(T val) { BASE::at(0) = val; }
 
-        T    Y() const { return Vector<3, T>::at(1); }
-        void Y(T val) { Vector<3, T>::at(1) = val; }
+        T    y() const { return BASE::at(1); }
+        void y(T val) { BASE::at(1) = val; }
 
-        T    Z() const { return Vector<3, T>::at(2); }
-        void Z(T val) { Vector<3, T>::at(2) = val; }
+        T    z() const { return BASE::at(2); }
+        void z(T val) { BASE::at(2) = val; }
 
-        T length() const { return X() * X() + Y() * Y() + Z() * Z(); }
+        T length() const { return x() * x() + y() * y() + z() * z(); }
 
         Vector3 cross(const Vector3& other) const
         {
             Vector3 rslt;
-            rslt.x(Y() * other.Z()) - (Z() * other.Y());
-            rslt.y((Z() * other.X()) - (X() * other.Z()));
-            rslt.z((X() * other.Y()) - (Y() * other.X()));
+            rslt.x((y() * other.z()) - (z() * other.y()));
+            rslt.y((z() * other.x()) - (x() * other.z()));
+            rslt.z((x() * other.y()) - (y() * other.x()));
 
             return rslt;
+        }
+
+        Vector3 normalize() const
+        {
+            Vector3 rslt(*this);
+            return rslt / BASE::magnitude();
+        }
+
+        Vector3& normalize_this()
+        {
+            *this /= BASE::magnitude();
+            return *this;
         }
     };
 } // namespace nate::Modules

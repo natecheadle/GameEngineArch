@@ -8,6 +8,7 @@
 #include <numeric>
 #include <ostream>
 #include <stdexcept>
+#include <type_traits>
 
 namespace nate::Modules
 {
@@ -33,18 +34,12 @@ namespace nate::Modules
         SquareMatrix(const SquareMatrix& other) = default;
         SquareMatrix(SquareMatrix&& other)      = default;
 
-        static SquareMatrix identity()
-        {
-            SquareMatrix rslt;
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                rslt[i][i] = 1;
-            }
-            return rslt;
-        }
+        static SquareMatrix identity() { return identity<SquareMatrix>(); }
 
         SquareMatrix& operator=(const SquareMatrix& other) = default;
         SquareMatrix& operator=(SquareMatrix&& other)      = default;
+
+        static constexpr size_t size() { return SIZE; }
 
         Vector<SIZE, T>*       data() { return m_Data.data(); }
         const Vector<SIZE, T>* data() const { return m_Data.data(); }
@@ -179,21 +174,21 @@ namespace nate::Modules
             return lhs;
         }
 
-        friend SquareMatrix operator*(const SquareMatrix& lhs, double rhs)
+        friend SquareMatrix operator*(const SquareMatrix& lhs, T rhs)
         {
             SquareMatrix rslt(lhs);
             rslt += rhs;
             return rslt;
         }
 
-        friend SquareMatrix operator*(double lhs, const SquareMatrix& rhs)
+        friend SquareMatrix operator*(T lhs, const SquareMatrix& rhs)
         {
             SquareMatrix rslt(rhs);
             rslt += lhs;
             return rslt;
         }
 
-        friend SquareMatrix& operator*=(SquareMatrix& lhs, double rhs)
+        friend SquareMatrix& operator*=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)
             {
@@ -205,27 +200,14 @@ namespace nate::Modules
             return lhs;
         }
 
-        friend SquareMatrix operator/(const SquareMatrix& lhs, double rhs)
+        friend SquareMatrix operator/(const SquareMatrix& lhs, T rhs)
         {
             SquareMatrix rslt(lhs);
             rslt /= rhs;
             return rslt;
         }
 
-        friend SquareMatrix operator/(double lhs, const SquareMatrix& rhs)
-        {
-            SquareMatrix rslt;
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                for (size_t j = 0; j < SIZE; ++j)
-                {
-                    rslt[i][j] = lhs / rhs[i][j];
-                }
-            }
-            return rslt;
-        }
-
-        friend SquareMatrix& operator/=(SquareMatrix& lhs, double rhs)
+        friend SquareMatrix& operator/=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)
             {
@@ -237,21 +219,21 @@ namespace nate::Modules
             return lhs;
         }
 
-        friend SquareMatrix operator+(const SquareMatrix& lhs, double rhs)
+        friend SquareMatrix operator+(const SquareMatrix& lhs, T rhs)
         {
             SquareMatrix rslt(lhs);
             rslt += rhs;
             return rslt;
         }
 
-        friend SquareMatrix operator+(double lhs, const SquareMatrix& rhs)
+        friend SquareMatrix operator+(T lhs, const SquareMatrix& rhs)
         {
             SquareMatrix rslt(rhs);
             rslt += lhs;
             return rslt;
         }
 
-        friend SquareMatrix& operator+=(SquareMatrix& lhs, double rhs)
+        friend SquareMatrix& operator+=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)
             {
@@ -263,14 +245,14 @@ namespace nate::Modules
             return lhs;
         }
 
-        friend SquareMatrix operator-(const SquareMatrix& lhs, double rhs)
+        friend SquareMatrix operator-(const SquareMatrix& lhs, T rhs)
         {
             SquareMatrix rslt(lhs);
             rslt -= rhs;
             return rslt;
         }
 
-        friend SquareMatrix operator-(double lhs, const SquareMatrix& rhs)
+        friend SquareMatrix operator-(T lhs, const SquareMatrix& rhs)
         {
             SquareMatrix rslt;
             for (size_t i = 0; i < SIZE; ++i)
@@ -283,7 +265,7 @@ namespace nate::Modules
             return rslt;
         }
 
-        friend SquareMatrix& operator-=(SquareMatrix& lhs, double rhs)
+        friend SquareMatrix& operator-=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)
             {
@@ -316,6 +298,19 @@ namespace nate::Modules
                 os << "|\n";
             }
             return os;
+        }
+
+      protected:
+        template <class DERIVED>
+        static DERIVED identity()
+        {
+            static_assert(std::is_base_of_v<SquareMatrix, DERIVED>, "return type must derive from SquareMatrix");
+            DERIVED rslt;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                rslt[i][i] = 1;
+            }
+            return rslt;
         }
 
       private:
