@@ -5,12 +5,12 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(${PROJECT_NAME} 
     "main.cpp"
-    "FragmentShader.cpp"
-    "ShaderProgram.cpp"
-    "Shader.cpp"
-    "VertexShader.cpp"
-    "GeometryShader.cpp"
-    "ComputeShader.cpp"
+    "Shader/FragmentShader.cpp"
+    "Shader/ShaderProgram.cpp"
+    "Shader/Shader.cpp"
+    "Shader/VertexShader.cpp"
+    "Shader/GeometryShader.cpp"
+    "Shader/ComputeShader.cpp"
 )
 
 add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")

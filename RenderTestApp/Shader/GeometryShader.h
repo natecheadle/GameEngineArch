@@ -1,13 +1,14 @@
 #pragma once
+
 #include "Shader.h"
 
 namespace nate::Modules::Render
 {
-    class ComputeShader : public Shader
+    class GeometryShader : public Shader
     {
       public:
-        ComputeShader() = default;
-        ShaderType Type() const override { return ShaderType::Compute; };
+        GeometryShader() = default;
+        ShaderType Type() const override { return ShaderType::Geometry; };
 
       protected:
         unsigned int CreateGLShader() override;

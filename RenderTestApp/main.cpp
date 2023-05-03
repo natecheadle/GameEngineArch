@@ -1,5 +1,5 @@
-#include "Shader.h"
-#include "ShaderProgram.h"
+#include "Shader/Shader.h"
+#include "Shader/ShaderProgram.h"
 
 #include <Window_GLFW.h>
 #include <glad/glad.h>
@@ -65,6 +65,7 @@ int main()
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
+
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
 
