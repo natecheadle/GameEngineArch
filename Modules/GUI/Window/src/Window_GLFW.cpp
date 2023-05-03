@@ -50,7 +50,14 @@ namespace nate::Modules::GUI
             return;
         }
 
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+#ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
         m_pWindow = glfwCreateWindow(size.Width(), size.Height(), name.c_str(), NULL, NULL);
         if (!m_pWindow)
             return;
@@ -61,6 +68,7 @@ namespace nate::Modules::GUI
         glfwSetWindowCloseCallback(m_pWindow, &Window_GLFW::OnCloseCallback);
         glfwSetMouseButtonCallback(m_pWindow, &Window_GLFW::OnMouseClickCallback);
         glfwSetWindowSizeCallback(m_pWindow, &Window_GLFW::OnWindowResizeCallback);
+        glfwMakeContextCurrent(m_pWindow);
 
         KeyPressCallbacks.insert(
             {m_pWindow, [this](int key, int scancode, int action, int mods) {

@@ -71,6 +71,8 @@ namespace nate::Modules::GUI
         KeyState       QueryKeyState(Key key) const override;
         WindowSize     QueryWindowSize() const override;
 
+        GLFWwindow* GetGLFWWindow() const { return m_pWindow; }
+
         std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const override
         {
             return m_KeyStates.execute<std::pair<KeyState, KeyModifiers>>(
