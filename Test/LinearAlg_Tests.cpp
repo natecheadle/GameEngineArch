@@ -7,7 +7,7 @@
 #include <gtest/gtest.h>
 
 #define _USE_MATH_DEFINES
-#include <cmath>
+#include <math.h>
 
 using namespace nate::Modules;
 
@@ -85,33 +85,33 @@ namespace nate::Test
 
     TEST(LinearAlg_Tests, ValidateRotateX)
     {
-        Vector3 init({0, 1, 1});
-        Vector  rotated = (SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * init).ToVector3();
+        Vector3<float> init({0, 1, 1});
+        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * init).ToVector3();
         ASSERT_EQ(Vector3({0, 0, std::sqrt(2.0f)}), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateY)
     {
-        Vector3 init({1, 0, 1});
-        Vector  rotated = (SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * init).ToVector3();
+        Vector3<float> init({1, 0, 1});
+        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * init).ToVector3();
         ASSERT_EQ(Vector3({std::sqrt(2.0f), 0, 0}), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateZ)
     {
-        Vector3 init({1, 1, 0});
-        Vector  rotated = (SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3({0, std::sqrt(2.0f), 0}), rotated);
+        Vector3<float> init({1, 1, 0});
+        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * init).ToVector3();
+        ASSERT_EQ(Vector3<float>({0, std::sqrt(2.0f), 0}), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateScale)
     {
-        Vector3 init({1, 1, 1});
-        Vector  scaled = (SquareMatrix4x4<float>::scale_init({
-                             {2.0, 2.0, 2.0}
+        Vector3<float> init({1, 1, 1});
+        Vector3<float> scaled = (SquareMatrix4x4<float>::scale_init({
+                                     {2.0, 2.0, 2.0}
         }) *
-                         init)
-                            .ToVector3();
+                                 init)
+                                    .ToVector3();
         ASSERT_EQ(Vector3({2.0, 2.0, 2.0}), scaled);
     }
 
