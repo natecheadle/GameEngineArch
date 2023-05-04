@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(${PROJECT_NAME} 
     "main.cpp"
+    "Object3D.cpp"
     "Shader/FragmentShader.cpp"
     "Shader/ShaderProgram.cpp"
     "Shader/Shader.cpp"
