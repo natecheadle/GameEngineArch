@@ -30,6 +30,39 @@ namespace nate::Modules
         SquareMatrix4x4(const SquareMatrix4x4& other) = default;
         SquareMatrix4x4(SquareMatrix4x4&& other)      = default;
 
+        static SquareMatrix4x4 lookat(
+            const Vector3<T>& right,
+            const Vector3<T>& up,
+            const Vector3<T>& dir,
+            const Vector3<T>& pos)
+        {
+            SquareMatrix4x4 lookat(BASE::identity());
+            lookat[0] = right;
+            lookat[1] = up;
+            lookat[2] = dir;
+            lookat    = lookat.transpose();
+
+            SquareMatrix4x4 posMat(BASE::identity());
+            posMat[3] = pos;
+
+            lookat *= posMat;
+            return lookat;
+        }
+
+        static SquareMatrix4x4 perspective(T fov, T aspect, T near, T far)
+        {
+            SquareMatrix4x4 per;
+            T               ta = std::tan(fov / T(2.0));
+
+            per[0][0] = 1 / (ta * aspect);
+            per[1][1] = 1 / ta;
+            per[2][2] = -(far + near) / (far - near);
+            per[2][3] = (-2 * far * near) / (far - near);
+            per[3][2] = -1;
+
+            return per;
+        }
+
         static SquareMatrix4x4 scale_init(const Vector3<T>& scale)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();

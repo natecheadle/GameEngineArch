@@ -1,4 +1,4 @@
-#include "Object3D.h"
+#include "3D/Object3D.h"
 #include "Shader/Shader.h"
 #include "Shader/ShaderProgram.h"
 
