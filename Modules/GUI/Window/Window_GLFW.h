@@ -30,6 +30,7 @@ namespace nate::Modules::GUI
         static std::map<GLFWwindow*, std::function<void(int button, int action, int mods)>> OnMouseClickCallbacks;
 
         const WindowSize  m_InitialSize;
+        WindowSize        m_LastSize;
         const std::string m_Name;
 
         GLFWwindow*       m_pWindow{nullptr};
@@ -73,6 +74,7 @@ namespace nate::Modules::GUI
 
         GLFWwindow* GetGLFWWindow() const { return m_pWindow; }
 
+        WindowSize                        GetLastWindowSize() const override { return m_LastSize; }
         std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const override
         {
             return m_KeyStates.execute<std::pair<KeyState, KeyModifiers>>(
@@ -88,6 +90,7 @@ namespace nate::Modules::GUI
       private:
         void InitializeKeyStates(KeyStateMap& val) const;
         void OnKeyPressed(const GUI::WindowMessage* pMessage);
+        void OnWindowResized(const GUI::WindowMessage* pMessage);
 
         static void KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods);
         static void OnCloseCallback(GLFWwindow* pWindow);

@@ -1,7 +1,9 @@
 #pragma once
 
-namespace nate::Modules::GUI {
-    class WindowSize {
+namespace nate::Modules::GUI
+{
+    class WindowSize
+    {
         int m_Width{0};
         int m_Height{0};
 
@@ -14,7 +16,7 @@ namespace nate::Modules::GUI {
         }
         ~WindowSize() = default;
 
-        WindowSize(const WindowSize& other) = default;
+        WindowSize(const WindowSize& other)            = default;
         WindowSize& operator=(const WindowSize& other) = default;
 
         bool operator==(const WindowSize& other) const = default;
@@ -24,5 +26,7 @@ namespace nate::Modules::GUI {
 
         void Width(int value) { m_Width = value; }
         void Height(int value) { m_Height = value; }
+
+        float AspectRatio() const { return float(m_Width) / float(m_Height); }
     };
 } // namespace nate::Modules::GUI

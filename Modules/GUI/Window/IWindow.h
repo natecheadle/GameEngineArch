@@ -44,6 +44,7 @@ namespace nate::Modules::GUI
         virtual KeyState       QueryKeyState(Key key) const = 0;
         virtual WindowSize     QueryWindowSize() const      = 0;
 
+        virtual WindowSize                        GetLastWindowSize() const                  = 0;
         virtual std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const             = 0;
         virtual void ExecuteWithKeyStates(std::function<void(const KeyStateMap&)> exe) const = 0;
     };

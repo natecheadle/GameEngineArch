@@ -237,6 +237,11 @@ namespace nate::Modules::GUI
                     pKeyPressed->GetData()->KeyMods()};
             });
     }
+    void Window_GLFW::OnWindowResized(const GUI::WindowMessage* pMessage)
+    {
+        const auto* pWindowResized = DebugCast<const GUI::WindowResized*>(pMessage);
+        m_LastSize                 = *pWindowResized->GetData();
+    }
 
     void Window_GLFW::KeyPressCallBack(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
     {
