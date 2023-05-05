@@ -1,4 +1,4 @@
-#include "Shader/ShaderProgram.h"
+#include "../Shader/ShaderProgram.h"
 
 #include <Vector3.hpp>
 
