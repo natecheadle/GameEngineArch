@@ -43,6 +43,7 @@ namespace nate::Modules::GUI
 
     Window_GLFW::Window_GLFW(const WindowSize& size, std::string name)
         : m_InitialSize(size)
+        , m_LastSize(size)
         , m_Name(std::move(name))
     {
         if (glfwInit() == GLFW_FALSE)

@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <numeric>
 #include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <type_traits>
 
@@ -34,12 +35,25 @@ namespace nate::Modules
         SquareMatrix(const SquareMatrix& other) = default;
         SquareMatrix(SquareMatrix&& other)      = default;
 
-        static SquareMatrix identity() { return identity<SquareMatrix>(); }
+        template <class DERIVED>
+        static DERIVED identity()
+        {
+            static_assert(std::is_base_of_v<SquareMatrix, DERIVED>, "return type must derive from SquareMatrix");
+            DERIVED rslt;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                rslt[i][i] = 1;
+            }
+            return rslt;
+        }
 
         SquareMatrix& operator=(const SquareMatrix& other) = default;
         SquareMatrix& operator=(SquareMatrix&& other)      = default;
 
         static constexpr size_t size() { return SIZE; }
+
+        float*       raw_data() { return reinterpret_cast<float*>(m_Data.data()); }
+        const float* raw_data() const { return reinterpret_cast<const float*>(m_Data.data()); }
 
         Vector<SIZE, T>*       data() { return m_Data.data(); }
         const Vector<SIZE, T>* data() const { return m_Data.data(); }
@@ -110,6 +124,27 @@ namespace nate::Modules
                 }
             }
             return rslt;
+        }
+
+        SquareMatrix& transpose_this()
+        {
+            std::array<Vector<SIZE, T>, SIZE> tmp = m_Data;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                for (size_t j = 0; j < SIZE; ++j)
+                {
+                    m_Data[j][i] = tmp[i][j];
+                }
+            }
+            return *this;
+        }
+
+        std::string print() const
+        {
+            std::stringstream ss;
+            ss << *this;
+
+            return ss.str();
         }
 
         friend bool operator==(const SquareMatrix& lhs, const SquareMatrix& rhs) = default;
@@ -301,18 +336,6 @@ namespace nate::Modules
         }
 
       protected:
-        template <class DERIVED>
-        static DERIVED identity()
-        {
-            static_assert(std::is_base_of_v<SquareMatrix, DERIVED>, "return type must derive from SquareMatrix");
-            DERIVED rslt;
-            for (size_t i = 0; i < SIZE; ++i)
-            {
-                rslt[i][i] = 1;
-            }
-            return rslt;
-        }
-
       private:
         T matrix_of_minors(size_t col, size_t row) const
         {

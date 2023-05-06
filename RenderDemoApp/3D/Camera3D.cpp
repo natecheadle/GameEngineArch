@@ -18,9 +18,11 @@ namespace nate::Modules::Render
     Camera3D::Camera3D(GUI::IWindow* pWindow)
         : m_pWindow(pWindow)
     {
+        Recalculate();
     }
 
     Camera3D::~Camera3D() {}
+
     SquareMatrix4x4<float> Camera3D::Projection() const
     {
         return SquareMatrix4x4<float>::perspective(m_FOV, m_pWindow->GetLastWindowSize().AspectRatio(), m_Near, m_Far);
@@ -28,7 +30,7 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Camera3D::View() const
     {
-        return SquareMatrix4x4<float>::lookat(m_Right, m_CameraUp, m_Direction, m_Target);
+        return SquareMatrix4x4<float>::lookat(m_Position, m_Target, m_WorldUp);
     }
 
     void Camera3D::CameraPosition(const Vector3<float>& val)
@@ -52,10 +54,12 @@ namespace nate::Modules::Render
     void Camera3D::Translate(const Vector3<float>& value)
     {
         m_Position += value;
+        m_Target += value;
         Recalculate();
     }
     void Camera3D::RotateX(float val)
     {
+        // TODO I think this is wrong.
         SquareMatrix4x4<float> rotMat(SquareMatrix4x4<float>::rotate_x_init(val));
         m_Direction = (rotMat * m_Direction).ToVector3();
         m_Direction.normalize_this();
@@ -64,6 +68,7 @@ namespace nate::Modules::Render
     }
     void Camera3D::RotateY(float val)
     {
+        // TODO I think this is wrong.
         SquareMatrix4x4<float> rotMat(SquareMatrix4x4<float>::rotate_y_init(val));
         m_Direction = (rotMat * m_Direction).ToVector3();
         m_Direction.normalize_this();
@@ -72,6 +77,7 @@ namespace nate::Modules::Render
     }
     void Camera3D::RotateZ(float val)
     {
+        // TODO I think this is wrong.
         SquareMatrix4x4<float> rotMat(SquareMatrix4x4<float>::rotate_z_init(val));
         m_Direction = (rotMat * m_Direction).ToVector3();
         m_Direction.normalize_this();
@@ -82,7 +88,5 @@ namespace nate::Modules::Render
     void Camera3D::Recalculate()
     {
         m_Direction = Vector3<float>(m_Position - m_Target).normalize_this();
-        m_Right     = m_WorldUp.cross(m_Direction).normalize_this();
-        m_CameraUp  = m_Direction.cross(m_Right).normalize_this();
     }
 } // namespace nate::Modules::Render

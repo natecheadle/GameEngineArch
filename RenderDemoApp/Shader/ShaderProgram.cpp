@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 #include <glad/glad.h>
 
+#include <array>
 #include <sstream>
 #include <stdexcept>
 
@@ -69,5 +70,11 @@ namespace nate::Modules::Render
     void ShaderProgram::SetShaderVar(const std::string& name, float value) const
     {
         glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+    }
+
+    void ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const
+    {
+        auto loc = glGetUniformLocation(m_ID, name.c_str());
+        glUniformMatrix4fv(loc, 1, GL_FALSE, value.raw_data());
     }
 } // namespace nate::Modules::Render

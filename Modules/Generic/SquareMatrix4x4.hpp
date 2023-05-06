@@ -30,20 +30,21 @@ namespace nate::Modules
         SquareMatrix4x4(const SquareMatrix4x4& other) = default;
         SquareMatrix4x4(SquareMatrix4x4&& other)      = default;
 
-        static SquareMatrix4x4 lookat(
-            const Vector3<T>& right,
-            const Vector3<T>& up,
-            const Vector3<T>& dir,
-            const Vector3<T>& pos)
+        static SquareMatrix4x4 lookat(const Vector3<T>& pos, const Vector3<T>& tar, const Vector3<T>& up)
         {
-            SquareMatrix4x4 lookat(BASE::identity());
-            lookat[0] = right;
-            lookat[1] = up;
-            lookat[2] = dir;
-            lookat    = lookat.transpose();
+            Vector3<T> dir = pos - tar;
+            dir.normalize_this();
+            Vector3<T> right  = up.cross(dir).normalize_this();
+            Vector3<T> cam_up = dir.cross(right);
 
-            SquareMatrix4x4 posMat(BASE::identity());
-            posMat[3] = pos;
+            SquareMatrix4x4 lookat(BASE::template identity<SquareMatrix4x4>());
+            lookat[0] = Vector4<T>(right, 0.0);
+            lookat[1] = Vector4<T>(cam_up, 0.0);
+            lookat[2] = Vector4<T>(dir, 0.0);
+            lookat.transpose_this();
+
+            SquareMatrix4x4 posMat(BASE::template identity<SquareMatrix4x4>());
+            posMat[3] = Vector4<T>(-1 * pos);
 
             lookat *= posMat;
             return lookat;
@@ -57,8 +58,8 @@ namespace nate::Modules
             per[0][0] = 1 / (ta * aspect);
             per[1][1] = 1 / ta;
             per[2][2] = -(far + near) / (far - near);
-            per[2][3] = (-2 * far * near) / (far - near);
-            per[3][2] = -1;
+            per[3][2] = (-2 * far * near) / (far - near);
+            per[2][3] = -1;
 
             return per;
         }

@@ -16,6 +16,7 @@
         "fmt",
         "boost-statechart",
         "glad",
-        "opengl"
+        "opengl",
+        "glm"
     ]
 }

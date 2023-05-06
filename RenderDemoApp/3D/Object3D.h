@@ -1,4 +1,5 @@
 #include "../Shader/ShaderProgram.h"
+#include "SquareMatrix4x4.hpp"
 
 #include <Vector3.hpp>
 

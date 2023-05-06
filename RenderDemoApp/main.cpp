@@ -1,14 +1,19 @@
+#include "3D/Fly_Camera3D.h"
 #include "3D/Object3D.h"
+#include "IWindow.h"
 #include "Shader/Shader.h"
 #include "Shader/ShaderProgram.h"
+#include "SquareMatrix4x4.hpp"
 
 #include <Window_GLFW.h>
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
 
+#include <chrono>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 // settings
 const unsigned int SCR_WIDTH  = 800;
@@ -55,7 +60,8 @@ int main()
         3 // second Triangle
     };
 
-    nate::Modules::Render::Object3D square(std::move(verts), std::move(indexes));
+    nate::Modules::Render::Fly_Camera3D camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
+    nate::Modules::Render::Object3D     square(std::move(verts), std::move(indexes));
     square.Shader(std::move(pProgram));
 
     // render loop
@@ -66,6 +72,13 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        camera.Update(std::chrono::milliseconds(17));
+
+        square.Shader()->SetShaderVar(
+            "model",
+            nate::Modules::SquareMatrix4x4<float>::identity<nate::Modules::SquareMatrix4x4<float>>());
+        square.Shader()->SetShaderVar("view", camera.View());
+        square.Shader()->SetShaderVar("projection", camera.Projection());
 
         square.Draw();
 
@@ -73,6 +86,8 @@ int main()
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window.GetGLFWWindow());
         window.PollEvents();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(17));
     }
 
     return 0;

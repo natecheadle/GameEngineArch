@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "SquareMatrix4x4.hpp"
 
 #include <memory>
 
@@ -27,9 +28,9 @@ namespace nate::Modules::Render
         void         Use();
         unsigned int ID() const { return m_ID; }
 
-      protected:
         void SetShaderVar(const std::string& name, bool value) const;
         void SetShaderVar(const std::string& name, int value) const;
         void SetShaderVar(const std::string& name, float value) const;
+        void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const;
     };
 } // namespace nate::Modules::Render

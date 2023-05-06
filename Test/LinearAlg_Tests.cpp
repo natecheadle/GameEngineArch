@@ -3,9 +3,15 @@
 #include <Vector.hpp>
 #include <Vector3.hpp>
 #include <Vector4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <gtest/gtest.h>
 
+#include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -59,7 +65,7 @@ namespace nate::Test
     {
         SquareMatrix4x4<float> rslt{
             {{{{1.0, 0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0, 0.0}}, {{0.0, 0.0, 1.0, 0.0}}, {{0.0, 0.0, 0.0, 1.0}}}}};
-        ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity());
+        ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
     }
 
     TEST_F(MatrixTests, ValidateInverse)
@@ -67,6 +73,43 @@ namespace nate::Test
         SquareMatrix3x3<float> input{{{{{2.0, 1.0, -1.0}}, {{-3.0, -1.0, 2.0}}, {{-2.0, 1.0, 2.0}}}}};
         SquareMatrix3x3<float> rslt{{{{{4.0, 3.0, -1.0}}, {{-2.0, -2.0, 1.0}}, {{5.0, 4.0, -1.0}}}}};
         ASSERT_EQ(rslt, input.invert());
+    }
+
+    TEST_F(MatrixTests, ValidatePerspective)
+    {
+        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::perspective(M_PI_4, 800.0 / 600.0, 0.1, 100.0));
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
+        SquareMatrix4x4<float> rslt;
+        for (size_t i = 0; i < SquareMatrix4x4<float>::size(); ++i)
+        {
+            for (size_t j = 0; j < SquareMatrix4x4<float>::size(); ++j)
+            {
+                rslt[i][j] = projection[int(i)][int(j)];
+            }
+        }
+
+        ASSERT_EQ(rslt, input);
+    }
+
+    TEST_F(MatrixTests, ValidateLookAt)
+    {
+        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::lookat(
+            {
+                {0.0, 0.0, 3.0}
+        },
+            {{0.0, 0.0, 0.0}},
+            {{0.0, 1.0, 0.0}}));
+        glm::mat4 look_at = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        SquareMatrix4x4<float> rslt;
+        for (size_t i = 0; i < SquareMatrix4x4<float>::size(); ++i)
+        {
+            for (size_t j = 0; j < SquareMatrix4x4<float>::size(); ++j)
+            {
+                rslt[i][j] = look_at[int(i)][int(j)];
+            }
+        }
+
+        ASSERT_EQ(rslt, input);
     }
 
     TEST(VectorTests, ValidateDotProduct)
@@ -78,9 +121,18 @@ namespace nate::Test
 
     TEST(VectorTests, ValidateCrossProduct)
     {
-        Vector3<float> vec({1.0, 2.0, 3.0});
-        Vector3<float> rslt = vec.cross(vec);
-        ASSERT_EQ(Vector3<float>({0, 0, 0}), rslt);
+        Vector3<float> vec1({1.0, 2.0, 3.0});
+        Vector3<float> vec2({-1.0, -1.0, -1.0});
+        Vector3<float> rslt = vec1.cross(vec2);
+        ASSERT_EQ(Vector3<float>({1, -2, 1}), rslt);
+    }
+
+    TEST(VectorTests, ValidateSubtraction)
+    {
+        Vector3<float> vec1({1.0, 2.0, 3.0});
+        Vector3<float> vec2({-1.0, -1.0, -1.0});
+        Vector3<float> rslt = vec1 - vec2;
+        ASSERT_EQ(Vector3<float>({2, 3, 4}), rslt);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateX)
@@ -125,4 +177,5 @@ namespace nate::Test
                                 .ToVector3();
         ASSERT_EQ(Vector3({3.0, 3.0, 3.0}), translated);
     }
+
 } // namespace nate::Test

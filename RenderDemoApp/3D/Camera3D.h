@@ -11,26 +11,29 @@
 #include <Vector3.hpp>
 
 #include <chrono>
+#include <cmath>
 #include <functional>
 
 namespace nate::Modules::Render
 {
     class Camera3D
     {
-        Vector3<float> m_Position;
-        Vector3<float> m_Target;
+        Vector3<float> m_Position{
+            {0.0, 0.0, 1.0}
+        };
+        Vector3<float> m_Target{
+            {0.0, 0.0, 0.0}
+        };
         Vector3<float> m_WorldUp{
             {0.0, 1.0, 0.0}
         };
 
-        float m_FOV;
-        float m_Near;
-        float m_Far;
+        float m_FOV{M_PI_4};
+        float m_Near{0.1};
+        float m_Far{100.0};
 
         // NOTE: The following 3 vectors are calculated values stored for conveniance.
         Vector3<float> m_Direction; // NOTE: This vector points out the back of the camera
-        Vector3<float> m_Right;
-        Vector3<float> m_CameraUp;
 
         GUI::IWindow* m_pWindow;
 
@@ -51,8 +54,6 @@ namespace nate::Modules::Render
         const Vector3<float>& WorldUp() const { return m_WorldUp; }
 
         Vector3<float> CameraDirection() const { return m_Direction; }
-        Vector3<float> CameraRight() const { return m_Right; }
-        Vector3<float> CameraUp() const;
 
         void CameraPosition(const Vector3<float>& val);
         void CameraTarget(const Vector3<float>& val);
