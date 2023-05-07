@@ -1,5 +1,8 @@
 #include "Object3D.h"
 
+#include "SquareMatrix4x4.hpp"
+#include "Vector3.hpp"
+
 #include <glad/glad.h>
 
 #include <algorithm>
@@ -61,6 +64,18 @@ namespace nate::Modules::Render
         glDeleteVertexArrays(1, &m_VAO);
         glDeleteBuffers(1, &m_VBO);
         glDeleteBuffers(1, &m_EBO);
+    }
+
+    SquareMatrix4x4<float> Object3D::ModelMatrix() const
+    {
+        // if (m_Rotation == Vector3({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
+        // {
+        //     return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
+        // }
+
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_xyz_init(m_Rotation));
+        rslt *= SquareMatrix4x4<float>::translate_init(m_Origin);
+        return rslt;
     }
 
     void Object3D::Draw()

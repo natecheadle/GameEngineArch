@@ -9,23 +9,14 @@ namespace nate::Modules::Render
 {
     class ShaderProgram
     {
-        unsigned int            m_ID;
-        std::shared_ptr<Shader> m_pFragmentShader;
-        std::shared_ptr<Shader> m_pGeometryShader;
-        std::shared_ptr<Shader> m_pVertexShader;
-
-        bool        m_IsValid;
-        std::string m_Error;
+        unsigned int m_ID;
 
       public:
-        ShaderProgram(
-            std::shared_ptr<Shader> pFragmentShader,
-            std::shared_ptr<Shader> pGeometryShader,
-            std::shared_ptr<Shader> pVertexShader);
+        ShaderProgram(const Shader* pFragmentShader, const Shader* pGeometryShader, const Shader* pVertexShader);
 
         ~ShaderProgram();
 
-        void         Use();
+        void         Use() const;
         unsigned int ID() const { return m_ID; }
 
         void SetShaderVar(const std::string& name, bool value) const;

@@ -10,30 +10,28 @@
 namespace nate::Modules::Render
 {
     ShaderProgram::ShaderProgram(
-        std::shared_ptr<Shader> pFragmentShader,
-        std::shared_ptr<Shader> pGeometryShader,
-        std::shared_ptr<Shader> pVertexShader)
+        const Shader* pFragmentShader,
+        const Shader* pGeometryShader,
+        const Shader* pVertexShader)
         : m_ID(glCreateProgram())
-        , m_pFragmentShader(std::move(pFragmentShader))
-        , m_pGeometryShader(std::move(pGeometryShader))
-        , m_pVertexShader(std::move(pVertexShader))
     {
+
         std::stringstream error;
         int               success{0};
 
-        if (m_pFragmentShader)
+        if (pFragmentShader)
         {
-            glAttachShader(m_ID, m_pFragmentShader->ID());
+            glAttachShader(m_ID, pFragmentShader->ID());
         }
 
-        if (m_pVertexShader)
+        if (pVertexShader)
         {
-            glAttachShader(m_ID, m_pVertexShader->ID());
+            glAttachShader(m_ID, pVertexShader->ID());
         }
 
-        if (m_pGeometryShader)
+        if (pGeometryShader)
         {
-            glAttachShader(m_ID, m_pGeometryShader->ID());
+            glAttachShader(m_ID, pGeometryShader->ID());
         }
 
         glLinkProgram(m_ID);
@@ -52,7 +50,7 @@ namespace nate::Modules::Render
         glDeleteProgram(m_ID);
     }
 
-    void ShaderProgram::Use()
+    void ShaderProgram::Use() const
     {
         glUseProgram(m_ID);
     }

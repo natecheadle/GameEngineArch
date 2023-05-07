@@ -38,10 +38,8 @@ int main()
 
     auto pVertexShader   = nate::Modules::Render::Shader::Create(vertex_shader_path);
     auto pFragmentShader = nate::Modules::Render::Shader::Create(fragment_shader_path);
-    auto pProgram        = std::make_shared<nate::Modules::Render::ShaderProgram>(
-        std::move(pFragmentShader),
-        nullptr,
-        std::move(pVertexShader));
+    auto pProgram =
+        std::make_shared<nate::Modules::Render::ShaderProgram>(pFragmentShader.get(), nullptr, pVertexShader.get());
 
     std::vector<nate::Modules::Render::VertexData> verts{
         {{{0.5f, 0.5f, 0.0f}},   {}, {}},
@@ -74,9 +72,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
         camera.Update(std::chrono::milliseconds(17));
 
-        square.Shader()->SetShaderVar(
-            "model",
-            nate::Modules::SquareMatrix4x4<float>::identity<nate::Modules::SquareMatrix4x4<float>>());
+        square.Shader()->SetShaderVar("model", square.ModelMatrix());
         square.Shader()->SetShaderVar("view", camera.View());
         square.Shader()->SetShaderVar("projection", camera.Projection());
 
