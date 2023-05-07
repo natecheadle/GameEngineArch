@@ -14,6 +14,9 @@ add_executable(${PROJECT_NAME}
     "Shader/VertexShader.cpp"
     "Shader/GeometryShader.cpp"
     "Shader/ComputeShader.cpp"
+    "Texture/stb_implementation.cpp"
+    "Texture/Texture.cpp"
+    "Texture/ImageFile.cpp"
 )
 
 add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")

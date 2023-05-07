@@ -1,8 +1,10 @@
 #include "../Shader/ShaderProgram.h"
+#include "../Texture/Texture.h"
 #include "SquareMatrix4x4.hpp"
 
 #include <Vector3.hpp>
 
+#include <initializer_list>
 #include <memory>
 #include <vector>
 
@@ -21,15 +23,20 @@ namespace nate::Modules::Render
         unsigned int m_VBO;
         unsigned int m_EBO;
 
-        std::vector<VertexData>        m_Vertexes;
-        std::vector<std::uint32_t>     m_Indeces;
-        std::shared_ptr<ShaderProgram> m_pShader;
-        Vector3<float>                 m_Origin;
-        Vector3<float>                 m_Rotation;
+        std::vector<VertexData>               m_Vertexes;
+        std::vector<std::uint32_t>            m_Indeces;
+        std::shared_ptr<ShaderProgram>        m_pShader;
+        Vector3<float>                        m_Origin;
+        Vector3<float>                        m_Rotation;
+        std::vector<std::shared_ptr<Texture>> m_Textures;
 
       public:
         Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
+        Object3D(std::vector<VertexData> vertexes);
         ~Object3D();
+
+        void Textures(std::vector<std::shared_ptr<Texture>> val) { m_Textures = std::move(val); }
+        const std::vector<std::shared_ptr<Texture>>& Textures() const { return m_Textures; }
 
         void Shader(std::shared_ptr<ShaderProgram> pShader) { m_pShader = std::move(pShader); }
         const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }

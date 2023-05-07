@@ -4,6 +4,7 @@
 #include "Shader/Shader.h"
 #include "Shader/ShaderProgram.h"
 #include "SquareMatrix4x4.hpp"
+#include "Texture/Texture.h"
 
 #include <Window_GLFW.h>
 #include <glad/glad.h>
@@ -25,6 +26,8 @@ int main()
 
     auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
     auto fragment_shader_path = shader_dir / "fragment_shader.frag";
+    auto awesomeface_path     = shader_dir / "awesomeface.png";
+    auto wall_path            = shader_dir / "wall.jpg";
 
     nate::Modules::GUI::Window_GLFW window({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
 
@@ -36,45 +39,82 @@ int main()
         return -1;
     }
 
+    // configure global opengl state
+    // -----------------------------
+    glEnable(GL_DEPTH_TEST);
+
+    auto pWallTex = std::make_shared<nate::Modules::Render::Texture>(
+        wall_path,
+        nate::Modules::Render::Texture::TextureUnit::Texture0);
+    auto pFaceTex = std::make_shared<nate::Modules::Render::Texture>(
+        awesomeface_path,
+        nate::Modules::Render::Texture::TextureUnit::Texture1);
+
     auto pVertexShader   = nate::Modules::Render::Shader::Create(vertex_shader_path);
     auto pFragmentShader = nate::Modules::Render::Shader::Create(fragment_shader_path);
     auto pProgram =
         std::make_shared<nate::Modules::Render::ShaderProgram>(pFragmentShader.get(), nullptr, pVertexShader.get());
 
     std::vector<nate::Modules::Render::VertexData> verts{
-        {{{0.5f, 0.5f, 0.0f}},   {}, {}},
-        {{{0.5f, -0.5f, 0.0f}},  {}, {}},
-        {{{-0.5f, -0.5f, 0.0f}}, {}, {}},
-        {{{-0.5f, 0.5f, 0.0f}},  {}, {}},
-    };
-
-    std::vector<std::uint32_t> indexes{
-        // note that we start from 0!
-        0,
-        1,
-        3, // first Triangle
-        1,
-        2,
-        3 // second Triangle
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 0.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{0.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{1.0f, 1.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}}
     };
 
     nate::Modules::Render::Fly_Camera3D camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
-    nate::Modules::Render::Object3D     square(std::move(verts), std::move(indexes));
+    nate::Modules::Render::Object3D     square(std::move(verts));
     square.Shader(std::move(pProgram));
 
-    // render loop
-    // -----------
+    //  render loop
+    //  -----------
     while (!window.ShouldClose())
     {
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         camera.Update(std::chrono::milliseconds(17));
 
+        square.RotY(M_PI_4 / 100.0);
+
+        square.Shader()->SetShaderVar("texture1", 0);
+        square.Shader()->SetShaderVar("texture2", 1);
+        square.Shader()->SetShaderVar("projection", camera.Projection());
         square.Shader()->SetShaderVar("model", square.ModelMatrix());
         square.Shader()->SetShaderVar("view", camera.View());
-        square.Shader()->SetShaderVar("projection", camera.Projection());
 
         square.Draw();
 

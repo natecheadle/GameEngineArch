@@ -3,6 +3,7 @@
 #include "SquareMatrix4x4.hpp"
 #include "Vector3.hpp"
 
+#include <OpenGL/OpenGL.h>
 #include <glad/glad.h>
 
 #include <algorithm>
@@ -59,6 +60,46 @@ namespace nate::Modules::Render
         glBindVertexArray(0);
     }
 
+    Object3D::Object3D(std::vector<VertexData> vertexes)
+        : m_Vertexes(std::move(vertexes))
+    {
+        glGenVertexArrays(1, &m_VAO);
+        glGenBuffers(1, &m_VBO);
+
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex
+        // attributes(s).
+        glBindVertexArray(m_VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            static_cast<std::uint32_t>(sizeof(VertexData) * m_Vertexes.size()),
+            m_Vertexes.data(),
+            GL_STATIC_DRAW);
+
+        // position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, Position));
+        glEnableVertexAttribArray(0);
+        // color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, Color));
+        glEnableVertexAttribArray(1);
+        // texture coord attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, TextureCoord));
+        glEnableVertexAttribArray(2);
+
+        // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound
+        // vertex buffer object so afterwards we can safely unbind
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the
+        // VAO; keep the EBO bound. glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely
+        // happens. Modifying other VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs
+        // (nor VBOs) when it's not directly necessary.
+        glBindVertexArray(0);
+    }
+
     Object3D::~Object3D()
     {
         glDeleteVertexArrays(1, &m_VAO);
@@ -68,10 +109,10 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Object3D::ModelMatrix() const
     {
-        // if (m_Rotation == Vector3({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
-        // {
-        //     return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
-        // }
+        if (m_Rotation == Vector3({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
+        {
+            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
+        }
 
         SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_xyz_init(m_Rotation));
         rslt *= SquareMatrix4x4<float>::translate_init(m_Origin);
@@ -80,13 +121,25 @@ namespace nate::Modules::Render
 
     void Object3D::Draw()
     {
-
+        for (auto& tex : m_Textures)
+        {
+            if (tex)
+            {
+                tex->Activate();
+                tex->Bind();
+            }
+        }
         m_pShader->Use();
 
         glBindVertexArray(m_VAO); // seeing as we only have a single VAO there's no need to bind it every time, but
                                   // we'll do so to keep things a bit more organized
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0); // no need to unbind it every time}
+        if (m_Indeces.empty())
+        {
+            glDrawArrays(GL_TRIANGLES, 0, static_cast<int>(m_Vertexes.size()));
+        }
+        else
+        {
+            glDrawElements(GL_TRIANGLES, static_cast<int>(m_Vertexes.size()), GL_UNSIGNED_INT, 0);
+        }
     }
 } // namespace nate::Modules::Render

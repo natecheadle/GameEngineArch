@@ -19,7 +19,7 @@ namespace nate::Modules::Render
     class Camera3D
     {
         Vector3<float> m_Position{
-            {0.0, 0.0, 1.0}
+            {0.0, 0.0, 5.0}
         };
         Vector3<float> m_Target{
             {0.0, 0.0, 0.0}
