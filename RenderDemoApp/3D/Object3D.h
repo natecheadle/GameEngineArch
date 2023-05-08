@@ -27,7 +27,7 @@ namespace nate::Modules::Render
         std::vector<std::uint32_t>            m_Indeces;
         std::shared_ptr<ShaderProgram>        m_pShader;
         Vector3<float>                        m_Origin;
-        Vector3<float>                        m_Rotation;
+        Vector3<Radian<float>>                m_Rotation;
         std::vector<std::shared_ptr<Texture>> m_Textures;
 
       public:
@@ -46,15 +46,15 @@ namespace nate::Modules::Render
         SquareMatrix4x4<float> ModelMatrix() const;
 
         void Translate(const Vector3<float>& val) { m_Origin += val; }
-        void Rotate(const Vector3<float>& val) { m_Rotation += val; }
+        void Rotate(const Vector3<Radian<float>>& val) { m_Rotation += val; }
 
         void TranslateX(float val) { m_Origin[0] += val; }
         void TranslateY(float val) { m_Origin[1] += val; }
         void TranslateZ(float val) { m_Origin[2] += val; }
 
-        void RotX(float val) { m_Rotation[0] += val; }
-        void RotY(float val) { m_Rotation[1] += val; }
-        void RotZ(float val) { m_Rotation[2] += val; }
+        void RotX(const Radian<float>& val) { m_Rotation[0] += val; }
+        void RotY(const Radian<float>& val) { m_Rotation[1] += val; }
+        void RotZ(const Radian<float>& val) { m_Rotation[2] += val; }
     };
 
     static_assert(sizeof(VertexData) == sizeof(float) * 8, "VertexData must be tightly packed");

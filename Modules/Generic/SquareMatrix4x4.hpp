@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SquareMatrix.hpp"
+#include "Units/Radian.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 
@@ -82,21 +83,21 @@ namespace nate::Modules
             return rslt;
         }
 
-        static SquareMatrix4x4 rotate_init(const Vector3<T>& rotAxis, T theta)
+        static SquareMatrix4x4 rotate_init(const Vector3<T>& rotAxis, Radian<T> theta)
         {
-            auto createMatrix = [](const Vector3<T>& rotAxis, T theta) -> SquareMatrix4x4 {
+            auto createMatrix = [](const Vector3<T>& rotAxis, Radian<T> theta) -> SquareMatrix4x4 {
                 SquareMatrix4x4 rslt;
-                rslt[0][0] = std::cos(theta) + rotAxis.X() * rotAxis.X() * (1 - std::cos(theta));
-                rslt[1][0] = rotAxis.X() * rotAxis.Y() * (1 - std::cos(theta)) - rotAxis.Z() * std::sin(theta);
-                rslt[2][0] = rotAxis.X() * rotAxis.Z() * (1 - std::cos(theta)) + rotAxis.Y() * std::sin(theta);
+                rslt[0][0] = cos(theta) + rotAxis.X() * rotAxis.X() * (1 - cos(theta));
+                rslt[1][0] = rotAxis.X() * rotAxis.Y() * (1 - cos(theta)) - rotAxis.Z() * sin(theta);
+                rslt[2][0] = rotAxis.X() * rotAxis.Z() * (1 - cos(theta)) + rotAxis.Y() * sin(theta);
 
-                rslt[0][1] = rotAxis.Y() * rotAxis.X() * (1 - std::cos(theta)) + rotAxis.Z() * std::sin(theta);
-                rslt[1][1] = std::cos(theta) + rotAxis.Y() * rotAxis.Y() * (1 - std::cos(theta));
-                rslt[2][1] = rotAxis.Y() * rotAxis.Z() * (1 - std::cos(theta)) - rotAxis.X() * std::sin(theta);
+                rslt[0][1] = rotAxis.Y() * rotAxis.X() * (1 - cos(theta)) + rotAxis.Z() * sin(theta);
+                rslt[1][1] = cos(theta) + rotAxis.Y() * rotAxis.Y() * (1 - cos(theta));
+                rslt[2][1] = rotAxis.Y() * rotAxis.Z() * (1 - cos(theta)) - rotAxis.X() * sin(theta);
 
-                rslt[0][2] = rotAxis.Z() * rotAxis.X() * (1 - std::cos(theta)) - rotAxis.Y() * std::sin(theta);
-                rslt[1][2] = rotAxis.Z() * rotAxis.Y() * (1 - std::cos(theta)) + rotAxis.X() * std::sin(theta);
-                rslt[2][2] = std::cos(theta) + rotAxis.Z() * rotAxis.Z() * (1 - std::cos(theta));
+                rslt[0][2] = rotAxis.Z() * rotAxis.X() * (1 - cos(theta)) - rotAxis.Y() * sin(theta);
+                rslt[1][2] = rotAxis.Z() * rotAxis.Y() * (1 - cos(theta)) + rotAxis.X() * sin(theta);
+                rslt[2][2] = cos(theta) + rotAxis.Z() * rotAxis.Z() * (1 - cos(theta));
                 return rslt;
             };
 
@@ -104,55 +105,55 @@ namespace nate::Modules
                                                            : createMatrix(rotAxis, theta);
         }
 
-        static SquareMatrix4x4 rotate_x_init(T theta)
+        static SquareMatrix4x4 rotate_x_init(Radian<T> theta)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();
-            rslt[1][1]           = std::cos(theta);
-            rslt[2][1]           = -std::sin(theta);
-            rslt[1][2]           = std::sin(theta);
-            rslt[2][2]           = std::cos(theta);
+            rslt[1][1]           = cos(theta);
+            rslt[2][1]           = -sin(theta);
+            rslt[1][2]           = sin(theta);
+            rslt[2][2]           = cos(theta);
             return rslt;
         }
 
-        static SquareMatrix4x4 rotate_y_init(T theta)
+        static SquareMatrix4x4 rotate_y_init(Radian<T> theta)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();
-            rslt[0][0]           = std::cos(theta);
-            rslt[0][2]           = -std::sin(theta);
-            rslt[2][0]           = std::sin(theta);
-            rslt[2][2]           = std::cos(theta);
+            rslt[0][0]           = cos(theta);
+            rslt[0][2]           = -sin(theta);
+            rslt[2][0]           = sin(theta);
+            rslt[2][2]           = cos(theta);
             return rslt;
         }
 
-        static SquareMatrix4x4 rotate_z_init(T theta)
+        static SquareMatrix4x4 rotate_z_init(Radian<T> theta)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();
-            rslt[0][0]           = std::cos(theta);
-            rslt[1][0]           = -std::sin(theta);
-            rslt[0][1]           = std::sin(theta);
-            rslt[1][1]           = std::cos(theta);
+            rslt[0][0]           = cos(theta);
+            rslt[1][0]           = -sin(theta);
+            rslt[0][1]           = sin(theta);
+            rslt[1][1]           = cos(theta);
             return rslt;
         }
 
-        static SquareMatrix4x4 rotate_zyx_init(const Vector3<T>& rot)
+        static SquareMatrix4x4 rotate_zyx_init(const Vector3<Radian<T>>& rot)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();
 
-            T alpha = rot.z();
-            T beta  = rot.y();
-            T gamma = rot.x();
+            Radian<T> alpha = rot.z();
+            Radian<T> beta  = rot.y();
+            Radian<T> gamma = rot.x();
 
-            rslt[0][0] = std::cos(alpha) * std::cos(beta);
-            rslt[0][1] = std::sin(alpha) * std::cos(beta);
-            rslt[0][2] = -std::sin(beta);
+            rslt[0][0] = cos(alpha) * cos(beta);
+            rslt[0][1] = sin(alpha) * cos(beta);
+            rslt[0][2] = -sin(beta);
 
-            rslt[1][0] = std::cos(alpha) * std::sin(beta) * std::sin(gamma) - std::sin(alpha) * std::cos(gamma);
-            rslt[1][1] = std::sin(alpha) * std::sin(beta) * std::sin(gamma) + std::cos(alpha) * std::cos(gamma);
-            rslt[1][2] = std::cos(beta) * std::sin(gamma);
+            rslt[1][0] = cos(alpha) * sin(beta) * sin(gamma) - sin(alpha) * cos(gamma);
+            rslt[1][1] = sin(alpha) * sin(beta) * sin(gamma) + cos(alpha) * cos(gamma);
+            rslt[1][2] = cos(beta) * sin(gamma);
 
-            rslt[2][0] = std::cos(alpha) * std::sin(beta) * std::cos(gamma) + std::sin(alpha) * std::sin(gamma);
-            rslt[2][1] = std::sin(alpha) * std::sin(beta) * std::cos(gamma) - std::cos(alpha) * std::sin(gamma);
-            rslt[2][2] = std::cos(beta) * std::cos(gamma);
+            rslt[2][0] = cos(alpha) * sin(beta) * cos(gamma) + sin(alpha) * sin(gamma);
+            rslt[2][1] = sin(alpha) * sin(beta) * cos(gamma) - cos(alpha) * sin(gamma);
+            rslt[2][2] = cos(beta) * cos(gamma);
 
             return rslt;
         }

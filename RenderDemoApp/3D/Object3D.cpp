@@ -88,7 +88,7 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Object3D::ModelMatrix() const
     {
-        if (m_Rotation == Vector3({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
+        if (m_Rotation == Vector3<Radian<float>>({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
         {
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
