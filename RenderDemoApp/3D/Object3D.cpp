@@ -47,16 +47,7 @@ namespace nate::Modules::Render
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, TextureCoord));
         glEnableVertexAttribArray(2);
 
-        // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound
-        // vertex buffer object so afterwards we can safely unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the
-        // VAO; keep the EBO bound. glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely
-        // happens. Modifying other VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs
-        // (nor VBOs) when it's not directly necessary.
         glBindVertexArray(0);
     }
 
@@ -65,9 +56,6 @@ namespace nate::Modules::Render
     {
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
-
-        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex
-        // attributes(s).
         glBindVertexArray(m_VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -87,16 +75,7 @@ namespace nate::Modules::Render
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, TextureCoord));
         glEnableVertexAttribArray(2);
 
-        // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound
-        // vertex buffer object so afterwards we can safely unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the
-        // VAO; keep the EBO bound. glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely
-        // happens. Modifying other VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs
-        // (nor VBOs) when it's not directly necessary.
         glBindVertexArray(0);
     }
 
@@ -114,7 +93,7 @@ namespace nate::Modules::Render
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
 
-        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_xyz_init(m_Rotation));
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation));
         rslt *= SquareMatrix4x4<float>::translate_init(m_Origin);
         return rslt;
     }

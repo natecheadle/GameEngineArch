@@ -134,25 +134,25 @@ namespace nate::Modules
             return rslt;
         }
 
-        static SquareMatrix4x4 rotate_xyz_init(const Vector3<T>& rot)
+        static SquareMatrix4x4 rotate_zyx_init(const Vector3<T>& rot)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();
 
             T alpha = rot.z();
             T beta  = rot.y();
-            T gamma = rot.z();
+            T gamma = rot.x();
 
-            rslt[0][0] = std::cos(beta) * std::cos(gamma);
-            rslt[0][1] = std::cos(beta) * std::sin(gamma);
+            rslt[0][0] = std::cos(alpha) * std::cos(beta);
+            rslt[0][1] = std::sin(alpha) * std::cos(beta);
             rslt[0][2] = -std::sin(beta);
 
-            rslt[1][0] = std::cos(alpha) * std::sin(beta) * std::sin(gamma) - std::cos(alpha) * std::sin(gamma);
+            rslt[1][0] = std::cos(alpha) * std::sin(beta) * std::sin(gamma) - std::sin(alpha) * std::cos(gamma);
             rslt[1][1] = std::sin(alpha) * std::sin(beta) * std::sin(gamma) + std::cos(alpha) * std::cos(gamma);
-            rslt[1][2] = std::sin(alpha) * std::cos(beta);
+            rslt[1][2] = std::cos(beta) * std::sin(gamma);
 
             rslt[2][0] = std::cos(alpha) * std::sin(beta) * std::cos(gamma) + std::sin(alpha) * std::sin(gamma);
             rslt[2][1] = std::sin(alpha) * std::sin(beta) * std::cos(gamma) - std::cos(alpha) * std::sin(gamma);
-            rslt[2][2] = std::cos(alpha) * std::cos(beta);
+            rslt[2][2] = std::cos(beta) * std::cos(gamma);
 
             return rslt;
         }

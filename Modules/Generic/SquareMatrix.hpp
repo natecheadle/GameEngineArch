@@ -158,7 +158,7 @@ namespace nate::Modules
                 {
                     for (size_t k = 0; k < SIZE; ++k)
                     {
-                        rslt[i][j] += lhs[i][k] * rhs[k][j];
+                        rslt[j][i] += lhs[k][i] * rhs[j][k];
                     }
                 }
             }
