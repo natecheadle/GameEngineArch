@@ -54,7 +54,7 @@ namespace nate::Modules::Render
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
-            image.GetFormat(),
+            GL_RGB,
             image.GetWidth(),
             image.GeHeight(),
             0,

@@ -97,6 +97,7 @@ int main()
     nate::Modules::Render::Fly_Camera3D camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
     nate::Modules::Render::Object3D     square(std::move(verts));
     square.Shader(std::move(pProgram));
+    square.Textures({pWallTex, pFaceTex});
 
     //  render loop
     //  -----------
