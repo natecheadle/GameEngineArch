@@ -17,6 +17,8 @@ add_executable(${PROJECT_NAME}
     "Texture/stb_implementation.cpp"
     "Texture/Texture.cpp"
     "Texture/ImageFile.cpp"
+    "Renderer/Renderer_OpenGL.cpp"
+    "Renderer/Renderer.cpp"
 )
 
 add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")

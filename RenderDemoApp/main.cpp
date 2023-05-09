@@ -43,12 +43,11 @@ int main()
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    auto pWallTex = std::make_shared<nate::Modules::Render::Texture>(
-        wall_path,
-        nate::Modules::Render::Texture::TextureUnit::Texture0);
+    auto pWallTex =
+        std::make_shared<nate::Modules::Render::Texture>(wall_path, nate::Modules::Render::TextureUnit::Texture0);
     auto pFaceTex = std::make_shared<nate::Modules::Render::Texture>(
         awesomeface_path,
-        nate::Modules::Render::Texture::TextureUnit::Texture1);
+        nate::Modules::Render::TextureUnit::Texture1);
 
     auto pVertexShader   = nate::Modules::Render::Shader::Create(vertex_shader_path);
     auto pFragmentShader = nate::Modules::Render::Shader::Create(fragment_shader_path);

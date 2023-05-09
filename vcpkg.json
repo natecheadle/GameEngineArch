@@ -18,6 +18,7 @@
         "glad",
         "opengl",
         "glm",
-        "stb"
+        "stb",
+        "boost-lockfree"
     ]
 }
