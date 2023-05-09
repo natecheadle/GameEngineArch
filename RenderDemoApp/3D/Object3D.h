@@ -19,10 +19,6 @@ namespace nate::Modules::Render
 
     class Object3D
     {
-        unsigned int m_VAO;
-        unsigned int m_VBO;
-        unsigned int m_EBO;
-
         std::vector<VertexData>               m_Vertexes;
         std::vector<std::uint32_t>            m_Indeces;
         std::shared_ptr<ShaderProgram>        m_pShader;
@@ -30,10 +26,15 @@ namespace nate::Modules::Render
         Vector3<Radian<float>>                m_Rotation;
         std::vector<std::shared_ptr<Texture>> m_Textures;
 
-      public:
+      protected:
         Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
         Object3D(std::vector<VertexData> vertexes);
-        ~Object3D();
+
+      public:
+        virtual ~Object3D();
+
+        const std::vector<VertexData>&    Vertexes() const { return m_Vertexes; }
+        const std::vector<std::uint32_t>& Indeces() const { return m_Indeces; }
 
         void Textures(std::vector<std::shared_ptr<Texture>> val) { m_Textures = std::move(val); }
         const std::vector<std::shared_ptr<Texture>>& Textures() const { return m_Textures; }
@@ -41,7 +42,7 @@ namespace nate::Modules::Render
         void Shader(std::shared_ptr<ShaderProgram> pShader) { m_pShader = std::move(pShader); }
         const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }
 
-        void Draw();
+        virtual void Draw();
 
         SquareMatrix4x4<float> ModelMatrix() const;
 

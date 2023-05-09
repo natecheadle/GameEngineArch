@@ -3,18 +3,19 @@
 #include "../3D/Object3D.h"
 #include "../Shader/Shader.h"
 #include "../Texture/Texture.h"
-#include "IRenderCommand.h"
 
 #include <Job.h>
 
 #include <algorithm>
 #include <atomic>
+#include <cassert>
 #include <condition_variable>
 #include <filesystem>
 #include <future>
 #include <memory>
 #include <optional>
 #include <queue>
+
 
 namespace nate::Modules::Render
 {

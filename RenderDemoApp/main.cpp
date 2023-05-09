@@ -1,5 +1,5 @@
 #include "3D/Fly_Camera3D.h"
-#include "3D/Object3D.h"
+#include "3D/OpenGL_Object3D.h"
 #include "IWindow.h"
 #include "Shader/Shader.h"
 #include "Shader/ShaderProgram.h"
@@ -93,8 +93,8 @@ int main()
         {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}}
     };
 
-    nate::Modules::Render::Fly_Camera3D camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
-    nate::Modules::Render::Object3D     square(std::move(verts));
+    nate::Modules::Render::Fly_Camera3D    camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
+    nate::Modules::Render::OpenGL_Object3D square(std::move(verts));
     square.Shader(std::move(pProgram));
     square.Textures({pWallTex, pFaceTex});
 

@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
     "3D/Object3D.cpp"
     "3D/Camera3D.cpp"
     "3D/Fly_Camera3D.cpp"
+    "3D/OpenGL_Object3D.cpp"
     "Shader/FragmentShader.cpp"
     "Shader/ShaderProgram.cpp"
     "Shader/Shader.cpp"

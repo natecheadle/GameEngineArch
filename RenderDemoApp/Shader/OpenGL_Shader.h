@@ -1,21 +1,10 @@
 #pragma once
 
-#include <filesystem>
-#include <string>
+#include "Shader.h"
 
 namespace nate::Modules::Render
 {
-    enum class ShaderType
-    {
-        Vertex,
-        Fragment,
-        Geometry,
-        Compute,
-
-        LAST
-    };
-
-    class Shader
+    class OpenGL_Shader : public Shader
     {
       public:
       private:
@@ -23,17 +12,16 @@ namespace nate::Modules::Render
         unsigned int m_ID{0};
 
       public:
-        const std::string& ShaderCode() const = 0;
-        virtual ShaderType Type() const       = 0;
+        const std::string& ShaderCode() const final { return m_ShaderCode; }
         unsigned int       ID() const { return m_ID; }
 
-        virtual ~Shader();
+        ~OpenGL_Shader() override;
 
         static std::unique_ptr<Shader> Create(const std::filesystem::path& shaderLoc);
         static std::unique_ptr<Shader> Create(const std::filesystem::path& shaderLoc, ShaderType type);
 
       protected:
-        Shader() = default;
+        OpenGL_Shader() = default;
 
         virtual unsigned int CreateGLShader() = 0;
 
