@@ -4,6 +4,7 @@
 #include "../Shader/Shader.h"
 #include "../Texture/Texture.h"
 
+#include <IWindow.h>
 #include <Job.h>
 
 #include <algorithm>
@@ -16,9 +17,9 @@
 #include <optional>
 #include <queue>
 
-
 namespace nate::Modules::Render
 {
+
     class Renderer : public Jobs::Job
     {
         static std::unique_ptr<Renderer> s_pInstance;
@@ -30,28 +31,28 @@ namespace nate::Modules::Render
       public:
         virtual ~Renderer();
 
-        static void      SetInstance(std::unique_ptr<Renderer> pRenderer) { s_pInstance = std::move(pRenderer); }
+        static void      SetInstance(std::unique_ptr<Renderer> pRenderer);
         static Renderer* GetInstance()
         {
             assert(s_pInstance.get());
             return s_pInstance.get();
         }
 
-        virtual std::unique_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) = 0;
-        virtual std::unique_ptr<Object3D> CreateObject(
+        virtual std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) = 0;
+        virtual std::shared_ptr<Object3D> CreateObject(
             std::vector<VertexData>    vertexes,
             std::vector<std::uint32_t> indeces) = 0;
 
-        virtual std::unique_ptr<Shader> CreateShader(const std::filesystem::path& path)                  = 0;
-        virtual std::unique_ptr<Shader> CreateShader(const std::filesystem::path& path, ShaderType type) = 0;
+        virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path)                  = 0;
+        virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path, ShaderType type) = 0;
 
-        virtual std::unique_ptr<ShaderProgram> CreateShaderProgram(
+        virtual std::shared_ptr<ShaderProgram> CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual std::shared_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
+        virtual std::shared_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
         virtual void Draw(Object3D* pObj) = 0;
 
@@ -63,6 +64,11 @@ namespace nate::Modules::Render
             const std::string&            name,
             const SquareMatrix<4, float>& value)                                                                  = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) = 0;
+
+        virtual void ClearDepthBuffer()                 = 0;
+        virtual void ClearColorBuffer()                 = 0;
+        virtual void SwapBuffers(GUI::IWindow* pWindow) = 0;
 
       protected:
         void              ExecuteJob() final;
@@ -71,10 +77,5 @@ namespace nate::Modules::Render
 
       private:
         std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> PopFunc();
-
-        virtual void DestroyObject(Object3D* pObj)                 = 0;
-        virtual void DestroyShader(Shader* pShader)                = 0;
-        virtual void DestroyTexture(Texture* pTex)                 = 0;
-        virtual void DestroyShaderProgram(ShaderProgram* pProgram) = 0;
     };
 } // namespace nate::Modules::Render

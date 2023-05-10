@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../Shader/ShaderProgram.h"
 #include "../Texture/Texture.h"
 #include "SquareMatrix4x4.hpp"
@@ -31,7 +33,7 @@ namespace nate::Modules::Render
         Object3D(std::vector<VertexData> vertexes);
 
       public:
-        virtual ~Object3D();
+        virtual ~Object3D() = default;
 
         const std::vector<VertexData>&    Vertexes() const { return m_Vertexes; }
         const std::vector<std::uint32_t>& Indeces() const { return m_Indeces; }

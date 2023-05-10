@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Shader.h"
+#include "OpenGL_Shader.h"
 
 namespace nate::Modules::Render
 {
-    class FragmentShader : public Shader
+    class Fragment_OpenGL_Shader : public OpenGL_Shader
     {
       public:
-        FragmentShader() = default;
+        Fragment_OpenGL_Shader() = default;
         ShaderType Type() const override { return ShaderType::Fragment; };
 
       protected:

@@ -21,9 +21,9 @@ namespace nate::Modules::Render
         void Draw();
 
       private:
-        void InitializeVertexData(const std::vector<VertexData>& data);
-        void InitializeIndexData(const std::vector<std::uint32_t>& data);
-        void InitializeVertexArrays();
-        void ClearBindings();
+        void        InitializeVertexData(const std::vector<VertexData>& data);
+        void        InitializeIndexData(const std::vector<std::uint32_t>& data);
+        void        InitializeVertexArrays();
+        static void ClearBindings();
     };
 } // namespace nate::Modules::Render

@@ -8,12 +8,10 @@ namespace nate::Modules::Render
     {
       public:
       private:
-        std::string  m_ShaderCode;
         unsigned int m_ID{0};
 
       public:
-        const std::string& ShaderCode() const final { return m_ShaderCode; }
-        unsigned int       ID() const { return m_ID; }
+        unsigned int ID() const { return m_ID; }
 
         ~OpenGL_Shader() override;
 
@@ -26,7 +24,6 @@ namespace nate::Modules::Render
         virtual unsigned int CreateGLShader() = 0;
 
       private:
-        void LoadShaderCode(const std::filesystem::path& shaderLoc);
         void ID(unsigned int val) { m_ID = val; }
         void Compile();
     };

@@ -1,10 +1,10 @@
-#include "FragmentShader.h"
+#include "Fragment_OpenGL_Shader.h"
 
 #include <glad/glad.h>
 
 namespace nate::Modules::Render
 {
-    unsigned int FragmentShader::CreateGLShader()
+    unsigned int Fragment_OpenGL_Shader::CreateGLShader()
     {
         return glCreateShader(GL_FRAGMENT_SHADER);
     }

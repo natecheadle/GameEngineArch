@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+#include <string>
 namespace nate::Modules::Render
 {
     OpenGL_Object3D::OpenGL_Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)

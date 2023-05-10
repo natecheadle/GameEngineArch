@@ -1,7 +1,6 @@
 #include "Camera3D.h"
 
 #include "KeyPressedInfo.hpp"
-#include "Matrix4x4.h"
 #include "SquareMatrix4x4.hpp"
 
 #include <DebugCast.hpp>

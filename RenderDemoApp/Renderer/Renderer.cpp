@@ -9,6 +9,17 @@
 
 namespace nate::Modules::Render
 {
+    std::unique_ptr<Renderer> Renderer::s_pInstance{nullptr};
+
+    void Renderer::SetInstance(std::unique_ptr<Renderer> pRenderer)
+    {
+        if (!pRenderer->IsExecuting())
+        {
+            pRenderer->Start();
+        }
+
+        s_pInstance = std::move(pRenderer);
+    }
 
     Renderer::~Renderer()
     {

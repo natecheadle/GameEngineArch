@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Shader.h"
+#include "OpenGL_Shader.h"
 
 namespace nate::Modules::Render
 {
-    class VertexShader : public Shader
+    class Vertex_OpenGL_Shader : public OpenGL_Shader
     {
       public:
-        VertexShader() = default;
+        Vertex_OpenGL_Shader() = default;
 
         ShaderType Type() const override { return ShaderType::Vertex; };
 

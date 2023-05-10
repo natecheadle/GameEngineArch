@@ -29,28 +29,16 @@ namespace nate::Modules::Render
 
     class Texture
     {
-      public:
       private:
-        const unsigned int m_ID;
-        const TextureUnit  m_Unit;
-        const unsigned int m_UnitID;
-
-      public:
-        Texture(const std::filesystem::path& path, TextureUnit unit);
-        Texture(const ImageFile& image, TextureUnit unit);
-
-        ~Texture();
-
-        unsigned int GetID() const { return m_ID; }
-
-        void Activate() const;
-        void Bind() const;
+        const TextureUnit m_Unit;
 
       protected:
-        static unsigned int CreateTexture();
-        void                InitializeFromImage(const ImageFile& image) const;
+        Texture(TextureUnit unit);
 
-      private:
-        static unsigned int TranslateTextureUnit(TextureUnit unit);
+      public:
+        virtual ~Texture() = default;
+
+        virtual void Activate() const = 0;
+        virtual void Bind() const     = 0;
     };
 } // namespace nate::Modules::Render
