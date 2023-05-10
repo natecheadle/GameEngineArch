@@ -23,10 +23,10 @@ int main()
     auto awesomeface_path     = shader_dir / "awesomeface.png";
     auto wall_path            = shader_dir / "wall.jpg";
 
-    nate::Modules::GUI::Window_GLFW window({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
-
     nate::Modules::Render::Renderer::SetInstance(std::make_unique<nate::Modules::Render::Renderer_OpenGL>());
     auto* pRenderer = nate::Modules::Render::Renderer::GetInstance();
+
+    auto pWin = pRenderer->Initialize({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
 
     auto pWallTex = pRenderer->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
     auto pFaceTex = pRenderer->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
@@ -74,14 +74,14 @@ int main()
         {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}}
     };
 
-    nate::Modules::Render::Fly_Camera3D camera(static_cast<nate::Modules::GUI::IWindow*>(&window));
+    nate::Modules::Render::Fly_Camera3D camera(pWin);
     auto                                pSquare = pRenderer->CreateObject(std::move(verts));
     pSquare->Shader(std::move(pProgram));
     pSquare->Textures({pWallTex, pFaceTex});
 
     //  render loop
     //  -----------
-    while (!window.ShouldClose())
+    while (!pWin->ShouldClose())
     {
 
         pRenderer->ClearColorBuffer();
@@ -99,8 +99,7 @@ int main()
 
         pRenderer->Draw(pSquare.get());
 
-        pRenderer->SwapBuffers(&window);
-        window.PollEvents();
+        pRenderer->SwapBuffers();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(17));
     }

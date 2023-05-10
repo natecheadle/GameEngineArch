@@ -38,6 +38,8 @@ namespace nate::Modules::Render
             return s_pInstance.get();
         }
 
+        virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
+
         virtual std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) = 0;
         virtual std::shared_ptr<Object3D> CreateObject(
             std::vector<VertexData>    vertexes,
@@ -66,9 +68,9 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) = 0;
 
-        virtual void ClearDepthBuffer()                 = 0;
-        virtual void ClearColorBuffer()                 = 0;
-        virtual void SwapBuffers(GUI::IWindow* pWindow) = 0;
+        virtual void ClearDepthBuffer() = 0;
+        virtual void ClearColorBuffer() = 0;
+        virtual void SwapBuffers()      = 0;
 
       protected:
         void              ExecuteJob() final;

@@ -16,23 +16,6 @@
 
 namespace nate::Modules::Render
 {
-    Renderer_OpenGL::Renderer_OpenGL()
-    {
-        // glad: load all OpenGL function pointers
-        // ---------------------------------------
-        if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
-        {
-            throw std::runtime_error("Failed to initialize GLAD");
-        }
-
-        // configure global opengl state
-        // -----------------------------
-        // TODO this should be user configurable.
-        glEnable(GL_DEPTH_TEST);
-    }
-
-    Renderer_OpenGL::~Renderer_OpenGL() {}
-
     std::shared_ptr<Object3D> Renderer_OpenGL::CreateObject(std::vector<VertexData> vertexes)
     {
         std::shared_ptr<Object3D> rslt;
@@ -115,6 +98,29 @@ namespace nate::Modules::Render
         return rslt;
     }
 
+    GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
+    {
+        ExecuteFunction([&]() -> void {
+            m_pWin = std::unique_ptr<GUI::Window_GLFW, std::function<void(GUI::IWindow*)>>(
+                std::make_unique<GUI::Window_GLFW>(size, std::move(name)).release(),
+                [](GUI::IWindow* pWin) { delete pWin; });
+
+            // glad: load all OpenGL function pointers
+            // ---------------------------------------
+            if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
+            {
+                throw std::runtime_error("Failed to initialize GLAD");
+            }
+
+            // configure global opengl state
+            // -----------------------------
+            // TODO this should be user configurable.
+            glEnable(GL_DEPTH_TEST);
+        });
+
+        return m_pWin.get();
+    }
+
     void Renderer_OpenGL::Draw(Object3D* pObj)
     {
         assert(pObj);
@@ -167,13 +173,27 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::ClearColorBuffer()
     {
-        ExecuteFunction([]() -> void { glClear(GL_COLOR_BUFFER_BIT); });
+        ExecuteFunction([]() -> void {
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        });
     }
 
-    void Renderer_OpenGL::SwapBuffers(GUI::IWindow* pWindow)
+    void Renderer_OpenGL::SwapBuffers()
     {
-        auto* pWindow_glfw = DebugCast<GUI::Window_GLFW*>(pWindow);
-        ExecuteFunction([pWindow_glfw]() -> void { glfwSwapBuffers(pWindow_glfw->GetGLFWWindow()); });
+        ExecuteFunction([this]() -> void {
+            glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
+            m_pWin->PollEvents();
+        });
+    }
+
+    void Renderer_OpenGL::Destroy(GUI::IWindow* pWin)
+    {
+        if (!pWin)
+        {
+            return;
+        }
+        ExecuteFunction([pWin]() { delete pWin; });
     }
 
     void Renderer_OpenGL::Destroy(Object3D* pObj)

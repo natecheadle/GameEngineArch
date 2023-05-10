@@ -3,6 +3,8 @@
 #include "../3D/Object3D.h"
 #include "Renderer.h"
 
+#include <Window_GLFW.h>
+
 #include <memory>
 
 namespace nate::Modules::Render
@@ -10,9 +12,13 @@ namespace nate::Modules::Render
 
     class Renderer_OpenGL : public Renderer
     {
+        std::unique_ptr<GUI::Window_GLFW, std::function<void(GUI::IWindow*)>> m_pWin;
+
       public:
-        Renderer_OpenGL();
-        ~Renderer_OpenGL() override;
+        Renderer_OpenGL()           = default;
+        ~Renderer_OpenGL() override = default;
+
+        GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
 
         std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) final;
         std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
@@ -40,9 +46,10 @@ namespace nate::Modules::Render
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
-        void SwapBuffers(GUI::IWindow* pWindow) override;
+        void SwapBuffers() override;
 
       private:
+        void Destroy(GUI::IWindow* pObj);
         void Destroy(Object3D* pObj);
         void Destroy(Shader* pShader);
         void Destroy(Texture* pTex);
