@@ -23,10 +23,10 @@ int main()
     auto awesomeface_path     = shader_dir / "awesomeface.png";
     auto wall_path            = shader_dir / "wall.jpg";
 
+    nate::Modules::GUI::Window_GLFW window({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
+
     nate::Modules::Render::Renderer::SetInstance(std::make_unique<nate::Modules::Render::Renderer_OpenGL>());
     auto* pRenderer = nate::Modules::Render::Renderer::GetInstance();
-
-    nate::Modules::GUI::Window_GLFW window({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
 
     auto pWallTex = pRenderer->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
     auto pFaceTex = pRenderer->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
