@@ -8,11 +8,18 @@ namespace nate::Modules::Render
     OpenGL_Object3D::OpenGL_Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
         : Object3D(std::move(vertexes), std::move(indeces))
     {
+        InitializeVertexArrays();
+        InitializeVertexData(Vertexes());
+        InitializeIndexData(Indeces());
+        ClearBindings();
     }
 
     OpenGL_Object3D::OpenGL_Object3D(std::vector<VertexData> vertexes)
         : Object3D(std::move(vertexes))
     {
+        InitializeVertexArrays();
+        InitializeVertexData(Vertexes());
+        ClearBindings();
     }
 
     OpenGL_Object3D::~OpenGL_Object3D()

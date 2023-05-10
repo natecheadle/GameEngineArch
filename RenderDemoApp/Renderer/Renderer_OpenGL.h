@@ -15,8 +15,8 @@ namespace nate::Modules::Render
         std::unique_ptr<GUI::Window_GLFW, std::function<void(GUI::IWindow*)>> m_pWin;
 
       public:
-        Renderer_OpenGL()           = default;
-        ~Renderer_OpenGL() override = default;
+        Renderer_OpenGL() = default;
+        ~Renderer_OpenGL() override;
 
         GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
 
@@ -49,6 +49,8 @@ namespace nate::Modules::Render
         void SwapBuffers() override;
 
       private:
+        static bool Validate(void* pVoid);
+
         void Destroy(GUI::IWindow* pObj);
         void Destroy(Object3D* pObj);
         void Destroy(Shader* pShader);

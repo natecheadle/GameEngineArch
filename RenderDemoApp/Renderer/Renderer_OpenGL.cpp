@@ -11,11 +11,17 @@
 
 #include <GLFW/glfw3.h>
 
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
 namespace nate::Modules::Render
 {
+    Renderer_OpenGL::~Renderer_OpenGL()
+    {
+        m_pWin.reset();
+    }
+
     std::shared_ptr<Object3D> Renderer_OpenGL::CreateObject(std::vector<VertexData> vertexes)
     {
         std::shared_ptr<Object3D> rslt;
@@ -187,45 +193,57 @@ namespace nate::Modules::Render
         });
     }
 
+    bool Renderer_OpenGL::Validate(void* pVoid)
+    {
+        if (!pVoid)
+        {
+            std::cerr << "[ERROR] Trying to delete null object." << std::endl;
+            return false;
+        }
+
+        if (!Renderer::InstanceValid())
+        {
+            std::cerr << "[ERROR] Trying to delete object created by renderer after renderer destroyed." << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
     void Renderer_OpenGL::Destroy(GUI::IWindow* pWin)
     {
-        if (!pWin)
+        if (Validate(pWin))
         {
-            return;
+            ExecuteFunction([pWin]() { delete pWin; });
         }
-        ExecuteFunction([pWin]() { delete pWin; });
     }
 
     void Renderer_OpenGL::Destroy(Object3D* pObj)
     {
-        if (!pObj)
+        if (Validate(pObj))
         {
-            return;
+            ExecuteFunction([pObj]() { delete pObj; });
         }
-        ExecuteFunction([pObj]() { delete pObj; });
     }
     void Renderer_OpenGL::Destroy(Shader* pShader)
     {
-        if (!pShader)
+        if (Validate(pShader))
         {
-            return;
+            ExecuteFunction([pShader]() { delete pShader; });
         }
-        ExecuteFunction([pShader]() { delete pShader; });
     }
     void Renderer_OpenGL::Destroy(Texture* pTex)
     {
-        if (!pTex)
+        if (Validate(pTex))
         {
-            return;
+            ExecuteFunction([pTex]() { delete pTex; });
         }
-        ExecuteFunction([pTex]() { delete pTex; });
     }
     void Renderer_OpenGL::Destroy(ShaderProgram* pProgram)
     {
-        if (!pProgram)
+        if (Validate(pProgram))
         {
-            return;
+            ExecuteFunction([pProgram]() { delete pProgram; });
         }
-        ExecuteFunction([pProgram]() { delete pProgram; });
     }
 } // namespace nate::Modules::Render

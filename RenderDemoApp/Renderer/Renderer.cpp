@@ -13,7 +13,7 @@ namespace nate::Modules::Render
 
     void Renderer::SetInstance(std::unique_ptr<Renderer> pRenderer)
     {
-        if (!pRenderer->IsExecuting())
+        if (pRenderer && !pRenderer->IsExecuting())
         {
             pRenderer->Start();
         }

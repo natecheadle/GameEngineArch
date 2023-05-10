@@ -20,7 +20,7 @@
 namespace nate::Modules::Render
 {
 
-    class Renderer : public Jobs::Job
+    class Renderer : protected Jobs::Job
     {
         static std::unique_ptr<Renderer> s_pInstance;
 
@@ -32,9 +32,11 @@ namespace nate::Modules::Render
         virtual ~Renderer();
 
         static void      SetInstance(std::unique_ptr<Renderer> pRenderer);
+        static void      ResetInstance() { SetInstance(nullptr); }
+        static bool      InstanceValid() { return s_pInstance.get() != nullptr; }
         static Renderer* GetInstance()
         {
-            assert(s_pInstance.get());
+            assert(InstanceValid());
             return s_pInstance.get();
         }
 
