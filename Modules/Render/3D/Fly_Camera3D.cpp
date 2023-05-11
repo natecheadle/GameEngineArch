@@ -52,28 +52,28 @@ namespace nate::Modules::Render
     void Fly_Camera3D::PanUp(float value)
     {
         Translate({
-            {0, value, 0}
+            {0, -value, 0}
         });
     }
 
     void Fly_Camera3D::PanDown(float value)
     {
         Translate({
-            {0, -value, 0}
+            {0, value, 0}
         });
     }
 
     void Fly_Camera3D::PanLeft(float value)
     {
         Translate({
-            {-value, 0, 0}
+            {value, 0, 0}
         });
     }
 
     void Fly_Camera3D::PanRight(float value)
     {
         Translate({
-            {value, 0, 0}
+            {-value, 0, 0}
         });
     }
 
