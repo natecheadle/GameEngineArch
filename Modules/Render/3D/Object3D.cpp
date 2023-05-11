@@ -1,40 +1,46 @@
 #include "Object3D.h"
 
-#include <bgfx/bgfx.h>
-#include <bx/math.h>
+#include "SquareMatrix4x4.hpp"
+#include "Vector3.hpp"
+
+#include <algorithm>
+#include <cstddef>
 
 namespace nate::Modules::Render
 {
-    const bgfx::VertexLayout Object3D::s_VertexLayout = Object3D::InitializeVertexLayout();
-
-    Object3D::Object3D(
-        std::vector<VertexPoint3D> points,
-        std::vector<std::uint16_t> indices,
-        std::shared_ptr<Material>  pMaterial)
-        : m_Points(std::move(points))
-        , m_Indices(std::move(indices))
-        , m_VertexBuffer(
-              bgfx::createVertexBuffer(bgfx::makeRef(Points().data(), (uint32_t)PointsSize()), s_VertexLayout))
-        , m_IndexBuffer(bgfx::createIndexBuffer(bgfx::makeRef(Indices().data(), IndecesSize())))
-        , m_pMaterial(std::move(pMaterial))
+    Object3D::Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
+        : m_Vertexes(std::move(vertexes))
+        , m_Indeces(std::move(indeces))
     {
-        m_Transformation.SetToIdentity();
     }
 
-    Object3D::~Object3D()
+    Object3D::Object3D(std::vector<VertexData> vertexes)
+        : m_Vertexes(std::move(vertexes))
     {
-        bgfx::destroy(m_VertexBuffer);
-        bgfx::destroy(m_IndexBuffer);
     }
 
-    bgfx::VertexLayout Object3D::InitializeVertexLayout()
+    SquareMatrix4x4<float> Object3D::ModelMatrix() const
     {
-        bgfx::VertexLayout layout;
-        layout.begin()
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
-            .end();
+        if (m_Rotation == Vector3<Radian<float>>({0.0, 0.0, 0.0}) && m_Origin == Vector3<float>({0.0, 0.0, 0.0}))
+        {
+            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
+        }
 
-        return layout;
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation));
+        rslt *= SquareMatrix4x4<float>::translate_init(m_Origin);
+        return rslt;
+    }
+
+    void Object3D::Draw()
+    {
+        for (auto& tex : m_Textures)
+        {
+            if (tex)
+            {
+                tex->Activate();
+                tex->Bind();
+            }
+        }
+        m_pShader->Use();
     }
 } // namespace nate::Modules::Render

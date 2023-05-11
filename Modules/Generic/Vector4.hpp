@@ -22,8 +22,8 @@ namespace nate::Modules
         {
         }
 
-        Vector4(const Vector3<T>& other)
-            : Vector<4, T>({other.x(), other.y(), other.z(), 1})
+        Vector4(const Vector3<T>& other, T cell_4 = 1.0)
+            : Vector<4, T>({other.x(), other.y(), other.z(), cell_4})
         {
         }
 

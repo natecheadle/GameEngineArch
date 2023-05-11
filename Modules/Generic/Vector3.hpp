@@ -23,6 +23,16 @@ namespace nate::Modules
         {
         }
 
+        Vector3(const Vector<3, T>& other)
+            : BASE(other)
+        {
+        }
+
+        Vector3(Vector<3, T>&& other)
+            : BASE(other)
+        {
+        }
+
         Vector3(const Vector3& other) = default;
         Vector3(Vector3&& other)      = default;
 

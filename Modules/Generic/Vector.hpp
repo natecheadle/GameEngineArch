@@ -166,4 +166,7 @@ namespace nate::Modules
             return os;
         }
     };
+
+    template <typename T = float>
+    using Vector2 = Vector<2, T>;
 } // namespace nate::Modules

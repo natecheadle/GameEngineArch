@@ -1,28 +1,33 @@
 #pragma once
 
-#include <cstdint>
 #include <filesystem>
-#include <fstream>
-#include <string_view>
-#include <vector>
+#include <string>
 
 namespace nate::Modules::Render
 {
+    enum class ShaderType
+    {
+        Vertex,
+        Fragment,
+        Geometry,
+        Compute,
+
+        LAST
+    };
+
     class Shader
     {
-      protected:
-        Shader(std::filesystem::path shadersPath);
+      private:
+        std::string m_ShaderCode;
 
       public:
-        virtual ~Shader();
+        const std::string& ShaderCode() const { return m_ShaderCode; }
+        virtual ShaderType Type() const = 0;
 
-        const std::filesystem::path&     Path() const { return m_Path; }
-        const std::vector<std::uint8_t>& ShaderData() const { return m_Data; }
+        virtual ~Shader() = default;
 
-      private:
-        std::filesystem::path     m_Path;
-        std::vector<std::uint8_t> m_Data;
-
-        static std::vector<std::uint8_t> ReadFileData(const std::filesystem::path& path);
+      protected:
+        Shader() = default;
+        void LoadShaderCode(const std::filesystem::path& shaderLoc);
     };
 } // namespace nate::Modules::Render
