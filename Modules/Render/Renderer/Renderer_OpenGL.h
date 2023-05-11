@@ -18,6 +18,8 @@ namespace nate::Modules::Render
         Renderer_OpenGL() = default;
         ~Renderer_OpenGL() override;
 
+        GUI::IWindow* Window() const override { return m_pWin.get(); }
+
         GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
 
         std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) final;

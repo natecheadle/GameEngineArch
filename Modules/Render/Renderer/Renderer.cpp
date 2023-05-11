@@ -1,24 +1,22 @@
 #include "Renderer.h"
 
+#include "Renderer_OpenGL.h"
+
 #include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <exception>
+#include <memory>
 #include <mutex>
 #include <optional>
 
 namespace nate::Modules::Render
 {
-    std::unique_ptr<Renderer> Renderer::s_pInstance{nullptr};
-
-    void Renderer::SetInstance(std::unique_ptr<Renderer> pRenderer)
+    std::unique_ptr<Renderer> Renderer::Create()
     {
-        if (pRenderer && !pRenderer->IsExecuting())
-        {
-            pRenderer->Start();
-        }
-
-        s_pInstance = std::move(pRenderer);
+        std::unique_ptr<Renderer> rslt = std::make_unique<Renderer_OpenGL>();
+        rslt->Start();
+        return rslt;
     }
 
     Renderer::~Renderer()

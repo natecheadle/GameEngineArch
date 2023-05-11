@@ -11,6 +11,7 @@
 #include <atomic>
 #include <cassert>
 #include <condition_variable>
+#include <exception>
 #include <filesystem>
 #include <future>
 #include <memory>
@@ -22,8 +23,6 @@ namespace nate::Modules::Render
 
     class Renderer : protected Jobs::Job
     {
-        static std::unique_ptr<Renderer> s_pInstance;
-
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
@@ -31,15 +30,13 @@ namespace nate::Modules::Render
       public:
         virtual ~Renderer();
 
-        static void      SetInstance(std::unique_ptr<Renderer> pRenderer);
-        static void      ResetInstance() { SetInstance(nullptr); }
-        static bool      InstanceValid() { return s_pInstance.get() != nullptr; }
-        static Renderer* GetInstance()
-        {
-            assert(InstanceValid());
-            return s_pInstance.get();
-        }
+        static std::unique_ptr<Renderer> Create();
 
+        const std::exception& Error() { return Job::GetCaughtException(); }
+        bool                  IsErrored() const { return Job::IsFailed(); }
+        bool                  IsRunning() const { return Job::IsExecuting(); }
+
+        virtual GUI::IWindow* Window() const                                            = 0;
         virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
 
         virtual std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) = 0;

@@ -5,20 +5,11 @@
     "dependencies": [
         "gtest",
         "glfw3",
-        {
-            "name": "bgfx",
-            "default-features": true,
-            "features": [
-                "tools"
-            ]
-        },
         "spdlog",
         "fmt",
-        "boost-statechart",
         "glad",
         "opengl",
         "glm",
-        "stb",
-        "boost-lockfree"
+        "stb"
     ]
 }

@@ -1,5 +1,6 @@
 #include "App.h"
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <iostream>
@@ -8,27 +9,22 @@
 namespace nate::Modules::App
 {
 
-    App::App(std::unique_ptr<GUI::IWindow> pWindow, std::unique_ptr<Render::Renderer> pRenderer)
-        : m_pWindow(std::move(pWindow))
-        , m_pRenderer(std::move(pRenderer))
+    App::App(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
+        : m_pRenderer(std::move(pRenderer))
     {
+        m_pWindow = m_pRenderer->Initialize(window_size, std::move(window_name));
     }
 
     void App::Close()
     {
         Shutdown();
-        m_pRenderer->Shutdown();
+        m_pRenderer.reset();
         m_pWindow->Close();
     }
 
     int App::Run()
     {
-        while (!m_pRenderer->IsInitialized())
-            std::this_thread::yield();
-
         Initialize();
-
-        m_pRenderer->StartRendering();
 
         std::chrono::nanoseconds period{0};
         while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
@@ -40,9 +36,9 @@ namespace nate::Modules::App
 
             UpdateApp(period);
 
-            if (m_pRenderer->RenderingFailed())
+            if (m_pRenderer->IsErrored())
             {
-                std::cerr << m_pRenderer->GetFailure().what();
+                std::cerr << m_pRenderer->Error().what();
                 return 1;
             }
 
@@ -51,7 +47,7 @@ namespace nate::Modules::App
             std::chrono::nanoseconds sleepTime = std::chrono::nanoseconds(std::int64_t(1.0 / 60.0 * 1e9)) - period;
             std::this_thread::sleep_for(sleepTime);
 
-            m_pRenderer->RenderFrame();
+            m_pRenderer->SwapBuffers();
         }
 
         Close();

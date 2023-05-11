@@ -197,12 +197,6 @@ namespace nate::Modules::Render
             return false;
         }
 
-        if (!Renderer::InstanceValid())
-        {
-            std::cerr << "[ERROR] Trying to delete object created by renderer after renderer destroyed." << std::endl;
-            return false;
-        }
-
         return true;
     }
 
