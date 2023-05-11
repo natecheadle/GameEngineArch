@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <thread>
 
 namespace nate::Modules::Render
 {
@@ -27,6 +28,8 @@ namespace nate::Modules::Render
 
     void Renderer::ExecuteJob()
     {
+
+        m_RenderThreadID = std::this_thread::get_id();
         while (!ShouldStop())
         {
             if (IsPaused())
@@ -43,26 +46,24 @@ namespace nate::Modules::Render
             assert(pair.first.has_value() && pair.second.has_value());
             auto& func = pair.second.value();
             auto& prom = pair.first.value();
-            try
-            {
-                func();
-                prom.set_value();
-            }
-            catch (...)
-            {
-                try
-                {
-                    prom.set_exception(std::current_exception());
-                }
-                catch (...) // set_exception() may throw too
-                {
-                }
-            }
+
+            ExecuteFunction(prom, func);
         }
+        FlushQueue();
     }
 
     void Renderer::ExecuteFunction(std::function<void()> func)
     {
+        // Execution is already on the render thread context, so simply execute the operation.
+        if (std::this_thread::get_id() == m_RenderThreadID)
+        {
+            func();
+            return;
+        }
+
+        if (ShouldStop())
+            return;
+
         std::future<void> fut = ExecuteFunctionAsync(std::move(func));
         return fut.get();
     }
@@ -73,8 +74,9 @@ namespace nate::Modules::Render
         {
             std::unique_lock<std::mutex> lock(m_QueueMutex);
             m_CommandQueue.push({std::move(prom), std::move(func)});
-            m_QueueCondition.notify_all();
         }
+
+        m_QueueCondition.notify_all();
         return std::move(fut);
     }
 
@@ -96,5 +98,34 @@ namespace nate::Modules::Render
         std::pair<std::promise<void>, std::function<void()>> func = std::move(m_CommandQueue.front());
         m_CommandQueue.pop();
         return {std::move(func.first), std::move(func.second)};
+    }
+
+    void Renderer::ExecuteFunction(std::promise<void>& prom, std::function<void()>& func)
+    {
+        try
+        {
+            func();
+            prom.set_value();
+        }
+        catch (...)
+        {
+            try
+            {
+                prom.set_exception(std::current_exception());
+            }
+            catch (...) // set_exception() may throw too
+            {
+            }
+        }
+    }
+
+    void Renderer::FlushQueue()
+    {
+        std::unique_lock<std::mutex> lock(m_QueueMutex);
+        while (!m_CommandQueue.empty())
+        {
+            std::pair<std::promise<void>, std::function<void()>> func = std::move(m_CommandQueue.front());
+            ExecuteFunction(func.first, func.second);
+        }
     }
 } // namespace nate::Modules::Render

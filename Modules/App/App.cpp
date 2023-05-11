@@ -19,7 +19,6 @@ namespace nate::Modules::App
     {
         Shutdown();
         m_pRenderer.reset();
-        m_pWindow->Close();
     }
 
     int App::Run()
@@ -30,7 +29,9 @@ namespace nate::Modules::App
         while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
         {
             std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
-            m_pWindow->PollEvents();
+            m_pRenderer->ClearColorBuffer();
+            m_pRenderer->ClearDepthBuffer();
+
             if (m_pWindow->ShouldClose())
                 break;
 
@@ -48,6 +49,7 @@ namespace nate::Modules::App
             std::this_thread::sleep_for(sleepTime);
 
             m_pRenderer->SwapBuffers();
+            m_pWindow->PollEvents();
         }
 
         Close();

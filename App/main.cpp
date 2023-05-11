@@ -1,4 +1,5 @@
 #include "IWindow.h"
+#include "Renderer/Renderer.h"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
 
@@ -7,7 +8,6 @@
 #include <DebugCast.hpp>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
-#include <Renderer/Renderer_OpenGL.h>
 #include <Shader/Shader.h>
 
 #include <algorithm>
@@ -24,12 +24,6 @@
 #include <vector>
 
 using namespace nate::Modules;
-
-void OnWindowResize(const Messaging::Message<GUI::WindowMessages>* pMessage)
-{
-    assert(pMessage->ID() == GUI::WindowMessages::WindowResized);
-    const auto* pResized = DebugCast<const GUI::WindowResized*>(pMessage);
-}
 
 class TestApp : public App::App
 {
@@ -148,9 +142,6 @@ class TestApp : public App::App
         pRenderer->SetShaderVar(m_pCube->Shader().get(), "view", m_pCamera->View());
 
         pRenderer->Draw(m_pCube.get());
-
-        pRenderer->SwapBuffers();
-        GetWindow()->PollEvents();
     }
 };
 
@@ -158,7 +149,7 @@ int main()
 {
     try
     {
-        std::unique_ptr<Render::Renderer> pRenderer = std::make_unique<Render::Renderer_OpenGL>();
+        std::unique_ptr<Render::Renderer> pRenderer = Render::Renderer::Create();
         TestApp                           app(std::move(pRenderer), {800, 600}, "Test Window");
         int                               code = app.Run();
         app.Close();

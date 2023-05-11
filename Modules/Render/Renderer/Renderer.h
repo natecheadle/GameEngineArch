@@ -13,6 +13,7 @@
 #include <condition_variable>
 #include <exception>
 #include <filesystem>
+#include <functional>
 #include <future>
 #include <memory>
 #include <optional>
@@ -23,6 +24,7 @@ namespace nate::Modules::Render
 
     class Renderer : protected Jobs::Job
     {
+        std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
@@ -72,11 +74,13 @@ namespace nate::Modules::Render
         virtual void SwapBuffers()      = 0;
 
       protected:
-        void              ExecuteJob() final;
-        void              ExecuteFunction(std::function<void()> func);
-        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
+        void ExecuteJob() final;
+        void ExecuteFunction(std::function<void()> func);
 
       private:
+        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
         std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> PopFunc();
+        static void ExecuteFunction(std::promise<void>& prom, std::function<void()>& func);
+        void        FlushQueue();
     };
 } // namespace nate::Modules::Render

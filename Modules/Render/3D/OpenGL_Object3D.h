@@ -8,17 +8,17 @@ namespace nate::Modules::Render
 {
     class OpenGL_Object3D : public Object3D
     {
-        unsigned int m_VAO;
+        unsigned int m_VAO{0};
 
-        unsigned int m_VBO;
-        unsigned int m_EBO;
+        unsigned int m_VBO{0};
+        unsigned int m_EBO{0};
 
       public:
         OpenGL_Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
         OpenGL_Object3D(std::vector<VertexData> vertexes);
-        ~OpenGL_Object3D();
+        ~OpenGL_Object3D() override;
 
-        void Draw();
+        void Draw() override;
 
       private:
         void        InitializeVertexData(const std::vector<VertexData>& data);

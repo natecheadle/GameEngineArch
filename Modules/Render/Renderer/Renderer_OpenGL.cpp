@@ -11,6 +11,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -61,7 +62,7 @@ namespace nate::Modules::Render
         std::shared_ptr<Object3D> rslt;
         ExecuteFunction([&]() -> void {
             rslt = std::shared_ptr<Object3D>(
-                std::make_unique<OpenGL_Object3D>(std::move(vertexes), std::move(indeces)).release(),
+                new OpenGL_Object3D(std::move(vertexes), std::move(indeces)),
                 [this](Object3D* pObj) { Destroy(pObj); });
         });
         return rslt;
@@ -107,10 +108,7 @@ namespace nate::Modules::Render
     {
         std::shared_ptr<Texture> rslt;
         ExecuteFunction([&]() -> void {
-            rslt =
-                std::shared_ptr<Texture>(std::make_unique<OpenGL_Texture>(path, unit).release(), [this](Texture* pTex) {
-                    Destroy(pTex);
-                });
+            rslt = std::shared_ptr<Texture>(new OpenGL_Texture(path, unit), [this](Texture* pTex) { Destroy(pTex); });
         });
         return rslt;
     }
