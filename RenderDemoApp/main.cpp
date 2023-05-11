@@ -26,7 +26,7 @@ int main()
     nate::Modules::Render::Renderer::SetInstance(std::make_unique<nate::Modules::Render::Renderer_OpenGL>());
     auto* pRenderer = nate::Modules::Render::Renderer::GetInstance();
 
-    auto pWin = pRenderer->Initialize({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
+    auto* pWin = pRenderer->Initialize({SCR_WIDTH, SCR_HEIGHT}, "TEST_WINDOW");
 
     auto pWallTex = pRenderer->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
     auto pFaceTex = pRenderer->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
@@ -100,6 +100,7 @@ int main()
         pRenderer->Draw(pSquare.get());
 
         pRenderer->SwapBuffers();
+        pWin->PollEvents();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(17));
     }

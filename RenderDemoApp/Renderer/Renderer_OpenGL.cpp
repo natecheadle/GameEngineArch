@@ -22,6 +22,28 @@ namespace nate::Modules::Render
         m_pWin.reset();
     }
 
+    GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
+    {
+        m_pWin = std::make_unique<GUI::Window_GLFW>(size, std::move(name));
+
+        // glad: load all OpenGL function pointers
+        // ---------------------------------------
+        if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
+        {
+            throw std::runtime_error("Failed to initialize GLAD");
+        }
+
+        ExecuteFunction([&]() -> void {
+            glfwMakeContextCurrent(m_pWin->GetGLFWWindow());
+            // configure global opengl state
+            // -----------------------------
+            // TODO this should be user configurable.
+            glEnable(GL_DEPTH_TEST);
+        });
+
+        return m_pWin.get();
+    }
+
     std::shared_ptr<Object3D> Renderer_OpenGL::CreateObject(std::vector<VertexData> vertexes)
     {
         std::shared_ptr<Object3D> rslt;
@@ -104,29 +126,6 @@ namespace nate::Modules::Render
         return rslt;
     }
 
-    GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
-    {
-        ExecuteFunction([&]() -> void {
-            m_pWin = std::unique_ptr<GUI::Window_GLFW, std::function<void(GUI::IWindow*)>>(
-                std::make_unique<GUI::Window_GLFW>(size, std::move(name)).release(),
-                [](GUI::IWindow* pWin) { delete pWin; });
-
-            // glad: load all OpenGL function pointers
-            // ---------------------------------------
-            if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
-            {
-                throw std::runtime_error("Failed to initialize GLAD");
-            }
-
-            // configure global opengl state
-            // -----------------------------
-            // TODO this should be user configurable.
-            glEnable(GL_DEPTH_TEST);
-        });
-
-        return m_pWin.get();
-    }
-
     void Renderer_OpenGL::Draw(Object3D* pObj)
     {
         assert(pObj);
@@ -187,10 +186,7 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::SwapBuffers()
     {
-        ExecuteFunction([this]() -> void {
-            glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
-            m_pWin->PollEvents();
-        });
+        glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
     }
 
     bool Renderer_OpenGL::Validate(void* pVoid)
@@ -208,14 +204,6 @@ namespace nate::Modules::Render
         }
 
         return true;
-    }
-
-    void Renderer_OpenGL::Destroy(GUI::IWindow* pWin)
-    {
-        if (Validate(pWin))
-        {
-            ExecuteFunction([pWin]() { delete pWin; });
-        }
     }
 
     void Renderer_OpenGL::Destroy(Object3D* pObj)

@@ -12,7 +12,7 @@ namespace nate::Modules::Render
 
     class Renderer_OpenGL : public Renderer
     {
-        std::unique_ptr<GUI::Window_GLFW, std::function<void(GUI::IWindow*)>> m_pWin;
+        std::unique_ptr<GUI::Window_GLFW> m_pWin;
 
       public:
         Renderer_OpenGL() = default;
@@ -51,7 +51,6 @@ namespace nate::Modules::Render
       private:
         static bool Validate(void* pVoid);
 
-        void Destroy(GUI::IWindow* pObj);
         void Destroy(Object3D* pObj);
         void Destroy(Shader* pShader);
         void Destroy(Texture* pTex);
