@@ -25,6 +25,8 @@ namespace nate::Modules::Render
 
     GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
     {
+#ifdef __APPLE__
+        // Mac requires the window to be in the main thread.
         m_pWin = std::make_unique<GUI::Window_GLFW>(size, std::move(name));
 
         // glad: load all OpenGL function pointers
@@ -42,6 +44,24 @@ namespace nate::Modules::Render
             glEnable(GL_DEPTH_TEST);
         });
 
+#else
+
+        ExecuteFunction([&]() -> void {
+            // Windows requires the windoww and conntext to be in the same thread, but the window can be on any thread.
+            m_pWin = std::make_unique<GUI::Window_GLFW>(size, std::move(name));
+
+            // glad: load all OpenGL function pointers
+            // ---------------------------------------
+            if (gladLoadGLLoader((GLADloadproc)glfwGetProcAddress) == 0)
+            {
+                throw std::runtime_error("Failed to initialize GLAD");
+            }
+            // configure global opengl state
+            // -----------------------------
+            // TODO this should be user configurable.
+            glEnable(GL_DEPTH_TEST);
+        });
+#endif
         return m_pWin.get();
     }
 
@@ -184,7 +204,15 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::SwapBuffers()
     {
+#ifdef __APPLE__
         glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
+        m_pWin->PollEvents();
+#else
+        ExecuteFunction([this]() -> void {
+            glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
+            m_pWin->PollEvents();
+        });
+#endif
     }
 
     bool Renderer_OpenGL::Validate(void* pVoid)

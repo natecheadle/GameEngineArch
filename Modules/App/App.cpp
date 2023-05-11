@@ -49,7 +49,6 @@ namespace nate::Modules::App
             std::this_thread::sleep_for(sleepTime);
 
             m_pRenderer->SwapBuffers();
-            m_pWindow->PollEvents();
         }
 
         Close();
