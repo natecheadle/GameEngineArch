@@ -6,20 +6,62 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 
 namespace nate::Modules::Render
 {
-    Object3D::Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
-        : m_Vertexes(std::move(vertexes))
-        , m_Indeces(std::move(indeces))
-        , m_pBuffer(pRenderer->CreateBuffer(m_Vertexes, m_Indeces))
+    VertexData Object3D::m_CubePoints[] = {
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 0.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{1.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{0.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{0.5f, -0.5f, -0.5f}},  {}, {{1.0f, 1.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{0.5f, -0.5f, 0.5f}},   {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, 0.5f}},  {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, -0.5f, -0.5f}}, {}, {{0.0f, 1.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}},
+        {{{0.5f, 0.5f, -0.5f}},   {}, {{1.0f, 1.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{0.5f, 0.5f, 0.5f}},    {}, {{1.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, 0.5f}},   {}, {{0.0f, 0.0f}}},
+        {{{-0.5f, 0.5f, -0.5f}},  {}, {{0.0f, 1.0f}}}
+    };
+
+    Object3D::Object3D(Renderer* pRenderer, std::span<VertexData> vertexes, std::span<std::uint32_t> indeces)
+        : m_pBuffer(pRenderer->CreateBuffer(vertexes, indeces))
     {
     }
 
-    Object3D::Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes)
-        : m_Vertexes(std::move(vertexes))
-        , m_pBuffer(pRenderer->CreateBuffer(m_Vertexes))
+    Object3D::Object3D(Renderer* pRenderer, std::span<VertexData> vertexes)
+        : m_pBuffer(pRenderer->CreateBuffer(vertexes))
     {
+    }
+
+    std::unique_ptr<Object3D> Object3D::CreateCube(Renderer* pRenderer)
+    {
+        return std::make_unique<Object3D>(pRenderer, m_CubePoints);
     }
 
     SquareMatrix4x4<float> Object3D::ModelMatrix() const

@@ -21,7 +21,7 @@ namespace nate::Modules
       public:
         SquareMatrix() = default;
 
-        SquareMatrix(std::array<Vector<SIZE, T>, SIZE> init)
+        SquareMatrix(std::array<Vector<SIZE, T>, SIZE> init) noexcept
             : m_Data(init)
         {
         }
@@ -32,8 +32,8 @@ namespace nate::Modules
         {
         }
 
-        SquareMatrix(const SquareMatrix& other) = default;
-        SquareMatrix(SquareMatrix&& other)      = default;
+        SquareMatrix(const SquareMatrix& other)     = default;
+        SquareMatrix(SquareMatrix&& other) noexcept = default;
 
         template <class DERIVED>
         static DERIVED identity()
@@ -47,8 +47,8 @@ namespace nate::Modules
             return rslt;
         }
 
-        SquareMatrix& operator=(const SquareMatrix& other) = default;
-        SquareMatrix& operator=(SquareMatrix&& other)      = default;
+        SquareMatrix& operator=(const SquareMatrix& other)     = default;
+        SquareMatrix& operator=(SquareMatrix&& other) noexcept = default;
 
         static constexpr size_t size() { return SIZE; }
 

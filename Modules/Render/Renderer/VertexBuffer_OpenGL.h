@@ -2,7 +2,7 @@
 
 #include "VertexBuffer.h"
 
-#include <vector>
+#include <span>
 
 namespace nate::Modules::Render
 {
@@ -17,16 +17,16 @@ namespace nate::Modules::Render
         int m_IndexSize{0};
 
       public:
-        VertexBuffer_OpenGL(const std::vector<VertexData>& vertexes, const std::vector<std::uint32_t>& indeces);
-        VertexBuffer_OpenGL(const std::vector<VertexData>& vertexes);
+        VertexBuffer_OpenGL(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces);
+        VertexBuffer_OpenGL(std::span<VertexData> vertexes);
 
         ~VertexBuffer_OpenGL() override;
 
         void Draw() override;
 
       private:
-        void        InitializeVertexData(const std::vector<VertexData>& data);
-        void        InitializeIndexData(const std::vector<std::uint32_t>& data);
+        void        InitializeVertexData(std::span<VertexData> data);
+        void        InitializeIndexData(std::span<std::uint32_t> data);
         void        InitializeVertexArrays();
         static void ClearBindings();
     };

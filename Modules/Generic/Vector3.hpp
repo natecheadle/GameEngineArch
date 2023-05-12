@@ -12,7 +12,7 @@ namespace nate::Modules
       public:
         Vector3() = default;
 
-        Vector3(std::array<T, 3> init)
+        Vector3(std::array<T, 3> init) noexcept
             : BASE(init)
         {
         }

@@ -4,9 +4,7 @@
 
 namespace nate::Modules::Render
 {
-    VertexBuffer_OpenGL::VertexBuffer_OpenGL(
-        const std::vector<VertexData>&    vertexes,
-        const std::vector<std::uint32_t>& indeces)
+    VertexBuffer_OpenGL::VertexBuffer_OpenGL(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces)
         : m_VertexSize(static_cast<int>(vertexes.size()))
         , m_IndexSize(static_cast<int>(indeces.size()))
     {
@@ -16,7 +14,7 @@ namespace nate::Modules::Render
         ClearBindings();
     }
 
-    VertexBuffer_OpenGL::VertexBuffer_OpenGL(const std::vector<VertexData>& vertexes)
+    VertexBuffer_OpenGL::VertexBuffer_OpenGL(std::span<VertexData> vertexes)
         : m_VertexSize(static_cast<int>(vertexes.size()))
     {
         InitializeVertexArrays();
@@ -44,7 +42,7 @@ namespace nate::Modules::Render
         }
     }
 
-    void VertexBuffer_OpenGL::InitializeVertexData(const std::vector<VertexData>& data)
+    void VertexBuffer_OpenGL::InitializeVertexData(std::span<VertexData> data)
     {
         glGenBuffers(1, &m_VBO);
 
@@ -66,7 +64,7 @@ namespace nate::Modules::Render
         glEnableVertexAttribArray(2);
     }
 
-    void VertexBuffer_OpenGL::InitializeIndexData(const std::vector<std::uint32_t>& data)
+    void VertexBuffer_OpenGL::InitializeIndexData(std::span<std::uint32_t> data)
     {
         glGenBuffers(1, &m_EBO);
 

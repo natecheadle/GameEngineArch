@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <span>
 
 namespace nate::Modules::Render
 {
@@ -47,10 +48,8 @@ namespace nate::Modules::Render
         virtual GUI::IWindow* Window() const                                            = 0;
         virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
 
-        virtual VertexBuffer_ptr CreateBuffer(const std::vector<VertexData>& vertexes) = 0;
-        virtual VertexBuffer_ptr CreateBuffer(
-            const std::vector<VertexData>&    vertexes,
-            const std::vector<std::uint32_t>& indeces) = 0;
+        virtual VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes)                                   = 0;
+        virtual VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces) = 0;
 
         virtual Shader_ptr CreateShader(const std::filesystem::path& path)                  = 0;
         virtual Shader_ptr CreateShader(const std::filesystem::path& path, ShaderType type) = 0;
