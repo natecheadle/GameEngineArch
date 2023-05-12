@@ -78,9 +78,10 @@ namespace nate::Modules::Render
         virtual void ClearColorBuffer() = 0;
         virtual void SwapBuffers()      = 0;
 
+        void ExecuteFunction(std::function<void()> func);
+
       protected:
         void ExecuteJob() final;
-        void ExecuteFunction(std::function<void()> func);
 
       private:
         std::future<void> ExecuteFunctionAsync(std::function<void()> func);

@@ -119,17 +119,20 @@ class TestApp : public App::App
     {
         // TODO this should be handled automatically
         m_pCamera->Update(time);
-        auto* pRenderer = GetRenderer();
+        auto* pRenderer    = GetRenderer();
+        auto  renderUpdate = [&]() -> void {
+            for (const auto& cube : m_Cubes)
+            {
+                pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
+                pRenderer->SetShaderVar(cube->Shader().get(), "texture2", 1);
+                pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
+                pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
+                pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
+                pRenderer->Draw(cube.get());
+            }
+        };
 
-        for (const auto& cube : m_Cubes)
-        {
-            pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
-            pRenderer->SetShaderVar(cube->Shader().get(), "texture2", 1);
-            pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
-            pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
-            pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
-            pRenderer->Draw(cube.get());
-        }
+        pRenderer->ExecuteFunction(renderUpdate);
     }
 };
 
