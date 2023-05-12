@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Renderer/VertexBuffer.h"
+#include "../Renderer/VertexData.h"
 #include "../Shader/ShaderProgram.h"
 #include "../Texture/Texture.h"
 #include "SquareMatrix4x4.hpp"
@@ -12,12 +14,7 @@
 
 namespace nate::Modules::Render
 {
-    struct VertexData
-    {
-        Vector3<float> Position;
-        Vector3<float> Color;
-        Vector2<float> TextureCoord;
-    };
+    class Renderer;
 
     class Object3D
     {
@@ -27,12 +24,12 @@ namespace nate::Modules::Render
         Vector3<float>                        m_Origin;
         Vector3<Radian<float>>                m_Rotation;
         std::vector<std::shared_ptr<Texture>> m_Textures;
-
-      protected:
-        Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
-        Object3D(std::vector<VertexData> vertexes);
+        std::shared_ptr<VertexBuffer>         m_pBuffer;
 
       public:
+        Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
+        Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes);
+
         virtual ~Object3D() = default;
 
         const std::vector<VertexData>&    Vertexes() const { return m_Vertexes; }

@@ -1,3 +1,4 @@
+#include "3D/Object3D.h"
 #include "IWindow.h"
 #include "Renderer/Renderer.h"
 #include "WindowMessages.hpp"
@@ -34,8 +35,8 @@ class TestApp : public App::App
     GUI::WindowSize                                m_WindowSize;
     float                                          m_CamYaw{0.0};
     float                                          m_CamPitch{0.0};
-    std::shared_ptr<Render::Object3D>              m_pCube;
-    std::shared_ptr<Render::Fly_Camera3D>          m_pCamera;
+    std::unique_ptr<Render::Object3D>              m_pCube;
+    std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -117,10 +118,10 @@ class TestApp : public App::App
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
         auto pProgram        = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
-        m_pCube = GetRenderer()->CreateObject(m_Verts);
+        m_pCube = std::make_unique<Render::Object3D>(GetRenderer(), m_Verts);
         m_pCube->Shader(std::move(pProgram));
         m_pCube->Textures({std::move(pWallTex), std::move(pFaceTex)});
-        m_pCamera = std::make_shared<Render::Fly_Camera3D>(GetWindow());
+        m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
     }
 
     void Shutdown() override

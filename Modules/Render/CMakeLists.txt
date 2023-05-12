@@ -7,7 +7,6 @@ add_library(${PROJECT_NAME} STATIC
     "3D/Object3D.cpp"
     "3D/Camera3D.cpp"
     "3D/Fly_Camera3D.cpp"
-    "3D/OpenGL_Object3D.cpp"
     "Shader/Fragment_OpenGL_Shader.cpp"
     "Shader/OpenGL_ShaderProgram.cpp"
     "Shader/Shader.cpp"
@@ -21,6 +20,7 @@ add_library(${PROJECT_NAME} STATIC
     "Texture/OpenGL_Texture.cpp"
     "Renderer/Renderer_OpenGL.cpp"
     "Renderer/Renderer.cpp"
+    "Renderer/VertexBuffer_OpenGL.cpp"
 )
 
 find_package(OpenGL REQUIRED)

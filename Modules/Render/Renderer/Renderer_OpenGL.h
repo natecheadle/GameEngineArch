@@ -2,6 +2,7 @@
 
 #include "../3D/Object3D.h"
 #include "Renderer.h"
+#include "Renderer/VertexBuffer.h"
 
 #include <Window_GLFW.h>
 
@@ -22,20 +23,21 @@ namespace nate::Modules::Render
 
         GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
 
-        std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) final;
-        std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
-            final;
+        VertexBuffer_ptr CreateBuffer(const std::vector<VertexData>& vertexes) override;
+        VertexBuffer_ptr CreateBuffer(
+            const std::vector<VertexData>&    vertexes,
+            const std::vector<std::uint32_t>& indeces) override;
 
-        std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path) final;
-        std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path, ShaderType type) final;
+        Shader_ptr CreateShader(const std::filesystem::path& path) final;
+        Shader_ptr CreateShader(const std::filesystem::path& path, ShaderType type) final;
 
-        std::shared_ptr<ShaderProgram> CreateShaderProgram(
+        ShaderProgram_ptr CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) final;
 
-        std::shared_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
-        std::shared_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit) final;
+        Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
+        Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
         void Draw(Object3D* pObj) final;
 
@@ -53,7 +55,7 @@ namespace nate::Modules::Render
       private:
         static bool Validate(void* pVoid);
 
-        void Destroy(Object3D* pObj);
+        void Destroy(VertexBuffer* pObj);
         void Destroy(Shader* pShader);
         void Destroy(Texture* pTex);
         void Destroy(ShaderProgram* pProgram);

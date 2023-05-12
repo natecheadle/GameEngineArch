@@ -1,22 +1,26 @@
 #pragma once
 
-#include "Object3D.h"
+#include "VertexBuffer.h"
 
 #include <vector>
 
 namespace nate::Modules::Render
 {
-    class OpenGL_Object3D : public Object3D
+    class VertexBuffer_OpenGL : public VertexBuffer
     {
-        unsigned int m_VAO{0};
 
+        unsigned int m_VAO{0};
         unsigned int m_VBO{0};
         unsigned int m_EBO{0};
 
+        int m_VertexSize{0};
+        int m_IndexSize{0};
+
       public:
-        OpenGL_Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces);
-        OpenGL_Object3D(std::vector<VertexData> vertexes);
-        ~OpenGL_Object3D() override;
+        VertexBuffer_OpenGL(const std::vector<VertexData>& vertexes, const std::vector<std::uint32_t>& indeces);
+        VertexBuffer_OpenGL(const std::vector<VertexData>& vertexes);
+
+        ~VertexBuffer_OpenGL() override;
 
         void Draw() override;
 

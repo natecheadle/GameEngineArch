@@ -1,5 +1,6 @@
 #include "Object3D.h"
 
+#include "../Renderer/Renderer.h"
 #include "SquareMatrix4x4.hpp"
 #include "Vector3.hpp"
 
@@ -8,14 +9,16 @@
 
 namespace nate::Modules::Render
 {
-    Object3D::Object3D(std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
+    Object3D::Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes, std::vector<std::uint32_t> indeces)
         : m_Vertexes(std::move(vertexes))
         , m_Indeces(std::move(indeces))
+        , m_pBuffer(pRenderer->CreateBuffer(m_Vertexes, m_Indeces))
     {
     }
 
-    Object3D::Object3D(std::vector<VertexData> vertexes)
+    Object3D::Object3D(Renderer* pRenderer, std::vector<VertexData> vertexes)
         : m_Vertexes(std::move(vertexes))
+        , m_pBuffer(pRenderer->CreateBuffer(m_Vertexes))
     {
     }
 
@@ -42,5 +45,6 @@ namespace nate::Modules::Render
             }
         }
         m_pShader->Use();
+        m_pBuffer->Draw();
     }
 } // namespace nate::Modules::Render
