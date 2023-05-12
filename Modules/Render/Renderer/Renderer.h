@@ -3,6 +3,8 @@
 #include "../3D/Object3D.h"
 #include "../Shader/Shader.h"
 #include "../Texture/Texture.h"
+#include "Shader/ShaderProgram.h"
+#include "VertexBuffer.h"
 
 #include <IWindow.h>
 #include <Job.h>
@@ -18,9 +20,14 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <span>
 
 namespace nate::Modules::Render
 {
+    using VertexBuffer_ptr  = std::unique_ptr<VertexBuffer, std::function<void(VertexBuffer*)>>;
+    using Shader_ptr        = std::unique_ptr<Shader, std::function<void(Shader*)>>;
+    using Texture_ptr       = std::unique_ptr<Texture, std::function<void(Texture*)>>;
+    using ShaderProgram_ptr = std::unique_ptr<ShaderProgram, std::function<void(ShaderProgram*)>>;
 
     class Renderer : protected Jobs::Job
     {
@@ -41,21 +48,19 @@ namespace nate::Modules::Render
         virtual GUI::IWindow* Window() const                                            = 0;
         virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
 
-        virtual std::shared_ptr<Object3D> CreateObject(std::vector<VertexData> vertexes) = 0;
-        virtual std::shared_ptr<Object3D> CreateObject(
-            std::vector<VertexData>    vertexes,
-            std::vector<std::uint32_t> indeces) = 0;
+        virtual VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes)                                   = 0;
+        virtual VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces) = 0;
 
-        virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path)                  = 0;
-        virtual std::shared_ptr<Shader> CreateShader(const std::filesystem::path& path, ShaderType type) = 0;
+        virtual Shader_ptr CreateShader(const std::filesystem::path& path)                  = 0;
+        virtual Shader_ptr CreateShader(const std::filesystem::path& path, ShaderType type) = 0;
 
-        virtual std::shared_ptr<ShaderProgram> CreateShaderProgram(
+        virtual ShaderProgram_ptr CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual std::shared_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual std::shared_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
+        virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
         virtual void Draw(Object3D* pObj) = 0;
 

@@ -1,10 +1,11 @@
 #include "Renderer_OpenGL.h"
 
-#include "../3D/OpenGL_Object3D.h"
 #include "../Shader/OpenGL_Shader.h"
 #include "../Shader/OpenGL_ShaderProgram.h"
 #include "../Texture/OpenGL_Texture.h"
 #include "DebugCast.hpp"
+#include "Renderer/VertexBuffer.h"
+#include "VertexBuffer_OpenGL.h"
 #include "Window_GLFW.h"
 
 #include <glad/glad.h>
@@ -65,81 +66,73 @@ namespace nate::Modules::Render
         return m_pWin.get();
     }
 
-    std::shared_ptr<Object3D> Renderer_OpenGL::CreateObject(std::vector<VertexData> vertexes)
+    VertexBuffer_ptr Renderer_OpenGL::CreateBuffer(std::span<VertexData> vertexes)
     {
-        std::shared_ptr<Object3D> rslt;
+        VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Object3D>(
-                std::make_unique<OpenGL_Object3D>(std::move(vertexes)).release(),
-                [this](Object3D* pObj) { Destroy(pObj); });
-        });
-        return rslt;
-    }
-    std::shared_ptr<Object3D> Renderer_OpenGL::CreateObject(
-        std::vector<VertexData>    vertexes,
-        std::vector<std::uint32_t> indeces)
-    {
-        std::shared_ptr<Object3D> rslt;
-        ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Object3D>(
-                new OpenGL_Object3D(std::move(vertexes), std::move(indeces)),
-                [this](Object3D* pObj) { Destroy(pObj); });
+            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(vertexes), [this](VertexBuffer* pObj) { Destroy(pObj); });
         });
         return rslt;
     }
 
-    std::shared_ptr<Shader> Renderer_OpenGL::CreateShader(const std::filesystem::path& path)
+    VertexBuffer_ptr Renderer_OpenGL::CreateBuffer(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces)
     {
-        std::shared_ptr<Shader> rslt;
+        VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Shader>(OpenGL_Shader::Create(path).release(), [this](Shader* pShader) {
-                Destroy(pShader);
+            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(vertexes, indeces), [this](VertexBuffer* pObj) {
+                Destroy(pObj);
             });
         });
         return rslt;
     }
 
-    std::shared_ptr<Shader> Renderer_OpenGL::CreateShader(const std::filesystem::path& path, ShaderType type)
+    Shader_ptr Renderer_OpenGL::CreateShader(const std::filesystem::path& path)
     {
-        std::shared_ptr<Shader> rslt;
+        Shader_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Shader>(OpenGL_Shader::Create(path, type).release(), [this](Shader* pShader) {
-                Destroy(pShader);
-            });
+            rslt = Shader_ptr(OpenGL_Shader::Create(path).release(), [this](Shader* pShader) { Destroy(pShader); });
         });
         return rslt;
     }
 
-    std::shared_ptr<ShaderProgram> Renderer_OpenGL::CreateShaderProgram(
+    Shader_ptr Renderer_OpenGL::CreateShader(const std::filesystem::path& path, ShaderType type)
+    {
+        Shader_ptr rslt;
+        ExecuteFunction([&]() -> void {
+            rslt =
+                Shader_ptr(OpenGL_Shader::Create(path, type).release(), [this](Shader* pShader) { Destroy(pShader); });
+        });
+        return rslt;
+    }
+
+    ShaderProgram_ptr Renderer_OpenGL::CreateShaderProgram(
         const Shader* pFragmentShader,
         const Shader* pGeometryShader,
         const Shader* pVertexShader)
     {
-        std::shared_ptr<ShaderProgram> rslt;
+        ShaderProgram_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<ShaderProgram>(
-                std::make_unique<OpenGL_ShaderProgram>(pFragmentShader, pGeometryShader, pVertexShader).release(),
+            rslt = ShaderProgram_ptr(
+                new OpenGL_ShaderProgram(pFragmentShader, pGeometryShader, pVertexShader),
                 [this](ShaderProgram* pProgram) { Destroy(pProgram); });
         });
         return rslt;
     }
 
-    std::shared_ptr<Texture> Renderer_OpenGL::CreateTexture(const std::filesystem::path& path, TextureUnit unit)
+    Texture_ptr Renderer_OpenGL::CreateTexture(const std::filesystem::path& path, TextureUnit unit)
     {
-        std::shared_ptr<Texture> rslt;
+        Texture_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Texture>(new OpenGL_Texture(path, unit), [this](Texture* pTex) { Destroy(pTex); });
+            rslt = Texture_ptr(new OpenGL_Texture(path, unit), [this](Texture* pTex) { Destroy(pTex); });
         });
         return rslt;
     }
 
-    std::shared_ptr<Texture> Renderer_OpenGL::CreateTexture(const ImageFile& image, TextureUnit unit)
+    Texture_ptr Renderer_OpenGL::CreateTexture(const ImageFile& image, TextureUnit unit)
     {
-        std::shared_ptr<Texture> rslt;
+        Texture_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = std::shared_ptr<Texture>(
-                std::make_unique<OpenGL_Texture>(image, unit).release(),
-                [this](Texture* pTex) { Destroy(pTex); });
+            rslt = Texture_ptr(new OpenGL_Texture(image, unit), [this](Texture* pTex) { Destroy(pTex); });
         });
         return rslt;
     }
@@ -226,7 +219,7 @@ namespace nate::Modules::Render
         return true;
     }
 
-    void Renderer_OpenGL::Destroy(Object3D* pObj)
+    void Renderer_OpenGL::Destroy(VertexBuffer* pObj)
     {
         if (Validate(pObj))
         {

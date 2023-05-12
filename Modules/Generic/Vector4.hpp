@@ -45,6 +45,6 @@ namespace nate::Modules
         T    w() const { return Vector<4, T>::at(3); }
         void w(T val) { Vector<3, T>::at(3) = val; }
 
-        Vector3<T> ToVector3() const { return Vector3<T>({x(), y(), z()}); }
+        Vector3<T> ToVector3() const { return Vector3<T>(x(), y(), z()); }
     };
 } // namespace nate::Modules

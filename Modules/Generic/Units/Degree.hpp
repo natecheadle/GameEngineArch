@@ -20,7 +20,7 @@ namespace nate::Modules
 
         template <class DERIVED_OTHER>
         Degree(const Angle<T, DERIVED_OTHER>& other)
-            : Degree(other.Radians())
+            : Degree(other.Radians() * Angle<T, Degree<T>>::DegreePerRad())
         {
         }
 

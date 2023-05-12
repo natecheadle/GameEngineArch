@@ -10,7 +10,6 @@
 
 #include <type_traits>
 
-
 namespace nate::Modules
 {
     template <class T, class DERIVED>
