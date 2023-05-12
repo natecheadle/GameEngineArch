@@ -2,6 +2,8 @@
 
 #include "Vector.hpp"
 
+#include <array>
+
 namespace nate::Modules
 {
     template <typename T = float>
@@ -11,9 +13,8 @@ namespace nate::Modules
 
       public:
         Vector3() = default;
-
-        Vector3(std::array<T, 3> init) noexcept
-            : BASE(init)
+        Vector3(T x, T y, T z) noexcept
+            : BASE(std::array<T, 3>({x, y, z}))
         {
         }
 

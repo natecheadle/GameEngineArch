@@ -26,11 +26,12 @@ namespace nate::Modules::Render
 
         static VertexData m_CubePoints[];
 
-        Object3D(Renderer* pRenderer, std::shared_ptr<VertexBuffer> pBuffer);
-
       public:
         Object3D(Renderer* pRenderer, std::span<VertexData> vertexes, std::span<std::uint32_t> indeces);
         Object3D(Renderer* pRenderer, std::span<VertexData> vertexes);
+
+        Object3D(const Object3D& other) = default;
+        Object3D(Object3D&& other)      = default;
 
         static std::unique_ptr<Object3D> CreateCube(Renderer* pRenderer);
 
@@ -45,6 +46,9 @@ namespace nate::Modules::Render
         virtual void Draw();
 
         SquareMatrix4x4<float> ModelMatrix() const;
+
+        void                  Origin(const Vector3<float>& val) { m_Origin = val; }
+        const Vector3<float>& Origin() const { return m_Origin; }
 
         void Translate(const Vector3<float>& val) { m_Origin += val; }
         void Rotate(const Vector3<Radian<float>>& val) { m_Rotation += val; }

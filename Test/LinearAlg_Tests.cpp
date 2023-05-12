@@ -96,13 +96,9 @@ namespace nate::Test
         ASSERT_EQ(rslt, test * test);
         ASSERT_EQ(TranslateMatrix(TranslateMatrix(test) * TranslateMatrix(test)), test * test);
 
-        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({
-            {M_PI_4, 0.0, 0.0}
-        });
+        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, 0.0, 0.0});
 
-        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({
-            {0.0, M_PI_4, 0.0}
-        });
+        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, M_PI_4, 0.0});
 
         auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(1, 0, 0));
         auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(0, 1, 0));
@@ -135,12 +131,7 @@ namespace nate::Test
 
     TEST_F(MatrixTests, ValidateLookAt)
     {
-        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::lookat(
-            {
-                {0.0, 0.0, 3.0}
-        },
-            {{0.0, 0.0, 0.0}},
-            {{0.0, 1.0, 0.0}}));
+        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::lookat({0.0, 0.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0}));
         glm::mat4 look_at = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
         ASSERT_EQ(TranslateMatrix(look_at), input);
@@ -148,21 +139,13 @@ namespace nate::Test
 
     TEST_F(MatrixTests, ValidateRotationMatrix)
     {
-        auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init({
-            {M_PI_4, M_PI_4, M_PI_4}
-        });
+        auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, M_PI_4, M_PI_4});
 
-        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({
-            {M_PI_4, 0.0, 0.0}
-        });
+        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, 0.0, 0.0});
 
-        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({
-            {0.0, M_PI_4, 0.0}
-        });
+        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, M_PI_4, 0.0});
 
-        auto rot_z = SquareMatrix4x4<float>::rotate_zyx_init({
-            {0.0, 0.0, M_PI_4}
-        });
+        auto rot_z = SquareMatrix4x4<float>::rotate_zyx_init({0.0, 0.0, M_PI_4});
 
         auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(1, 0, 0));
         auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(0, 1, 0));
@@ -181,32 +164,32 @@ namespace nate::Test
 
     TEST(VectorTests, ValidateDotProduct)
     {
-        Vector3<float> vec({1.0, 2.0, 3.0});
+        Vector3<float> vec(1.0, 2.0, 3.0);
         float          rslt = vec.dot(vec);
         ASSERT_EQ(14, rslt);
     }
 
     TEST(VectorTests, ValidateCrossProduct)
     {
-        Vector3<float> vec1({1.0, 2.0, 3.0});
-        Vector3<float> vec2({-1.0, -1.0, -1.0});
+        Vector3<float> vec1(1.0, 2.0, 3.0);
+        Vector3<float> vec2(-1.0, -1.0, -1.0);
         Vector3<float> rslt = vec1.cross(vec2);
-        ASSERT_EQ(Vector3<float>({1, -2, 1}), rslt);
+        ASSERT_EQ(Vector3<float>(1, -2, 1), rslt);
     }
 
     TEST(VectorTests, ValidateSubtraction)
     {
-        Vector3<float> vec1({1.0, 2.0, 3.0});
-        Vector3<float> vec2({-1.0, -1.0, -1.0});
+        Vector3<float> vec1(1.0, 2.0, 3.0);
+        Vector3<float> vec2(-1.0, -1.0, -1.0);
         Vector3<float> rslt = vec1 - vec2;
-        ASSERT_EQ(Vector3<float>({2, 3, 4}), rslt);
+        ASSERT_EQ(Vector3<float>(2, 3, 4), rslt);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateX)
     {
-        Vector3<float> init({0, 1, 1});
+        Vector3<float> init(0, 1, 1);
         Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3({0, 0, std::sqrt(2.0f)}), rotated);
+        ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateY)
@@ -226,22 +209,14 @@ namespace nate::Test
     TEST(LinearAlg_Tests, ValidateScale)
     {
         Vector3<float> init({1, 1, 1});
-        Vector3<float> scaled = (SquareMatrix4x4<float>::scale_init({
-                                     {2.0, 2.0, 2.0}
-        }) *
-                                 init)
-                                    .ToVector3();
+        Vector3<float> scaled = (SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * init).ToVector3();
         ASSERT_EQ(Vector3({2.0, 2.0, 2.0}), scaled);
     }
 
     TEST(LinearAlg_Tests, ValidateTranslate)
     {
         Vector3 init({1, 1, 1});
-        Vector  translated = (SquareMatrix4x4<float>::translate_init({
-                                 {2.0, 2.0, 2.0}
-        }) *
-                             init)
-                                .ToVector3();
+        Vector  translated = (SquareMatrix4x4<float>::translate_init({2.0, 2.0, 2.0}) * init).ToVector3();
         ASSERT_EQ(Vector3({3.0, 3.0, 3.0}), translated);
     }
 
