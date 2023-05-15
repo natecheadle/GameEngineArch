@@ -8,6 +8,11 @@ namespace nate::Modules::Render
     {
       public:
         RGB_Color() noexcept = default;
+        RGB_Color(float red, float green, float blue) noexcept
+            : Color({red, green, blue})
+        {
+        }
+
         RGB_Color(Vector3<float> val) noexcept
             : Color(std::move(val))
         {

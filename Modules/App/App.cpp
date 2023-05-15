@@ -44,7 +44,7 @@ namespace nate::Modules::App
             }
 
             std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
-            period                             = duration_cast<std::chrono::nanoseconds>(begin - end);
+            period                             = duration_cast<std::chrono::nanoseconds>(end - begin);
             std::chrono::nanoseconds sleepTime = std::chrono::nanoseconds(std::int64_t(1.0 / 60.0 * 1e9)) - period;
             std::this_thread::sleep_for(sleepTime);
 

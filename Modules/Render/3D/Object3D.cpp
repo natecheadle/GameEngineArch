@@ -83,8 +83,8 @@ namespace nate::Modules::Render
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
 
-        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation));
-        rslt *= SquareMatrix4x4<float>::translate_init(m_Origin);
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_Origin));
+        rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
         return rslt;
     }
 

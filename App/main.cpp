@@ -1,5 +1,6 @@
 #include "3D/Object3D.h"
 #include "IWindow.h"
+#include "Renderer/RGB_Color.h"
 #include "Renderer/Renderer.h"
 #include "Vector3.hpp"
 #include "WindowMessages.hpp"
@@ -26,6 +27,7 @@
 #include <vector>
 
 using namespace nate::Modules;
+using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
@@ -135,15 +137,25 @@ class TestApp : public App::App
 
     void UpdateApp(std::chrono::nanoseconds time) override
     {
+        static std::chrono::nanoseconds totalTime;
+        totalTime += time;
         // TODO this should be handled automatically
         m_pCamera->Update(time);
-        auto* pRenderer    = GetRenderer();
-        auto  renderUpdate = [&]() -> void {
+        auto* pRenderer = GetRenderer();
+        for (auto& cube : m_Cubes)
+        {
+            cube->RotX(M_PI / 100.0);
+        }
+
+        double            nsec = totalTime / 1.0s;
+        Render::RGB_Color lightColor(std::abs(std::cos(nsec * 5.0)), 0.0, 0.0);
+
+        auto renderUpdate = [&]() -> void {
             for (const auto& cube : m_Cubes)
             {
                 pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
-                pRenderer->SetShaderVar(cube->Shader().get(), "lightColor", Vector3<float>(1.0, 1.0, 1.0));
+                pRenderer->SetShaderVar(cube->Shader().get(), "lightColor", lightColor.Data());
                 pRenderer->SetShaderVar(cube->Shader().get(), "lightPos", m_LightCube->Origin());
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
@@ -152,6 +164,7 @@ class TestApp : public App::App
 
             pRenderer->SetShaderVar(m_LightCube->Shader().get(), "model", m_LightCube->ModelMatrix());
             pRenderer->SetShaderVar(m_LightCube->Shader().get(), "view", m_pCamera->View());
+            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "lightColor", lightColor.Data());
             pRenderer->Draw(m_LightCube.get());
         };
 
