@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <type_traits>
 
 namespace nate::Modules
@@ -31,8 +32,9 @@ namespace nate::Modules
 
         template <typename IT>
         Vector(IT begin, IT end)
-            : m_Data(begin, end)
         {
+            assert(std::distance(begin, end) == SIZE);
+            std::fill(begin, end, m_Data.begin());
         }
 
         Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }

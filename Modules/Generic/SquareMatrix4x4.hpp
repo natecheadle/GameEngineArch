@@ -238,6 +238,20 @@ namespace nate::Modules
             *this *= rotate_z_init(theta);
             return *this;
         }
+
+        SquareMatrix3x3<T> to_3x3() const
+        {
+            SquareMatrix3x3<T> rslt;
+            for (size_t i = 0; i < 3; ++i)
+            {
+                const Vector<4, T>& col = this->at(i);
+                for (size_t j = 0; j < 3; ++j)
+                {
+                    rslt[i][j] = col[j];
+                }
+            }
+            return rslt;
+        }
     };
 
     template <class T>

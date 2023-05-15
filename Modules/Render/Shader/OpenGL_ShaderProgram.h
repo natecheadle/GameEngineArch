@@ -24,6 +24,7 @@ namespace nate::Modules::Render
         void SetShaderVar(const std::string& name, int value) const override;
         void SetShaderVar(const std::string& name, float value) const override;
         void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const override;
+        void SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const override;
         void SetShaderVar(const std::string& name, const Vector<3, float>& value) const override;
         void SetShaderVar(const std::string& name, const Vector<4, float>& value) const override;
     };

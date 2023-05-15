@@ -81,6 +81,12 @@ namespace nate::Modules::Render
         glUniformMatrix4fv(loc, 1, GL_FALSE, value.raw_data());
     }
 
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const
+    {
+        auto loc = glGetUniformLocation(m_ID, name.c_str());
+        glUniformMatrix3fv(loc, 1, GL_FALSE, value.raw_data());
+    }
+
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Vector<3, float>& value) const
     {
         auto loc = glGetUniformLocation(m_ID, name.c_str());

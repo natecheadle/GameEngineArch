@@ -36,6 +36,7 @@ class TestApp : public App::App
     float                                          m_CamYaw{0.0};
     float                                          m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Object3D>> m_Cubes;
+    std::unique_ptr<Render::Object3D>              m_LightCube;
     std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
   public:
@@ -69,15 +70,22 @@ class TestApp : public App::App
 
         auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
+        auto light_source_path    = shader_dir / "light_source.frag";
         auto awesomeface_path     = shader_dir / "awesomeface.png";
         auto wall_path            = shader_dir / "wall.jpg";
 
         auto pWallTex = GetRenderer()->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
         auto pFaceTex = GetRenderer()->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
 
-        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
-        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
-        auto pProgram        = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto pVertexShader      = GetRenderer()->CreateShader(vertex_shader_path);
+        auto pFragmentShader    = GetRenderer()->CreateShader(fragment_shader_path);
+        auto pLightSourceShader = GetRenderer()->CreateShader(light_source_path);
+        auto pLightProg = GetRenderer()->CreateShaderProgram(pLightSourceShader.get(), nullptr, pVertexShader.get());
+        auto pProgram   = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+
+        m_LightCube = Render::Object3D::CreateCube(GetRenderer());
+        m_LightCube->Shader(std::move(pLightProg));
+        m_LightCube->Origin({1.0f, 1.0f, 1.0f});
 
         const size_t numOfCubes{10};
         m_Cubes.resize(numOfCubes);
@@ -107,12 +115,22 @@ class TestApp : public App::App
         }
 
         m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
+
+        auto* pRenderer = GetRenderer();
+        pRenderer->SetShaderVar(m_LightCube->Shader().get(), "projection", m_pCamera->Projection());
+        for (auto& cube : m_Cubes)
+        {
+            pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
+            pRenderer->SetShaderVar(cube->Shader().get(), "texture2", 1);
+            pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
+        }
     }
 
     void Shutdown() override
     {
         m_pCamera.reset();
         m_Cubes.clear();
+        m_LightCube.reset();
     }
 
     void UpdateApp(std::chrono::nanoseconds time) override
@@ -123,13 +141,18 @@ class TestApp : public App::App
         auto  renderUpdate = [&]() -> void {
             for (const auto& cube : m_Cubes)
             {
-                pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
-                pRenderer->SetShaderVar(cube->Shader().get(), "texture2", 1);
-                pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
                 pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
+                pRenderer->SetShaderVar(cube->Shader().get(), "lightColor", Vector3<float>(1.0, 1.0, 1.0));
+                pRenderer->SetShaderVar(cube->Shader().get(), "lightPos", m_LightCube->Origin());
+                pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
+                pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
                 pRenderer->Draw(cube.get());
             }
+
+            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "model", m_LightCube->ModelMatrix());
+            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "view", m_pCamera->View());
+            pRenderer->Draw(m_LightCube.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);

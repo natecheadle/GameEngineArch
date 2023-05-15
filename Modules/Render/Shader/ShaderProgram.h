@@ -20,6 +20,7 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(const std::string& name, int value) const                           = 0;
         virtual void SetShaderVar(const std::string& name, float value) const                         = 0;
         virtual void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const = 0;
+        virtual void SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const = 0;
         virtual void SetShaderVar(const std::string& name, const Vector<3, float>& value) const       = 0;
         virtual void SetShaderVar(const std::string& name, const Vector<4, float>& value) const       = 0;
     };

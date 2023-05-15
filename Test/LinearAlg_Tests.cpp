@@ -66,6 +66,12 @@ namespace nate::Test
         ASSERT_EQ(0, test.determinant());
     }
 
+    TEST_F(MatrixTests, ValidateTo3x3)
+    {
+        SquareMatrix3x3<float> mat3 = {{{{{1.0, 2.0, 3.0}}, {{5.0, 6.0, 7.0}}, {{9.0, 10.0, 11.0}}}}};
+        ASSERT_EQ(mat3, test.to_3x3());
+    }
+
     TEST_F(MatrixTests, ValidateAddition)
     {
         SquareMatrix4x4<float> rslt{

@@ -151,19 +151,28 @@ namespace nate::Modules::Render
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, int value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, float value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(
@@ -172,19 +181,40 @@ namespace nate::Modules::Render
         const SquareMatrix<4, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
+    }
+
+    void Renderer_OpenGL::SetShaderVar(
+        ShaderProgram*                pShader,
+        const std::string&            name,
+        const SquareMatrix<3, float>& value)
+    {
+        assert(pShader);
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::ClearDepthBuffer()
@@ -194,10 +224,7 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::ClearColorBuffer()
     {
-        ExecuteFunction([]() -> void {
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-        });
+        ExecuteFunction([]() -> void { glClear(GL_COLOR_BUFFER_BIT); });
     }
 
     void Renderer_OpenGL::SwapBuffers()

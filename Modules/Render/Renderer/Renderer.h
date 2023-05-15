@@ -73,7 +73,11 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(
             ShaderProgram*                pShader,
             const std::string&            name,
-            const SquareMatrix<4, float>& value)                                                                  = 0;
+            const SquareMatrix<4, float>& value) = 0;
+        virtual void SetShaderVar(
+            ShaderProgram*                pShader,
+            const std::string&            name,
+            const SquareMatrix<3, float>& value)                                                                  = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) = 0;
 
