@@ -9,7 +9,7 @@ namespace nate::Modules
     class Vector4 : public Vector<4, T>
     {
       public:
-        Vector4() = default;
+        Vector4() noexcept = default;
 
         Vector4(std::array<T, 4> init)
             : Vector<4, T>(init)
@@ -27,11 +27,11 @@ namespace nate::Modules
         {
         }
 
-        Vector4(const Vector4& other) = default;
-        Vector4(Vector4&& other)      = default;
+        Vector4(const Vector4& other) noexcept = default;
+        Vector4(Vector4&& other) noexcept      = default;
 
-        Vector4& operator=(const Vector4& other) = default;
-        Vector4& operator=(Vector4&& other)      = default;
+        Vector4& operator=(const Vector4& other) noexcept = default;
+        Vector4& operator=(Vector4&& other) noexcept      = default;
 
         T    x() const { return Vector<4, T>::at(0); }
         void x(T val) { Vector<3, T>::at(0) = val; }

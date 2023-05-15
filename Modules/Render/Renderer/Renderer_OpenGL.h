@@ -23,8 +23,11 @@ namespace nate::Modules::Render
 
         GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
 
-        VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes) override;
-        VertexBuffer_ptr CreateBuffer(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces) override;
+        VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<float> vertexes) override;
+        VertexBuffer_ptr CreateBuffer(
+            const VertexDataConfig&  config,
+            std::span<float>         vertexes,
+            std::span<std::uint32_t> indeces) override;
 
         Shader_ptr CreateShader(const std::filesystem::path& path) final;
         Shader_ptr CreateShader(const std::filesystem::path& path, ShaderType type) final;

@@ -22,7 +22,7 @@ namespace nate::Modules
         using const_iterator = typename std::array<T, SIZE>::const_iterator;
         using iterator       = typename std::array<T, SIZE>::iterator;
 
-        Vector() { m_Data.fill(T()); }
+        Vector() noexcept { m_Data.fill(T()); }
 
         Vector(std::array<T, SIZE> init) noexcept
             : m_Data(init)
@@ -35,11 +35,11 @@ namespace nate::Modules
         {
         }
 
-        Vector(const Vector& other) { std::copy(other.begin(), other.end(), m_Data.begin()); }
+        Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }
         Vector(Vector&& other) noexcept = default;
 
-        Vector& operator=(const Vector& other)     = default;
-        Vector& operator=(Vector&& other) noexcept = default;
+        Vector& operator=(const Vector& other) noexcept = default;
+        Vector& operator=(Vector&& other) noexcept      = default;
 
         static constexpr size_t size() { return SIZE; }
         T*                      data() { return m_Data.data(); }
