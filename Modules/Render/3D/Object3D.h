@@ -27,8 +27,12 @@ namespace nate::Modules::Render
         static VertexData m_CubePoints[];
 
       public:
-        Object3D(Renderer* pRenderer, std::span<VertexData> vertexes, std::span<std::uint32_t> indeces);
-        Object3D(Renderer* pRenderer, std::span<VertexData> vertexes);
+        Object3D(
+            Renderer*                pRenderer,
+            const VertexDataConfig&  config,
+            std::span<float>         vertexes,
+            std::span<std::uint32_t> indeces);
+        Object3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
 
         Object3D(const Object3D& other) = default;
         Object3D(Object3D&& other)      = default;
@@ -61,6 +65,4 @@ namespace nate::Modules::Render
         void RotY(const Radian<float>& val) { m_Rotation[1] += val; }
         void RotZ(const Radian<float>& val) { m_Rotation[2] += val; }
     };
-
-    static_assert(sizeof(VertexData) == sizeof(float) * 8, "VertexData must be tightly packed");
 } // namespace nate::Modules::Render

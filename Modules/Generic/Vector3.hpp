@@ -12,7 +12,7 @@ namespace nate::Modules
         using BASE = Vector<3, T>;
 
       public:
-        Vector3() = default;
+        Vector3() noexcept = default;
         Vector3(T x, T y, T z) noexcept
             : BASE(std::array<T, 3>({x, y, z}))
         {
@@ -34,11 +34,11 @@ namespace nate::Modules
         {
         }
 
-        Vector3(const Vector3& other) = default;
-        Vector3(Vector3&& other)      = default;
+        Vector3(const Vector3& other) noexcept = default;
+        Vector3(Vector3&& other) noexcept      = default;
 
-        Vector3& operator=(const Vector3& other) = default;
-        Vector3& operator=(Vector3&& other)      = default;
+        Vector3& operator=(const Vector3& other) noexcept = default;
+        Vector3& operator=(Vector3&& other) noexcept      = default;
 
         T    x() const { return BASE::at(0); }
         void x(T val) { BASE::at(0) = val; }

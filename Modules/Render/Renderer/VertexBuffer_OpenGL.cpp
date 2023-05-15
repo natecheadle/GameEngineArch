@@ -4,21 +4,24 @@
 
 namespace nate::Modules::Render
 {
-    VertexBuffer_OpenGL::VertexBuffer_OpenGL(std::span<VertexData> vertexes, std::span<std::uint32_t> indeces)
-        : m_VertexSize(static_cast<int>(vertexes.size()))
+    VertexBuffer_OpenGL::VertexBuffer_OpenGL(
+        const VertexDataConfig&  config,
+        std::span<float>         vertexData,
+        std::span<std::uint32_t> indeces)
+        : m_VertexSize(static_cast<int>(vertexData.size()))
         , m_IndexSize(static_cast<int>(indeces.size()))
     {
         InitializeVertexArrays();
-        InitializeVertexData(vertexes);
+        InitializeVertexData(config, vertexData);
         InitializeIndexData(indeces);
         ClearBindings();
     }
 
-    VertexBuffer_OpenGL::VertexBuffer_OpenGL(std::span<VertexData> vertexes)
-        : m_VertexSize(static_cast<int>(vertexes.size()))
+    VertexBuffer_OpenGL::VertexBuffer_OpenGL(const VertexDataConfig& config, std::span<float> vertexData)
+        : m_VertexSize(static_cast<int>(vertexData.size()))
     {
         InitializeVertexArrays();
-        InitializeVertexData(vertexes);
+        InitializeVertexData(config, vertexData);
         ClearBindings();
     }
 
@@ -42,26 +45,32 @@ namespace nate::Modules::Render
         }
     }
 
-    void VertexBuffer_OpenGL::InitializeVertexData(std::span<VertexData> data)
+    void VertexBuffer_OpenGL::InitializeVertexData(const VertexDataConfig& configs, std::span<float> vertexData)
     {
         glGenBuffers(1, &m_VBO);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferData(
             GL_ARRAY_BUFFER,
-            static_cast<std::uint32_t>(sizeof(VertexData) * data.size()),
-            data.data(),
+            static_cast<std::uint32_t>(sizeof(float) * vertexData.size()),
+            vertexData.data(),
             GL_STATIC_DRAW);
 
-        // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, Position));
-        glEnableVertexAttribArray(0);
-        // color attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, Color));
-        glEnableVertexAttribArray(1);
-        // texture coord attribute
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, TextureCoord));
-        glEnableVertexAttribArray(2);
+        int    i{0};
+        size_t cur_offset{0};
+        for (const auto& config : configs.Describe())
+        {
+            glVertexAttribPointer(
+                i,
+                config.Length,
+                ConvertType(config.BaseType),
+                GL_FALSE,
+                static_cast<GLsizei>(configs.ConfigSize()),
+                (void*)cur_offset);
+            glEnableVertexAttribArray(i);
+            cur_offset += config.TotalSize();
+            i++;
+        }
     }
 
     void VertexBuffer_OpenGL::InitializeIndexData(std::span<std::uint32_t> data)
@@ -86,5 +95,16 @@ namespace nate::Modules::Render
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
+
+    int VertexBuffer_OpenGL::ConvertType(VertexDataConfig::DataType type)
+    {
+        switch (type)
+        {
+        case VertexDataConfig::DataType::INT32: return GL_INT;
+        case VertexDataConfig::DataType::UINT32: return GL_UNSIGNED_INT;
+        case VertexDataConfig::DataType::FLOAT32: return GL_FLOAT;
+        default: assert(false); return 0;
+        }
     }
 } // namespace nate::Modules::Render

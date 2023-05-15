@@ -1,6 +1,7 @@
 #include "Object3D.h"
 
 #include "../Renderer/Renderer.h"
+#include "Renderer/VertexData.h"
 #include "SquareMatrix4x4.hpp"
 #include "Vector3.hpp"
 
@@ -49,19 +50,28 @@ namespace nate::Modules::Render
         {{-0.5f, 0.5f, -0.5f},  {}, {{0.0f, 1.0f}}}
     };
 
-    Object3D::Object3D(Renderer* pRenderer, std::span<VertexData> vertexes, std::span<std::uint32_t> indeces)
-        : m_pBuffer(pRenderer->CreateBuffer(vertexes, indeces))
+    Object3D::Object3D(
+        Renderer*                pRenderer,
+        const VertexDataConfig&  config,
+        std::span<float>         vertexes,
+        std::span<std::uint32_t> indeces)
+        : m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
-    Object3D::Object3D(Renderer* pRenderer, std::span<VertexData> vertexes)
-        : m_pBuffer(pRenderer->CreateBuffer(vertexes))
+    Object3D::Object3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
+        : m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
 
     std::unique_ptr<Object3D> Object3D::CreateCube(Renderer* pRenderer)
     {
-        return std::make_unique<Object3D>(pRenderer, m_CubePoints);
+        return std::make_unique<Object3D>(
+            pRenderer,
+            VertexData::describe(),
+            std::span<float>(
+                reinterpret_cast<float*>(m_CubePoints),
+                reinterpret_cast<float*>(m_CubePoints) + sizeof(m_CubePoints) / (sizeof(float))));
     }
 
     SquareMatrix4x4<float> Object3D::ModelMatrix() const
