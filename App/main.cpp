@@ -1,3 +1,5 @@
+#include "3D/Light.h"
+#include "3D/Material.h"
 #include "3D/Object3D.h"
 #include "IWindow.h"
 #include "Renderer/RGB_Color.h"
@@ -38,13 +40,22 @@ class TestApp : public App::App
     float                                          m_CamYaw{0.0};
     float                                          m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Object3D>> m_Cubes;
-    std::unique_ptr<Render::Object3D>              m_LightCube;
+    Render::Light                                  m_Light;
+    Render::Material                               m_CubeMaterial;
     std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
+        m_Light.Ambient  = {0.2f, 0.2f, 0.2f};
+        m_Light.Diffuse  = {0.5f, 0.5f, 0.5f};
+        m_Light.Specular = {1.0f, 1.0f, 1.0f};
+
+        m_CubeMaterial.Ambient   = {1.0f, 0.5f, 0.31f};
+        m_CubeMaterial.Diffuse   = {1.0f, 0.5f, 0.31f};
+        m_CubeMaterial.Specular  = {0.5f, 0.5f, 0.5f};
+        m_CubeMaterial.Shininess = 32.0f;
 
         GetWindow()->SubscribeToMessage(
             this,
@@ -79,15 +90,9 @@ class TestApp : public App::App
         auto pWallTex = GetRenderer()->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
         auto pFaceTex = GetRenderer()->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
 
-        auto pVertexShader      = GetRenderer()->CreateShader(vertex_shader_path);
-        auto pFragmentShader    = GetRenderer()->CreateShader(fragment_shader_path);
-        auto pLightSourceShader = GetRenderer()->CreateShader(light_source_path);
-        auto pLightProg = GetRenderer()->CreateShaderProgram(pLightSourceShader.get(), nullptr, pVertexShader.get());
-        auto pProgram   = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
-
-        m_LightCube = Render::Object3D::CreateCube(GetRenderer());
-        m_LightCube->Shader(std::move(pLightProg));
-        m_LightCube->Origin({1.0f, 1.0f, 1.0f});
+        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
+        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
+        auto pProgram        = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
         m_Cubes.resize(numOfCubes);
@@ -119,7 +124,6 @@ class TestApp : public App::App
         m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
 
         auto* pRenderer = GetRenderer();
-        pRenderer->SetShaderVar(m_LightCube->Shader().get(), "projection", m_pCamera->Projection());
         for (auto& cube : m_Cubes)
         {
             pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
@@ -132,7 +136,6 @@ class TestApp : public App::App
     {
         m_pCamera.reset();
         m_Cubes.clear();
-        m_LightCube.reset();
     }
 
     void UpdateApp(std::chrono::nanoseconds time) override
@@ -144,28 +147,29 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            cube->RotX(M_PI / 100.0);
+            cube->RotX(M_PI / 500.0);
         }
-
-        double            nsec = totalTime / 1.0s;
-        Render::RGB_Color lightColor(std::abs(std::cos(nsec * 5.0)), 0.0, 0.0);
 
         auto renderUpdate = [&]() -> void {
             for (const auto& cube : m_Cubes)
             {
                 pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
-                pRenderer->SetShaderVar(cube->Shader().get(), "lightColor", lightColor.Data());
-                pRenderer->SetShaderVar(cube->Shader().get(), "lightPos", m_LightCube->Origin());
+                pRenderer->SetShaderVar(cube->Shader().get(), "lightPos", m_Light.Position);
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
+
+                pRenderer->SetShaderVar(cube->Shader().get(), "light.ambient", m_Light.Ambient);
+                pRenderer->SetShaderVar(cube->Shader().get(), "light.diffuse", m_Light.Diffuse);
+                pRenderer->SetShaderVar(cube->Shader().get(), "light.specular", m_Light.Specular);
+
+                pRenderer->SetShaderVar(cube->Shader().get(), "material.ambient", m_CubeMaterial.Ambient);
+                pRenderer->SetShaderVar(cube->Shader().get(), "material.diffuse", m_CubeMaterial.Diffuse);
+                pRenderer->SetShaderVar(cube->Shader().get(), "material.specular", m_CubeMaterial.Specular);
+                pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
+
                 pRenderer->Draw(cube.get());
             }
-
-            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "model", m_LightCube->ModelMatrix());
-            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "view", m_pCamera->View());
-            pRenderer->SetShaderVar(m_LightCube->Shader().get(), "lightColor", lightColor.Data());
-            pRenderer->Draw(m_LightCube.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);
