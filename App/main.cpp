@@ -2,7 +2,6 @@
 #include "3D/Material.h"
 #include "3D/Object3D.h"
 #include "IWindow.h"
-#include "Renderer/RGB_Color.h"
 #include "Renderer/Renderer.h"
 #include "Vector3.hpp"
 #include "WindowMessages.hpp"
@@ -48,14 +47,12 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
+        m_Light.Position = {0.0f, 0.0f, 5.0f};
         m_Light.Ambient  = {0.2f, 0.2f, 0.2f};
         m_Light.Diffuse  = {0.5f, 0.5f, 0.5f};
         m_Light.Specular = {1.0f, 1.0f, 1.0f};
 
-        m_CubeMaterial.Ambient   = {1.0f, 0.5f, 0.31f};
-        m_CubeMaterial.Diffuse   = {1.0f, 0.5f, 0.31f};
-        m_CubeMaterial.Specular  = {0.5f, 0.5f, 0.5f};
-        m_CubeMaterial.Shininess = 32.0f;
+        m_CubeMaterial.Shininess = 64.0f;
 
         GetWindow()->SubscribeToMessage(
             this,
@@ -84,11 +81,11 @@ class TestApp : public App::App
         auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
         auto light_source_path    = shader_dir / "light_source.frag";
-        auto awesomeface_path     = shader_dir / "awesomeface.png";
-        auto wall_path            = shader_dir / "wall.jpg";
+        auto cont_spec_path       = shader_dir / "container2_specular.png";
+        auto cont_path            = shader_dir / "container2.png";
 
-        auto pWallTex = GetRenderer()->CreateTexture(wall_path, nate::Modules::Render::TextureUnit::Texture0);
-        auto pFaceTex = GetRenderer()->CreateTexture(awesomeface_path, nate::Modules::Render::TextureUnit::Texture1);
+        auto pContTex     = GetRenderer()->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
+        auto pContSpecTex = GetRenderer()->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
@@ -99,7 +96,7 @@ class TestApp : public App::App
 
         m_Cubes[0] = Render::Object3D::CreateCube(GetRenderer());
         m_Cubes[0]->Shader(std::move(pProgram));
-        m_Cubes[0]->Textures({std::move(pWallTex), std::move(pFaceTex)});
+        m_Cubes[0]->Textures({std::move(pContTex), std::move(pContSpecTex)});
 
         Vector3<float> cubePositions[] = {
             Vector3<float>(0.0f, 0.0f, 0.0f),
@@ -126,8 +123,9 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            pRenderer->SetShaderVar(cube->Shader().get(), "texture1", 0);
-            pRenderer->SetShaderVar(cube->Shader().get(), "texture2", 1);
+            pRenderer->SetShaderVar(cube->Shader().get(), "material.diffuse", 0);
+            pRenderer->SetShaderVar(cube->Shader().get(), "material.specular", 1);
+            pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
             pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
         }
     }
@@ -162,11 +160,6 @@ class TestApp : public App::App
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.ambient", m_Light.Ambient);
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.diffuse", m_Light.Diffuse);
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.specular", m_Light.Specular);
-
-                pRenderer->SetShaderVar(cube->Shader().get(), "material.ambient", m_CubeMaterial.Ambient);
-                pRenderer->SetShaderVar(cube->Shader().get(), "material.diffuse", m_CubeMaterial.Diffuse);
-                pRenderer->SetShaderVar(cube->Shader().get(), "material.specular", m_CubeMaterial.Specular);
-                pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
 
                 pRenderer->Draw(cube.get());
             }

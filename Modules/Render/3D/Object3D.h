@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../Renderer/VertexBuffer.h"
-#include "../Renderer/VertexData.h"
 #include "../Shader/ShaderProgram.h"
 #include "../Texture/Texture.h"
 #include "SquareMatrix4x4.hpp"
+#include "VertexData.h"
 
 #include <Vector3.hpp>
 

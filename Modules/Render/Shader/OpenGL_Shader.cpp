@@ -70,13 +70,15 @@ namespace nate::Modules::Render
         glShaderSource(m_ID, 1, &pStr, NULL);
         glCompileShader(m_ID);
 
-        int  success{0};
-        char infoLog[512];
+        int success{0};
         glGetShaderiv(m_ID, GL_COMPILE_STATUS, &success);
 
         if (success == 0)
         {
-            throw std::runtime_error(fmt::format("Compilation failed, {}.", infoLog));
+            static constexpr size_t size = 1024;
+            char                    infoLog[size];
+            glGetShaderInfoLog(m_ID, size, NULL, infoLog);
+            throw std::runtime_error(fmt::format("Compilation failed, {}.", std::string(infoLog)));
         }
     }
 

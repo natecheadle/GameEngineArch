@@ -1,7 +1,5 @@
 #pragma once
 
-#include "VertexData.h"
-
 #include <vector>
 
 namespace nate::Modules::Render

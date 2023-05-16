@@ -1,12 +1,15 @@
+#pragma once
+
+#include "../Texture/Texture.h"
+
 #include <Vector3.hpp>
 
 namespace nate::Modules::Render
 {
     struct Material
     {
-        Vector3<float> Ambient;
-        Vector3<float> Diffuse;
-        Vector3<float> Specular;
+        std::shared_ptr<Texture> Diffuse;
+        std::shared_ptr<Texture> Specular;
 
         float Shininess;
     };
