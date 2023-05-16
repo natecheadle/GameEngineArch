@@ -150,7 +150,6 @@ class TestApp : public App::App
             pRenderer->SetShaderVar(cube->Shader().get(), "material.diffuse", 0);
             pRenderer->SetShaderVar(cube->Shader().get(), "material.specular", 1);
             pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
-            pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
 
             pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient.Data());
             pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse.Data());
@@ -199,6 +198,7 @@ class TestApp : public App::App
                 pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
+                pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
 
                 pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.position", m_pCamera->CameraPosition());
                 pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.direction", -1 * m_pCamera->CameraDirection());
