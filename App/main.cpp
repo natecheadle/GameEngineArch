@@ -1,4 +1,4 @@
-#include "3D/Light.h"
+#include "3D/Light_Directional.h"
 #include "3D/Material.h"
 #include "3D/Object3D.h"
 #include "IWindow.h"
@@ -39,7 +39,7 @@ class TestApp : public App::App
     float                                          m_CamYaw{0.0};
     float                                          m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Object3D>> m_Cubes;
-    Render::Light                                  m_Light;
+    Render::Light_Directional                      m_Light;
     Render::Material                               m_CubeMaterial;
     std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
@@ -47,10 +47,10 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
-        m_Light.Position = {0.0f, 0.0f, 5.0f};
-        m_Light.Ambient  = {0.2f, 0.2f, 0.2f};
-        m_Light.Diffuse  = {0.5f, 0.5f, 0.5f};
-        m_Light.Specular = {1.0f, 1.0f, 1.0f};
+        m_Light.Direction = {0.0f, 0.0f, -1.0f};
+        m_Light.Ambient   = {0.2f, 0.2f, 0.2f};
+        m_Light.Diffuse   = {0.5f, 0.5f, 0.5f};
+        m_Light.Specular  = {1.0f, 1.0f, 1.0f};
 
         m_CubeMaterial.Shininess = 64.0f;
 
@@ -153,10 +153,10 @@ class TestApp : public App::App
             {
                 pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
-                pRenderer->SetShaderVar(cube->Shader().get(), "lightPos", m_Light.Position);
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
 
+                pRenderer->SetShaderVar(cube->Shader().get(), "light.direction", m_Light.Direction);
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.ambient", m_Light.Ambient);
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.diffuse", m_Light.Diffuse);
                 pRenderer->SetShaderVar(cube->Shader().get(), "light.specular", m_Light.Specular);
