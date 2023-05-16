@@ -40,16 +40,15 @@ namespace nate::Modules::Render
         virtual void Update(std::chrono::nanoseconds /* time */) {}
 
         const Vector3<float>& CameraPosition() const { return m_Position; }
-        void                  CameraPosition(const Vector3<float>& val);
+        const Vector3<float>& CameraDirection() const { return m_Direction; }
+        const Vector3<float>& CameraTarget() const { return m_Target; }
+        const Vector3<float>& WorldUp() const { return m_WorldUp; }
+
+        void CameraPosition(const Vector3<float>& val);
 
       protected:
         Camera3D(GUI::IWindow* pWindow);
         const GUI::IWindow* Window() const { return m_pWindow; }
-
-        const Vector3<float>& CameraTarget() const { return m_Target; }
-        const Vector3<float>& WorldUp() const { return m_WorldUp; }
-
-        Vector3<float> CameraDirection() const { return m_Direction; }
 
         void CameraTarget(const Vector3<float>& val);
         void WorldUp(const Vector3<float>& val);

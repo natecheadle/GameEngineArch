@@ -51,12 +51,6 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
-        m_DirLight.Direction = {0.0f, 0.0f, -1.0f};
-        m_DirLight.Ambient   = {0.2f, 0.2f, 0.2f};
-        m_DirLight.Diffuse   = {0.5f, 0.5f, 0.5f};
-        m_DirLight.Specular  = {1.0f, 1.0f, 1.0f};
-
-        m_CubeMaterial.Shininess = 64.0f;
 
         GetWindow()->SubscribeToMessage(
             this,
@@ -124,6 +118,32 @@ class TestApp : public App::App
 
         m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
 
+        m_DirLight.Direction = {0.0f, 0.0f, -1.0f};
+        m_DirLight.Ambient   = {0.2f, 0.2f, 0.2f};
+        m_DirLight.Diffuse   = {0.5f, 0.5f, 0.5f};
+        m_DirLight.Specular  = {1.0f, 1.0f, 1.0f};
+
+        m_SpotLight.Position              = m_pCamera->CameraPosition();
+        m_SpotLight.Direction             = m_pCamera->CameraDirection();
+        m_SpotLight.Ambient               = {0.0f, 0.0f, 0.0f};
+        m_SpotLight.Diffuse               = {1.0f, 1.0f, 1.0f};
+        m_SpotLight.Specular              = {1.0f, 1.0f, 1.0f};
+        m_SpotLight.Attenuation.Constant  = 1.0f;
+        m_SpotLight.Attenuation.Linear    = 0.09f;
+        m_SpotLight.Attenuation.Quadratic = 0.32f;
+        m_SpotLight.Cutoff                = 12.5f;
+        m_SpotLight.OuterCutoff           = 15.0f;
+
+        m_PointLight.Position              = {0.7f, 0.2f, 2.0f};
+        m_PointLight.Ambient               = {0.05f, 0.05f, 0.05f};
+        m_PointLight.Diffuse               = {0.8f, 0.8f, 0.8f};
+        m_PointLight.Specular              = {1.0f, 1.0f, 1.0f};
+        m_PointLight.Attenuation.Constant  = 1.0f;
+        m_PointLight.Attenuation.Linear    = 0.09f;
+        m_PointLight.Attenuation.Quadratic = 0.32f;
+
+        m_CubeMaterial.Shininess = 64.0f;
+
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
@@ -131,6 +151,26 @@ class TestApp : public App::App
             pRenderer->SetShaderVar(cube->Shader().get(), "material.specular", 1);
             pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
             pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
+
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient);
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse);
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.specular", m_DirLight.Specular);
+
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.ambient", m_PointLight.Ambient);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.diffuse", m_PointLight.Diffuse);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.specular", m_PointLight.Specular);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.constant", m_PointLight.Attenuation.Constant);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.diffuse", m_PointLight.Attenuation.Linear);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.quadratic", m_PointLight.Attenuation.Quadratic);
+
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.ambient", m_SpotLight.Ambient);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.diffuse", m_SpotLight.Diffuse);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.specular", m_SpotLight.Specular);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.constant", m_SpotLight.Attenuation.Constant);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.diffuse", m_SpotLight.Attenuation.Linear);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.quadratic", m_SpotLight.Attenuation.Quadratic);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.cutOff", cos(m_SpotLight.Cutoff));
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.outerCutOff", cos(m_SpotLight.OuterCutoff));
         }
     }
 
@@ -160,10 +200,8 @@ class TestApp : public App::App
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
 
-                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.direction", m_DirLight.Direction);
-                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient);
-                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse);
-                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.specular", m_DirLight.Specular);
+                pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.position", m_pCamera->CameraPosition());
+                pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.direction", -1 * m_pCamera->CameraDirection());
 
                 pRenderer->Draw(cube.get());
             }
