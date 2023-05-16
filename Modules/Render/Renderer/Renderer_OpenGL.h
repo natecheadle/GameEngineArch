@@ -57,6 +57,8 @@ namespace nate::Modules::Render
       private:
         static bool Validate(void* pVoid);
 
+        void OnWindowResized(const GUI::WindowMessage* pMessage);
+
         void Destroy(VertexBuffer* pObj);
         void Destroy(Shader* pShader);
         void Destroy(Texture* pTex);

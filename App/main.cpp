@@ -152,20 +152,20 @@ class TestApp : public App::App
             pRenderer->SetShaderVar(cube->Shader().get(), "material.shininess", m_CubeMaterial.Shininess);
             pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
 
-            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient);
-            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse);
-            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.specular", m_DirLight.Specular);
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.specular", m_DirLight.Specular.Data());
 
-            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.ambient", m_PointLight.Ambient);
-            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.diffuse", m_PointLight.Diffuse);
-            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.specular", m_PointLight.Specular);
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.ambient", m_PointLight.Ambient.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.diffuse", m_PointLight.Diffuse.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.specular", m_PointLight.Specular.Data());
             pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.constant", m_PointLight.Attenuation.Constant);
             pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.diffuse", m_PointLight.Attenuation.Linear);
             pRenderer->SetShaderVar(cube->Shader().get(), "pointLight.quadratic", m_PointLight.Attenuation.Quadratic);
 
-            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.ambient", m_SpotLight.Ambient);
-            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.diffuse", m_SpotLight.Diffuse);
-            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.specular", m_SpotLight.Specular);
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.ambient", m_SpotLight.Ambient.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.diffuse", m_SpotLight.Diffuse.Data());
+            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.specular", m_SpotLight.Specular.Data());
             pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.constant", m_SpotLight.Attenuation.Constant);
             pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.diffuse", m_SpotLight.Attenuation.Linear);
             pRenderer->SetShaderVar(cube->Shader().get(), "spotLight.quadratic", m_SpotLight.Attenuation.Quadratic);

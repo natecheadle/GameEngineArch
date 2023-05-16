@@ -1,13 +1,15 @@
 #pragma once
 
+#include "RGB_Color.h"
+
 #include <Vector3.hpp>
 
 namespace nate::Modules::Render
 {
     struct Light
     {
-        Vector3<float> Ambient;
-        Vector3<float> Diffuse;
-        Vector3<float> Specular;
+        RGB_Color Ambient;
+        RGB_Color Diffuse;
+        RGB_Color Specular;
     };
 } // namespace nate::Modules::Render
