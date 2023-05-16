@@ -1,4 +1,6 @@
 #include "3D/Light_Directional.h"
+#include "3D/Light_Point.h"
+#include "3D/Light_Spotlight.h"
 #include "3D/Material.h"
 #include "3D/Object3D.h"
 #include "IWindow.h"
@@ -39,7 +41,9 @@ class TestApp : public App::App
     float                                          m_CamYaw{0.0};
     float                                          m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Object3D>> m_Cubes;
-    Render::Light_Directional                      m_Light;
+    Render::Light_Directional                      m_DirLight;
+    Render::Light_Spotlight                        m_SpotLight;
+    Render::Light_Point                            m_PointLight;
     Render::Material                               m_CubeMaterial;
     std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
@@ -47,10 +51,10 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
-        m_Light.Direction = {0.0f, 0.0f, -1.0f};
-        m_Light.Ambient   = {0.2f, 0.2f, 0.2f};
-        m_Light.Diffuse   = {0.5f, 0.5f, 0.5f};
-        m_Light.Specular  = {1.0f, 1.0f, 1.0f};
+        m_DirLight.Direction = {0.0f, 0.0f, -1.0f};
+        m_DirLight.Ambient   = {0.2f, 0.2f, 0.2f};
+        m_DirLight.Diffuse   = {0.5f, 0.5f, 0.5f};
+        m_DirLight.Specular  = {1.0f, 1.0f, 1.0f};
 
         m_CubeMaterial.Shininess = 64.0f;
 
@@ -156,10 +160,10 @@ class TestApp : public App::App
                 pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
                 pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
 
-                pRenderer->SetShaderVar(cube->Shader().get(), "light.direction", m_Light.Direction);
-                pRenderer->SetShaderVar(cube->Shader().get(), "light.ambient", m_Light.Ambient);
-                pRenderer->SetShaderVar(cube->Shader().get(), "light.diffuse", m_Light.Diffuse);
-                pRenderer->SetShaderVar(cube->Shader().get(), "light.specular", m_Light.Specular);
+                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.direction", m_DirLight.Direction);
+                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.ambient", m_DirLight.Ambient);
+                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.diffuse", m_DirLight.Diffuse);
+                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight.specular", m_DirLight.Specular);
 
                 pRenderer->Draw(cube.get());
             }
