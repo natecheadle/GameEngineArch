@@ -9,7 +9,7 @@ namespace nate::Modules::Render
     struct VertexData
     {
         Vector3<float> Position;
-        Vector3<float> Color;
+        Vector3<float> Normal;
         Vector2<float> TextureCoord;
 
         static VertexDataConfig describe()

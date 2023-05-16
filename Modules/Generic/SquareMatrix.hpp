@@ -113,6 +113,13 @@ namespace nate::Modules
             return rslt / det;
         }
 
+        SquareMatrix& invert_this()
+        {
+            auto rslt    = invert();
+            this->m_Data = rslt.m_Data;
+            return *this;
+        }
+
         SquareMatrix transpose() const
         {
             SquareMatrix rslt;

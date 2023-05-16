@@ -3,11 +3,14 @@
 #include "../Shader/OpenGL_Shader.h"
 #include "../Shader/OpenGL_ShaderProgram.h"
 #include "../Texture/OpenGL_Texture.h"
-#include "DebugCast.hpp"
+#include "IWindow.h"
 #include "Renderer/VertexBuffer.h"
 #include "VertexBuffer_OpenGL.h"
-#include "Window_GLFW.h"
+#include "WindowMessages.hpp"
 
+#include <DebugCast.hpp>
+#include <Messages/WindowResized.hpp>
+#include <Window_GLFW.h>
 #include <glad/glad.h>
 
 #include <GLFW/glfw3.h>
@@ -21,6 +24,7 @@ namespace nate::Modules::Render
 {
     Renderer_OpenGL::~Renderer_OpenGL()
     {
+        m_pWin->Unsubscribe(this);
         m_pWin.reset();
     }
 
@@ -61,6 +65,11 @@ namespace nate::Modules::Render
             // -----------------------------
             // TODO this should be user configurable.
             glEnable(GL_DEPTH_TEST);
+
+            m_pWin->SubscribeToMessage(
+                this,
+                GUI::WindowMessages::WindowResized,
+                [this](const GUI::WindowMessage* pMsg) { OnWindowResized(pMsg); });
         });
 #endif
         return m_pWin.get();
@@ -151,19 +160,28 @@ namespace nate::Modules::Render
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, int value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, float value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(
@@ -172,19 +190,40 @@ namespace nate::Modules::Render
         const SquareMatrix<4, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
+    }
+
+    void Renderer_OpenGL::SetShaderVar(
+        ShaderProgram*                pShader,
+        const std::string&            name,
+        const SquareMatrix<3, float>& value)
+    {
+        assert(pShader);
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value)
     {
         assert(pShader);
-        ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
+        ExecuteFunction([&]() -> void {
+            pShader->Use();
+            pShader->SetShaderVar(name, value);
+        });
     }
 
     void Renderer_OpenGL::ClearDepthBuffer()
@@ -194,10 +233,7 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::ClearColorBuffer()
     {
-        ExecuteFunction([]() -> void {
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-        });
+        ExecuteFunction([]() -> void { glClear(GL_COLOR_BUFFER_BIT); });
     }
 
     void Renderer_OpenGL::SwapBuffers()
@@ -222,6 +258,14 @@ namespace nate::Modules::Render
         }
 
         return true;
+    }
+
+    void Renderer_OpenGL::OnWindowResized(const GUI::WindowMessage* pMessage)
+    {
+        const auto* pWindowResized = DebugCast<const GUI::WindowResized*>(pMessage);
+        ExecuteFunction([pWindowResized]() {
+            glViewport(0, 0, pWindowResized->GetData()->Width(), pWindowResized->GetData()->Height());
+        });
     }
 
     void Renderer_OpenGL::Destroy(VertexBuffer* pObj)

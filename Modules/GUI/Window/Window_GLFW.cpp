@@ -101,6 +101,10 @@ namespace nate::Modules::GUI
         SubscribeToMessage(this, WindowMessages::KeyPressed, [this](const GUI::WindowMessage* pMesssage) {
             OnKeyPressed(pMesssage);
         });
+
+        SubscribeToMessage(this, WindowMessages::WindowResized, [this](const GUI::WindowMessage* pMesssage) {
+            OnWindowResized(pMesssage);
+        });
     }
 
     Window_GLFW::~Window_GLFW()

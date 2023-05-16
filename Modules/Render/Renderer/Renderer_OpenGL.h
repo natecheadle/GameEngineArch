@@ -46,6 +46,7 @@ namespace nate::Modules::Render
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, float value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const SquareMatrix<4, float>& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const SquareMatrix<3, float>& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) final;
 
@@ -55,6 +56,8 @@ namespace nate::Modules::Render
 
       private:
         static bool Validate(void* pVoid);
+
+        void OnWindowResized(const GUI::WindowMessage* pMessage);
 
         void Destroy(VertexBuffer* pObj);
         void Destroy(Shader* pShader);

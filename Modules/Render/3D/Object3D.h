@@ -1,10 +1,10 @@
 #pragma once
 
 #include "../Renderer/VertexBuffer.h"
-#include "../Renderer/VertexData.h"
 #include "../Shader/ShaderProgram.h"
 #include "../Texture/Texture.h"
 #include "SquareMatrix4x4.hpp"
+#include "VertexData.h"
 
 #include <Vector3.hpp>
 
@@ -50,6 +50,7 @@ namespace nate::Modules::Render
         virtual void Draw();
 
         SquareMatrix4x4<float> ModelMatrix() const;
+        SquareMatrix3x3<float> NormalMatrix() const;
 
         void                  Origin(const Vector3<float>& val) { m_Origin = val; }
         const Vector3<float>& Origin() const { return m_Origin; }
