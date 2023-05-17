@@ -31,5 +31,7 @@ namespace nate::Modules::Render
         void SetShaderVar(const std::string& name, const Light_Directional& value) const final;
         void SetShaderVar(const std::string& name, const Light_Point& value) const final;
         void SetShaderVar(const std::string& name, const Light_Spotlight& value) const final;
+        void SetShaderVar(const std::string& name, const Light_Attenuation& value) const final;
+        void SetShaderVar(const std::string& name, const Light& value) const final;
     };
 } // namespace nate::Modules::Render

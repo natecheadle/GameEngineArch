@@ -53,6 +53,8 @@ namespace nate::Modules::Render
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value) final;
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
@@ -76,6 +78,15 @@ namespace nate::Modules::Render
                 pShader->Use();
                 pShader->SetShaderVar(name, value);
             });
+        }
+
+        template <class T>
+        void DeleteObj(T* pObj)
+        {
+            if (Validate(pObj))
+            {
+                ExecuteFunction([pObj]() { delete pObj; });
+            }
         }
     };
 } // namespace nate::Modules::Render

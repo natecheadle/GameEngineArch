@@ -120,16 +120,16 @@ class TestApp : public App::App
 
         m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
 
-        m_DirLight.Direction = {0.0f, 0.0f, -1.0f};
-        m_DirLight.Ambient   = {0.2f, 0.2f, 0.2f};
-        m_DirLight.Diffuse   = {0.5f, 0.5f, 0.5f};
-        m_DirLight.Specular  = {1.0f, 1.0f, 1.0f};
+        m_DirLight.Direction      = {0.0f, 0.0f, -1.0f};
+        m_DirLight.Light.Ambient  = {0.2f, 0.2f, 0.2f};
+        m_DirLight.Light.Diffuse  = {0.5f, 0.5f, 0.5f};
+        m_DirLight.Light.Specular = {1.0f, 1.0f, 1.0f};
 
         m_SpotLight.Position              = m_pCamera->CameraPosition();
         m_SpotLight.Direction             = m_pCamera->CameraDirection();
-        m_SpotLight.Ambient               = {0.0f, 0.0f, 0.0f};
-        m_SpotLight.Diffuse               = {1.0f, 1.0f, 1.0f};
-        m_SpotLight.Specular              = {1.0f, 1.0f, 1.0f};
+        m_SpotLight.Light.Ambient         = {0.0f, 0.0f, 0.0f};
+        m_SpotLight.Light.Diffuse         = {1.0f, 1.0f, 1.0f};
+        m_SpotLight.Light.Specular        = {1.0f, 1.0f, 1.0f};
         m_SpotLight.Attenuation.Constant  = 1.0f;
         m_SpotLight.Attenuation.Linear    = 0.09f;
         m_SpotLight.Attenuation.Quadratic = 0.32f;
@@ -137,9 +137,9 @@ class TestApp : public App::App
         m_SpotLight.OuterCutoff           = 15.0f;
 
         m_PointLight.Position              = {0.7f, 0.2f, 2.0f};
-        m_PointLight.Ambient               = {0.05f, 0.05f, 0.05f};
-        m_PointLight.Diffuse               = {0.8f, 0.8f, 0.8f};
-        m_PointLight.Specular              = {1.0f, 1.0f, 1.0f};
+        m_PointLight.Light.Ambient         = {0.05f, 0.05f, 0.05f};
+        m_PointLight.Light.Diffuse         = {0.8f, 0.8f, 0.8f};
+        m_PointLight.Light.Specular        = {1.0f, 1.0f, 1.0f};
         m_PointLight.Attenuation.Constant  = 1.0f;
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;

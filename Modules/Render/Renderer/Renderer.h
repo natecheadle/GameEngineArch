@@ -88,6 +88,8 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value)       = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value)   = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value) = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value)             = 0;
 
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;

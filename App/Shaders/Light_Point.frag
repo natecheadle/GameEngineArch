@@ -2,17 +2,14 @@
 #define LIGHT_POINT_FRAG
 
 #include "Light.frag"
+#include "Light_Attenuation.frag"
 #include "Material.frag"
 
 struct Light_Point
 {
-    vec3 Position;
-
-    float Constant;
-    float Linear;
-    float Quadratic;
-
-    Light Light;
+    vec3        Position;
+    Attenuation Attenuation;
+    Light       Light;
 };
 
 // calculates the color when using a point light.
@@ -31,8 +28,7 @@ vec3 Caluclate_Light_Point(
     vec3  reflectDir  = reflect(-lightDir, normal);
     float spec        = pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess);
     // attenuation
-    float distance    = length(light.Position - fragPos);
-    float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * (distance * distance));
+    float attenuation = Calculate_Light_Attenuation(light.Attenuation, light.Position, fragPos);
     // combine results
 
     return Calculate_Light(light.Light, diff, spec, attenuation, material, texCoords);

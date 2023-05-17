@@ -219,6 +219,16 @@ namespace nate::Modules::Render
         SetShaderVar_T(pShader, name, value);
     }
 
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value)
+    {
+        SetShaderVar_T(pShader, name, value);
+    }
+
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value)
+    {
+        SetShaderVar_T(pShader, name, value);
+    }
+
     void Renderer_OpenGL::ClearDepthBuffer()
     {
         ExecuteFunction([]() -> void { glClear(GL_DEPTH_BUFFER_BIT); });
@@ -263,30 +273,18 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::Destroy(VertexBuffer* pObj)
     {
-        if (Validate(pObj))
-        {
-            ExecuteFunction([pObj]() { delete pObj; });
-        }
+        DeleteObj(pObj);
     }
     void Renderer_OpenGL::Destroy(Shader* pShader)
     {
-        if (Validate(pShader))
-        {
-            ExecuteFunction([pShader]() { delete pShader; });
-        }
+        DeleteObj(pShader);
     }
     void Renderer_OpenGL::Destroy(Texture* pTex)
     {
-        if (Validate(pTex))
-        {
-            ExecuteFunction([pTex]() { delete pTex; });
-        }
+        DeleteObj(pTex);
     }
     void Renderer_OpenGL::Destroy(ShaderProgram* pProgram)
     {
-        if (Validate(pProgram))
-        {
-            ExecuteFunction([pProgram]() { delete pProgram; });
-        }
+        DeleteObj(pProgram);
     }
 } // namespace nate::Modules::Render

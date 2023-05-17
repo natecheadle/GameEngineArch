@@ -2,20 +2,17 @@
 #define LIGHT_SPOTLIGHT_FRAG
 
 #include "Light.frag"
+#include "Light_Attenuation.frag"
 #include "Material.frag"
 
 struct Light_SpotLight
 {
-    vec3  Position;
-    vec3  Direction;
-    float CutOff;
-    float OuterCutOff;
-
-    float Constant;
-    float Linear;
-    float Quadratic;
-
-    Light Light;
+    vec3        Position;
+    vec3        Direction;
+    float       CutOff;
+    float       OuterCutOff;
+    Attenuation Attenuation;
+    Light       Light;
 };
 
 // calculates the color when using a spot light.
@@ -34,8 +31,7 @@ vec3 Calculate_Light_SpotLight(
     vec3  reflectDir  = reflect(-lightDir, normal);
     float spec        = pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess);
     // attenuation
-    float distance    = length(light.Position - fragPos);
-    float attenuation = 1.0 / (light.Constant + light.Linear * distance + light.Quadratic * (distance * distance));
+    float attenuation = Calculate_Light_Attenuation(light.Attenuation, light.Position, fragPos);
     // spotlight intensity
     float theta       = dot(lightDir, normalize(-light.Direction));
     float epsilon     = light.CutOff - light.OuterCutOff;
