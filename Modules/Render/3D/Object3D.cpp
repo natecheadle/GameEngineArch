@@ -95,13 +95,15 @@ namespace nate::Modules::Render
 
     void Object3D::Draw()
     {
-        for (auto& tex : m_Textures)
+        if (m_pMaterial->Diffuse)
         {
-            if (tex)
-            {
-                tex->Activate();
-                tex->Bind();
-            }
+            m_pMaterial->Diffuse->Activate();
+            m_pMaterial->Diffuse->Bind();
+        }
+        if (m_pMaterial->Specular)
+        {
+            m_pMaterial->Specular->Activate();
+            m_pMaterial->Specular->Bind();
         }
         m_pShader->Use();
         m_pBuffer->Draw();

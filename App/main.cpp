@@ -44,7 +44,6 @@ class TestApp : public App::App
     Render::Light_Directional                      m_DirLight;
     Render::Light_Spotlight                        m_SpotLight;
     Render::Light_Point                            m_PointLight;
-    Render::Material                               m_CubeMaterial;
     std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
 
   public:
@@ -82,10 +81,12 @@ class TestApp : public App::App
         auto cont_spec_path       = shader_dir / "container2_specular.png";
         auto cont_path            = shader_dir / "container2.png";
 
-        m_CubeMaterial.Diffuse = GetRenderer()->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
-        m_CubeMaterial.Specular =
+        auto cubeMaterial = std::make_unique<Render::Material>();
+
+        cubeMaterial->Diffuse = GetRenderer()->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Specular =
             GetRenderer()->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
-        m_CubeMaterial.Shininess = 64.0;
+        cubeMaterial->Shininess = 64.0;
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
@@ -96,7 +97,7 @@ class TestApp : public App::App
 
         m_Cubes[0] = Render::Object3D::CreateCube(GetRenderer());
         m_Cubes[0]->Shader(std::move(pProgram));
-        m_Cubes[0]->Textures({m_CubeMaterial.Diffuse, m_CubeMaterial.Specular});
+        m_Cubes[0]->AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
             Vector3<float>(0.0f, 0.0f, 0.0f),
@@ -147,7 +148,7 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            pRenderer->SetShaderVar(cube->Shader().get(), "material", m_CubeMaterial);
+            pRenderer->SetShaderVar(cube->Shader().get(), "material", *(cube->AttachedMaterial()));
             pRenderer->SetShaderVar(cube->Shader().get(), "dirLight", m_DirLight);
             pRenderer->SetShaderVar(cube->Shader().get(), "pointLight", m_PointLight);
             pRenderer->SetShaderVar(cube->Shader().get(), "spotLight", m_SpotLight);
@@ -158,8 +159,6 @@ class TestApp : public App::App
     {
         m_pCamera.reset();
         m_Cubes.clear();
-        m_CubeMaterial.Diffuse.reset();
-        m_CubeMaterial.Specular.reset();
     }
 
     void UpdateApp(std::chrono::nanoseconds time) override
