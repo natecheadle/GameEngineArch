@@ -8,7 +8,7 @@
 
 namespace nate::Modules::Render
 {
-    OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& path, TextureUnit unit)
+    OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& path, enum TextureUnit unit)
         : Texture(unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
@@ -17,7 +17,7 @@ namespace nate::Modules::Render
         InitializeFromImage(image);
     }
 
-    OpenGL_Texture::OpenGL_Texture(const ImageFile& image, TextureUnit unit)
+    OpenGL_Texture::OpenGL_Texture(const ImageFile& image, enum TextureUnit unit)
         : Texture(unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
@@ -71,7 +71,7 @@ namespace nate::Modules::Render
         glBindTexture(GL_TEXTURE_2D, m_ID);
     }
 
-    unsigned int OpenGL_Texture::TranslateTextureUnit(TextureUnit unit)
+    unsigned int OpenGL_Texture::TranslateTextureUnit(enum TextureUnit unit)
     {
         switch (unit)
         {

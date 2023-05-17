@@ -5,6 +5,7 @@
 #include "../Texture/OpenGL_Texture.h"
 #include "IWindow.h"
 #include "Renderer/VertexBuffer.h"
+#include "Shader/ShaderProgram.h"
 #include "VertexBuffer_OpenGL.h"
 #include "WindowMessages.hpp"
 
@@ -159,29 +160,17 @@ namespace nate::Modules::Render
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, int value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, float value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(
@@ -189,11 +178,7 @@ namespace nate::Modules::Render
         const std::string&            name,
         const SquareMatrix<4, float>& value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(
@@ -201,29 +186,37 @@ namespace nate::Modules::Render
         const std::string&            name,
         const SquareMatrix<3, float>& value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value)
     {
-        assert(pShader);
-        ExecuteFunction([&]() -> void {
-            pShader->Use();
-            pShader->SetShaderVar(name, value);
-        });
+        SetShaderVar_T(pShader, name, value);
+    }
+
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Material& value)
+    {
+        SetShaderVar_T(pShader, name, value);
+    }
+
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value)
+    {
+        SetShaderVar_T(pShader, name, value);
+    }
+
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value)
+    {
+        SetShaderVar_T(pShader, name, value);
+    }
+
+    void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value)
+    {
+        SetShaderVar_T(pShader, name, value);
     }
 
     void Renderer_OpenGL::ClearDepthBuffer()

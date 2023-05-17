@@ -20,12 +20,16 @@ namespace nate::Modules::Render
         void         Use() const override;
         unsigned int ID() const { return m_ID; }
 
-        void SetShaderVar(const std::string& name, bool value) const override;
-        void SetShaderVar(const std::string& name, int value) const override;
-        void SetShaderVar(const std::string& name, float value) const override;
-        void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const override;
-        void SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const override;
-        void SetShaderVar(const std::string& name, const Vector<3, float>& value) const override;
-        void SetShaderVar(const std::string& name, const Vector<4, float>& value) const override;
+        void SetShaderVar(const std::string& name, bool value) const final;
+        void SetShaderVar(const std::string& name, int value) const final;
+        void SetShaderVar(const std::string& name, float value) const final;
+        void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const final;
+        void SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const final;
+        void SetShaderVar(const std::string& name, const Vector<3, float>& value) const final;
+        void SetShaderVar(const std::string& name, const Vector<4, float>& value) const final;
+        void SetShaderVar(const std::string& name, const Material& value) const final;
+        void SetShaderVar(const std::string& name, const Light_Directional& value) const final;
+        void SetShaderVar(const std::string& name, const Light_Point& value) const final;
+        void SetShaderVar(const std::string& name, const Light_Spotlight& value) const final;
     };
 } // namespace nate::Modules::Render

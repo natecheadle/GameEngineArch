@@ -49,6 +49,10 @@ namespace nate::Modules::Render
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const SquareMatrix<3, float>& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Material& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value) final;
+        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value) final;
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
@@ -63,5 +67,15 @@ namespace nate::Modules::Render
         void Destroy(Shader* pShader);
         void Destroy(Texture* pTex);
         void Destroy(ShaderProgram* pProgram);
+
+        template <class T>
+        void SetShaderVar_T(ShaderProgram* pShader, const std::string& name, const T& value)
+        {
+            assert(pShader);
+            ExecuteFunction([&]() -> void {
+                pShader->Use();
+                pShader->SetShaderVar(name, value);
+            });
+        }
     };
 } // namespace nate::Modules::Render

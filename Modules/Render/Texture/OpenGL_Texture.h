@@ -12,8 +12,8 @@ namespace nate::Modules::Render
         const unsigned int m_UnitID;
 
       public:
-        OpenGL_Texture(const std::filesystem::path& path, TextureUnit unit);
-        OpenGL_Texture(const ImageFile& image, TextureUnit unit);
+        OpenGL_Texture(const std::filesystem::path& path, enum TextureUnit unit);
+        OpenGL_Texture(const ImageFile& image, enum TextureUnit unit);
 
         ~OpenGL_Texture() override;
 
@@ -27,6 +27,6 @@ namespace nate::Modules::Render
         void                InitializeFromImage(const ImageFile& image) const;
 
       private:
-        static unsigned int TranslateTextureUnit(TextureUnit unit);
+        static unsigned int TranslateTextureUnit(enum TextureUnit unit);
     };
 } // namespace nate::Modules::Render
