@@ -3,6 +3,7 @@
 #include "../Renderer/VertexBuffer.h"
 #include "../Shader/ShaderProgram.h"
 #include "../Texture/Texture.h"
+#include "3D/Material.h"
 #include "SquareMatrix4x4.hpp"
 #include "VertexData.h"
 
@@ -18,11 +19,11 @@ namespace nate::Modules::Render
 
     class Object3D
     {
-        std::shared_ptr<ShaderProgram>        m_pShader;
-        Vector3<float>                        m_Origin;
-        Vector3<Radian<float>>                m_Rotation;
-        std::vector<std::shared_ptr<Texture>> m_Textures;
-        std::shared_ptr<VertexBuffer>         m_pBuffer;
+        std::shared_ptr<ShaderProgram> m_pShader;
+        Vector3<float>                 m_Origin;
+        Vector3<Radian<float>>         m_Rotation;
+        std::shared_ptr<VertexBuffer>  m_pBuffer;
+        std::shared_ptr<Material>      m_pMaterial;
 
         static VertexData m_CubePoints[];
 
@@ -41,8 +42,8 @@ namespace nate::Modules::Render
 
         virtual ~Object3D() = default;
 
-        void Textures(std::vector<std::shared_ptr<Texture>> val) { m_Textures = std::move(val); }
-        const std::vector<std::shared_ptr<Texture>>& Textures() const { return m_Textures; }
+        void AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
+        const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
 
         void Shader(std::shared_ptr<ShaderProgram> pShader) { m_pShader = std::move(pShader); }
         const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }
