@@ -3,11 +3,13 @@
 #include "Compute_OpenGL_Shader.h"
 #include "Fragment_OpenGL_Shader.h"
 #include "Geometry_OpenGL_Shader.h"
+#include "Preprocessor.h"
 #include "Vertex_OpenGL_Shader.h"
 
 #include <fmt/format.h>
 #include <glad/glad.h>
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -65,9 +67,11 @@ namespace nate::Modules::Render
 
     void OpenGL_Shader::Compile()
     {
-        const char* pStr = ShaderCode().c_str();
+        Preprocessor processor;
+        std::string  processed_code  = processor.PreProcess(ShaderLoc(), ShaderCode());
+        const char*  pProcessed_code = processed_code.c_str();
 
-        glShaderSource(m_ID, 1, &pStr, NULL);
+        glShaderSource(m_ID, 1, &pProcessed_code, NULL);
         glCompileShader(m_ID);
 
         int success{0};
@@ -78,6 +82,9 @@ namespace nate::Modules::Render
             static constexpr size_t size = 1024;
             char                    infoLog[size];
             glGetShaderInfoLog(m_ID, size, NULL, infoLog);
+            std::cout << infoLog << "\n\n";
+            std::cout << "Code: \n" << processed_code << std::endl;
+
             throw std::runtime_error(fmt::format("Compilation failed, {}.", std::string(infoLog)));
         }
     }

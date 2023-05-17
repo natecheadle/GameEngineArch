@@ -18,11 +18,13 @@ namespace nate::Modules::Render
     class Shader
     {
       private:
-        std::string m_ShaderCode;
+        std::filesystem::path m_ShaderLoc;
+        std::string           m_ShaderCode;
 
       public:
-        const std::string& ShaderCode() const { return m_ShaderCode; }
-        virtual ShaderType Type() const = 0;
+        const std::string&           ShaderCode() const { return m_ShaderCode; }
+        const std::filesystem::path& ShaderLoc() const { return m_ShaderLoc; }
+        virtual ShaderType           Type() const = 0;
 
         virtual ~Shader() = default;
 

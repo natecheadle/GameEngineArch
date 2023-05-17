@@ -17,5 +17,6 @@ namespace nate::Modules::Render
         std::stringstream sstream;
         sstream << shaderFile.rdbuf();
         m_ShaderCode = sstream.str();
+        m_ShaderLoc  = shaderLoc;
     }
 } // namespace nate::Modules::Render
