@@ -38,6 +38,7 @@ namespace nate::Modules::Render
       public:
         virtual ~Texture() = default;
 
+        TextureUnit  TextureUnit() const { return m_Unit; }
         virtual void Activate() const = 0;
         virtual void Bind() const     = 0;
     };

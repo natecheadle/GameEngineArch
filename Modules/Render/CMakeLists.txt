@@ -14,6 +14,7 @@ add_library(${PROJECT_NAME} STATIC
     "Shader/Vertex_OpenGL_Shader.cpp"
     "Shader/Geometry_OpenGL_Shader.cpp"
     "Shader/Compute_OpenGL_Shader.cpp"
+    "Shader/Preprocessor.cpp"
     "Texture/stb_implementation.cpp"
     "Texture/Texture.cpp"
     "Texture/ImageFile.cpp"

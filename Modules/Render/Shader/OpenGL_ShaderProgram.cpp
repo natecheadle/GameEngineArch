@@ -77,25 +77,67 @@ namespace nate::Modules::Render
 
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const
     {
-        auto loc = glGetUniformLocation(m_ID, name.c_str());
-        glUniformMatrix4fv(loc, 1, GL_FALSE, value.raw_data());
+        glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, value.raw_data());
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const
     {
-        auto loc = glGetUniformLocation(m_ID, name.c_str());
-        glUniformMatrix3fv(loc, 1, GL_FALSE, value.raw_data());
+        glUniformMatrix3fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, value.raw_data());
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Vector<3, float>& value) const
     {
-        auto loc = glGetUniformLocation(m_ID, name.c_str());
-        glUniform3fv(loc, 1, value.data());
+        glUniform3fv(glGetUniformLocation(m_ID, name.c_str()), 1, value.data());
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Vector<4, float>& value) const
     {
-        auto loc = glGetUniformLocation(m_ID, name.c_str());
-        glUniform4fv(loc, 1, value.data());
+        glUniform4fv(glGetUniformLocation(m_ID, name.c_str()), 1, value.data());
     }
+
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Material& value) const
+    {
+        SetShaderVar(name + ".Diffuse", static_cast<int>(value.Diffuse->TextureUnit()));
+        SetShaderVar(name + ".Specular", static_cast<int>(value.Specular->TextureUnit()));
+        SetShaderVar(name + ".Shininess", value.Shininess);
+    }
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Directional& value) const
+    {
+        SetShaderVar(name + ".Light", value.Light);
+        SetShaderVar(name + ".Direction", value.Direction);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Point& value) const
+    {
+        SetShaderVar(name + ".Light", value.Light);
+        SetShaderVar(name + ".Position", value.Position);
+        SetShaderVar(name + ".Attenuation", value.Attenuation);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Spotlight& value) const
+    {
+        SetShaderVar(name + ".Light", value.Light);
+
+        SetShaderVar(name + ".Position", value.Position);
+        SetShaderVar(name + ".Direction", value.Direction);
+        SetShaderVar(name + ".CutOff", cos(value.Cutoff));
+        SetShaderVar(name + ".OuterCutOff", cos(value.OuterCutoff));
+
+        SetShaderVar(name + ".Attenuation", value.Attenuation);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Attenuation& value) const
+    {
+        SetShaderVar(name + ".Constant", value.Constant);
+        SetShaderVar(name + ".Linear", value.Linear);
+        SetShaderVar(name + ".Quadratic", value.Quadratic);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light& value) const
+    {
+        SetShaderVar(name + ".Ambient", value.Ambient.Data());
+        SetShaderVar(name + ".Diffuse", value.Diffuse.Data());
+        SetShaderVar(name + ".Specular", value.Specular.Data());
+    }
+
 } // namespace nate::Modules::Render

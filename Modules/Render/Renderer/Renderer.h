@@ -1,5 +1,9 @@
 #pragma once
 
+#include "../3D/Light_Directional.h"
+#include "../3D/Light_Point.h"
+#include "../3D/Light_Spotlight.h"
+#include "../3D/Material.h"
 #include "../3D/Object3D.h"
 #include "../Shader/Shader.h"
 #include "../Texture/Texture.h"
@@ -77,9 +81,15 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(
             ShaderProgram*                pShader,
             const std::string&            name,
-            const SquareMatrix<3, float>& value)                                                                  = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) = 0;
+            const SquareMatrix<3, float>& value)                                                                   = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value)  = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value)  = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Material& value)          = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value)       = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value)   = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value) = 0;
+        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value)             = 0;
 
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;

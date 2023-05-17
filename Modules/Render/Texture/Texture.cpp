@@ -2,7 +2,7 @@
 
 namespace nate::Modules::Render
 {
-    Texture::Texture(TextureUnit unit)
+    Texture::Texture(enum TextureUnit unit)
         : m_Unit(unit)
     {
     }
