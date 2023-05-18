@@ -163,6 +163,9 @@ namespace nate::Modules::Render
         auto                                  tex_type = static_cast<aiTextureType>(type);
         std::vector<std::shared_ptr<Texture>> textures;
         assert(mat->GetTextureCount(tex_type) <= 1);
+        if (mat->GetTextureCount(tex_type) == 0)
+            return nullptr;
+
         for (unsigned int i = 0; i < mat->GetTextureCount(tex_type); i++)
         {
             aiString str;

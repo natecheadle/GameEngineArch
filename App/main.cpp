@@ -185,6 +185,7 @@ class TestApp : public App::App
         {
             cube->RotX(M_PI / 500.0);
         }
+        m_pBackpackModel->RotY(M_PI / 500.0);
 
         m_SpotLight.Position  = m_pCamera->CameraPosition();
         m_SpotLight.Direction = -1.0 * m_pCamera->CameraDirection();
