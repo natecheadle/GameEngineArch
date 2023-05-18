@@ -36,12 +36,6 @@ using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
-    std::mutex                                   m_CallbackMutex;
-    GUI::MouseClickedInfo                        m_LastMouseClick;
-    GUI::CursorPosition                          m_LastPosition;
-    GUI::WindowSize                              m_WindowSize;
-    float                                        m_CamYaw{0.0};
-    float                                        m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Mesh3D>> m_Cubes;
     Render::Light_Directional                    m_DirLight;
     Render::Light_Spotlight                      m_SpotLight;
@@ -54,23 +48,6 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
-
-        GetWindow()->SubscribeToMessage(
-            this,
-            GUI::WindowMessages::MouseClicked,
-            [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::mutex> lock(m_CallbackMutex);
-
-                m_LastMouseClick = *(DebugCast<const GUI::MouseClicked*>(pMessage)->GetData());
-            });
-        GetWindow()->SubscribeToMessage(
-            this,
-            GUI::WindowMessages::WindowResized,
-            [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::mutex> lock(m_CallbackMutex);
-
-                m_WindowSize = *(DebugCast<const GUI::WindowResized*>(pMessage)->GetData());
-            });
     }
 
   protected:
