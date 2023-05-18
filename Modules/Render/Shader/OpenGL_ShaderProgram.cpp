@@ -1,14 +1,19 @@
 #include "OpenGL_ShaderProgram.h"
 
 #include "OpenGL_Shader.h"
+#include "Texture/Texture.h"
 
 #include <DebugCast.hpp>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <glad/glad.h>
 
 #include <array>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace nate::Modules::Render
 {
@@ -97,8 +102,15 @@ namespace nate::Modules::Render
 
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Material& value) const
     {
-        SetShaderVar(name + ".Diffuse", static_cast<int>(value.Diffuse->TextureUnit()));
-        SetShaderVar(name + ".Specular", static_cast<int>(value.Specular->TextureUnit()));
+        auto populateShader = [&](const std::shared_ptr<Texture>& texs, std::string_view field) -> void {
+            SetShaderVar(fmt::format("{}.{}", name, field), static_cast<int>(texs->TextureUnit()));
+        };
+
+        populateShader(value.Diffuse, "Diffuse");
+        populateShader(value.Specular, "Specular");
+        // populateShader(value.Height, "Height");
+        // populateShader(value.Normal, "Normal");
+
         SetShaderVar(name + ".Shininess", value.Shininess);
     }
     void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Directional& value) const

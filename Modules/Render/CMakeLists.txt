@@ -4,9 +4,10 @@ project(Modules_Render)
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} STATIC
-    "3D/Object3D.cpp"
+    "3D/Mesh3D.cpp"
     "3D/Camera3D.cpp"
     "3D/Fly_Camera3D.cpp"
+    "3D/Model3D.cpp"
     "Shader/Fragment_OpenGL_Shader.cpp"
     "Shader/OpenGL_ShaderProgram.cpp"
     "Shader/Shader.cpp"

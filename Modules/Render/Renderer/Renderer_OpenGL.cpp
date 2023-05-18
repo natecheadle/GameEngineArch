@@ -152,7 +152,7 @@ namespace nate::Modules::Render
         return rslt;
     }
 
-    void Renderer_OpenGL::Draw(Object3D* pObj)
+    void Renderer_OpenGL::Draw(Mesh3D* pObj)
     {
         assert(pObj);
         ExecuteFunction([pObj]() -> void { pObj->Draw(); });

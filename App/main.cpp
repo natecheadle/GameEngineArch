@@ -2,7 +2,7 @@
 #include "3D/Light_Point.h"
 #include "3D/Light_Spotlight.h"
 #include "3D/Material.h"
-#include "3D/Object3D.h"
+#include "3D/Mesh3D.h"
 #include "IWindow.h"
 #include "Renderer/Renderer.h"
 #include "Vector3.hpp"
@@ -34,17 +34,17 @@ using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
-    std::mutex                                     m_CallbackMutex;
-    GUI::MouseClickedInfo                          m_LastMouseClick;
-    GUI::CursorPosition                            m_LastPosition;
-    GUI::WindowSize                                m_WindowSize;
-    float                                          m_CamYaw{0.0};
-    float                                          m_CamPitch{0.0};
-    std::vector<std::unique_ptr<Render::Object3D>> m_Cubes;
-    Render::Light_Directional                      m_DirLight;
-    Render::Light_Spotlight                        m_SpotLight;
-    Render::Light_Point                            m_PointLight;
-    std::unique_ptr<Render::Fly_Camera3D>          m_pCamera;
+    std::mutex                                   m_CallbackMutex;
+    GUI::MouseClickedInfo                        m_LastMouseClick;
+    GUI::CursorPosition                          m_LastPosition;
+    GUI::WindowSize                              m_WindowSize;
+    float                                        m_CamYaw{0.0};
+    float                                        m_CamPitch{0.0};
+    std::vector<std::unique_ptr<Render::Mesh3D>> m_Cubes;
+    Render::Light_Directional                    m_DirLight;
+    Render::Light_Spotlight                      m_SpotLight;
+    Render::Light_Point                          m_PointLight;
+    std::unique_ptr<Render::Fly_Camera3D>        m_pCamera;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -95,7 +95,7 @@ class TestApp : public App::App
         const size_t numOfCubes{10};
         m_Cubes.resize(numOfCubes);
 
-        m_Cubes[0] = Render::Object3D::CreateCube(GetRenderer());
+        m_Cubes[0] = Render::Mesh3D::CreateCube(GetRenderer());
         m_Cubes[0]->Shader(std::move(pProgram));
         m_Cubes[0]->AttachedMaterial(std::move(cubeMaterial));
 
@@ -115,7 +115,7 @@ class TestApp : public App::App
 
         for (size_t i = 1; i < numOfCubes; ++i)
         {
-            m_Cubes[i] = std::make_unique<Render::Object3D>(*m_Cubes[0]);
+            m_Cubes[i] = std::make_unique<Render::Mesh3D>(*m_Cubes[0]);
             m_Cubes[i]->Origin(cubePositions[i]);
         }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../3D/Object3D.h"
+#include "../3D/Mesh3D.h"
 #include "Renderer.h"
 #include "Renderer/VertexBuffer.h"
 
@@ -40,7 +40,7 @@ namespace nate::Modules::Render
         Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
         Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
-        void Draw(Object3D* pObj) final;
+        void Draw(Mesh3D* pObj) final;
 
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value) final;

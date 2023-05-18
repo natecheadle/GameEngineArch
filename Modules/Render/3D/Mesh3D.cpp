@@ -1,4 +1,4 @@
-#include "Object3D.h"
+#include "Mesh3D.h"
 
 #include "../Renderer/Renderer.h"
 #include "SquareMatrix4x4.hpp"
@@ -10,7 +10,7 @@
 
 namespace nate::Modules::Render
 {
-    VertexData Object3D::m_CubePoints[] = {
+    VertexData Mesh3D::m_CubePoints[] = {
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {{0.0f, 0.0f}}},
         {{0.5f, -0.5f, -0.5f},  {0.0f, 0.0f, -1.0f}, {{1.0f, 0.0f}}},
         {{0.5f, 0.5f, -0.5f},   {0.0f, 0.0f, -1.0f}, {{1.0f, 1.0f}}},
@@ -49,7 +49,7 @@ namespace nate::Modules::Render
         {{-0.5f, 0.5f, -0.5f},  {0.0f, 1.0f, 0.0f},  {{0.0f, 1.0f}}}
     };
 
-    Object3D::Object3D(
+    Mesh3D::Mesh3D(
         Renderer*                pRenderer,
         const VertexDataConfig&  config,
         std::span<float>         vertexes,
@@ -58,14 +58,14 @@ namespace nate::Modules::Render
     {
     }
 
-    Object3D::Object3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
+    Mesh3D::Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
         : m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
 
-    std::unique_ptr<Object3D> Object3D::CreateCube(Renderer* pRenderer)
+    std::unique_ptr<Mesh3D> Mesh3D::CreateCube(Renderer* pRenderer)
     {
-        return std::make_unique<Object3D>(
+        return std::make_unique<Mesh3D>(
             pRenderer,
             VertexData::describe(),
             std::span<float>(
@@ -73,7 +73,7 @@ namespace nate::Modules::Render
                 reinterpret_cast<float*>(m_CubePoints) + sizeof(m_CubePoints) / (sizeof(float))));
     }
 
-    SquareMatrix4x4<float> Object3D::ModelMatrix() const
+    SquareMatrix4x4<float> Mesh3D::ModelMatrix() const
     {
         if (m_Rotation == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_Origin == Vector3<float>(0.0, 0.0, 0.0))
         {
@@ -85,7 +85,7 @@ namespace nate::Modules::Render
         return rslt;
     }
 
-    SquareMatrix3x3<float> Object3D::NormalMatrix() const
+    SquareMatrix3x3<float> Mesh3D::NormalMatrix() const
     {
         auto norm = ModelMatrix();
         norm.invert_this();
@@ -93,18 +93,17 @@ namespace nate::Modules::Render
         return norm.to_3x3();
     }
 
-    void Object3D::Draw()
+    void Mesh3D::Draw()
     {
-        if (m_pMaterial->Diffuse)
-        {
-            m_pMaterial->Diffuse->Activate();
-            m_pMaterial->Diffuse->Bind();
-        }
-        if (m_pMaterial->Specular)
-        {
-            m_pMaterial->Specular->Activate();
-            m_pMaterial->Specular->Bind();
-        }
+        auto activeTextures = [](const std::shared_ptr<Texture>& texs) {
+            texs->Activate();
+            texs->Bind();
+        };
+        activeTextures(m_pMaterial->Diffuse);
+        activeTextures(m_pMaterial->Specular);
+        // activeTextures(m_pMaterial->Height);
+        // activeTextures(m_pMaterial->Normal);
+
         m_pShader->Use();
         m_pBuffer->Draw();
     }

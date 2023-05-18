@@ -17,7 +17,7 @@ namespace nate::Modules::Render
 {
     class Renderer;
 
-    class Object3D
+    class Mesh3D
     {
         std::shared_ptr<ShaderProgram> m_pShader;
         Vector3<float>                 m_Origin;
@@ -28,19 +28,19 @@ namespace nate::Modules::Render
         static VertexData m_CubePoints[];
 
       public:
-        Object3D(
+        Mesh3D(
             Renderer*                pRenderer,
             const VertexDataConfig&  config,
             std::span<float>         vertexes,
             std::span<std::uint32_t> indeces);
-        Object3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
+        Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
 
-        Object3D(const Object3D& other) = default;
-        Object3D(Object3D&& other)      = default;
+        Mesh3D(const Mesh3D& other) = default;
+        Mesh3D(Mesh3D&& other)      = default;
 
-        static std::unique_ptr<Object3D> CreateCube(Renderer* pRenderer);
+        static std::unique_ptr<Mesh3D> CreateCube(Renderer* pRenderer);
 
-        virtual ~Object3D() = default;
+        virtual ~Mesh3D() = default;
 
         void AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
         const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
