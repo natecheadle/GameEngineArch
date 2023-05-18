@@ -150,14 +150,19 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
-        auto* pRenderer = GetRenderer();
-        for (auto& cube : m_Cubes)
-        {
-            pRenderer->SetShaderVar(m_pShader.get(), "material", *(cube->AttachedMaterial()));
-            pRenderer->SetShaderVar(m_pShader.get(), "dirLight", m_DirLight);
-            pRenderer->SetShaderVar(m_pShader.get(), "pointLight", m_PointLight);
-            pRenderer->SetShaderVar(m_pShader.get(), "spotLight", m_SpotLight);
-        }
+        auto* pRenderer      = GetRenderer();
+        auto  initShaderVars = [&]() -> void {
+            m_pShader->Use();
+            m_pShader->SetShaderVar("dirLight", m_DirLight);
+            m_pShader->SetShaderVar("pointLight", m_PointLight);
+            m_pShader->SetShaderVar("spotLight", m_SpotLight);
+
+            for (auto& cube : m_Cubes)
+            {
+                m_pShader->SetShaderVar("material", *(cube->AttachedMaterial()));
+            }
+        };
+        pRenderer->ExecuteFunction(initShaderVars);
 
         m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
     }
@@ -166,6 +171,7 @@ class TestApp : public App::App
     {
         m_pCamera.reset();
         m_Cubes.clear();
+        m_pBackpackModel.reset();
     }
 
     void UpdateApp(std::chrono::nanoseconds time) override
@@ -184,26 +190,20 @@ class TestApp : public App::App
         m_SpotLight.Direction = -1.0 * m_pCamera->CameraDirection();
 
         auto renderUpdate = [&]() -> void {
+            m_pShader->Use();
+
+            m_pShader->SetShaderVar("view", m_pCamera->View());
+            m_pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+            m_pShader->SetShaderVar("projection", m_pCamera->Projection());
+
+            m_pShader->SetShaderVar("spotLight", m_SpotLight);
+
             for (const auto& cube : m_Cubes)
             {
-                pRenderer->SetShaderVar(m_pShader.get(), "model", cube->ModelMatrix());
-                pRenderer->SetShaderVar(m_pShader.get(), "view", m_pCamera->View());
-                pRenderer->SetShaderVar(m_pShader.get(), "norm_mat", cube->NormalMatrix());
-                pRenderer->SetShaderVar(m_pShader.get(), "viewPos", m_pCamera->CameraPosition());
-                pRenderer->SetShaderVar(m_pShader.get(), "projection", m_pCamera->Projection());
-
-                pRenderer->SetShaderVar(m_pShader.get(), "dirLight", m_DirLight);
-                pRenderer->SetShaderVar(m_pShader.get(), "pointLight", m_PointLight);
-                pRenderer->SetShaderVar(m_pShader.get(), "spotLight", m_SpotLight);
-
-                pRenderer->Draw(cube.get(), m_pShader.get());
+                cube->Draw(m_pShader.get());
             }
 
-            pRenderer->SetShaderVar(
-                m_pShader.get(),
-                "model",
-                SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
-            pRenderer->Draw(m_pBackpackModel.get(), m_pShader.get());
+            m_pBackpackModel->Draw(m_pShader.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);

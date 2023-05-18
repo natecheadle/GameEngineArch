@@ -40,23 +40,6 @@ namespace nate::Modules::Render
         Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
         Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
-        void Draw(Mesh3D* pObj, ShaderProgram* pShader) final;
-        void Draw(Model3D* pMode, ShaderProgram* pShader) final;
-
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, float value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const SquareMatrix<4, float>& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const SquareMatrix<3, float>& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Material& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value) final;
-        void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value) final;
-
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
         void SwapBuffers() override;
@@ -75,10 +58,7 @@ namespace nate::Modules::Render
         void SetShaderVar_T(ShaderProgram* pShader, const std::string& name, const T& value)
         {
             assert(pShader);
-            ExecuteFunction([&]() -> void {
-                pShader->Use();
-                pShader->SetShaderVar(name, value);
-            });
+            ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
         }
 
         template <class T>

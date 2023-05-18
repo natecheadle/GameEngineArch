@@ -28,11 +28,34 @@ namespace nate::Modules::Render
 
         loadModel(file);
     }
+
+    SquareMatrix4x4<float> Model3D::ModelMatrix() const
+    {
+        if (m_Rotation == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_Origin == Vector3<float>(0.0, 0.0, 0.0))
+        {
+            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
+        }
+
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_Origin));
+        rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
+        return rslt;
+    }
+
+    SquareMatrix3x3<float> Model3D::NormalMatrix() const
+    {
+        auto norm = ModelMatrix();
+        norm.invert_this();
+        norm.transpose_this();
+        return norm.to_3x3();
+    }
+
     void Model3D::Draw(ShaderProgram* pShader)
     {
+        pShader->SetShaderVar("model", ModelMatrix());
+        pShader->SetShaderVar("norm_mat", NormalMatrix());
         for (auto& obj : m_Objects)
         {
-            obj->Draw(pShader);
+            obj->Draw();
         }
     }
 

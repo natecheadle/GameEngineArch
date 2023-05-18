@@ -55,12 +55,14 @@ namespace nate::Modules::Render
         const VertexDataConfig&  config,
         std::span<float>         vertexes,
         std::span<std::uint32_t> indeces)
-        : m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
+        : m_pRenderer(pRenderer)
+        , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
     Mesh3D::Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
-        : m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
+        : m_pRenderer(pRenderer)
+        , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
 
@@ -96,8 +98,14 @@ namespace nate::Modules::Render
 
     void Mesh3D::Draw(ShaderProgram* pShader)
     {
-        pShader->Use();
+        pShader->SetShaderVar("model", ModelMatrix());
+        pShader->SetShaderVar("norm_mat", NormalMatrix());
 
+        Draw();
+    }
+
+    void Mesh3D::Draw()
+    {
         auto activeTextures = [](const std::shared_ptr<Texture>& texs) {
             texs->Activate();
             texs->Bind();

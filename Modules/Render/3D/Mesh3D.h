@@ -19,6 +19,8 @@ namespace nate::Modules::Render
 
     class Mesh3D
     {
+
+        Renderer*                     m_pRenderer;
         Vector3<float>                m_Origin;
         Vector3<Radian<float>>        m_Rotation;
         std::shared_ptr<VertexBuffer> m_pBuffer;
@@ -45,6 +47,7 @@ namespace nate::Modules::Render
         const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
 
         virtual void Draw(ShaderProgram* pShader);
+        virtual void Draw();
 
         SquareMatrix4x4<float> ModelMatrix() const;
         SquareMatrix3x3<float> NormalMatrix() const;
