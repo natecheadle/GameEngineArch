@@ -106,14 +106,17 @@ namespace nate::Modules::Render
 
     void Mesh3D::Draw()
     {
-        auto activeTextures = [](const std::shared_ptr<Texture>& texs) {
-            texs->Activate();
-            texs->Bind();
+        auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
+            if (texs)
+            {
+                texs->Activate();
+                texs->Bind();
+            }
         };
-        activeTextures(m_pMaterial->Diffuse);
-        activeTextures(m_pMaterial->Specular);
-        // activeTextures(m_pMaterial->Height);
-        // activeTextures(m_pMaterial->Normal);
+        activeTexture(m_pMaterial->Diffuse);
+        activeTexture(m_pMaterial->Specular);
+        activeTexture(m_pMaterial->Height);
+        activeTexture(m_pMaterial->Normal);
 
         m_pBuffer->Draw();
     }

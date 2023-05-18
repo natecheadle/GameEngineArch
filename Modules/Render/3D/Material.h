@@ -12,8 +12,8 @@ namespace nate::Modules::Render
     {
         std::shared_ptr<Texture> Diffuse;
         std::shared_ptr<Texture> Specular;
-        // std::vector<std::shared_ptr<Texture>> Normal;
-        // std::vector<std::shared_ptr<Texture>> Height;
+        std::shared_ptr<Texture> Normal;
+        std::shared_ptr<Texture> Height;
 
         float Shininess;
     };

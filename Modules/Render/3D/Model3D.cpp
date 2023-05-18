@@ -140,8 +140,8 @@ namespace nate::Modules::Render
         {
             pMat->Diffuse  = loadMaterialTextures(material, aiTextureType_DIFFUSE);
             pMat->Specular = loadMaterialTextures(material, aiTextureType_SPECULAR);
-            // pMat->Normal   = loadMaterialTextures(material, aiTextureType_HEIGHT);
-            // pMat->Height   = loadMaterialTextures(material, aiTextureType_AMBIENT);
+            pMat->Normal   = loadMaterialTextures(material, aiTextureType_HEIGHT);
+            pMat->Height   = loadMaterialTextures(material, aiTextureType_AMBIENT);
         }
 
         std::span<float> vertData(
