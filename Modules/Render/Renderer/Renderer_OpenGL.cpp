@@ -152,16 +152,16 @@ namespace nate::Modules::Render
         return rslt;
     }
 
-    void Renderer_OpenGL::Draw(Mesh3D* pObj)
+    void Renderer_OpenGL::Draw(Mesh3D* pObj, ShaderProgram* pShader)
     {
         assert(pObj);
-        ExecuteFunction([pObj]() -> void { pObj->Draw(); });
+        ExecuteFunction([pObj, pShader]() -> void { pObj->Draw(pShader); });
     }
 
-    void Renderer_OpenGL::Draw(Model3D* pMode)
+    void Renderer_OpenGL::Draw(Model3D* pMode, ShaderProgram* pShader)
     {
         assert(pMode);
-        ExecuteFunction([pMode]() -> void { pMode->Draw(); });
+        ExecuteFunction([pMode, pShader]() -> void { pMode->Draw(pShader); });
     }
 
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)

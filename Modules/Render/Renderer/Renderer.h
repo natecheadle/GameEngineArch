@@ -71,8 +71,8 @@ namespace nate::Modules::Render
         virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
         virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
-        virtual void Draw(Mesh3D* pObj)   = 0;
-        virtual void Draw(Model3D* pMode) = 0;
+        virtual void Draw(Mesh3D* pObj, ShaderProgram* pShader)   = 0;
+        virtual void Draw(Model3D* pMode, ShaderProgram* pShader) = 0;
 
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)  = 0;
         virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value)   = 0;

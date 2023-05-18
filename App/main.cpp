@@ -48,6 +48,7 @@ class TestApp : public App::App
     Render::Light_Point                          m_PointLight;
     std::unique_ptr<Render::Fly_Camera3D>        m_pCamera;
     std::unique_ptr<Render::Model3D>             m_pBackpackModel;
+    Render::ShaderProgram_ptr                    m_pShader;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -94,13 +95,13 @@ class TestApp : public App::App
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
-        auto pProgram        = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
         m_Cubes.resize(numOfCubes);
 
         m_Cubes[0] = Render::Mesh3D::CreateCube(GetRenderer());
-        m_Cubes[0]->Shader(std::move(pProgram));
+
         m_Cubes[0]->AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
@@ -152,14 +153,13 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            pRenderer->SetShaderVar(cube->Shader().get(), "material", *(cube->AttachedMaterial()));
-            pRenderer->SetShaderVar(cube->Shader().get(), "dirLight", m_DirLight);
-            pRenderer->SetShaderVar(cube->Shader().get(), "pointLight", m_PointLight);
-            pRenderer->SetShaderVar(cube->Shader().get(), "spotLight", m_SpotLight);
+            pRenderer->SetShaderVar(m_pShader.get(), "material", *(cube->AttachedMaterial()));
+            pRenderer->SetShaderVar(m_pShader.get(), "dirLight", m_DirLight);
+            pRenderer->SetShaderVar(m_pShader.get(), "pointLight", m_PointLight);
+            pRenderer->SetShaderVar(m_pShader.get(), "spotLight", m_SpotLight);
         }
 
         m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
-        m_pBackpackModel->Shader(m_Cubes[0]->Shader());
     }
 
     void Shutdown() override
@@ -186,24 +186,24 @@ class TestApp : public App::App
         auto renderUpdate = [&]() -> void {
             for (const auto& cube : m_Cubes)
             {
-                pRenderer->SetShaderVar(cube->Shader().get(), "model", cube->ModelMatrix());
-                pRenderer->SetShaderVar(cube->Shader().get(), "view", m_pCamera->View());
-                pRenderer->SetShaderVar(cube->Shader().get(), "norm_mat", cube->NormalMatrix());
-                pRenderer->SetShaderVar(cube->Shader().get(), "viewPos", m_pCamera->CameraPosition());
-                pRenderer->SetShaderVar(cube->Shader().get(), "projection", m_pCamera->Projection());
+                pRenderer->SetShaderVar(m_pShader.get(), "model", cube->ModelMatrix());
+                pRenderer->SetShaderVar(m_pShader.get(), "view", m_pCamera->View());
+                pRenderer->SetShaderVar(m_pShader.get(), "norm_mat", cube->NormalMatrix());
+                pRenderer->SetShaderVar(m_pShader.get(), "viewPos", m_pCamera->CameraPosition());
+                pRenderer->SetShaderVar(m_pShader.get(), "projection", m_pCamera->Projection());
 
-                pRenderer->SetShaderVar(cube->Shader().get(), "dirLight", m_DirLight);
-                pRenderer->SetShaderVar(cube->Shader().get(), "pointLight", m_PointLight);
-                pRenderer->SetShaderVar(cube->Shader().get(), "spotLight", m_SpotLight);
+                pRenderer->SetShaderVar(m_pShader.get(), "dirLight", m_DirLight);
+                pRenderer->SetShaderVar(m_pShader.get(), "pointLight", m_PointLight);
+                pRenderer->SetShaderVar(m_pShader.get(), "spotLight", m_SpotLight);
 
-                pRenderer->Draw(cube.get());
+                pRenderer->Draw(cube.get(), m_pShader.get());
             }
 
             pRenderer->SetShaderVar(
-                m_Cubes[0]->Shader().get(),
+                m_pShader.get(),
                 "model",
                 SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
-            pRenderer->Draw(m_pBackpackModel.get());
+            pRenderer->Draw(m_pBackpackModel.get(), m_pShader.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);

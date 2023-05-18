@@ -13,7 +13,6 @@ struct aiNode;
 struct aiScene;
 class aiMesh;
 class aiMaterial;
-enum aiTextureType;
 
 namespace nate::Modules::Render
 {
@@ -29,13 +28,12 @@ namespace nate::Modules::Render
       public:
         Model3D(Renderer* pRenderer, const std::filesystem::path& file);
         virtual ~Model3D() = default;
-        virtual void Draw();
-        void         Shader(const std::shared_ptr<ShaderProgram>& pShader);
+        virtual void Draw(ShaderProgram* pShader);
 
       private:
         void                     loadModel(const std::filesystem::path& path);
         void                     processNode(aiNode* node, const aiScene* scene);
         std::shared_ptr<Mesh3D>  processMesh(aiMesh* mesh, const aiScene* scene);
-        std::shared_ptr<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type);
+        std::shared_ptr<Texture> loadMaterialTextures(aiMaterial* mat, int type);
     };
 } // namespace nate::Modules::Render

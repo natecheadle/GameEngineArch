@@ -19,11 +19,10 @@ namespace nate::Modules::Render
 
     class Mesh3D
     {
-        std::shared_ptr<ShaderProgram> m_pShader;
-        Vector3<float>                 m_Origin;
-        Vector3<Radian<float>>         m_Rotation;
-        std::shared_ptr<VertexBuffer>  m_pBuffer;
-        std::shared_ptr<Material>      m_pMaterial;
+        Vector3<float>                m_Origin;
+        Vector3<Radian<float>>        m_Rotation;
+        std::shared_ptr<VertexBuffer> m_pBuffer;
+        std::shared_ptr<Material>     m_pMaterial;
 
         static VertexData m_CubePoints[];
 
@@ -45,10 +44,7 @@ namespace nate::Modules::Render
         void AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
         const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
 
-        void Shader(std::shared_ptr<ShaderProgram> pShader) { m_pShader = std::move(pShader); }
-        const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }
-
-        virtual void Draw();
+        virtual void Draw(ShaderProgram* pShader);
 
         SquareMatrix4x4<float> ModelMatrix() const;
         SquareMatrix3x3<float> NormalMatrix() const;

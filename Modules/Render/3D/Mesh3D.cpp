@@ -1,6 +1,7 @@
 #include "Mesh3D.h"
 
 #include "../Renderer/Renderer.h"
+#include "Shader/ShaderProgram.h"
 #include "SquareMatrix4x4.hpp"
 
 #include <algorithm>
@@ -93,8 +94,10 @@ namespace nate::Modules::Render
         return norm.to_3x3();
     }
 
-    void Mesh3D::Draw()
+    void Mesh3D::Draw(ShaderProgram* pShader)
     {
+        pShader->Use();
+
         auto activeTextures = [](const std::shared_ptr<Texture>& texs) {
             texs->Activate();
             texs->Bind();
@@ -104,7 +107,6 @@ namespace nate::Modules::Render
         // activeTextures(m_pMaterial->Height);
         // activeTextures(m_pMaterial->Normal);
 
-        m_pShader->Use();
         m_pBuffer->Draw();
     }
 } // namespace nate::Modules::Render

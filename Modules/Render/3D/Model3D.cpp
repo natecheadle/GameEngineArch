@@ -28,19 +28,11 @@ namespace nate::Modules::Render
 
         loadModel(file);
     }
-    void Model3D::Draw()
+    void Model3D::Draw(ShaderProgram* pShader)
     {
         for (auto& obj : m_Objects)
         {
-            obj->Draw();
-        }
-    }
-
-    void Model3D::Shader(const std::shared_ptr<ShaderProgram>& pShader)
-    {
-        for (auto& obj : m_Objects)
-        {
-            obj->Shader(pShader);
+            obj->Draw(pShader);
         }
     }
 
@@ -142,15 +134,16 @@ namespace nate::Modules::Render
         return pObj;
     }
 
-    std::shared_ptr<Texture> Model3D::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
+    std::shared_ptr<Texture> Model3D::loadMaterialTextures(aiMaterial* mat, int type)
     {
         int                                   texUnit{0};
+        auto                                  tex_type = static_cast<aiTextureType>(type);
         std::vector<std::shared_ptr<Texture>> textures;
-        assert(mat->GetTextureCount(type) <= 1);
-        for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+        assert(mat->GetTextureCount(tex_type) <= 1);
+        for (unsigned int i = 0; i < mat->GetTextureCount(tex_type); i++)
         {
             aiString str;
-            mat->GetTexture(type, i, &str);
+            mat->GetTexture(tex_type, i, &str);
             std::filesystem::path texPath(str.C_Str());
             texPath           = m_Dir / texPath;
             // check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
