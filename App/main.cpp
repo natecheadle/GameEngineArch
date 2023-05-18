@@ -197,7 +197,7 @@ class TestApp : public App::App
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
 
-            m_pShader->SetShaderVar("view", m_pCamera->View());
+            m_pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
             m_pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
             m_pShader->SetShaderVar("projection", m_pCamera->Projection());
 

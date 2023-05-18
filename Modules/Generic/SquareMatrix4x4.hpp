@@ -65,6 +65,20 @@ namespace nate::Modules
             return per;
         }
 
+        static SquareMatrix4x4 orthographic(T left, T right, T bottom, T top, T near, T far)
+        {
+            SquareMatrix4x4 ortho;
+            ortho[0][0] = T(2) / (right - left);
+            ortho[1][1] = T(2) / (top - bottom);
+            ortho[2][2] = T(-2) / (far - near);
+            ortho[3][0] = T(-1) * (right + left) / (right - left);
+            ortho[3][1] = T(-1) * (top + bottom) / (top - bottom);
+            ortho[3][2] = T(-1) * (far + near) / (far - near);
+            ortho[3][3] = T(1);
+
+            return ortho;
+        }
+
         static SquareMatrix4x4 scale_init(const Vector3<T>& scale)
         {
             SquareMatrix4x4 rslt = BASE::template identity<SquareMatrix4x4>();

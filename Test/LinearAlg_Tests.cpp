@@ -143,6 +143,13 @@ namespace nate::Test
         ASSERT_EQ(TranslateMatrix(look_at), input);
     }
 
+    TEST_F(MatrixTests, ValidateOrthographic)
+    {
+        glm::mat4              ortho_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+        SquareMatrix4x4<float> ortho = SquareMatrix4x4<float>::orthographic(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+        ASSERT_EQ(TranslateMatrix(ortho_mat), ortho);
+    }
+
     TEST_F(MatrixTests, ValidateRotationMatrix)
     {
         auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, M_PI_4, M_PI_4});
