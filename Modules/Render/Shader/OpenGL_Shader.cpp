@@ -20,29 +20,34 @@ namespace nate::Modules::Render
         glDeleteShader(m_ID);
     }
 
-    std::unique_ptr<Shader> OpenGL_Shader::Create(const std::filesystem::path& shaderLoc)
+    std::unique_ptr<Shader> OpenGL_Shader::Create(
+        const std::filesystem::path&              shaderLoc,
+        const std::vector<std::filesystem::path>& inc_paths)
     {
         std::string extension = shaderLoc.extension().string();
         if (extension == ".vert")
         {
-            return Create(shaderLoc, ShaderType::Vertex);
+            return Create(shaderLoc, ShaderType::Vertex, inc_paths);
         }
         if (extension == ".frag")
         {
-            return Create(shaderLoc, ShaderType::Fragment);
+            return Create(shaderLoc, ShaderType::Fragment, inc_paths);
         }
         if (extension == ".geom")
         {
-            return Create(shaderLoc, ShaderType::Geometry);
+            return Create(shaderLoc, ShaderType::Geometry, inc_paths);
         }
         if (extension == ".comp")
         {
-            return Create(shaderLoc, ShaderType::Compute);
+            return Create(shaderLoc, ShaderType::Compute, inc_paths);
         }
         throw std::invalid_argument("Unkown shader extension " + extension);
     }
 
-    std::unique_ptr<Shader> OpenGL_Shader::Create(const std::filesystem::path& shaderLoc, ShaderType type)
+    std::unique_ptr<Shader> OpenGL_Shader::Create(
+        const std::filesystem::path&              shaderLoc,
+        ShaderType                                type,
+        const std::vector<std::filesystem::path>& inc_paths)
     {
         if (!std::filesystem::is_regular_file(shaderLoc))
             throw std::invalid_argument(fmt::format("Shader file [{}] does not exist.", shaderLoc.string()));
@@ -60,16 +65,17 @@ namespace nate::Modules::Render
 
         pNewObj->LoadShaderCode(shaderLoc);
         pNewObj->ID(pNewObj->CreateGLShader());
-        pNewObj->Compile();
+        pNewObj->Compile(inc_paths);
 
         return pNewObj;
     }
 
-    void OpenGL_Shader::Compile()
+    void OpenGL_Shader::Compile(const std::vector<std::filesystem::path>& inc_paths)
     {
         Preprocessor processor;
-        std::string  processed_code  = processor.PreProcess(ShaderLoc(), ShaderCode());
-        const char*  pProcessed_code = processed_code.c_str();
+        processor.IncludePaths(inc_paths);
+        std::string processed_code  = processor.PreProcess(ShaderLoc(), ShaderCode());
+        const char* pProcessed_code = processed_code.c_str();
 
         glShaderSource(m_ID, 1, &pProcessed_code, NULL);
         glCompileShader(m_ID);

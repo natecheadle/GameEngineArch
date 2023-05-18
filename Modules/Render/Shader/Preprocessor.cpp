@@ -43,15 +43,7 @@ namespace nate::Modules::Render
 
     std::string Preprocessor::ProcessInclude(const std::filesystem::path& file_path, const std::filesystem::path& path)
     {
-        std::filesystem::path inc_path{path};
-        if (!std::filesystem::is_regular_file(path))
-        {
-            inc_path = file_path.parent_path() / path;
-            if (!std::filesystem::is_regular_file(inc_path))
-            {
-                throw std::runtime_error("Include file not found: " + path.string());
-            }
-        }
+        std::filesystem::path inc_path{Preprocessor::FindInclude(file_path, path)};
 
         auto openedInc = std::find(m_Includes.begin(), m_Includes.end(), inc_path);
         if (openedInc != m_Includes.end())
@@ -67,5 +59,28 @@ namespace nate::Modules::Render
         if (std::regex_search(inc_file, m_IncRegex))
             return PreProcess(inc_path, inc_file) + '\n';
         return inc_file + '\n';
+    }
+
+    std::filesystem::path Preprocessor::FindInclude(
+        const std::filesystem::path& file_path,
+        const std::filesystem::path& path)
+    {
+        if (std::filesystem::is_regular_file(path))
+            return path;
+
+        std::filesystem::path inc_path = file_path.parent_path() / path;
+        if (std::filesystem::is_regular_file(inc_path))
+        {
+            return inc_path;
+        }
+
+        for (auto& inc_path_search : m_IncludePaths)
+        {
+            inc_path = inc_path_search / path;
+            if (std::filesystem::is_regular_file(inc_path))
+                return inc_path;
+        }
+
+        throw std::runtime_error("Include file not found: " + path.string());
     }
 } // namespace nate::Modules::Render

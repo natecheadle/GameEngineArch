@@ -76,8 +76,12 @@ class TestApp : public App::App
   protected:
     void Initialize() override
     {
-        std::filesystem::path shader_dir(std::string(SHADER_DIR));
+        std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
+        std::filesystem::path shader_inc_dir = std::filesystem::path(std::string_view(SHADER_DIR));
         shader_dir /= "Shaders";
+        shader_inc_dir /= "../Modules/Render/Shader/GLSL/";
+        assert(std::filesystem::is_directory(shader_dir));
+        assert(std::filesystem::is_directory(shader_inc_dir));
 
         auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
@@ -93,8 +97,8 @@ class TestApp : public App::App
             GetRenderer()->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
-        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path);
-        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path);
+        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
         m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
