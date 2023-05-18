@@ -4,9 +4,11 @@
 #include "../3D/Light_Point.h"
 #include "../3D/Light_Spotlight.h"
 #include "../3D/Material.h"
-#include "../3D/Object3D.h"
+#include "../3D/Mesh3D.h"
+#include "../3D/Model3D.h"
 #include "../Shader/Shader.h"
 #include "../Texture/Texture.h"
+#include "3D/Model3D.h"
 #include "Shader/ShaderProgram.h"
 #include "VertexBuffer.h"
 
@@ -68,28 +70,6 @@ namespace nate::Modules::Render
 
         virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
         virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
-
-        virtual void Draw(Object3D* pObj) = 0;
-
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)  = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value)   = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, float value) = 0;
-        virtual void SetShaderVar(
-            ShaderProgram*                pShader,
-            const std::string&            name,
-            const SquareMatrix<4, float>& value) = 0;
-        virtual void SetShaderVar(
-            ShaderProgram*                pShader,
-            const std::string&            name,
-            const SquareMatrix<3, float>& value)                                                                   = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<3, float>& value)  = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Vector<4, float>& value)  = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Material& value)          = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Directional& value) = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Point& value)       = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Spotlight& value)   = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light_Attenuation& value) = 0;
-        virtual void SetShaderVar(ShaderProgram* pShader, const std::string& name, const Light& value)             = 0;
 
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;
