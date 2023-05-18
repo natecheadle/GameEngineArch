@@ -1,22 +1,22 @@
-#include "3D/Light_Directional.h"
-#include "3D/Light_Point.h"
-#include "3D/Light_Spotlight.h"
-#include "3D/Material.h"
-#include "3D/Mesh3D.h"
-#include "3D/Model3D.h"
-#include "IWindow.h"
-#include "Renderer/Renderer.h"
-#include "SquareMatrix4x4.hpp"
-#include "Vector3.hpp"
-#include "WindowMessages.hpp"
-#include "WindowSize.hpp"
-
-#include <3D/Fly_Camera3D.h>
+#include <3D/Camera2D.h>
+#include <3D/Fly_Camera.h>
+#include <3D/Light_Directional.h>
+#include <3D/Light_Point.h>
+#include <3D/Light_Spotlight.h>
+#include <3D/Material.h>
+#include <3D/Mesh3D.h>
+#include <3D/Model3D.h>
 #include <App.h>
 #include <DebugCast.hpp>
+#include <IWindow.h>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
+#include <Renderer/Renderer.h>
 #include <Shader/Shader.h>
+#include <SquareMatrix4x4.hpp>
+#include <Vector3.hpp>
+#include <WindowMessages.hpp>
+#include <WindowSize.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -46,7 +46,7 @@ class TestApp : public App::App
     Render::Light_Directional                    m_DirLight;
     Render::Light_Spotlight                      m_SpotLight;
     Render::Light_Point                          m_PointLight;
-    std::unique_ptr<Render::Fly_Camera3D>        m_pCamera;
+    std::unique_ptr<Render::Camera2D>            m_pCamera;
     std::unique_ptr<Render::Model3D>             m_pBackpackModel;
     Render::ShaderProgram_ptr                    m_pShader;
 
@@ -124,7 +124,7 @@ class TestApp : public App::App
             m_Cubes[i]->Origin(cubePositions[i]);
         }
 
-        m_pCamera = std::make_unique<Render::Fly_Camera3D>(GetWindow());
+        m_pCamera = std::make_unique<Render::Camera2D>(GetWindow());
 
         m_DirLight.Direction      = {0.0f, 0.0f, -1.0f};
         m_DirLight.Light.Ambient  = {0.2f, 0.2f, 0.2f};

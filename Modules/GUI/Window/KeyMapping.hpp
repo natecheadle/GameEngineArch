@@ -1,3 +1,5 @@
+#pragma once
+
 #include "KeyModifiers.hpp"
 #include "Keys.h"
 
