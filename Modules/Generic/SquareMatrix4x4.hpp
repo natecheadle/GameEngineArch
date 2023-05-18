@@ -51,10 +51,10 @@ namespace nate::Modules
             return lookat;
         }
 
-        static SquareMatrix4x4 perspective(T fov, T aspect, T near, T far)
+        static SquareMatrix4x4 perspective(Radian<T> fov, T aspect, T near, T far)
         {
             SquareMatrix4x4 per;
-            T               ta = std::tan(fov / T(2.0));
+            T               ta = tan(fov / T(2.0));
 
             per[0][0] = 1 / (ta * aspect);
             per[1][1] = 1 / ta;

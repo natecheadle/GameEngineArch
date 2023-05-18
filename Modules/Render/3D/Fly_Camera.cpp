@@ -1,5 +1,4 @@
-#include "Fly_Camera3D.h"
-
+#include "Fly_Camera.h"
 #include "IWindow.h"
 #include "KeyModifiers.hpp"
 #include "KeyPressedInfo.hpp"
@@ -9,10 +8,11 @@
 
 #include <functional>
 
+
 namespace nate::Modules::Render
 {
-    Fly_Camera3D::Fly_Camera3D(GUI::IWindow* pWindow)
-        : Camera3D(pWindow)
+    Fly_Camera::Fly_Camera(GUI::IWindow* pWindow)
+        : Camera(pWindow)
         , m_PanUpMap([this]() { PanUp(); })
         , m_PanDownMap([this]() { PanDown(); })
         , m_PanLeftMap([this]() { PanLeft(); })
@@ -61,56 +61,56 @@ namespace nate::Modules::Render
         });
     }
 
-    void Fly_Camera3D::PanUp(float value)
+    void Fly_Camera::PanUp(float value)
     {
         Translate({0, -value, 0});
     }
 
-    void Fly_Camera3D::PanDown(float value)
+    void Fly_Camera::PanDown(float value)
     {
         Translate({0, value, 0});
     }
 
-    void Fly_Camera3D::PanLeft(float value)
+    void Fly_Camera::PanLeft(float value)
     {
         Translate({value, 0, 0});
     }
 
-    void Fly_Camera3D::PanRight(float value)
+    void Fly_Camera::PanRight(float value)
     {
         Translate({-value, 0, 0});
     }
 
-    void Fly_Camera3D::RotatePitch(const Radian<float>& value)
+    void Fly_Camera::RotatePitch(const Radian<float>& value)
     {
         m_Pitch += value;
         m_Pitch = m_Pitch >= m_MaxRot ? m_MaxRot : m_Pitch;
         CameraDirection(CalcDir());
     }
 
-    void Fly_Camera3D::RotateYaw(const Radian<float>& value)
+    void Fly_Camera::RotateYaw(const Radian<float>& value)
     {
         m_Yaw += value;
         m_Yaw = m_Yaw >= m_MaxRot ? m_MaxRot : m_Yaw;
         CameraDirection(CalcDir());
     }
 
-    void Fly_Camera3D::ZoomIn(float value)
+    void Fly_Camera::ZoomIn(float value)
     {
         Translate({0, 0, value});
     }
 
-    void Fly_Camera3D::ZoomOut(float value)
+    void Fly_Camera::ZoomOut(float value)
     {
         Translate({0, 0, -value});
     }
 
-    void Fly_Camera3D::Update(std::chrono::nanoseconds /* time */)
+    void Fly_Camera::Update(std::chrono::nanoseconds /* time */)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
     }
 
-    Vector3<float> Fly_Camera3D::CalcDir() const
+    Vector3<float> Fly_Camera::CalcDir() const
     {
         Vector3<float> dir;
         dir.x(cos(m_Yaw) * cos(m_Pitch));
@@ -120,7 +120,7 @@ namespace nate::Modules::Render
         return dir;
     }
 
-    void Fly_Camera3D::ExecuteKeyMappings(const GUI::KeyStateMap& keyStates)
+    void Fly_Camera::ExecuteKeyMappings(const GUI::KeyStateMap& keyStates)
     {
         auto mappingUpdate = [keyStates](const GUI::KeyMapping& mappings) -> void {
             for (const auto& mapping : mappings.KeyMappings())
