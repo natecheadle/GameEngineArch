@@ -32,7 +32,8 @@ namespace nate::Modules::Render
         virtual ~Camera();
 
         virtual SquareMatrix4x4<float> Projection() const;
-        virtual SquareMatrix4x4<float> View() const;
+        virtual SquareMatrix4x4<float> ViewPerspective() const;
+        virtual SquareMatrix4x4<float> ViewOrthographic() const;
 
         virtual void Update(std::chrono::nanoseconds /* time */) {}
 
