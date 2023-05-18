@@ -164,7 +164,7 @@ class TestApp : public App::App
         };
         pRenderer->ExecuteFunction(initShaderVars);
 
-        m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
+        // m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
     }
 
     void Shutdown() override
@@ -185,7 +185,7 @@ class TestApp : public App::App
         {
             cube->RotX(M_PI / 500.0);
         }
-        m_pBackpackModel->RotY(M_PI / 500.0);
+        // m_pBackpackModel->RotY(M_PI / 500.0);
 
         m_SpotLight.Position  = m_pCamera->CameraPosition();
         m_SpotLight.Direction = -1.0 * m_pCamera->CameraDirection();
@@ -204,7 +204,7 @@ class TestApp : public App::App
                 cube->Draw(m_pShader.get());
             }
 
-            m_pBackpackModel->Draw(m_pShader.get());
+            // m_pBackpackModel->Draw(m_pShader.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);

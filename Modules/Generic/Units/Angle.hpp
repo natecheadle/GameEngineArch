@@ -34,6 +34,30 @@ namespace nate::Modules
         }
 
         template <class DERIVED_OTHER>
+        friend bool operator<(const Angle& lhs, const Angle<T, DERIVED_OTHER>& rhs)
+        {
+            return lhs.m_RadValue < rhs.Radians();
+        }
+
+        template <class DERIVED_OTHER>
+        friend bool operator>(const Angle& lhs, const Angle<T, DERIVED_OTHER>& rhs)
+        {
+            return lhs.m_RadValue > rhs.Radians();
+        }
+
+        template <class DERIVED_OTHER>
+        friend bool operator<=(const Angle& lhs, const Angle<T, DERIVED_OTHER>& rhs)
+        {
+            return lhs.m_RadValue < rhs.Radians() || lhs == rhs;
+        }
+
+        template <class DERIVED_OTHER>
+        friend bool operator>=(const Angle& lhs, const Angle<T, DERIVED_OTHER>& rhs)
+        {
+            return lhs.m_RadValue > rhs.Radians() || lhs == rhs;
+        }
+
+        template <class DERIVED_OTHER>
         Angle& operator=(const Angle<T, DERIVED_OTHER>& other)
         {
             if (this == &other)

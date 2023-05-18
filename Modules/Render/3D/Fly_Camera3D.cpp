@@ -4,6 +4,8 @@
 #include "KeyModifiers.hpp"
 #include "KeyPressedInfo.hpp"
 #include "Keys.h"
+#include "Units/Angle.hpp"
+#include "Vector3.hpp"
 
 #include <functional>
 
@@ -15,11 +17,14 @@ namespace nate::Modules::Render
         , m_PanDownMap([this]() { PanDown(); })
         , m_PanLeftMap([this]() { PanLeft(); })
         , m_PanRightMap([this]() { PanRight(); })
-        , m_RotatePitchMap([this]() { RotatePitch(); })
-        , m_RotateYawMap([this]() { RotateYaw(); })
-        , m_RotateRollMap([this]() { RotateRoll(); })
+        , m_RotatePitchPosMap([this]() { RotatePitchPos(); })
+        , m_RotatePitchNegMap([this]() { RotatePitchNeg(); })
+        , m_RotateYawPosMap([this]() { RotateYawPos(); })
+        , m_RotateYawNegMap([this]() { RotateYawNeg(); })
         , m_ZoomInMap([this]() { ZoomIn(); })
         , m_ZoomOutMap([this]() { ZoomOut(); })
+        , m_Pitch(0.0)
+        , m_Yaw(-M_PI_2)
     {
         m_PanUpMap.KeyMappings({
             {{GUI::Key::W, GUI::KeyModifiers()}, {GUI::Key::Up, GUI::KeyModifiers()}}
@@ -34,10 +39,17 @@ namespace nate::Modules::Render
             {{GUI::Key::D, GUI::KeyModifiers()}, {GUI::Key::Right, GUI::KeyModifiers()}}
         });
 
-        m_RotatePitchMap.KeyMappings({
+        m_RotatePitchPosMap.KeyMappings({
+            {{GUI::Key::C, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
+        });
+        m_RotatePitchNegMap.KeyMappings({
+            {{GUI::Key::R, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
+        });
+
+        m_RotateYawPosMap.KeyMappings({
             {{GUI::Key::Q, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
         });
-        m_RotateYawMap.KeyMappings({
+        m_RotateYawNegMap.KeyMappings({
             {{GUI::Key::E, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
         });
 
@@ -69,19 +81,18 @@ namespace nate::Modules::Render
         Translate({-value, 0, 0});
     }
 
-    void Fly_Camera3D::RotatePitch(float value)
+    void Fly_Camera3D::RotatePitch(const Radian<float>& value)
     {
-        RotateX(value);
+        m_Pitch += value;
+        m_Pitch = m_Pitch >= m_MaxRot ? m_MaxRot : m_Pitch;
+        CameraDirection(CalcDir());
     }
 
-    void Fly_Camera3D::RotateYaw(float value)
+    void Fly_Camera3D::RotateYaw(const Radian<float>& value)
     {
-        RotateY(value);
-    }
-
-    void Fly_Camera3D::RotateRoll(float value)
-    {
-        RotateZ(value);
+        m_Yaw += value;
+        m_Yaw = m_Yaw >= m_MaxRot ? m_MaxRot : m_Yaw;
+        CameraDirection(CalcDir());
     }
 
     void Fly_Camera3D::ZoomIn(float value)
@@ -97,6 +108,16 @@ namespace nate::Modules::Render
     void Fly_Camera3D::Update(std::chrono::nanoseconds /* time */)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
+    }
+
+    Vector3<float> Fly_Camera3D::CalcDir() const
+    {
+        Vector3<float> dir;
+        dir.x(cos(m_Yaw) * cos(m_Pitch));
+        dir.y(sin(m_Pitch));
+        dir.z(sin(m_Yaw) * cos(m_Pitch));
+
+        return dir;
     }
 
     void Fly_Camera3D::ExecuteKeyMappings(const GUI::KeyStateMap& keyStates)
@@ -119,9 +140,10 @@ namespace nate::Modules::Render
         mappingUpdate(m_PanLeftMap);
         mappingUpdate(m_PanRightMap);
 
-        mappingUpdate(m_RotatePitchMap);
-        mappingUpdate(m_RotateYawMap);
-        mappingUpdate(m_RotateRollMap);
+        mappingUpdate(m_RotatePitchPosMap);
+        mappingUpdate(m_RotatePitchNegMap);
+        mappingUpdate(m_RotateYawPosMap);
+        mappingUpdate(m_RotateYawNegMap);
 
         mappingUpdate(m_ZoomInMap);
         mappingUpdate(m_ZoomOutMap);
