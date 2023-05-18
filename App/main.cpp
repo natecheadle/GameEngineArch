@@ -3,8 +3,10 @@
 #include "3D/Light_Spotlight.h"
 #include "3D/Material.h"
 #include "3D/Mesh3D.h"
+#include "3D/Model3D.h"
 #include "IWindow.h"
 #include "Renderer/Renderer.h"
+#include "SquareMatrix4x4.hpp"
 #include "Vector3.hpp"
 #include "WindowMessages.hpp"
 #include "WindowSize.hpp"
@@ -45,6 +47,7 @@ class TestApp : public App::App
     Render::Light_Spotlight                      m_SpotLight;
     Render::Light_Point                          m_PointLight;
     std::unique_ptr<Render::Fly_Camera3D>        m_pCamera;
+    std::unique_ptr<Render::Model3D>             m_pBackpackModel;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -80,6 +83,7 @@ class TestApp : public App::App
         auto light_source_path    = shader_dir / "light_source.frag";
         auto cont_spec_path       = shader_dir / "container2_specular.png";
         auto cont_path            = shader_dir / "container2.png";
+        auto backpack_path        = shader_dir / "backpack/backpack.obj";
 
         auto cubeMaterial = std::make_unique<Render::Material>();
 
@@ -153,6 +157,9 @@ class TestApp : public App::App
             pRenderer->SetShaderVar(cube->Shader().get(), "pointLight", m_PointLight);
             pRenderer->SetShaderVar(cube->Shader().get(), "spotLight", m_SpotLight);
         }
+
+        m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
+        m_pBackpackModel->Shader(m_Cubes[0]->Shader());
     }
 
     void Shutdown() override
@@ -191,6 +198,12 @@ class TestApp : public App::App
 
                 pRenderer->Draw(cube.get());
             }
+
+            pRenderer->SetShaderVar(
+                m_Cubes[0]->Shader().get(),
+                "model",
+                SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
+            pRenderer->Draw(m_pBackpackModel.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);

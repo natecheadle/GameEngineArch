@@ -2,7 +2,10 @@
 
 #include "3D/Material.h"
 #include "3D/Mesh3D.h"
+#include "3D/Model3D.h"
 #include "3D/VertexData.h"
+#include "Renderer/Renderer.h"
+#include "Shader/ShaderProgram.h"
 #include "Texture/Texture.h"
 
 #include <assimp/Importer.hpp>
@@ -30,6 +33,14 @@ namespace nate::Modules::Render
         for (auto& obj : m_Objects)
         {
             obj->Draw();
+        }
+    }
+
+    void Model3D::Shader(const std::shared_ptr<ShaderProgram>& pShader)
+    {
+        for (auto& obj : m_Objects)
+        {
+            obj->Shader(pShader);
         }
     }
 
@@ -73,17 +84,23 @@ namespace nate::Modules::Render
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             VertexData vertex;
-            vertex.Position = {mesh[i].mVertices->x, mesh[i].mVertices->y, mesh[i].mVertices->z};
+            vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
             if (mesh->HasNormals())
             {
-                vertex.Normal = {mesh[i].mNormals->x, mesh[i].mNormals->y, mesh[i].mNormals->z};
+                vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
             }
             if (mesh->mTextureCoords[0])
             {
                 vertex.TextureCoord = {
                     {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y}
                 };
-                vertex.TextureTangent   = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+            }
+            if (mesh->mTangents)
+            {
+                vertex.TextureTangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+            }
+            if (mesh->mBitangents)
+            {
                 vertex.TextureBitangent = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
             }
 

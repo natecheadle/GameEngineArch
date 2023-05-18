@@ -158,6 +158,12 @@ namespace nate::Modules::Render
         ExecuteFunction([pObj]() -> void { pObj->Draw(); });
     }
 
+    void Renderer_OpenGL::Draw(Model3D* pMode)
+    {
+        assert(pMode);
+        ExecuteFunction([pMode]() -> void { pMode->Draw(); });
+    }
+
     void Renderer_OpenGL::SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value)
     {
         SetShaderVar_T(pShader, name, value);

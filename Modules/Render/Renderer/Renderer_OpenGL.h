@@ -41,6 +41,7 @@ namespace nate::Modules::Render
         Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
         void Draw(Mesh3D* pObj) final;
+        void Draw(Model3D* pMode) final;
 
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, bool value) final;
         void SetShaderVar(ShaderProgram* pShader, const std::string& name, int value) final;
