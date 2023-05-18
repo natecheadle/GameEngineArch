@@ -2,6 +2,8 @@
 
 #include "Shader.h"
 
+#include <vector>
+
 namespace nate::Modules::Render
 {
     class OpenGL_Shader : public Shader
@@ -15,8 +17,13 @@ namespace nate::Modules::Render
 
         ~OpenGL_Shader() override;
 
-        static std::unique_ptr<Shader> Create(const std::filesystem::path& shaderLoc);
-        static std::unique_ptr<Shader> Create(const std::filesystem::path& shaderLoc, ShaderType type);
+        static std::unique_ptr<Shader> Create(
+            const std::filesystem::path&              shaderLoc,
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>());
+        static std::unique_ptr<Shader> Create(
+            const std::filesystem::path&              shaderLoc,
+            ShaderType                                type,
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>());
 
       protected:
         OpenGL_Shader() = default;
@@ -25,6 +32,6 @@ namespace nate::Modules::Render
 
       private:
         void ID(unsigned int val) { m_ID = val; }
-        void Compile();
+        void Compile(const std::vector<std::filesystem::path>& inc_paths);
     };
 } // namespace nate::Modules::Render

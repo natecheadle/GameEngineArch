@@ -29,8 +29,13 @@ namespace nate::Modules::Render
             std::span<float>         vertexes,
             std::span<std::uint32_t> indeces) override;
 
-        Shader_ptr CreateShader(const std::filesystem::path& path) final;
-        Shader_ptr CreateShader(const std::filesystem::path& path, ShaderType type) final;
+        Shader_ptr CreateShader(
+            const std::filesystem::path&              path,
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
+        Shader_ptr CreateShader(
+            const std::filesystem::path&              path,
+            ShaderType                                type,
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
 
         ShaderProgram_ptr CreateShaderProgram(
             const Shader* pFragmentShader,

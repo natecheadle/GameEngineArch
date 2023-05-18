@@ -101,21 +101,29 @@ namespace nate::Modules::Render
         return rslt;
     }
 
-    Shader_ptr Renderer_OpenGL::CreateShader(const std::filesystem::path& path)
+    Shader_ptr Renderer_OpenGL::CreateShader(
+        const std::filesystem::path&              path,
+        const std::vector<std::filesystem::path>& inc_paths)
     {
         Shader_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = Shader_ptr(OpenGL_Shader::Create(path).release(), [this](Shader* pShader) { Destroy(pShader); });
+            rslt = Shader_ptr(OpenGL_Shader::Create(path, inc_paths).release(), [this](Shader* pShader) {
+                Destroy(pShader);
+            });
         });
         return rslt;
     }
 
-    Shader_ptr Renderer_OpenGL::CreateShader(const std::filesystem::path& path, ShaderType type)
+    Shader_ptr Renderer_OpenGL::CreateShader(
+        const std::filesystem::path&              path,
+        ShaderType                                type,
+        const std::vector<std::filesystem::path>& inc_paths)
     {
         Shader_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt =
-                Shader_ptr(OpenGL_Shader::Create(path, type).release(), [this](Shader* pShader) { Destroy(pShader); });
+            rslt = Shader_ptr(OpenGL_Shader::Create(path, type, inc_paths).release(), [this](Shader* pShader) {
+                Destroy(pShader);
+            });
         });
         return rslt;
     }
