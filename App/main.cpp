@@ -1,5 +1,3 @@
-#include "3D/Sprite.h"
-
 #include <3D/Camera2D.h>
 #include <3D/Fly_Camera.h>
 #include <3D/Light_Directional.h>
@@ -8,6 +6,7 @@
 #include <3D/Material.h>
 #include <3D/Mesh3D.h>
 #include <3D/Model3D.h>
+#include <3D/Sprite.h>
 #include <App.h>
 #include <DebugCast.hpp>
 #include <Entity.h>
@@ -35,7 +34,6 @@
 #include <thread>
 #include <utility>
 #include <vector>
-
 
 using namespace nate::Modules;
 using namespace std::chrono_literals;
