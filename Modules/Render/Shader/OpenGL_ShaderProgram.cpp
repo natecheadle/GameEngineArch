@@ -123,45 +123,45 @@ namespace nate::Modules::Render
             populateShader(value.Normal, "Normal");
         }
 
-        SetShaderVar(fmt::format("{}.{}", name, ".Shininess"), value.Shininess);
+        SetShaderVar(fmt::format("{}.{}", name, "Shininess"), value.Shininess);
     }
     void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Directional& value) const
     {
-        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
-        SetShaderVar(fmt::format("{}.{}", name, ".Direction"), value.Direction);
+        SetShaderVar(fmt::format("{}.{}", name, "Light"), value.Light);
+        SetShaderVar(fmt::format("{}.{}", name, "Direction"), value.Direction);
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Point& value) const
     {
-        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
-        SetShaderVar(fmt::format("{}.{}", name, ".Position"), value.Position);
-        SetShaderVar(fmt::format("{}.{}", name, ".Attenuation"), value.Attenuation);
+        SetShaderVar(fmt::format("{}.{}", name, "Light"), value.Light);
+        SetShaderVar(fmt::format("{}.{}", name, "Position"), value.Position);
+        SetShaderVar(fmt::format("{}.{}", name, "Attenuation"), value.Attenuation);
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Spotlight& value) const
     {
-        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
+        SetShaderVar(fmt::format("{}.{}", name, "Light"), value.Light);
 
-        SetShaderVar(fmt::format("{}.{}", name, ".Position"), value.Position);
-        SetShaderVar(fmt::format("{}.{}", name, ".Direction"), value.Direction);
-        SetShaderVar(fmt::format("{}.{}", name, ".CutOff"), cos(value.Cutoff));
-        SetShaderVar(fmt::format("{}.{}", name, ".OuterCutOff"), cos(value.OuterCutoff));
+        SetShaderVar(fmt::format("{}.{}", name, "Position"), value.Position);
+        SetShaderVar(fmt::format("{}.{}", name, "Direction"), value.Direction);
+        SetShaderVar(fmt::format("{}.{}", name, "CutOff"), cos(value.Cutoff));
+        SetShaderVar(fmt::format("{}.{}", name, "OuterCutOff"), cos(value.OuterCutoff));
 
-        SetShaderVar(fmt::format("{}.{}", name, ".Attenuation"), value.Attenuation);
+        SetShaderVar(fmt::format("{}.{}", name, "Attenuation"), value.Attenuation);
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Attenuation& value) const
     {
-        SetShaderVar(fmt::format("{}.{}", name, ".Constant"), value.Constant);
-        SetShaderVar(fmt::format("{}.{}", name, ".Linear"), value.Linear);
-        SetShaderVar(fmt::format("{}.{}", name, ".Quadratic"), value.Quadratic);
+        SetShaderVar(fmt::format("{}.{}", name, "Constant"), value.Constant);
+        SetShaderVar(fmt::format("{}.{}", name, "Linear"), value.Linear);
+        SetShaderVar(fmt::format("{}.{}", name, "Quadratic"), value.Quadratic);
     }
 
     void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light& value) const
     {
-        SetShaderVar(fmt::format("{}.{}", name, ".Ambient"), value.Ambient.Data());
-        SetShaderVar(fmt::format("{}.{}", name, ".Diffuse"), value.Diffuse.Data());
-        SetShaderVar(fmt::format("{}.{}", name, ".Specular"), value.Specular.Data());
+        SetShaderVar(fmt::format("{}.{}", name, "Ambient"), value.Ambient.Data());
+        SetShaderVar(fmt::format("{}.{}", name, "Diffuse"), value.Diffuse.Data());
+        SetShaderVar(fmt::format("{}.{}", name, "Specular"), value.Specular.Data());
     }
 
 } // namespace nate::Modules::Render
