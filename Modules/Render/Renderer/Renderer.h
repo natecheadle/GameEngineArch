@@ -20,6 +20,7 @@
 #include <atomic>
 #include <cassert>
 #include <condition_variable>
+#include <cstddef>
 #include <exception>
 #include <filesystem>
 #include <functional>
@@ -51,16 +52,12 @@ namespace nate::Modules::Render
       public:
         virtual ~Renderer();
 
-        static std::unique_ptr<Renderer> Create(
-            Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
-            Memory::PoolMemoryBlock<Sprite>* pSpritePool);
-
         const std::exception& Error() { return Job::GetCaughtException(); }
         bool                  IsErrored() const { return Job::IsFailed(); }
         bool                  IsRunning() const { return Job::IsExecuting(); }
 
-        virtual GUI::IWindow* Window() const                                            = 0;
-        virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
+        virtual GUI::IWindow* Window() const                                  = 0;
+        virtual GUI::IWindow* Initialize(const GUI::WindowSize&, std::string) = 0;
 
         virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
         virtual VertexBuffer_ptr CreateBuffer(
