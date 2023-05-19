@@ -23,6 +23,13 @@
 
 namespace nate::Modules::Render
 {
+    Renderer_OpenGL::Renderer_OpenGL(
+        Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
+        Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+        : Renderer(pMeshPool, pSpritePool)
+    {
+    }
+
     Renderer_OpenGL::~Renderer_OpenGL()
     {
         m_pWin->Unsubscribe(this);
@@ -53,7 +60,8 @@ namespace nate::Modules::Render
 #else
 
         ExecuteFunction([&]() -> void {
-            // Windows requires the windoww and conntext to be in the same thread, but the window can be on any thread.
+            // Windows requires the windoww and conntext to be in the same thread, but the window can be on any
+            // thread.
             m_pWin = std::make_unique<GUI::Window_GLFW>(size, std::move(name));
 
             // glad: load all OpenGL function pointers

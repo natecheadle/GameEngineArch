@@ -16,7 +16,8 @@ namespace nate::Modules::Render
         std::unique_ptr<GUI::Window_GLFW> m_pWin;
 
       public:
-        Renderer_OpenGL() = default;
+        Renderer_OpenGL(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+
         ~Renderer_OpenGL() override;
 
         GUI::IWindow* Window() const override { return m_pWin.get(); }
