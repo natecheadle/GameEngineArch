@@ -66,9 +66,9 @@ namespace nate::Modules::Render
     {
     }
 
-    std::unique_ptr<Mesh3D> Mesh3D::CreateCube(Renderer* pRenderer)
+    Mesh3D Mesh3D::CreateCube(Renderer* pRenderer)
     {
-        return std::make_unique<Mesh3D>(
+        return Mesh3D(
             pRenderer,
             VertexData::describe(),
             std::span<const float>(

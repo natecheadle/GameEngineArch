@@ -25,6 +25,28 @@ namespace nate::Modules::Render
         Join();
     }
 
+    void Renderer::DrawAllMesh(ShaderProgram* pProgram)
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool = GetPool<Mesh3D>();
+            for (auto& val : pool)
+            {
+                val.Draw(pProgram);
+            }
+        });
+    }
+
+    void Renderer::DrawAllSprites(ShaderProgram* pProgram)
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool = GetPool<Sprite>();
+            for (auto& val : pool)
+            {
+                val.Draw(pProgram);
+            }
+        });
+    }
+
     void Renderer::ExecuteJob()
     {
 

@@ -56,6 +56,9 @@ namespace nate::Modules::Render
         bool                  IsErrored() const { return Job::IsFailed(); }
         bool                  IsRunning() const { return Job::IsExecuting(); }
 
+        virtual void DrawAllMesh(ShaderProgram* pProgram);
+        virtual void DrawAllSprites(ShaderProgram* pProgram);
+
         virtual GUI::IWindow* Window() const                                  = 0;
         virtual GUI::IWindow* Initialize(const GUI::WindowSize&, std::string) = 0;
 
