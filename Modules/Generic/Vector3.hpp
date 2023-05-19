@@ -6,7 +6,7 @@
 
 namespace nate::Modules
 {
-    template <typename T = float>
+    template <typename T>
     class Vector3 : public Vector<3, T>
     {
         using BASE = Vector<3, T>;
@@ -14,22 +14,16 @@ namespace nate::Modules
       public:
         Vector3() noexcept = default;
         Vector3(T x, T y, T z) noexcept
-            : BASE(std::array<T, 3>({x, y, z}))
+            : BASE({x, y, z})
         {
         }
 
-        template <typename IT>
-        Vector3(IT begin, IT end)
-            : BASE(begin, end)
-        {
-        }
-
-        Vector3(const Vector<3, T>& other)
+        Vector3(const Vector<3, T>& other) noexcept
             : BASE(other)
         {
         }
 
-        Vector3(Vector<3, T>&& other)
+        Vector3(Vector<3, T>&& other) noexcept
             : BASE(other)
         {
         }

@@ -1,41 +1,24 @@
-#include <3D/Camera2D.h>
-#include <3D/Fly_Camera.h>
-#include <3D/Light_Directional.h>
-#include <3D/Light_Point.h>
-#include <3D/Light_Spotlight.h>
-#include <3D/Material.h>
-#include <3D/Mesh3D.h>
-#include <3D/Model3D.h>
-#include <App.h>
-#include <DebugCast.hpp>
-#include <IWindow.h>
-#include <Messages/MouseClicked.hpp>
-#include <Messages/WindowResized.hpp>
-#include <Renderer/Renderer.h>
-#include <Shader/Shader.h>
-#include <SquareMatrix4x4.hpp>
-#include <Vector3.hpp>
-#include <WindowMessages.hpp>
-#include <WindowSize.hpp>
+#include "Units/Radian.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <chrono>
-#include <filesystem>
-#include <iostream>
+#include <3D/Camera2D.h>
+#include <3D/Sprite.h>
+#include <App.h>
+#include <Renderer/Renderer.h>
+#include <SquareMatrix.hpp>
+#include <SquareMatrix4x4.hpp>
+#include <Units/Degree.hpp>
+
 #include <memory>
-#include <mutex>
-#include <string>
-#include <string_view>
-#include <thread>
-#include <utility>
-#include <vector>
 
 using namespace nate::Modules;
 using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
+
+    std::unique_ptr<Render::Camera2D> m_pCamera;
+    std::unique_ptr<Render::Sprite>   m_pSprite;
+    Render::ShaderProgram_ptr         m_pShader;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -44,11 +27,64 @@ class TestApp : public App::App
     }
 
   protected:
-    void Initialize() override {}
+    void Initialize() override
+    {
+        std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
+        std::filesystem::path shader_inc_dir = std::filesystem::path(std::string_view(SHADER_DIR));
+        shader_dir /= "Shaders";
+        shader_inc_dir /= "../../Modules/Render/Shader/GLSL/";
+        assert(std::filesystem::is_directory(shader_dir));
+        assert(std::filesystem::is_directory(shader_inc_dir));
 
-    void Shutdown() override {}
+        auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
+        auto fragment_shader_path = shader_dir / "fragment_shader.frag";
+        auto face_path            = shader_dir / "awesomeface.png";
 
-    void UpdateApp(std::chrono::nanoseconds time) override {}
+        auto cubeMaterial = std::make_unique<Render::Material>();
+
+        cubeMaterial->Diffuse = GetRenderer()->CreateTexture(face_path, nate::Modules::Render::TextureUnit::Texture0);
+
+        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+
+        auto* pRenderer = GetRenderer();
+        m_pCamera       = std::make_unique<Render::Camera2D>(GetWindow());
+        m_pSprite       = std::make_unique<Render::Sprite>(pRenderer);
+        m_pSprite->AttachedMaterial(std::move(cubeMaterial));
+
+        auto renderUpdate = [&]() -> void {
+            m_pShader->Use();
+            m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
+            m_pShader->SetShaderVar("material", *m_pSprite->AttachedMaterial());
+        };
+
+        GetRenderer()->ExecuteFunction(renderUpdate);
+    }
+
+    void Shutdown() override
+    {
+        m_pCamera.reset();
+        m_pSprite.reset();
+        m_pShader.reset();
+    }
+
+    void UpdateApp(std::chrono::nanoseconds time) override
+    {
+        // TODO this should be handled automatically
+        m_pCamera->Update(time);
+        m_pSprite->Origin({200.0, 200.0});
+        m_pSprite->Size({300.0f, 400.0f});
+        // m_pSprite->Rotation(Degree<float>(45.0));
+        m_pSprite->Color({0.0f, 1.0f, 0.0f});
+
+        auto renderUpdate = [&]() -> void {
+            m_pShader->Use();
+            m_pSprite->Draw(m_pShader.get());
+        };
+
+        GetRenderer()->ExecuteFunction(renderUpdate);
+    }
 };
 
 int main()

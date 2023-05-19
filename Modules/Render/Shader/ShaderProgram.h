@@ -23,18 +23,18 @@ namespace nate::Modules::Render
 
         virtual void Use() const = 0;
 
-        virtual void SetShaderVar(const std::string& name, bool value) const                          = 0;
-        virtual void SetShaderVar(const std::string& name, int value) const                           = 0;
-        virtual void SetShaderVar(const std::string& name, float value) const                         = 0;
-        virtual void SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const = 0;
-        virtual void SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const = 0;
-        virtual void SetShaderVar(const std::string& name, const Vector<3, float>& value) const       = 0;
-        virtual void SetShaderVar(const std::string& name, const Vector<4, float>& value) const       = 0;
-        virtual void SetShaderVar(const std::string& name, const Material& value) const               = 0;
-        virtual void SetShaderVar(const std::string& name, const Light_Directional& value) const      = 0;
-        virtual void SetShaderVar(const std::string& name, const Light_Point& value) const            = 0;
-        virtual void SetShaderVar(const std::string& name, const Light_Spotlight& value) const        = 0;
-        virtual void SetShaderVar(const std::string& name, const Light_Attenuation& value) const      = 0;
-        virtual void SetShaderVar(const std::string& name, const Light& value) const                  = 0;
+        virtual void SetShaderVar(std::string_view name, bool value) const                          = 0;
+        virtual void SetShaderVar(std::string_view name, int value) const                           = 0;
+        virtual void SetShaderVar(std::string_view name, float value) const                         = 0;
+        virtual void SetShaderVar(std::string_view name, const SquareMatrix<4, float>& value) const = 0;
+        virtual void SetShaderVar(std::string_view name, const SquareMatrix<3, float>& value) const = 0;
+        virtual void SetShaderVar(std::string_view name, const Vector<3, float>& value) const       = 0;
+        virtual void SetShaderVar(std::string_view name, const Vector<4, float>& value) const       = 0;
+        virtual void SetShaderVar(std::string_view name, const Material& value) const               = 0;
+        virtual void SetShaderVar(std::string_view name, const Light_Directional& value) const      = 0;
+        virtual void SetShaderVar(std::string_view name, const Light_Point& value) const            = 0;
+        virtual void SetShaderVar(std::string_view name, const Light_Spotlight& value) const        = 0;
+        virtual void SetShaderVar(std::string_view name, const Light_Attenuation& value) const      = 0;
+        virtual void SetShaderVar(std::string_view name, const Light& value) const                  = 0;
     };
 } // namespace nate::Modules::Render

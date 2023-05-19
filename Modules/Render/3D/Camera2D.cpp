@@ -40,6 +40,9 @@ namespace nate::Modules::Render
         m_ZoomOutMap.KeyMappings({
             {{GUI::Key::X, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
         });
+
+        Near(-1.0);
+        Far(1.0);
     }
 
     void Camera2D::PanUp(float value)

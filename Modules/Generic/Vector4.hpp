@@ -5,7 +5,7 @@
 
 namespace nate::Modules
 {
-    template <typename T = float>
+    template <typename T>
     class Vector4 : public Vector<4, T>
     {
       public:
@@ -13,12 +13,6 @@ namespace nate::Modules
 
         Vector4(std::array<T, 4> init)
             : Vector<4, T>(init)
-        {
-        }
-
-        template <typename IT>
-        Vector4(IT begin, IT end)
-            : Vector<3, T>(begin, end)
         {
         }
 

@@ -54,11 +54,11 @@ namespace nate::Modules::Render
         virtual GUI::IWindow* Window() const                                            = 0;
         virtual GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) = 0;
 
-        virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<float> vertexes) = 0;
+        virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
         virtual VertexBuffer_ptr CreateBuffer(
-            const VertexDataConfig&  config,
-            std::span<float>         vertexes,
-            std::span<std::uint32_t> indeces) = 0;
+            const VertexDataConfig&        config,
+            std::span<const float>         vertexes,
+            std::span<const std::uint32_t> indeces) = 0;
 
         virtual Shader_ptr CreateShader(
             const std::filesystem::path&              path,

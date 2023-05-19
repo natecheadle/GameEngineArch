@@ -157,8 +157,6 @@ class TestApp : public App::App
 
     void UpdateApp(std::chrono::nanoseconds time) override
     {
-        static std::chrono::nanoseconds totalTime;
-        totalTime += time;
         // TODO this should be handled automatically
         m_pCamera->Update(time);
         auto* pRenderer = GetRenderer();

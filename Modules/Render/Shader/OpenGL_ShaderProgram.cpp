@@ -65,91 +65,103 @@ namespace nate::Modules::Render
         glUseProgram(m_ID);
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, bool value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, bool value) const
     {
-        glUniform1i(glGetUniformLocation(m_ID, name.c_str()), static_cast<int>(value));
+        glUniform1i(glGetUniformLocation(m_ID, name.data()), static_cast<int>(value));
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, int value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, int value) const
     {
-        glUniform1i(glGetUniformLocation(m_ID, name.c_str()), value);
+        glUniform1i(glGetUniformLocation(m_ID, name.data()), value);
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, float value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, float value) const
     {
-        glUniform1f(glGetUniformLocation(m_ID, name.c_str()), value);
+        glUniform1f(glGetUniformLocation(m_ID, name.data()), value);
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<4, float>& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const SquareMatrix<4, float>& value) const
     {
-        glUniformMatrix4fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, value.raw_data());
+        glUniformMatrix4fv(glGetUniformLocation(m_ID, name.data()), 1, GL_FALSE, value.raw_data());
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const SquareMatrix<3, float>& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const SquareMatrix<3, float>& value) const
     {
-        glUniformMatrix3fv(glGetUniformLocation(m_ID, name.c_str()), 1, GL_FALSE, value.raw_data());
+        glUniformMatrix3fv(glGetUniformLocation(m_ID, name.data()), 1, GL_FALSE, value.raw_data());
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Vector<3, float>& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Vector<3, float>& value) const
     {
-        glUniform3fv(glGetUniformLocation(m_ID, name.c_str()), 1, value.data());
+        glUniform3fv(glGetUniformLocation(m_ID, name.data()), 1, value.data());
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Vector<4, float>& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Vector<4, float>& value) const
     {
-        glUniform4fv(glGetUniformLocation(m_ID, name.c_str()), 1, value.data());
+        glUniform4fv(glGetUniformLocation(m_ID, name.data()), 1, value.data());
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Material& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Material& value) const
     {
         auto populateShader = [&](const std::shared_ptr<Texture>& texs, std::string_view field) -> void {
             SetShaderVar(fmt::format("{}.{}", name, field), static_cast<int>(texs->TextureUnit()));
         };
 
-        populateShader(value.Diffuse, "Diffuse");
-        populateShader(value.Specular, "Specular");
-        // populateShader(value.Height, "Height");
-        // populateShader(value.Normal, "Normal");
+        if (value.Diffuse)
+        {
+            populateShader(value.Diffuse, "Diffuse");
+        }
+        if (value.Specular)
+        {
+            populateShader(value.Specular, "Specular");
+        }
+        if (value.Height)
+        {
+            populateShader(value.Height, "Height");
+        }
+        if (value.Normal)
+        {
+            populateShader(value.Normal, "Normal");
+        }
 
-        SetShaderVar(name + ".Shininess", value.Shininess);
+        SetShaderVar(fmt::format("{}.{}", name, ".Shininess"), value.Shininess);
     }
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Directional& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Directional& value) const
     {
-        SetShaderVar(name + ".Light", value.Light);
-        SetShaderVar(name + ".Direction", value.Direction);
-    }
-
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Point& value) const
-    {
-        SetShaderVar(name + ".Light", value.Light);
-        SetShaderVar(name + ".Position", value.Position);
-        SetShaderVar(name + ".Attenuation", value.Attenuation);
-    }
-
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Spotlight& value) const
-    {
-        SetShaderVar(name + ".Light", value.Light);
-
-        SetShaderVar(name + ".Position", value.Position);
-        SetShaderVar(name + ".Direction", value.Direction);
-        SetShaderVar(name + ".CutOff", cos(value.Cutoff));
-        SetShaderVar(name + ".OuterCutOff", cos(value.OuterCutoff));
-
-        SetShaderVar(name + ".Attenuation", value.Attenuation);
+        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
+        SetShaderVar(fmt::format("{}.{}", name, ".Direction"), value.Direction);
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light_Attenuation& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Point& value) const
     {
-        SetShaderVar(name + ".Constant", value.Constant);
-        SetShaderVar(name + ".Linear", value.Linear);
-        SetShaderVar(name + ".Quadratic", value.Quadratic);
+        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
+        SetShaderVar(fmt::format("{}.{}", name, ".Position"), value.Position);
+        SetShaderVar(fmt::format("{}.{}", name, ".Attenuation"), value.Attenuation);
     }
 
-    void OpenGL_ShaderProgram::SetShaderVar(const std::string& name, const Light& value) const
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Spotlight& value) const
     {
-        SetShaderVar(name + ".Ambient", value.Ambient.Data());
-        SetShaderVar(name + ".Diffuse", value.Diffuse.Data());
-        SetShaderVar(name + ".Specular", value.Specular.Data());
+        SetShaderVar(fmt::format("{}.{}", name, ".Light"), value.Light);
+
+        SetShaderVar(fmt::format("{}.{}", name, ".Position"), value.Position);
+        SetShaderVar(fmt::format("{}.{}", name, ".Direction"), value.Direction);
+        SetShaderVar(fmt::format("{}.{}", name, ".CutOff"), cos(value.Cutoff));
+        SetShaderVar(fmt::format("{}.{}", name, ".OuterCutOff"), cos(value.OuterCutoff));
+
+        SetShaderVar(fmt::format("{}.{}", name, ".Attenuation"), value.Attenuation);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light_Attenuation& value) const
+    {
+        SetShaderVar(fmt::format("{}.{}", name, ".Constant"), value.Constant);
+        SetShaderVar(fmt::format("{}.{}", name, ".Linear"), value.Linear);
+        SetShaderVar(fmt::format("{}.{}", name, ".Quadratic"), value.Quadratic);
+    }
+
+    void OpenGL_ShaderProgram::SetShaderVar(std::string_view name, const Light& value) const
+    {
+        SetShaderVar(fmt::format("{}.{}", name, ".Ambient"), value.Ambient.Data());
+        SetShaderVar(fmt::format("{}.{}", name, ".Diffuse"), value.Diffuse.Data());
+        SetShaderVar(fmt::format("{}.{}", name, ".Specular"), value.Specular.Data());
     }
 
 } // namespace nate::Modules::Render
