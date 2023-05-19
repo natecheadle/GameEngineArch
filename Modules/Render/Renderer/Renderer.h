@@ -1,19 +1,20 @@
 #pragma once
 
-#include "../3D/Light_Directional.h"
-#include "../3D/Light_Point.h"
-#include "../3D/Light_Spotlight.h"
-#include "../3D/Material.h"
-#include "../3D/Mesh3D.h"
-#include "../3D/Model3D.h"
-#include "../Shader/Shader.h"
-#include "../Texture/Texture.h"
+#include "3D/Light_Directional.h"
+#include "3D/Light_Point.h"
+#include "3D/Light_Spotlight.h"
+#include "3D/Material.h"
+#include "3D/Mesh3D.h"
 #include "3D/Model3D.h"
+#include "3D/Sprite.h"
+#include "Shader/Shader.h"
 #include "Shader/ShaderProgram.h"
+#include "Texture/Texture.h"
 #include "VertexBuffer.h"
 
 #include <IWindow.h>
 #include <Job.h>
+#include <System.h>
 
 #include <algorithm>
 #include <atomic>
@@ -35,17 +36,24 @@ namespace nate::Modules::Render
     using Texture_ptr       = std::unique_ptr<Texture, std::function<void(Texture*)>>;
     using ShaderProgram_ptr = std::unique_ptr<ShaderProgram, std::function<void(ShaderProgram*)>>;
 
-    class Renderer : protected Jobs::Job
+    class Renderer
+        : public ECS::System<Mesh3D, Sprite>
+        , protected Jobs::Job
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
 
+      protected:
+        Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+
       public:
         virtual ~Renderer();
 
-        static std::unique_ptr<Renderer> Create();
+        static std::unique_ptr<Renderer> Create(
+            Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
+            Memory::PoolMemoryBlock<Sprite>* pSpritePool);
 
         const std::exception& Error() { return Job::GetCaughtException(); }
         bool                  IsErrored() const { return Job::IsFailed(); }

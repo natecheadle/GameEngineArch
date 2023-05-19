@@ -4,6 +4,8 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+
 namespace nate::Test
 {
     struct Position
@@ -85,11 +87,11 @@ namespace nate::Test
         Modules::ECS::World<KinematicData> world;
         ;
 
-        TestSystem system = world.CreateSystem<TestSystem, KinematicData>();
-        TestEntity entity = world.CreateEntity<TestEntity>(
+        std::unique_ptr<TestSystem> system = world.CreateSystem<TestSystem, KinematicData>();
+        TestEntity                  entity = world.CreateEntity<TestEntity>(
             KinematicData(KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})})));
 
-        ASSERT_NO_THROW(system.Process(1.0));
+        ASSERT_NO_THROW(system->Process(1.0));
 
         KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
 

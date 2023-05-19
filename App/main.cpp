@@ -1,3 +1,6 @@
+#include "3D/Sprite.h"
+#include "Renderer/Renderer_OpenGL.h"
+
 #include <3D/Camera2D.h>
 #include <3D/Fly_Camera.h>
 #include <3D/Light_Directional.h>
@@ -17,6 +20,7 @@
 #include <Vector3.hpp>
 #include <WindowMessages.hpp>
 #include <WindowSize.hpp>
+#include <World.h>
 
 #include <algorithm>
 #include <cassert>
@@ -36,17 +40,24 @@ using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
-    std::vector<std::unique_ptr<Render::Mesh3D>> m_Cubes;
-    Render::Light_Directional                    m_DirLight;
-    Render::Light_Spotlight                      m_SpotLight;
-    Render::Light_Point                          m_PointLight;
-    std::unique_ptr<Render::Fly_Camera>          m_pCamera;
-    std::unique_ptr<Render::Model3D>             m_pBackpackModel;
-    Render::ShaderProgram_ptr                    m_pShader;
+    std::vector<std::unique_ptr<Render::Mesh3D>>                m_Cubes;
+    Render::Light_Directional                                   m_DirLight;
+    Render::Light_Spotlight                                     m_SpotLight;
+    Render::Light_Point                                         m_PointLight;
+    std::unique_ptr<Render::Fly_Camera>                         m_pCamera;
+    std::unique_ptr<Render::Model3D>                            m_pBackpackModel;
+    Render::ShaderProgram_ptr                                   m_pShader;
+    std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> m_pWorld;
 
   public:
-    TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
-        : App(std::move(pRenderer), window_size, std::move(window_name))
+    TestApp(
+        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld,
+        const GUI::WindowSize&                                      window_size,
+        std::string                                                 window_name)
+        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
+              window_size,
+              std::move(window_name))
+        , m_pWorld(std::move(pWorld))
     {
     }
 
@@ -194,9 +205,8 @@ int main()
 {
     try
     {
-        std::unique_ptr<Render::Renderer> pRenderer = Render::Renderer::Create();
-        TestApp                           app(std::move(pRenderer), {800, 600}, "Test Window");
-        int                               code = app.Run();
+        TestApp app(std::make_unique<ECS::World<Render::Mesh3D, Render::Sprite>>(), {800, 600}, "Test Window");
+        int     code = app.Run();
         app.Close();
         return code;
     }

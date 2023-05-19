@@ -23,6 +23,13 @@
 
 namespace nate::Modules::Render
 {
+    Renderer_OpenGL::Renderer_OpenGL(
+        Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
+        Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+        : Renderer(pMeshPool, pSpritePool)
+    {
+    }
+
     Renderer_OpenGL::~Renderer_OpenGL()
     {
         m_pWin->Unsubscribe(this);
