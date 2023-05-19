@@ -36,17 +36,11 @@ using namespace std::chrono_literals;
 
 class TestApp : public App::App
 {
-    std::mutex                                   m_CallbackMutex;
-    GUI::MouseClickedInfo                        m_LastMouseClick;
-    GUI::CursorPosition                          m_LastPosition;
-    GUI::WindowSize                              m_WindowSize;
-    float                                        m_CamYaw{0.0};
-    float                                        m_CamPitch{0.0};
     std::vector<std::unique_ptr<Render::Mesh3D>> m_Cubes;
     Render::Light_Directional                    m_DirLight;
     Render::Light_Spotlight                      m_SpotLight;
     Render::Light_Point                          m_PointLight;
-    std::unique_ptr<Render::Camera2D>            m_pCamera;
+    std::unique_ptr<Render::Fly_Camera>          m_pCamera;
     std::unique_ptr<Render::Model3D>             m_pBackpackModel;
     Render::ShaderProgram_ptr                    m_pShader;
 
@@ -54,23 +48,6 @@ class TestApp : public App::App
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
         : App(std::move(pRenderer), window_size, std::move(window_name))
     {
-
-        GetWindow()->SubscribeToMessage(
-            this,
-            GUI::WindowMessages::MouseClicked,
-            [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::mutex> lock(m_CallbackMutex);
-
-                m_LastMouseClick = *(DebugCast<const GUI::MouseClicked*>(pMessage)->GetData());
-            });
-        GetWindow()->SubscribeToMessage(
-            this,
-            GUI::WindowMessages::WindowResized,
-            [this](const GUI::WindowMessage* pMessage) {
-                std::unique_lock<std::mutex> lock(m_CallbackMutex);
-
-                m_WindowSize = *(DebugCast<const GUI::WindowResized*>(pMessage)->GetData());
-            });
     }
 
   protected:
@@ -128,7 +105,7 @@ class TestApp : public App::App
             m_Cubes[i]->Origin(cubePositions[i]);
         }
 
-        m_pCamera = std::make_unique<Render::Camera2D>(GetWindow());
+        m_pCamera = std::make_unique<Render::Fly_Camera>(GetWindow());
 
         m_DirLight.Direction      = {0.0f, 0.0f, -1.0f};
         m_DirLight.Light.Ambient  = {0.2f, 0.2f, 0.2f};
@@ -180,8 +157,6 @@ class TestApp : public App::App
 
     void UpdateApp(std::chrono::nanoseconds time) override
     {
-        static std::chrono::nanoseconds totalTime;
-        totalTime += time;
         // TODO this should be handled automatically
         m_pCamera->Update(time);
         auto* pRenderer = GetRenderer();

@@ -26,15 +26,15 @@ namespace nate::Modules::Render
         std::shared_ptr<VertexBuffer> m_pBuffer;
         std::shared_ptr<Material>     m_pMaterial;
 
-        static VertexData m_CubePoints[];
+        static const VertexData m_CubePoints[];
 
       public:
         Mesh3D(
-            Renderer*                pRenderer,
-            const VertexDataConfig&  config,
-            std::span<float>         vertexes,
-            std::span<std::uint32_t> indeces);
-        Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
+            Renderer*                      pRenderer,
+            const VertexDataConfig&        config,
+            std::span<const float>         vertexes,
+            std::span<const std::uint32_t> indeces);
+        Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
 
         Mesh3D(const Mesh3D& other) = default;
         Mesh3D(Mesh3D&& other)      = default;

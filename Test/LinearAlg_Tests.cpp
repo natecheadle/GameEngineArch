@@ -207,30 +207,30 @@ namespace nate::Test
 
     TEST(LinearAlg_Tests, ValidateRotateY)
     {
-        Vector3<float> init({1, 0, 1});
+        Vector3<float> init(1, 0, 1);
         Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3({std::sqrt(2.0f), 0, 0}), rotated);
+        ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateRotateZ)
     {
-        Vector3<float> init({1, 1, 0});
+        Vector3<float> init(1, 1, 0);
         Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3<float>({0, std::sqrt(2.0f), 0}), rotated);
+        ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated);
     }
 
     TEST(LinearAlg_Tests, ValidateScale)
     {
-        Vector3<float> init({1, 1, 1});
+        Vector3<float> init(1, 1, 1);
         Vector3<float> scaled = (SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * init).ToVector3();
-        ASSERT_EQ(Vector3({2.0, 2.0, 2.0}), scaled);
+        ASSERT_EQ(Vector3<float>(2.0, 2.0, 2.0), scaled);
     }
 
     TEST(LinearAlg_Tests, ValidateTranslate)
     {
-        Vector3 init({1, 1, 1});
-        Vector  translated = (SquareMatrix4x4<float>::translate_init({2.0, 2.0, 2.0}) * init).ToVector3();
-        ASSERT_EQ(Vector3({3.0, 3.0, 3.0}), translated);
+        Vector3<float> init(1.0f, 1.0f, 1.0f);
+        Vector3<float> translated = (SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * init).ToVector3();
+        ASSERT_EQ(Vector3<float>(3.0, 3.0, 3.0), translated);
     }
 
 } // namespace nate::Test

@@ -76,7 +76,7 @@ namespace nate::Modules::Render
         return m_pWin.get();
     }
 
-    VertexBuffer_ptr Renderer_OpenGL::CreateBuffer(const VertexDataConfig& config, std::span<float> vertexes)
+    VertexBuffer_ptr Renderer_OpenGL::CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes)
     {
         VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {
@@ -88,9 +88,9 @@ namespace nate::Modules::Render
     }
 
     VertexBuffer_ptr Renderer_OpenGL::CreateBuffer(
-        const VertexDataConfig&  config,
-        std::span<float>         vertexes,
-        std::span<std::uint32_t> indeces)
+        const VertexDataConfig&        config,
+        std::span<const float>         vertexes,
+        std::span<const std::uint32_t> indeces)
     {
         VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {

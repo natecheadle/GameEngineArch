@@ -51,9 +51,9 @@ namespace nate::Modules::Render
         void CameraTarget(const Vector3<float>& val);
         void WorldUp(const Vector3<float>& val);
 
-        Radian<float> FOV() const { return m_FOV; }
-        float         Near() const { return m_Near; }
-        float         Far() const { return m_Far; }
+        const Radian<float>& FOV() const { return m_FOV; }
+        float                Near() const { return m_Near; }
+        float                Far() const { return m_Far; }
 
         void FOV(const Radian<float>& val) { m_FOV = val; }
         void Near(float val) { m_Near = val; }

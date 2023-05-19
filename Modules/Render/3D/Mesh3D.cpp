@@ -11,7 +11,7 @@
 
 namespace nate::Modules::Render
 {
-    VertexData Mesh3D::m_CubePoints[] = {
+    const VertexData Mesh3D::m_CubePoints[] = {
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {{0.0f, 0.0f}}},
         {{0.5f, -0.5f, -0.5f},  {0.0f, 0.0f, -1.0f}, {{1.0f, 0.0f}}},
         {{0.5f, 0.5f, -0.5f},   {0.0f, 0.0f, -1.0f}, {{1.0f, 1.0f}}},
@@ -51,16 +51,16 @@ namespace nate::Modules::Render
     };
 
     Mesh3D::Mesh3D(
-        Renderer*                pRenderer,
-        const VertexDataConfig&  config,
-        std::span<float>         vertexes,
-        std::span<std::uint32_t> indeces)
+        Renderer*                      pRenderer,
+        const VertexDataConfig&        config,
+        std::span<const float>         vertexes,
+        std::span<const std::uint32_t> indeces)
         : m_pRenderer(pRenderer)
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
-    Mesh3D::Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
+    Mesh3D::Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes)
         : m_pRenderer(pRenderer)
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
@@ -71,9 +71,9 @@ namespace nate::Modules::Render
         return std::make_unique<Mesh3D>(
             pRenderer,
             VertexData::describe(),
-            std::span<float>(
-                reinterpret_cast<float*>(m_CubePoints),
-                reinterpret_cast<float*>(m_CubePoints) + sizeof(m_CubePoints) / (sizeof(float))));
+            std::span<const float>(
+                reinterpret_cast<const float*>(m_CubePoints),
+                reinterpret_cast<const float*>(m_CubePoints) + sizeof(m_CubePoints) / (sizeof(float))));
     }
 
     SquareMatrix4x4<float> Mesh3D::ModelMatrix() const

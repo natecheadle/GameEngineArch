@@ -5,6 +5,7 @@
 #include <fmt/format.h>
 
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <initializer_list>
 #include <iomanip>
@@ -14,7 +15,7 @@
 
 namespace nate::Modules
 {
-    template <size_t SIZE, typename T = float>
+    template <size_t SIZE, typename T>
     class Vector
     {
         std::array<T, SIZE> m_Data;
@@ -25,16 +26,14 @@ namespace nate::Modules
 
         Vector() noexcept { m_Data.fill(T()); }
 
-        Vector(std::array<T, SIZE> init) noexcept
-            : m_Data(init)
+        Vector(std::initializer_list<T> vals) noexcept
         {
-        }
-
-        template <typename IT>
-        Vector(IT begin, IT end)
-        {
-            assert(std::distance(begin, end) == SIZE);
-            std::fill(begin, end, m_Data.begin());
+            assert(vals.size() <= SIZE);
+            size_t i = 0;
+            for (const auto& val : vals)
+            {
+                m_Data[i++] = val;
+            }
         }
 
         Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }
@@ -169,6 +168,6 @@ namespace nate::Modules
         }
     };
 
-    template <typename T = float>
+    template <typename T>
     using Vector2 = Vector<2, T>;
 } // namespace nate::Modules

@@ -19,18 +19,18 @@ namespace nate::Modules::Render
 
       public:
         VertexBuffer_OpenGL(
-            const VertexDataConfig&  config,
-            std::span<float>         vertexData,
-            std::span<std::uint32_t> indeces);
-        VertexBuffer_OpenGL(const VertexDataConfig& config, std::span<float> vertexData);
+            const VertexDataConfig&        config,
+            std::span<const float>         vertexData,
+            std::span<const std::uint32_t> indeces);
+        VertexBuffer_OpenGL(const VertexDataConfig& config, std::span<const float> vertexData);
 
         ~VertexBuffer_OpenGL() override;
 
         void Draw() override;
 
       private:
-        void        InitializeVertexData(const VertexDataConfig& config, std::span<float> vertexData);
-        void        InitializeIndexData(std::span<std::uint32_t> data);
+        void        InitializeVertexData(const VertexDataConfig& config, std::span<const float> vertexData);
+        void        InitializeIndexData(std::span<const std::uint32_t> data);
         void        InitializeVertexArrays();
         static void ClearBindings();
 
