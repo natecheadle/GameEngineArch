@@ -13,7 +13,6 @@
 #include <IWindow.h>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
-#include <Renderer/Renderer.h>
 #include <Renderer/Renderer_OpenGL.h>
 #include <Shader/Shader.h>
 #include <SquareMatrix4x4.hpp>
