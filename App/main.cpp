@@ -40,7 +40,7 @@ class TestApp : public App::App
     Render::Light_Directional                    m_DirLight;
     Render::Light_Spotlight                      m_SpotLight;
     Render::Light_Point                          m_PointLight;
-    std::unique_ptr<Render::Camera2D>            m_pCamera;
+    std::unique_ptr<Render::Fly_Camera>          m_pCamera;
     std::unique_ptr<Render::Model3D>             m_pBackpackModel;
     Render::ShaderProgram_ptr                    m_pShader;
 
@@ -105,7 +105,7 @@ class TestApp : public App::App
             m_Cubes[i]->Origin(cubePositions[i]);
         }
 
-        m_pCamera = std::make_unique<Render::Camera2D>(GetWindow());
+        m_pCamera = std::make_unique<Render::Fly_Camera>(GetWindow());
 
         m_DirLight.Direction      = {0.0f, 0.0f, -1.0f};
         m_DirLight.Light.Ambient  = {0.2f, 0.2f, 0.2f};
