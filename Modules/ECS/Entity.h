@@ -33,7 +33,6 @@ namespace nate::Modules::ECS
 
         std::uint64_t ID() const { return m_ID; }
 
-      protected:
         template <typename T>
         void Set(const T& val)
         {

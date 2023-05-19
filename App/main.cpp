@@ -6,17 +6,21 @@
 #include <3D/Material.h>
 #include <3D/Mesh3D.h>
 #include <3D/Model3D.h>
+#include <3D/Sprite.h>
 #include <App.h>
 #include <DebugCast.hpp>
+#include <Entity.h>
 #include <IWindow.h>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
 #include <Renderer/Renderer.h>
+#include <Renderer/Renderer_OpenGL.h>
 #include <Shader/Shader.h>
 #include <SquareMatrix4x4.hpp>
 #include <Vector3.hpp>
 #include <WindowMessages.hpp>
 #include <WindowSize.hpp>
+#include <World.h>
 
 #include <algorithm>
 #include <cassert>
@@ -34,19 +38,37 @@
 using namespace nate::Modules;
 using namespace std::chrono_literals;
 
+class TestAppEntity : ECS::Entity<Render::Mesh3D>
+{
+  public:
+    TestAppEntity(Memory::pool_pointer<Render::Mesh3D>&& val)
+        : ECS::Entity<Render::Mesh3D>(std::move(val))
+    {
+    }
+
+    Render::Mesh3D&       Mesh() { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
+    const Render::Mesh3D& Mesh() const { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
+};
+
 class TestApp : public App::App
 {
-    std::vector<std::unique_ptr<Render::Mesh3D>> m_Cubes;
-    Render::Light_Directional                    m_DirLight;
-    Render::Light_Spotlight                      m_SpotLight;
-    Render::Light_Point                          m_PointLight;
-    std::unique_ptr<Render::Fly_Camera>          m_pCamera;
-    std::unique_ptr<Render::Model3D>             m_pBackpackModel;
-    Render::ShaderProgram_ptr                    m_pShader;
+    std::vector<TestAppEntity>                                  m_Cubes;
+    Render::Light_Directional                                   m_DirLight;
+    Render::Light_Spotlight                                     m_SpotLight;
+    Render::Light_Point                                         m_PointLight;
+    std::unique_ptr<Render::Fly_Camera>                         m_pCamera;
+    Render::ShaderProgram_ptr                                   m_pShader;
+    std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> m_pWorld;
 
   public:
-    TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
-        : App(std::move(pRenderer), window_size, std::move(window_name))
+    TestApp(
+        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld,
+        const GUI::WindowSize&                                      window_size,
+        std::string                                                 window_name)
+        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
+              window_size,
+              std::move(window_name))
+        , m_pWorld(std::move(pWorld))
     {
     }
 
@@ -79,11 +101,9 @@ class TestApp : public App::App
         m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
-        m_Cubes.resize(numOfCubes);
-
-        m_Cubes[0] = Render::Mesh3D::CreateCube(GetRenderer());
-
-        m_Cubes[0]->AttachedMaterial(std::move(cubeMaterial));
+        m_Cubes.reserve(numOfCubes);
+        m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(GetRenderer())));
+        m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
             Vector3<float>(0.0f, 0.0f, 0.0f),
@@ -101,8 +121,8 @@ class TestApp : public App::App
 
         for (size_t i = 1; i < numOfCubes; ++i)
         {
-            m_Cubes[i] = std::make_unique<Render::Mesh3D>(*m_Cubes[0]);
-            m_Cubes[i]->Origin(cubePositions[i]);
+            m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D(m_Cubes[0].Mesh())));
+            m_Cubes[i].Mesh().Origin(cubePositions[i]);
         }
 
         m_pCamera = std::make_unique<Render::Fly_Camera>(GetWindow());
@@ -140,7 +160,7 @@ class TestApp : public App::App
 
             for (auto& cube : m_Cubes)
             {
-                m_pShader->SetShaderVar("material", *(cube->AttachedMaterial()));
+                m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
             }
         };
         pRenderer->ExecuteFunction(initShaderVars);
@@ -152,7 +172,6 @@ class TestApp : public App::App
     {
         m_pCamera.reset();
         m_Cubes.clear();
-        m_pBackpackModel.reset();
     }
 
     void UpdateApp(std::chrono::nanoseconds time) override
@@ -162,7 +181,7 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            cube->RotX(M_PI / 500.0);
+            cube.Mesh().RotX(M_PI / 500.0);
         }
         // m_pBackpackModel->RotY(M_PI / 500.0);
 
@@ -178,12 +197,7 @@ class TestApp : public App::App
 
             m_pShader->SetShaderVar("spotLight", m_SpotLight);
 
-            for (const auto& cube : m_Cubes)
-            {
-                cube->Draw(m_pShader.get());
-            }
-
-            // m_pBackpackModel->Draw(m_pShader.get());
+            pRenderer->DrawAllMesh(m_pShader.get());
         };
 
         pRenderer->ExecuteFunction(renderUpdate);
@@ -194,9 +208,8 @@ int main()
 {
     try
     {
-        std::unique_ptr<Render::Renderer> pRenderer = Render::Renderer::Create();
-        TestApp                           app(std::move(pRenderer), {800, 600}, "Test Window");
-        int                               code = app.Run();
+        TestApp app(std::make_unique<ECS::World<Render::Mesh3D, Render::Sprite>>(), {800, 600}, "Test Window");
+        int     code = app.Run();
         app.Close();
         return code;
     }
