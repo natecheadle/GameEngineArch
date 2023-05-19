@@ -43,7 +43,16 @@ namespace nate::Modules::Render
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
-
+    Sprite::Sprite(const Sprite& other)
+        : m_pRenderer(other.m_pRenderer)
+        , m_Origin(other.m_Origin)
+        , m_Size(other.m_Size)
+        , m_Rotation(other.m_Rotation)
+        , m_pBuffer(other.m_pBuffer)
+        , m_pMaterial(other.m_pMaterial)
+        , m_Color(other.m_Color)
+    {
+    }
     SquareMatrix4x4<float> Sprite::ModelMatrix() const
     {
         if (m_Rotation == Radian<float>(0.0) && m_Origin == Vector2<float>({0.0f, 0.0f}) &&

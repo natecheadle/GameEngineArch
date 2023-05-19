@@ -40,8 +40,8 @@ namespace nate::Modules::Render
 
         Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
 
-        Sprite(const Sprite& other) = default;
-        Sprite(Sprite&& other)      = default;
+        Sprite(const Sprite& other);
+        Sprite(Sprite&& other) = default;
 
         virtual ~Sprite() = default;
 

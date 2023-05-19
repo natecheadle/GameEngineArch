@@ -42,7 +42,8 @@ class TestApp : public App::App
 
         auto cubeMaterial = std::make_unique<Render::Material>();
 
-        cubeMaterial->Diffuse = GetRenderer()->CreateTexture(face_path, nate::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Diffuse =
+            GetRenderer()->CreateTexture({face_path, false}, nate::Modules::Render::TextureUnit::Texture0);
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
@@ -73,9 +74,10 @@ class TestApp : public App::App
     {
         // TODO this should be handled automatically
         m_pCamera->Update(time);
+
         m_pSprite->Origin({200.0, 200.0});
         m_pSprite->Size({300.0f, 400.0f});
-        // m_pSprite->Rotation(Degree<float>(45.0));
+        m_pSprite->Rotation(Degree<float>(45.0));
         m_pSprite->Color({0.0f, 1.0f, 0.0f});
 
         auto renderUpdate = [&]() -> void {
