@@ -13,17 +13,38 @@
 
 namespace nate::Modules::Render
 {
-    std::unique_ptr<Renderer> Renderer::Create()
+    Renderer::Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+        : ECS::System<Mesh3D, Sprite>(pMeshPool, pSpritePool)
     {
-        std::unique_ptr<Renderer> rslt = std::make_unique<Renderer_OpenGL>();
-        rslt->Start();
-        return rslt;
+        Start();
     }
 
     Renderer::~Renderer()
     {
         Stop();
         Join();
+    }
+
+    void Renderer::DrawAllMesh(ShaderProgram* pProgram)
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool = GetPool<Mesh3D>();
+            for (auto& val : pool)
+            {
+                val.Draw(pProgram);
+            }
+        });
+    }
+
+    void Renderer::DrawAllSprites(ShaderProgram* pProgram)
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool = GetPool<Sprite>();
+            for (auto& val : pool)
+            {
+                val.Draw(pProgram);
+            }
+        });
     }
 
     void Renderer::ExecuteJob()

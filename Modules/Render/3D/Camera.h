@@ -41,20 +41,17 @@ namespace nate::Modules::Render
         const Vector3<float>& CameraPosition() const { return m_Position; }
         const Vector3<float>& CameraDirection() const { return m_Direction; }
         const Vector3<float>& WorldUp() const { return m_WorldUp; }
+        const Radian<float>&  FOV() const { return m_FOV; }
+        float                 Near() const { return m_Near; }
+        float                 Far() const { return m_Far; }
 
+        void CameraPosition(const Vector3<float>& val);
         void CameraDirection(const Vector3<float>& val);
-        void CameraTarget(const Vector3<float>& val);
         void WorldUp(const Vector3<float>& val);
-
-        const Radian<float>& FOV() const { return m_FOV; }
-        float                Near() const { return m_Near; }
-        float                Far() const { return m_Far; }
-
         void FOV(const Radian<float>& val) { m_FOV = val; }
         void Near(float val) { m_Near = val; }
         void Far(float val) { m_Far = val; }
 
-        void CameraPosition(const Vector3<float>& val);
         void Translate(const Vector3<float>& value);
 
       protected:

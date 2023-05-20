@@ -33,10 +33,10 @@ namespace nate::Modules::ECS
         }
 
         template <typename T, typename... ComponentTypes>
-        T CreateSystem()
+        std::unique_ptr<T> CreateSystem()
         {
             static_assert(std::is_base_of_v<System<ComponentTypes...>, T>, "T must be derive from System.");
-            return T(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
+            return std::make_unique<T>(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
         }
 
       private:

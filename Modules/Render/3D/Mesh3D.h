@@ -39,7 +39,7 @@ namespace nate::Modules::Render
         Mesh3D(const Mesh3D& other) = default;
         Mesh3D(Mesh3D&& other)      = default;
 
-        static std::unique_ptr<Mesh3D> CreateCube(Renderer* pRenderer);
+        static Mesh3D CreateCube(Renderer* pRenderer);
 
         virtual ~Mesh3D() = default;
 
