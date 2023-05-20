@@ -1,25 +1,18 @@
 #pragma once
 
-#include <3D/Sprite.h>
-#include <Entity.h>
+#include "BreakOutEntity.h"
 
 namespace nate::BreakOut
 {
-    class Ball : Modules::ECS::Entity<Modules::Render::Sprite>
+    class Ball : BreakOutEntity
     {
       public:
         Ball(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)
-            : Modules::ECS::Entity<Modules::Render::Sprite>(std::move(val))
+            : BreakOutEntity(std::move(val))
         {
         }
 
-        Modules::Render::Sprite& Sprite()
-        {
-            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
-        }
-        const Modules::Render::Sprite& Sprite() const
-        {
-            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
-        }
+        Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
+        const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
     };
 } // namespace nate::BreakOut
