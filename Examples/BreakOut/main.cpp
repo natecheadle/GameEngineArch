@@ -1,6 +1,6 @@
 #include "Units/Radian.hpp"
 
-#include <3D/Camera2D.h>
+#include <3D/Camera.h>
 #include <3D/Sprite.h>
 #include <App.h>
 #include <Renderer/Renderer.h>
@@ -16,9 +16,9 @@ using namespace std::chrono_literals;
 class TestApp : public App::App
 {
 
-    std::unique_ptr<Render::Camera2D> m_pCamera;
-    std::unique_ptr<Render::Sprite>   m_pSprite;
-    Render::ShaderProgram_ptr         m_pShader;
+    std::unique_ptr<Render::Camera> m_pCamera;
+    std::unique_ptr<Render::Sprite> m_pSprite;
+    Render::ShaderProgram_ptr       m_pShader;
 
   public:
     TestApp(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -50,8 +50,10 @@ class TestApp : public App::App
         m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         auto* pRenderer = GetRenderer();
-        m_pCamera       = std::make_unique<Render::Camera2D>(GetWindow());
-        m_pSprite       = std::make_unique<Render::Sprite>(pRenderer);
+        m_pCamera       = std::make_unique<Render::Camera>(GetWindow());
+        m_pCamera->Near(-1.0);
+        m_pCamera->Far(1.0);
+        m_pSprite = std::make_unique<Render::Sprite>(pRenderer);
         m_pSprite->AttachedMaterial(std::move(cubeMaterial));
 
         auto renderUpdate = [&]() -> void {

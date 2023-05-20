@@ -29,6 +29,7 @@ namespace nate::Modules::Render
         GUI::IWindow* m_pWindow;
 
       public:
+        Camera(GUI::IWindow* pWindow);
         virtual ~Camera();
 
         virtual SquareMatrix4x4<float> Projection() const;
@@ -40,12 +41,6 @@ namespace nate::Modules::Render
         const Vector3<float>& CameraPosition() const { return m_Position; }
         const Vector3<float>& CameraDirection() const { return m_Direction; }
         const Vector3<float>& WorldUp() const { return m_WorldUp; }
-
-        void CameraPosition(const Vector3<float>& val);
-
-      protected:
-        Camera(GUI::IWindow* pWindow);
-        const GUI::IWindow* Window() const { return m_pWindow; }
 
         void CameraDirection(const Vector3<float>& val);
         void CameraTarget(const Vector3<float>& val);
@@ -59,6 +54,10 @@ namespace nate::Modules::Render
         void Near(float val) { m_Near = val; }
         void Far(float val) { m_Far = val; }
 
+        void CameraPosition(const Vector3<float>& val);
         void Translate(const Vector3<float>& value);
+
+      protected:
+        const GUI::IWindow* Window() const { return m_pWindow; }
     };
 } // namespace nate::Modules::Render
