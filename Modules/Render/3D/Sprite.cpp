@@ -83,6 +83,10 @@ namespace nate::Modules::Render
     {
         pShader->SetShaderVar("model", ModelMatrix());
         pShader->SetShaderVar("spriteColor", Color().Data());
+        if (m_pMaterial)
+        {
+            pShader->SetShaderVar("material", *m_pMaterial);
+        }
 
         Draw();
     }
@@ -96,11 +100,13 @@ namespace nate::Modules::Render
                 texs->Bind();
             }
         };
-        activeTexture(m_pMaterial->Diffuse);
-        activeTexture(m_pMaterial->Specular);
-        activeTexture(m_pMaterial->Height);
-        activeTexture(m_pMaterial->Normal);
-
+        if (m_pMaterial)
+        {
+            activeTexture(m_pMaterial->Diffuse);
+            activeTexture(m_pMaterial->Specular);
+            activeTexture(m_pMaterial->Height);
+            activeTexture(m_pMaterial->Normal);
+        }
         m_pBuffer->Draw();
     }
 } // namespace nate::Modules::Render

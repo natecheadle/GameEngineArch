@@ -1,7 +1,11 @@
 #include "BreakOutApp.h"
 
+#include "3D/Sprite.h"
+
 #include <Renderer/Renderer_OpenGL.h>
 #include <Units/Degree.hpp>
+
+#include <memory>
 
 using namespace nate::Modules;
 using namespace std::chrono_literals;
@@ -17,6 +21,8 @@ namespace nate::BreakOut
               std::move(window_name))
         , m_pWorld(std::move(pWorld))
     {
+        std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
+        m_LevelDir = shader_dir / "Levels";
     }
 
     void BreakOutApp::Initialize()
@@ -32,9 +38,9 @@ namespace nate::BreakOut
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
         auto face_path            = shader_dir / "awesomeface.png";
 
-        auto cubeMaterial = std::make_unique<Render::Material>();
+        auto backMaterial = std::make_unique<Render::Material>();
 
-        cubeMaterial->Diffuse =
+        backMaterial->Diffuse =
             GetRenderer()->CreateTexture({face_path, false}, nate::Modules::Render::TextureUnit::Texture0);
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
@@ -46,13 +52,21 @@ namespace nate::BreakOut
         m_pCamera->Near(-1.0);
         m_pCamera->Far(1.0);
 
-        m_pSprite = std::make_unique<Render::Sprite>(pRenderer);
-        m_pSprite->AttachedMaterial(std::move(cubeMaterial));
+        float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
+        float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
+
+        m_pBackground =
+            std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer))));
+        m_pBackground->Sprite().AttachedMaterial((std::move(backMaterial)));
+        m_pBackground->Sprite().Origin({0.0f, 0.0f});
+        m_pBackground->Sprite().Size({winWidth, windHeight});
+
+        m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
+        m_pLevel->Load(m_LevelDir, static_cast<unsigned int>(winWidth), static_cast<unsigned int>(windHeight) / 2U);
 
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
             m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
-            m_pShader->SetShaderVar("material", *m_pSprite->AttachedMaterial());
         };
 
         GetRenderer()->ExecuteFunction(renderUpdate);
@@ -61,7 +75,8 @@ namespace nate::BreakOut
     void BreakOutApp::Shutdown()
     {
         m_pCamera.reset();
-        m_pSprite.reset();
+        m_pLevel.reset();
+        m_pBackground.reset();
         m_pShader.reset();
     }
 
@@ -70,14 +85,9 @@ namespace nate::BreakOut
         // TODO this should be handled automatically
         m_pCamera->Update(time);
 
-        m_pSprite->Origin({200.0, 200.0});
-        m_pSprite->Size({300.0f, 400.0f});
-        m_pSprite->Rotation(Degree<float>(45.0));
-        m_pSprite->Color({0.0f, 1.0f, 0.0f});
-
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
-            m_pSprite->Draw(m_pShader.get());
+            GetRenderer()->DrawAllSprites(m_pShader.get());
         };
 
         GetRenderer()->ExecuteFunction(renderUpdate);
