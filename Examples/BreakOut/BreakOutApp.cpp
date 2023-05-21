@@ -36,12 +36,12 @@ namespace nate::BreakOut
 
         auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
-        auto face_path            = shader_dir / "awesomeface.png";
+        auto background_path      = shader_dir / "background.jpg";
 
         auto backMaterial = std::make_unique<Render::Material>();
 
         backMaterial->Diffuse =
-            GetRenderer()->CreateTexture({face_path, false}, nate::Modules::Render::TextureUnit::Texture0);
+            GetRenderer()->CreateTexture({background_path, false}, nate::Modules::Render::TextureUnit::Texture0);
 
         auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
         auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
@@ -55,23 +55,23 @@ namespace nate::BreakOut
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
 
-        m_pBackground =
-            std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer))));
-        m_pBackground->Sprite().AttachedMaterial((std::move(backMaterial)));
-        m_pBackground->Sprite().Origin({0.0f, 0.0f});
-        m_pBackground->Sprite().Size({winWidth, windHeight});
-
         m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
         m_pLevel->Load(
             m_LevelDir / "One.lvl",
             static_cast<unsigned int>(winWidth),
             static_cast<unsigned int>(windHeight) / 2U);
 
+        m_pBackground =
+            std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer))));
+        m_pBackground->Sprite().AttachedMaterial((std::move(backMaterial)));
+        m_pBackground->Sprite().Origin({0.0f, 0.0});
+        m_pBackground->Sprite().Size({winWidth, windHeight * 2});
+        m_pBackground->Sprite().Color({1.0f, 1.0f, 1.0f});
+
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
             m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
         };
-
         GetRenderer()->ExecuteFunction(renderUpdate);
     }
 
