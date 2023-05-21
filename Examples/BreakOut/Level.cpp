@@ -6,6 +6,7 @@
 #include "Renderer/Renderer.h"
 #include "Texture/Texture.h"
 
+#include <filesystem>
 #include <fstream>
 #include <memory>
 
@@ -23,6 +24,7 @@ namespace nate::BreakOut
 
     void Level::Load(const std::filesystem::path& file, unsigned int lvlWidth, unsigned int lvlHeight)
     {
+        assert(std::filesystem::is_regular_file(file));
         // clear old data
         m_Bricks.clear();
         // load from file

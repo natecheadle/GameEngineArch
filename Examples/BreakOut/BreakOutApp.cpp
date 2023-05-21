@@ -62,7 +62,10 @@ namespace nate::BreakOut
         m_pBackground->Sprite().Size({winWidth, windHeight});
 
         m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
-        m_pLevel->Load(m_LevelDir, static_cast<unsigned int>(winWidth), static_cast<unsigned int>(windHeight) / 2U);
+        m_pLevel->Load(
+            m_LevelDir / "One.lvl",
+            static_cast<unsigned int>(winWidth),
+            static_cast<unsigned int>(windHeight) / 2U);
 
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();

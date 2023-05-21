@@ -291,7 +291,9 @@ namespace nate::Modules::Memory
                     m_Data[i - 1].NextObject = i;
                     m_Data[i].PreviousObject = i - 1;
                 }
-                m_Data.back().NextObject = m_Data.size();
+                m_Data[currentSize].PreviousObject = m_Data.size();
+                m_Data[currentSize - 1].NextObject = m_Data.size();
+                m_Data.back().NextObject           = m_Data.size();
             }
 
             size_t  newObjLocation = m_FirstEmptyIndex;
