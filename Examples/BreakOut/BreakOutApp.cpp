@@ -73,15 +73,12 @@ namespace nate::BreakOut
             static_cast<unsigned int>(winWidth),
             static_cast<unsigned int>(windHeight) / 2U);
 
-        Vector2<float> paddleSize{100.0f, 50.0f};
+        Vector2<float> paddleSize{100.0f, 100.0f};
         m_pPaddle = std::make_unique<Paddle>(std::move(m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer))));
         m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
         m_pPaddle->Sprite().Size(paddleSize);
         m_pPaddle->Sprite().Origin({winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1] / 4});
         m_pPaddle->Sprite().Color({1.0f, 1.0f, 1.0f});
-
-        auto renderUpdate = [&]() -> void { m_pShader->Use(); };
-        pRenderer->ExecuteFunction(renderUpdate);
     }
 
     void BreakOutApp::Shutdown()
