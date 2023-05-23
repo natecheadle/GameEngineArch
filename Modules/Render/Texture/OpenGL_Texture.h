@@ -21,6 +21,7 @@ namespace nate::Modules::Render
 
         void Activate() const override;
         void Bind() const override;
+        void Unbind() const override;
 
       protected:
         static unsigned int CreateTexture();

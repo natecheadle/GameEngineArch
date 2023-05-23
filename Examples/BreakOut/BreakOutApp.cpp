@@ -1,6 +1,7 @@
 #include "BreakOutApp.h"
 
 #include "3D/Sprite.h"
+#include "Keys.h"
 
 #include <Renderer/Renderer_OpenGL.h>
 #include <Units/Degree.hpp>
@@ -37,29 +38,27 @@ namespace nate::BreakOut
         auto vertex_shader_path   = shader_dir / "vertex_shader.vert";
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
         auto background_path      = shader_dir / "background.jpg";
+        auto paddle_path          = shader_dir / "paddle.png";
 
         auto backMaterial = std::make_unique<Render::Material>();
-
-        backMaterial->Diffuse =
-            GetRenderer()->CreateTexture({background_path, false}, nate::Modules::Render::TextureUnit::Texture0);
-
-        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
-        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto pPaddleMat   = std::make_shared<Render::Material>();
 
         auto* pRenderer = GetRenderer();
-        m_pCamera       = std::make_unique<Render::Camera>(GetWindow());
+
+        backMaterial->Diffuse = pRenderer->CreateTexture(background_path, nate::Modules::Render::TextureUnit::Texture0);
+
+        pPaddleMat->Diffuse = pRenderer->CreateTexture(paddle_path, Render::TextureUnit::Texture0);
+
+        auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+
+        m_pCamera = std::make_unique<Render::Camera>(GetWindow());
         m_pCamera->Near(-1.0);
         m_pCamera->Far(1.0);
 
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
-
-        m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
-        m_pLevel->Load(
-            m_LevelDir / "One.lvl",
-            static_cast<unsigned int>(winWidth),
-            static_cast<unsigned int>(windHeight) / 2U);
 
         m_pBackground =
             std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer))));
@@ -68,11 +67,21 @@ namespace nate::BreakOut
         m_pBackground->Sprite().Size({winWidth, windHeight * 2});
         m_pBackground->Sprite().Color({1.0f, 1.0f, 1.0f});
 
-        auto renderUpdate = [&]() -> void {
-            m_pShader->Use();
-            m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
-        };
-        GetRenderer()->ExecuteFunction(renderUpdate);
+        m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
+        m_pLevel->Load(
+            m_LevelDir / "One.lvl",
+            static_cast<unsigned int>(winWidth),
+            static_cast<unsigned int>(windHeight) / 2U);
+
+        Vector2<float> paddleSize{100.0f, 50.0f};
+        m_pPaddle = std::make_unique<Paddle>(std::move(m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer))));
+        m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
+        m_pPaddle->Sprite().Size(paddleSize);
+        m_pPaddle->Sprite().Origin({winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1] / 4});
+        m_pPaddle->Sprite().Color({1.0f, 1.0f, 1.0f});
+
+        auto renderUpdate = [&]() -> void { m_pShader->Use(); };
+        pRenderer->ExecuteFunction(renderUpdate);
     }
 
     void BreakOutApp::Shutdown()
@@ -81,6 +90,7 @@ namespace nate::BreakOut
         m_pLevel.reset();
         m_pBackground.reset();
         m_pShader.reset();
+        m_pPaddle.reset();
     }
 
     void BreakOutApp::UpdateApp(std::chrono::nanoseconds time)
@@ -88,8 +98,31 @@ namespace nate::BreakOut
         // TODO this should be handled automatically
         m_pCamera->Update(time);
 
+        GetWindow()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
+            if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed ||
+                 keyStates[GUI::Key::Left].first == GUI::KeyState::Repeat))
+            {
+                if (m_pPaddle->Sprite().Origin()[0] > 0.0)
+                {
+                    m_pPaddle->Sprite().TranslateX(-PADDLE_SPEED);
+                }
+            }
+
+            if ((keyStates[GUI::Key::Right].first == GUI::KeyState::Pressed ||
+                 keyStates[GUI::Key::Right].first == GUI::KeyState::Repeat))
+            {
+                if (m_pPaddle->Sprite().Origin()[0] <
+                    static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->Sprite().Size()[0])
+                {
+                    m_pPaddle->Sprite().TranslateX(PADDLE_SPEED);
+                }
+            }
+        });
+
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
+            m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
+
             GetRenderer()->DrawAllSprites(m_pShader.get());
         };
 

@@ -108,5 +108,13 @@ namespace nate::Modules::Render
             activeTexture(m_pMaterial->Normal);
         }
         m_pBuffer->Draw();
+        if (m_pMaterial->Diffuse)
+            m_pMaterial->Diffuse->Unbind();
+        if (m_pMaterial->Specular)
+            m_pMaterial->Specular->Unbind();
+        if (m_pMaterial->Height)
+            m_pMaterial->Height->Unbind();
+        if (m_pMaterial->Normal)
+            m_pMaterial->Normal->Unbind();
     }
 } // namespace nate::Modules::Render

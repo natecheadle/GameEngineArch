@@ -11,16 +11,15 @@
 
 namespace nate::Modules::Render
 {
-    ImageFile::ImageFile(const std::filesystem::path& path, bool flipVerticallyOnLoad)
+    ImageFile::ImageFile(const std::filesystem::path& path)
         : m_Width(0)
         , m_Height(0)
         , m_Channels(0)
         , m_pData(nullptr)
+        , m_Path(path)
     {
         if (!std::filesystem::is_regular_file(path))
             throw std::invalid_argument("Invalid file path. " + path.string());
-
-        stbi_set_flip_vertically_on_load(flipVerticallyOnLoad ? 1 : 0);
 
         m_pData = stbi_load(path.string().c_str(), &m_Width, &m_Height, &m_Channels, 0);
 

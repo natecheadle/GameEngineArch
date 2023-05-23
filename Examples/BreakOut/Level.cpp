@@ -16,8 +16,7 @@ namespace nate::BreakOut
 {
 
     Level::Level(BreakOutWorld* pWorld, Modules::Render::Renderer* pRenderer)
-        : m_Paddle(pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer)))
-        , m_pWorld(pWorld)
+        : m_pWorld(pWorld)
         , m_pRenderer(pRenderer)
     {
     }
@@ -47,6 +46,14 @@ namespace nate::BreakOut
         }
     }
 
+    void Level::Draw(Modules::Render::ShaderProgram* pProgram)
+    {
+        for (auto& brick : m_Bricks)
+        {
+            brick.Sprite().Draw(pProgram);
+        }
+    }
+
     void Level::Initialize(
         std::vector<std::vector<unsigned int>> tileData,
         unsigned int                           lvlWidth,
@@ -62,22 +69,12 @@ namespace nate::BreakOut
 
         auto solid_block_path = shader_dir / "block_solid.png";
         auto block_path       = shader_dir / "block.png";
-        auto paddle_path      = shader_dir / "paddle.png";
 
         std::shared_ptr<Render::Material> pBlockMat      = std::make_shared<Render::Material>();
         std::shared_ptr<Render::Material> pSolidBlockMat = std::make_shared<Render::Material>();
-        std::shared_ptr<Render::Material> pPaddleMat     = std::make_shared<Render::Material>();
 
-        pPaddleMat->Diffuse     = m_pRenderer->CreateTexture(paddle_path, Render::TextureUnit::Texture0);
         pBlockMat->Diffuse      = m_pRenderer->CreateTexture(block_path, Render::TextureUnit::Texture0);
         pSolidBlockMat->Diffuse = m_pRenderer->CreateTexture(solid_block_path, Render::TextureUnit::Texture0);
-
-        m_Paddle.Sprite().AttachedMaterial(std::move(pPaddleMat));
-        m_Paddle.Sprite().Size({100.0f, 20.0f});
-        m_Paddle.Sprite().Origin(
-            {static_cast<float>(lvlWidth) / 2.0f - m_Paddle.Sprite().Size()[0] / 2.0f,
-             static_cast<float>(lvlHeight) * 2 - m_Paddle.Sprite().Size()[1]});
-        m_Paddle.Sprite().Color({1.0f, 1.0f, 1.0f});
 
         // initialize level tiles based on tileData
         for (unsigned int y = 0; y < height; ++y)
@@ -112,7 +109,7 @@ namespace nate::BreakOut
                     Vector2<float> pos({unit_width * static_cast<float>(x), unit_height * static_cast<float>(y)});
                     Vector2<float> size({unit_width, unit_height});
 
-                    brick.Sprite().AttachedMaterial(pSolidBlockMat);
+                    brick.Sprite().AttachedMaterial(pBlockMat);
                     brick.Sprite().Origin(pos);
                     brick.Sprite().Size(size);
                     brick.Sprite().Color(color);

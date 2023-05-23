@@ -39,7 +39,7 @@ namespace nate::Modules::Render
 
     void OpenGL_Texture::InitializeFromImage(const ImageFile& image) const
     {
-        glBindTexture(GL_TEXTURE_2D, m_ID);
+        Bind();
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -47,19 +47,18 @@ namespace nate::Modules::Render
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        assert(image.GetData());
-
+        assert(image.Data());
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
-            GL_RGB,
-            image.GetWidth(),
-            image.GeHeight(),
+            image.Format(),
+            image.Width(),
+            image.Height(),
             0,
-            image.GetFormat(),
+            image.Format(),
             GL_UNSIGNED_BYTE,
-            image.GetData());
-        glGenerateMipmap(GL_TEXTURE_2D);
+            image.Data());
+        Unbind();
     }
 
     void OpenGL_Texture::Activate() const
@@ -69,6 +68,10 @@ namespace nate::Modules::Render
     void OpenGL_Texture::Bind() const
     {
         glBindTexture(GL_TEXTURE_2D, m_ID);
+    }
+    void OpenGL_Texture::Unbind() const
+    { // unbind texture
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     unsigned int OpenGL_Texture::TranslateTextureUnit(enum TextureUnit unit)

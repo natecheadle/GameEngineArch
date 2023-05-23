@@ -6,9 +6,9 @@
 
 namespace nate::Modules::Render
 {
-    enum class TextureUnit : unsigned int
+    enum class TextureUnit
     {
-        Texture0,
+        Texture0 = 0,
         Texture1,
         Texture2,
         Texture3,
@@ -41,5 +41,6 @@ namespace nate::Modules::Render
         TextureUnit  TextureUnit() const { return m_Unit; }
         virtual void Activate() const = 0;
         virtual void Bind() const     = 0;
+        virtual void Unbind() const   = 0;
     };
 } // namespace nate::Modules::Render

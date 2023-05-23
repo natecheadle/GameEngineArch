@@ -22,7 +22,10 @@ namespace nate::BreakOut
         std::unique_ptr<BreakOutWorld>           m_pWorld;
         std::unique_ptr<Background>              m_pBackground;
         std::unique_ptr<Level>                   m_pLevel;
+        std::unique_ptr<Paddle>                  m_pPaddle;
         std::filesystem::path                    m_LevelDir;
+
+        static constexpr float PADDLE_SPEED = 3.0; // pixels per update
 
       public:
         BreakOutApp(
