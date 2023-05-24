@@ -66,7 +66,7 @@ namespace nate::Modules::Render
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * 0.5f, m_Size[1] * 0.5f, 0.0));
         rslt *= SquareMatrix4x4<float>::rotate_z_init(m_Rotation);
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * -0.5f, m_Size[1] * -0.5f, 0.0));
-        rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(m_Size[0], m_Size[1], 0.0));
+        rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(m_Size[0], m_Size[1], 1.0));
 
         return rslt;
     }

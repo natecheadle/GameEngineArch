@@ -34,6 +34,7 @@ namespace nate::Modules::Render
         void        InitializeVertexArrays();
         static void ClearBindings();
 
+        static int VertexSizeInit(const VertexDataConfig& config, std::span<const float> vertexData);
         static int ConvertType(VertexDataConfig::DataType type);
     };
 } // namespace nate::Modules::Render

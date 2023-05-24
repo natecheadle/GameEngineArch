@@ -58,6 +58,7 @@ namespace nate::Modules::Render
             image.Format(),
             GL_UNSIGNED_BYTE,
             image.Data());
+
         Unbind();
     }
 
@@ -70,7 +71,7 @@ namespace nate::Modules::Render
         glBindTexture(GL_TEXTURE_2D, m_ID);
     }
     void OpenGL_Texture::Unbind() const
-    { // unbind texture
+    {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

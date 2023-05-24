@@ -8,7 +8,7 @@ namespace nate::Modules::Render
         const VertexDataConfig&        config,
         std::span<const float>         vertexData,
         std::span<const std::uint32_t> indeces)
-        : m_VertexSize(static_cast<int>(vertexData.size()))
+        : m_VertexSize(VertexSizeInit(config, vertexData))
         , m_IndexSize(static_cast<int>(indeces.size()))
     {
         InitializeVertexArrays();
@@ -18,7 +18,7 @@ namespace nate::Modules::Render
     }
 
     VertexBuffer_OpenGL::VertexBuffer_OpenGL(const VertexDataConfig& config, std::span<const float> vertexData)
-        : m_VertexSize(static_cast<int>(vertexData.size()))
+        : m_VertexSize(VertexSizeInit(config, vertexData))
     {
         InitializeVertexArrays();
         InitializeVertexData(config, vertexData);
@@ -49,8 +49,8 @@ namespace nate::Modules::Render
     void VertexBuffer_OpenGL::InitializeVertexData(const VertexDataConfig& configs, std::span<const float> vertexData)
     {
         glGenBuffers(1, &m_VBO);
-
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
         glBufferData(
             GL_ARRAY_BUFFER,
             static_cast<std::uint32_t>(sizeof(float) * vertexData.size()),
@@ -59,8 +59,10 @@ namespace nate::Modules::Render
 
         int    i{0};
         size_t cur_offset{0};
+        glBindVertexArray(m_VAO);
         for (const auto& config : configs.Describe())
         {
+            glEnableVertexAttribArray(i);
             glVertexAttribPointer(
                 i,
                 config.Length,
@@ -68,10 +70,11 @@ namespace nate::Modules::Render
                 GL_FALSE,
                 static_cast<GLsizei>(configs.ConfigSize()),
                 (void*)cur_offset);
-            glEnableVertexAttribArray(i);
             cur_offset += config.TotalSize();
             i++;
         }
+
+        ClearBindings();
     }
 
     void VertexBuffer_OpenGL::InitializeIndexData(std::span<const std::uint32_t> data)
@@ -96,6 +99,16 @@ namespace nate::Modules::Render
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
+
+    int VertexBuffer_OpenGL::VertexSizeInit(const VertexDataConfig& configs, std::span<const float> vertexData)
+    {
+        int dataSize{0};
+        for (const auto& config : configs.Describe())
+        {
+            dataSize += config.Length;
+        }
+        return static_cast<int>(vertexData.size()) / dataSize;
     }
 
     int VertexBuffer_OpenGL::ConvertType(VertexDataConfig::DataType type)

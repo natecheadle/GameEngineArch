@@ -1,5 +1,7 @@
 #include <SquareMatrix.hpp>
 #include <SquareMatrix4x4.hpp>
+#include <Units/Degree.hpp>
+#include <Units/Radian.hpp>
 #include <Vector.hpp>
 #include <Vector3.hpp>
 #include <Vector4.hpp>
@@ -173,6 +175,35 @@ namespace nate::Test
         ASSERT_EQ(TranslateMatrix(rot_y_glm * rot_z_glm), rot_y * rot_z);
 
         ASSERT_EQ(rot_zyx, rot_z * rot_y * rot_x);
+    }
+
+    TEST_F(MatrixTests, ValidateSpriteModelMatrix)
+    {
+
+        Vector2<float> origin({100.0f, 200.0f});
+        Vector2<float> size({600.0f, 200.0f});
+        Degree<float>  rotation(45.0);
+
+        SquareMatrix4x4<float> rslt{SquareMatrix4x4<float>::translate_init(Vector3<float>(origin[0], origin[1], 0.0))};
+        glm::mat4              model = glm::mat4(1.0f);
+        model                        = glm::translate(model, glm::vec3(glm::vec2(origin[0], origin[1]), 0.0f));
+        ASSERT_EQ(TranslateMatrix(model), rslt);
+
+        rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(size[0] * 0.5f, size[1] * 0.5f, 0.0));
+        model = glm::translate(model, glm::vec3(0.5f * size[0], 0.5f * size[1], 0.0f));
+        ASSERT_EQ(TranslateMatrix(model), rslt);
+
+        rslt *= SquareMatrix4x4<float>::rotate_z_init(rotation);
+        model = glm::rotate(model, rotation.Radians(), glm::vec3(0.0f, 0.0f, 1.0f));
+        ASSERT_EQ(TranslateMatrix(model), rslt);
+
+        rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(size[0] * -0.5f, size[1] * -0.5f, 0.0));
+        model = glm::translate(model, glm::vec3(-0.5f * size[0], -0.5f * size[1], 0.0f));
+        ASSERT_EQ(TranslateMatrix(model), rslt);
+
+        rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(size[0], size[1], 1.0));
+        model = glm::scale(model, glm::vec3(size[0], size[1], 1.0f));
+        ASSERT_EQ(TranslateMatrix(model), rslt);
     }
 
     TEST(VectorTests, ValidateDotProduct)
