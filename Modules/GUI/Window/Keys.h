@@ -85,6 +85,7 @@ namespace nate::Modules::GUI
         Super,
         CapsLock,
         NumLock,
+        Space,
 
         LAST
     };

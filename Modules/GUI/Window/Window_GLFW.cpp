@@ -346,6 +346,7 @@ namespace nate::Modules::GUI
         case Key::Super: return GLFW_KEY_LEFT_SUPER;
         case Key::CapsLock: return GLFW_KEY_CAPS_LOCK;
         case Key::NumLock: return GLFW_KEY_NUM_LOCK;
+        case Key::Space: return GLFW_KEY_SPACE;
 
         case Key::LAST:
         case Key::None: assert(false);
@@ -424,6 +425,7 @@ namespace nate::Modules::GUI
         case GLFW_KEY_RIGHT_SUPER: return Key::Super;
         case GLFW_KEY_CAPS_LOCK: return Key::CapsLock;
         case GLFW_KEY_NUM_LOCK: return Key::NumLock;
+        case GLFW_KEY_SPACE: return Key::Space;
         }
 
         assert(false);

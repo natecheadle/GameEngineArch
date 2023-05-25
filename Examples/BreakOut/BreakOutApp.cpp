@@ -1,5 +1,7 @@
 #include "BreakOutApp.h"
 
+#include "3D/Material.h"
+
 #include <3D/Sprite.h>
 #include <Keys.h>
 #include <Renderer/Renderer_OpenGL.h>
@@ -39,17 +41,22 @@ namespace nate::BreakOut
         auto fragment_shader_path = shader_dir / "fragment_shader.frag";
         auto background_path      = shader_dir / "background.jpg";
         auto paddle_path          = shader_dir / "paddle.png";
+        auto ball_path            = shader_dir / "awesomeface.png";
 
-        auto backMaterial = std::make_unique<Render::Material>();
-        auto pPaddleMat   = std::make_shared<Render::Material>();
+        auto pBackMat   = std::make_unique<Render::Material>();
+        auto pPaddleMat = std::make_shared<Render::Material>();
+        auto pBallMat   = std::make_shared<Render::Material>();
 
         auto* pRenderer = GetRenderer();
 
         Modules::Render::ImageFile background(background_path);
-        backMaterial->Diffuse = pRenderer->CreateTexture(background, nate::Modules::Render::TextureUnit::Texture0);
+        pBackMat->Diffuse = pRenderer->CreateTexture(background, nate::Modules::Render::TextureUnit::Texture0);
 
         Modules::Render::ImageFile paddle(paddle_path);
         pPaddleMat->Diffuse = pRenderer->CreateTexture(paddle, Render::TextureUnit::Texture0);
+
+        Modules::Render::ImageFile ball(ball_path);
+        pBallMat->Diffuse = pRenderer->CreateTexture(ball, Render::TextureUnit::Texture0);
 
         auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
         auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
@@ -64,10 +71,9 @@ namespace nate::BreakOut
 
         m_pBackground = std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(
             Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio())))));
-        m_pBackground->Sprite().AttachedMaterial((std::move(backMaterial)));
+        m_pBackground->Sprite().AttachedMaterial((std::move(pBackMat)));
         m_pBackground->Sprite().Origin({0.0f, 0.0f});
         m_pBackground->Sprite().Size({winWidth, windHeight});
-        m_pBackground->Sprite().Color({1.0f, 1.0f, 1.0f});
 
         m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
         m_pLevel->Load(
@@ -76,12 +82,20 @@ namespace nate::BreakOut
             static_cast<unsigned int>(windHeight) / 2U);
 
         Vector2<float> paddleSize{100.0f, 20.0f};
+        Vector2<float> playerPos{winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]};
         m_pPaddle = std::make_unique<Paddle>(std::move(
             m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer, static_cast<float>(paddle.AspectRatio())))));
         m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
         m_pPaddle->Sprite().Size(paddleSize);
-        m_pPaddle->Sprite().Origin({winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]});
-        m_pPaddle->Sprite().Color({1.0f, 1.0f, 1.0f});
+        m_pPaddle->Sprite().Origin(playerPos);
+
+        m_pBall = std::make_unique<Ball>(std::move(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer))));
+        m_pBall->Sprite().AttachedMaterial(std::move(pBallMat));
+
+        Vector2<float> ballPos =
+            playerPos + Vector2<float>({paddleSize[0] / 2.0f - m_pBall->Radius(), -m_pBall->Radius() * 2.0f});
+        m_pBall->Sprite().Origin(ballPos);
+        m_pBall->WindowWidth(winWidth);
     }
 
     void BreakOutApp::Shutdown()
@@ -91,6 +105,7 @@ namespace nate::BreakOut
         m_pBackground.reset();
         m_pShader.reset();
         m_pPaddle.reset();
+        m_pBall.reset();
     }
 
     void BreakOutApp::UpdateApp(std::chrono::nanoseconds time)
@@ -105,6 +120,10 @@ namespace nate::BreakOut
                 if (m_pPaddle->Sprite().Origin()[0] > 0.0)
                 {
                     m_pPaddle->Sprite().TranslateX(-PADDLE_SPEED);
+                    if (m_pBall->IsStuck())
+                    {
+                        m_pBall->Sprite().TranslateX(-PADDLE_SPEED);
+                    }
                 }
             }
 
@@ -115,9 +134,21 @@ namespace nate::BreakOut
                     static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->Sprite().Size()[0])
                 {
                     m_pPaddle->Sprite().TranslateX(PADDLE_SPEED);
+                    if (m_pBall->IsStuck())
+                    {
+                        m_pBall->Sprite().TranslateX(PADDLE_SPEED);
+                    }
                 }
             }
+
+            if ((keyStates[GUI::Key::Space].first == GUI::KeyState::Pressed ||
+                 keyStates[GUI::Key::Space].first == GUI::KeyState::Repeat))
+            {
+                m_pBall->Release();
+            }
         });
+
+        m_pBall->Update(time);
 
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();

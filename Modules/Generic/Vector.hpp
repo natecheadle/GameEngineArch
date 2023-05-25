@@ -133,7 +133,7 @@ namespace nate::Modules
             return rslt *= lhs;
         }
 
-        friend Vector operator*=(Vector& lhs, T rhs)
+        friend Vector& operator*=(Vector& lhs, T rhs)
         {
             for (size_t i = 0; i < size(); ++i)
             {

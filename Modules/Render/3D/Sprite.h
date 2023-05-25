@@ -26,7 +26,7 @@ namespace nate::Modules::Render
         Radian<float>                 m_Rotation{0.0};
         std::shared_ptr<VertexBuffer> m_pBuffer;
         std::shared_ptr<Material>     m_pMaterial;
-        RGB_Color                     m_Color;
+        RGB_Color                     m_Color{1.0, 1.0, 1.0};
 
         static constexpr size_t                                             s_SpritePointsSize = 6U;
         static const std::array<const SpriteVertexData, s_SpritePointsSize> s_BasicSpritePoints;

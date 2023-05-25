@@ -4,7 +4,7 @@
 
 namespace nate::BreakOut
 {
-    class Paddle : BreakOutEntity
+    class Paddle : public BreakOutEntity
     {
       public:
         Paddle(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)

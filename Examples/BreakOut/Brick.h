@@ -12,7 +12,7 @@ namespace nate::BreakOut
         Green    = 3,
     };
 
-    class Brick : BreakOutEntity
+    class Brick : public BreakOutEntity
     {
         BrickType m_Type;
 
