@@ -27,7 +27,7 @@ namespace nate::BreakOut
         std::unique_ptr<Ball>                    m_pBall;
         std::filesystem::path                    m_LevelDir;
 
-        static constexpr float PADDLE_SPEED = 3.0f; // pixels per update
+        static constexpr float PADDLE_SPEED = 6.0f; // pixels per update
 
       public:
         BreakOutApp(

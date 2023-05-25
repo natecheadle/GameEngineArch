@@ -12,7 +12,7 @@ namespace nate::BreakOut
         float                   m_Radius{12.5};
         float                   m_WinWidth{600.0};
         bool                    m_IsStuck;
-        Modules::Vector2<float> m_Velocity{2.5f, -15.0f};
+        Modules::Vector2<float> m_Velocity{1.5f, -10.0f};
 
       public:
         Ball(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val);
