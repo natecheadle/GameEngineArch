@@ -24,5 +24,6 @@ namespace nate::Modules::Render
         int                          Channels() const { return m_Width; }
         int                          Format() const { return m_Format; }
         const std::filesystem::path& Path() const { return m_Path; }
+        double                       AspectRatio() const { return double(m_Width) / double(m_Height); }
     };
 } // namespace nate::Modules::Render

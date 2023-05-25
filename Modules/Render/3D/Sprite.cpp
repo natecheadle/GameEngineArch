@@ -7,25 +7,60 @@
 
 namespace nate::Modules::Render
 {
-    const SpriteVertexData Sprite::m_BasicSpritePoints[] = {
+    const std::array<const SpriteVertexData, Sprite::s_SpritePointsSize> Sprite::s_BasicSpritePoints = {
+        {
 
-        {{0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 0.0f}, {1.0f, 0.0f}},
-        {{0.0f, 0.0f}, {0.0f, 0.0f}},
+         {{0.0f, 1.0f}, {0.0f, 1.0f}},
+         {{1.0f, 0.0f}, {1.0f, 0.0f}},
+         {{0.0f, 0.0f}, {0.0f, 0.0f}},
 
-        {{0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 1.0f}, {1.0f, 1.0f}},
-        {{1.0f, 0.0f}, {1.0f, 0.0f}},
+         {{0.0f, 1.0f}, {0.0f, 1.0f}},
+         {{1.0f, 1.0f}, {1.0f, 1.0f}},
+         {{1.0f, 0.0f}, {1.0f, 0.0f}},
+         }
     };
 
-    Sprite::Sprite(Renderer* pRenderer)
+    const size_t Sprite::s_SpritePointsFloatSize =
+        (sizeof(SpriteVertexData) / sizeof(float)) * Sprite::s_SpritePointsSize;
+
+    Sprite::Sprite(Renderer* pRenderer, float aspectRatio)
         : m_pRenderer(pRenderer)
-        , m_pBuffer(pRenderer->CreateBuffer(
-              SpriteVertexData::describe(),
-              std::span<const float>(
-                  reinterpret_cast<const float*>(m_BasicSpritePoints),
-                  reinterpret_cast<const float*>(m_BasicSpritePoints) + sizeof(m_BasicSpritePoints) / (sizeof(float)))))
+
     {
+        if (aspectRatio != 1.0)
+        {
+            std::array<SpriteVertexData, s_SpritePointsSize> spritePoints;
+            std::copy(s_BasicSpritePoints.begin(), s_BasicSpritePoints.end(), spritePoints.begin());
+            if (aspectRatio > 1.0)
+            {
+                for (auto& point : spritePoints)
+                {
+                    point.Position[1] *= aspectRatio;
+                }
+            }
+            else
+            {
+                float asp_inv = 1.0f / aspectRatio;
+                for (auto& point : spritePoints)
+                {
+                    point.Position[0] *= asp_inv;
+                }
+            }
+
+            m_pBuffer = pRenderer->CreateBuffer(
+                SpriteVertexData::describe(),
+                std::span<const float>(
+                    reinterpret_cast<const float*>(spritePoints.data()),
+                    reinterpret_cast<const float*>(spritePoints.data()) + s_SpritePointsFloatSize));
+        }
+        else
+        {
+            m_pBuffer = pRenderer->CreateBuffer(
+                SpriteVertexData::describe(),
+                std::span<const float>(
+                    reinterpret_cast<const float*>(s_BasicSpritePoints.data()),
+                    reinterpret_cast<const float*>(s_BasicSpritePoints.data()) + s_SpritePointsFloatSize));
+        }
     }
 
     Sprite::Sprite(

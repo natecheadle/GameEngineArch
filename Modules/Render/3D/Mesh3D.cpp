@@ -2,7 +2,9 @@
 
 #include "../Renderer/Renderer.h"
 #include "Shader/ShaderProgram.h"
-#include "SquareMatrix4x4.hpp"
+
+#include <SquareMatrix4x4.hpp>
+#include <Vector3.hpp>
 
 #include <algorithm>
 #include <cstddef>
@@ -78,13 +80,15 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Mesh3D::ModelMatrix() const
     {
-        if (m_Rotation == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_Origin == Vector3<float>(0.0, 0.0, 0.0))
+        if (m_Rotation == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_Origin == Vector3<float>(0.0, 0.0, 0.0) &&
+            m_Scale == Vector3<float>(1.0, 1.0, 1.0))
         {
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
 
         SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_Origin));
         rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
+        rslt *= SquareMatrix4x4<float>::scale_init(m_Scale);
         return rslt;
     }
 

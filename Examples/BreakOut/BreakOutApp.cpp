@@ -1,9 +1,9 @@
 #include "BreakOutApp.h"
 
-#include "3D/Sprite.h"
-#include "Keys.h"
-
+#include <3D/Sprite.h>
+#include <Keys.h>
 #include <Renderer/Renderer_OpenGL.h>
+#include <Texture/ImageFile.h>
 #include <Units/Degree.hpp>
 
 #include <memory>
@@ -45,9 +45,11 @@ namespace nate::BreakOut
 
         auto* pRenderer = GetRenderer();
 
-        backMaterial->Diffuse = pRenderer->CreateTexture(background_path, nate::Modules::Render::TextureUnit::Texture0);
+        Modules::Render::ImageFile background(background_path);
+        backMaterial->Diffuse = pRenderer->CreateTexture(background, nate::Modules::Render::TextureUnit::Texture0);
 
-        pPaddleMat->Diffuse = pRenderer->CreateTexture(paddle_path, Render::TextureUnit::Texture0);
+        Modules::Render::ImageFile paddle(paddle_path);
+        pPaddleMat->Diffuse = pRenderer->CreateTexture(paddle, Render::TextureUnit::Texture0);
 
         auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
         auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
@@ -60,11 +62,11 @@ namespace nate::BreakOut
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
 
-        m_pBackground =
-            std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer))));
+        m_pBackground = std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(
+            Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio())))));
         m_pBackground->Sprite().AttachedMaterial((std::move(backMaterial)));
-        m_pBackground->Sprite().Origin({0.0f, 0.0});
-        m_pBackground->Sprite().Size({winWidth, windHeight * 2});
+        m_pBackground->Sprite().Origin({0.0f, 0.0f});
+        m_pBackground->Sprite().Size({winWidth, windHeight});
         m_pBackground->Sprite().Color({1.0f, 1.0f, 1.0f});
 
         m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
@@ -73,11 +75,12 @@ namespace nate::BreakOut
             static_cast<unsigned int>(winWidth),
             static_cast<unsigned int>(windHeight) / 2U);
 
-        Vector2<float> paddleSize{100.0f, 100.0f};
-        m_pPaddle = std::make_unique<Paddle>(std::move(m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer))));
+        Vector2<float> paddleSize{100.0f, 20.0f};
+        m_pPaddle = std::make_unique<Paddle>(std::move(
+            m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer, static_cast<float>(paddle.AspectRatio())))));
         m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
         m_pPaddle->Sprite().Size(paddleSize);
-        m_pPaddle->Sprite().Origin({winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1] / 4});
+        m_pPaddle->Sprite().Origin({winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]});
         m_pPaddle->Sprite().Color({1.0f, 1.0f, 1.0f});
     }
 

@@ -28,10 +28,12 @@ namespace nate::Modules::Render
         std::shared_ptr<Material>     m_pMaterial;
         RGB_Color                     m_Color;
 
-        static const SpriteVertexData m_BasicSpritePoints[];
+        static constexpr size_t                                             s_SpritePointsSize = 6U;
+        static const std::array<const SpriteVertexData, s_SpritePointsSize> s_BasicSpritePoints;
+        static const size_t                                                 s_SpritePointsFloatSize;
 
       public:
-        Sprite(Renderer* pRenderer);
+        Sprite(Renderer* pRenderer, float aspectRatio = 1.0);
         Sprite(
             Renderer*                pRenderer,
             const VertexDataConfig&  config,

@@ -23,6 +23,7 @@ namespace nate::Modules::Render
         Renderer*                     m_pRenderer;
         Vector3<float>                m_Origin;
         Vector3<Radian<float>>        m_Rotation;
+        Vector3<float>                m_Scale{1.0, 1.0, 1.0};
         std::shared_ptr<VertexBuffer> m_pBuffer;
         std::shared_ptr<Material>     m_pMaterial;
 
@@ -52,8 +53,11 @@ namespace nate::Modules::Render
         SquareMatrix4x4<float> ModelMatrix() const;
         SquareMatrix3x3<float> NormalMatrix() const;
 
-        void                  Origin(const Vector3<float>& val) { m_Origin = val; }
+        void Origin(const Vector3<float>& val) { m_Origin = val; }
+        void Scale(const Vector3<float>& val) { m_Scale = val; }
+
         const Vector3<float>& Origin() const { return m_Origin; }
+        const Vector3<float>& Scale() const { return m_Scale; }
 
         void Translate(const Vector3<float>& val) { m_Origin += val; }
         void Rotate(const Vector3<Radian<float>>& val) { m_Rotation += val; }
