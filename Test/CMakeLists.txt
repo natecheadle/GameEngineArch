@@ -20,4 +20,5 @@ add_compile_definitions(TEST_SOURCE_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")
 
 find_package(glm CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE Modules GTest::gtest  glm::glm)
