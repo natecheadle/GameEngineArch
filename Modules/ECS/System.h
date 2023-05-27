@@ -33,5 +33,11 @@ namespace nate::Modules::ECS
         {
             return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
         }
+
+        template <typename T>
+        const Memory::PoolMemoryBlock<T>& GetPool() const
+        {
+            return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
+        }
     };
 } // namespace nate::Modules::ECS

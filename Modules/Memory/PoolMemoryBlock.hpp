@@ -389,6 +389,8 @@ namespace nate::Modules::Memory
 
         iterator       begin() { return iterator(this, m_FirstDataIndex); }
         iterator       end() { return iterator(this, m_Data.size()); }
+        const_iterator begin() const { return iterator(this, m_FirstDataIndex); }
+        const_iterator end() const { return iterator(this, m_Data.size()); }
         const_iterator cbegin() { return const_iterator(this, m_FirstDataIndex); }
         const_iterator cend() { return const_iterator(this, m_Data.size()); }
 
