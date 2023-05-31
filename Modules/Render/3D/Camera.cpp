@@ -1,10 +1,9 @@
 #include "Camera.h"
 
-#include "KeyPressedInfo.hpp"
-#include "SquareMatrix4x4.hpp"
-
 #include <DebugCast.hpp>
 #include <IWindow.h>
+#include <KeyPressedInfo.hpp>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <Messages/KeyPressed.hpp>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>

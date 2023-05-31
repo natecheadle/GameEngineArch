@@ -5,10 +5,10 @@
 #include "Renderer/VertexBuffer.h"
 #include "Shader/ShaderProgram.h"
 #include "SpriteVertexData.h"
-#include "Units/Radian.hpp"
 
-#include <SquareMatrix4x4.hpp>
-#include <Vector.hpp>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector.hpp>
+#include <Units/Radian.hpp>
 
 #include <memory>
 #include <span>

@@ -1,10 +1,10 @@
 #include "Camera2D.h"
 
-#include "IWindow.h"
-#include "KeyModifiers.hpp"
-#include "KeyPressedInfo.hpp"
-#include "Keys.h"
-#include "Vector3.hpp"
+#include <IWindow.h>
+#include <KeyModifiers.hpp>
+#include <KeyPressedInfo.hpp>
+#include <Keys.h>
+#include <LinearAlgebra/Vector3.hpp>
 
 #include <functional>
 

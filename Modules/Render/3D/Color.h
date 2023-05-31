@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3.hpp"
+#include <LinearAlgebra/Vector3.hpp>
 
 namespace nate::Modules::Render
 {
