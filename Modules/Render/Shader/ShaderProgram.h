@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../3D/Light.h"
-#include "../3D/Light_Attenuation.h"
-#include "../3D/Light_Directional.h"
-#include "../3D/Light_Point.h"
-#include "../3D/Light_Spotlight.h"
-#include "../3D/Material.h"
+#include "3D/Light.h"
 #include "3D/Light_Attenuation.h"
-#include "SquareMatrix4x4.hpp"
+#include "3D/Light_Directional.h"
+#include "3D/Light_Point.h"
+#include "3D/Light_Spotlight.h"
+#include "3D/Material.h"
+
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
 
 #include <memory>
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Vector.hpp"
-#include "Vector3.hpp"
 
 namespace nate::Modules
 {
@@ -11,13 +10,28 @@ namespace nate::Modules
       public:
         Vector4() noexcept = default;
 
-        Vector4(std::array<T, 4> init)
-            : Vector<4, T>(init)
+        Vector4(T val)
+            : Vector<4, T>(val)
         {
         }
 
-        Vector4(const Vector3<T>& other, T cell_4 = 1.0)
-            : Vector<4, T>({other.x(), other.y(), other.z(), cell_4})
+        Vector4(std::initializer_list<T> vals) noexcept
+            : Vector<4, T>(std::move(vals))
+        {
+        }
+
+        Vector4(T x, T y, T z, T w)
+            : Vector<4, T>({x, y, z, w})
+        {
+        }
+
+        Vector4(const Vector<2, T>& other, T z = 1, T w = 1)
+            : Vector<4, T>({other[0], other[1], z, w})
+        {
+        }
+
+        Vector4(const Vector<3, T>& other, T w = 1)
+            : Vector<4, T>({other[0], other[1], other[2], w})
         {
         }
 

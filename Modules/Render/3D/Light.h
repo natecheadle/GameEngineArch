@@ -2,7 +2,7 @@
 
 #include "RGB_Color.h"
 
-#include <Vector3.hpp>
+#include <LinearAlgebra/Vector3.hpp>
 
 namespace nate::Modules::Render
 {

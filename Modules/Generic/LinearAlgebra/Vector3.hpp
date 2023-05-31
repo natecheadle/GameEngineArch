@@ -13,6 +13,7 @@ namespace nate::Modules
 
       public:
         Vector3() noexcept = default;
+
         Vector3(T x, T y, T z) noexcept
             : BASE({x, y, z})
         {
@@ -20,6 +21,16 @@ namespace nate::Modules
 
         Vector3(const Vector<3, T>& other) noexcept
             : BASE(other)
+        {
+        }
+
+        Vector3(T val)
+            : Vector<3, T>(val)
+        {
+        }
+
+        Vector3(const Vector<2, T>& other, T z = 1) noexcept
+            : BASE({other[0], other[1], z})
         {
         }
 
