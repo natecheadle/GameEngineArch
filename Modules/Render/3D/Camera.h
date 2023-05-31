@@ -3,10 +3,10 @@
 #include <IWindow.h>
 #include <KeyPressedInfo.hpp>
 #include <Keys.h>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector3.hpp>
 #include <MouseClickedInfo.hpp>
-#include <SquareMatrix4x4.hpp>
 #include <Units/Radian.hpp>
-#include <Vector3.hpp>
 #include <WindowMessages.hpp>
 #include <WindowSize.hpp>
 

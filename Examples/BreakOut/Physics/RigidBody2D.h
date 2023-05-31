@@ -1,4 +1,4 @@
-#include <Vector.hpp>
+#include <LinearAlgebra/Vector2.hpp>
 
 #include <functional>
 

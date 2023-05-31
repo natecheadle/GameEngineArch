@@ -1,6 +1,6 @@
 #include "PhysicsSystem.h"
 
-#include "Vector.hpp"
+#include <LinearAlgebra/Vector2.hpp>
 
 using namespace std::chrono_literals;
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../Renderer/VertexBuffer.h"
-#include "../Shader/ShaderProgram.h"
-#include "../Texture/Texture.h"
 #include "3D/Material.h"
-#include "SquareMatrix4x4.hpp"
+#include "Renderer/VertexBuffer.h"
+#include "Shader/ShaderProgram.h"
+#include "Texture/Texture.h"
 #include "VertexData.h"
 
-#include <Vector3.hpp>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector3.hpp>
 
 #include <initializer_list>
 #include <memory>

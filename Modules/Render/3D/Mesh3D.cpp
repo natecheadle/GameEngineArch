@@ -1,10 +1,9 @@
 #include "Mesh3D.h"
 
-#include "../Renderer/Renderer.h"
+#include "Renderer/Renderer.h"
 #include "Shader/ShaderProgram.h"
 
-#include <SquareMatrix4x4.hpp>
-#include <Vector3.hpp>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
 
 #include <algorithm>
 #include <cstddef>

@@ -11,12 +11,12 @@
 #include <DebugCast.hpp>
 #include <Entity.h>
 #include <IWindow.h>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector3.hpp>
 #include <Messages/MouseClicked.hpp>
 #include <Messages/WindowResized.hpp>
 #include <Renderer/Renderer_OpenGL.h>
 #include <Shader/Shader.h>
-#include <SquareMatrix4x4.hpp>
-#include <Vector3.hpp>
 #include <WindowMessages.hpp>
 #include <WindowSize.hpp>
 #include <World.h>

@@ -1,13 +1,13 @@
 #include "Fly_Camera.h"
-#include "IWindow.h"
-#include "KeyModifiers.hpp"
-#include "KeyPressedInfo.hpp"
-#include "Keys.h"
-#include "Units/Angle.hpp"
-#include "Vector3.hpp"
+
+#include <IWindow.h>
+#include <KeyModifiers.hpp>
+#include <KeyPressedInfo.hpp>
+#include <Keys.h>
+#include <LinearAlgebra/Vector3.hpp>
+#include <Units/Angle.hpp>
 
 #include <functional>
-
 
 namespace nate::Modules::Render
 {

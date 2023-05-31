@@ -2,7 +2,8 @@
 
 #include "Shader.h"
 #include "ShaderProgram.h"
-#include "SquareMatrix4x4.hpp"
+
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
 
 #include <memory>
 

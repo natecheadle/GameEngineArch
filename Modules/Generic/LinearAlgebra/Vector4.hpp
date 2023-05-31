@@ -1,23 +1,44 @@
 #pragma once
 
 #include "Vector.hpp"
-#include "Vector3.hpp"
 
 namespace nate::Modules
 {
     template <typename T>
     class Vector4 : public Vector<4, T>
     {
+        using BASE = Vector<4, T>;
+
       public:
         Vector4() noexcept = default;
 
-        Vector4(std::array<T, 4> init)
-            : Vector<4, T>(init)
+        Vector4(T val)
+            : BASE(val)
         {
         }
 
-        Vector4(const Vector3<T>& other, T cell_4 = 1.0)
-            : Vector<4, T>({other.x(), other.y(), other.z(), cell_4})
+        Vector4(std::initializer_list<T> vals) noexcept
+            : BASE(std::move(vals))
+        {
+        }
+
+        Vector4(T x, T y, T z, T w)
+            : BASE({x, y, z, w})
+        {
+        }
+
+        Vector4(BASE&& other)
+            : BASE(std::move(other))
+        {
+        }
+
+        Vector4(const Vector<2, T>& other, T z = 1, T w = 1)
+            : BASE({other[0], other[1], z, w})
+        {
+        }
+
+        Vector4(const Vector<3, T>& other, T w = 1)
+            : BASE({other[0], other[1], other[2], w})
         {
         }
 
@@ -27,16 +48,16 @@ namespace nate::Modules
         Vector4& operator=(const Vector4& other) noexcept = default;
         Vector4& operator=(Vector4&& other) noexcept      = default;
 
-        T    x() const { return Vector<4, T>::at(0); }
+        T    x() const { return BASE::at(0); }
         void x(T val) { Vector<3, T>::at(0) = val; }
 
-        T    y() const { return Vector<4, T>::at(1); }
+        T    y() const { return BASE::at(1); }
         void y(T val) { Vector<3, T>::at(1) = val; }
 
-        T    z() const { return Vector<4, T>::at(2); }
+        T    z() const { return BASE::at(2); }
         void z(T val) { Vector<3, T>::at(2) = val; }
 
-        T    w() const { return Vector<4, T>::at(3); }
+        T    w() const { return BASE::at(3); }
         void w(T val) { Vector<3, T>::at(3) = val; }
 
         Vector3<T> ToVector3() const { return Vector3<T>(x(), y(), z()); }

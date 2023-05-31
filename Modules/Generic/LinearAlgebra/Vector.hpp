@@ -36,6 +36,8 @@ namespace nate::Modules
             }
         }
 
+        Vector(T val) noexcept { m_Data.fill(val); }
+
         Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }
         Vector(Vector&& other) noexcept = default;
 
@@ -167,7 +169,4 @@ namespace nate::Modules
             return os;
         }
     };
-
-    template <typename T>
-    using Vector2 = Vector<2, T>;
 } // namespace nate::Modules

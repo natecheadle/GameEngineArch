@@ -1,7 +1,7 @@
 #pragma once
 
-#include <SquareMatrix.hpp>
-#include <Vector.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 #include <cassert>
 #include <cstddef>

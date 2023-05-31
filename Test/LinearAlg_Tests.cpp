@@ -1,10 +1,11 @@
-#include <SquareMatrix.hpp>
-#include <SquareMatrix4x4.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
+#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector.hpp>
+#include <LinearAlgebra/Vector2.hpp>
+#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector4.hpp>
 #include <Units/Degree.hpp>
 #include <Units/Radian.hpp>
-#include <Vector.hpp>
-#include <Vector3.hpp>
-#include <Vector4.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>

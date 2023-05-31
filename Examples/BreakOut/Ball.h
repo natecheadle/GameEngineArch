@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BreakOutEntity.h"
-#include "Vector.hpp"
+
+#include <LinearAlgebra/Vector2.hpp>
 
 #include <chrono>
 

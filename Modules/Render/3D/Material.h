@@ -2,7 +2,7 @@
 
 #include "../Texture/Texture.h"
 
-#include <Vector3.hpp>
+#include <LinearAlgebra/Vector3.hpp>
 
 #include <memory>
 

@@ -1,9 +1,9 @@
 #include "BreakOutApp.h"
 
-#include "3D/Material.h"
-
+#include <3D/Material.h>
 #include <3D/Sprite.h>
 #include <Keys.h>
+#include <LinearAlgebra/Vector2.hpp>
 #include <Renderer/Renderer_OpenGL.h>
 #include <Texture/ImageFile.h>
 #include <Units/Degree.hpp>

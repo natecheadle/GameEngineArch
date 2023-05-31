@@ -1,7 +1,5 @@
 #include "Ball.h"
 
-#include "Vector.hpp"
-
 using namespace std::chrono_literals;
 
 namespace nate::BreakOut

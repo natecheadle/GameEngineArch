@@ -1,9 +1,9 @@
 #include "Sprite.h"
 
-#include "3D/SpriteVertexData.h"
-#include "Renderer/Renderer.h"
-#include "Units/Radian.hpp"
-#include "Vector.hpp"
+#include <3D/SpriteVertexData.h>
+#include <LinearAlgebra/Vector.hpp>
+#include <Renderer/Renderer.h>
+#include <Units/Radian.hpp>
 
 namespace nate::Modules::Render
 {
