@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(Module_Unit_Tests)
+include(GoogleTest)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -22,3 +23,4 @@ find_package(glm CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Modules GTest::gtest  glm::glm)
+gtest_add_tests(TARGET ${PROJECT_NAME})
