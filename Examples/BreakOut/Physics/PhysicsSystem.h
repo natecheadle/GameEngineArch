@@ -3,6 +3,7 @@
 #include <System.h>
 
 #include <vector>
+#include <chrono>
 
 namespace nate::Modules::Physics
 {
