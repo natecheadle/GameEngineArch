@@ -15,6 +15,7 @@ namespace nate::Modules::Render
         : m_Width(0)
         , m_Height(0)
         , m_Channels(0)
+        , m_Format(GL_RED)
         , m_pData(nullptr)
         , m_Path(path)
     {
