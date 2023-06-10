@@ -4,15 +4,21 @@
 
 namespace nate::BreakOut
 {
-    class Background : BreakOutEntity
+    class Background : Modules::ECS::Entity<Modules::Render::Sprite>
     {
       public:
         Background(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)
-            : BreakOutEntity(std::move(val))
+            : Modules::ECS::Entity<Modules::Render::Sprite>(std::move(val))
         {
         }
 
-        Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
-        const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
+        Modules::Render::Sprite& Sprite()
+        {
+            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
+        }
+        const Modules::Render::Sprite& Sprite() const
+        {
+            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
+        }
     };
 } // namespace nate::BreakOut

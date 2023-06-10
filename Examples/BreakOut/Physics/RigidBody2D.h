@@ -1,3 +1,5 @@
+#pragma once
+
 #include <LinearAlgebra/Vector2.hpp>
 
 #include <functional>

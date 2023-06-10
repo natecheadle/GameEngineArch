@@ -18,14 +18,15 @@ namespace nate::BreakOut
     class BreakOutApp : public Modules::App::App
     {
 
-        std::unique_ptr<Modules::Render::Camera> m_pCamera;
-        Modules::Render::ShaderProgram_ptr       m_pShader;
-        std::unique_ptr<BreakOutWorld>           m_pWorld;
-        std::unique_ptr<Background>              m_pBackground;
-        std::unique_ptr<Level>                   m_pLevel;
-        std::unique_ptr<Paddle>                  m_pPaddle;
-        std::unique_ptr<Ball>                    m_pBall;
-        std::filesystem::path                    m_LevelDir;
+        std::unique_ptr<Modules::Render::Camera>         m_pCamera;
+        Modules::Render::ShaderProgram_ptr               m_pShader;
+        std::unique_ptr<BreakOutWorld>                   m_pWorld;
+        std::unique_ptr<Background>                      m_pBackground;
+        std::unique_ptr<Level>                           m_pLevel;
+        std::unique_ptr<Paddle>                          m_pPaddle;
+        std::unique_ptr<Ball>                            m_pBall;
+        std::filesystem::path                            m_LevelDir;
+        std::unique_ptr<Modules::Physics::PhysicsSystem> m_pPhysicsSys;
 
         static constexpr float PADDLE_SPEED = 6.0f; // pixels per update
 

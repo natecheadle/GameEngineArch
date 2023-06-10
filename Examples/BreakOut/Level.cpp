@@ -3,6 +3,7 @@
 #include "3D/Material.h"
 #include "3D/RGB_Color.h"
 #include "3D/Sprite.h"
+#include "Physics/RigidBody2D.h"
 #include "Renderer/Renderer.h"
 #include "Texture/Texture.h"
 
@@ -81,7 +82,7 @@ namespace nate::BreakOut
         {
             for (unsigned int x = 0; x < width; ++x)
             {
-                Brick brick(m_pWorld->CreateEntity<Brick>(Render::Sprite(m_pRenderer)));
+                Brick brick(m_pWorld->CreateEntity<Brick>(Render::Sprite(m_pRenderer), Physics::RigidBody2D()));
                 // check block type from level data (2D level array)
                 if (tileData[y][x] == 1) // solid
                 {

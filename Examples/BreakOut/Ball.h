@@ -16,7 +16,9 @@ namespace nate::BreakOut
         Modules::Vector2<float> m_Velocity{1.5f, -10.0f};
 
       public:
-        Ball(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val);
+        Ball(
+            Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
+            Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
 
         Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
         const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }

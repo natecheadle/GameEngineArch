@@ -4,8 +4,10 @@ using namespace std::chrono_literals;
 
 namespace nate::BreakOut
 {
-    Ball::Ball(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)
-        : BreakOutEntity(std::move(val))
+    Ball::Ball(
+        Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
+        Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body)
+        : BreakOutEntity(std::move(sprite), std::move(body))
         , m_IsStuck(true)
     {
         Sprite().SizeX(m_Radius * 2);

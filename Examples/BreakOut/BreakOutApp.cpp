@@ -1,5 +1,8 @@
 #include "BreakOutApp.h"
 
+#include "Physics/PhysicsSystem.h"
+#include "Physics/RigidBody2D.h"
+
 #include <3D/Material.h>
 #include <3D/Sprite.h>
 #include <Keys.h>
@@ -16,13 +19,14 @@ using namespace std::chrono_literals;
 namespace nate::BreakOut
 {
     BreakOutApp::BreakOutApp(
-        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld,
-        const GUI::WindowSize&                                      window_size,
-        std::string                                                 window_name)
+        std::unique_ptr<BreakOutWorld> pWorld,
+        const GUI::WindowSize&         window_size,
+        std::string                    window_name)
         : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
               window_size,
               std::move(window_name))
         , m_pWorld(std::move(pWorld))
+        , m_pPhysicsSys(pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Modules::Physics::RigidBody2D>())
     {
         std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
         m_LevelDir = shader_dir / "Levels";
@@ -69,8 +73,8 @@ namespace nate::BreakOut
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
 
-        m_pBackground = std::make_unique<Background>(std::move(m_pWorld->CreateEntity<Background>(
-            Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio())))));
+        m_pBackground = std::make_unique<Background>(m_pWorld->CreateEntity<Background>(
+            Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio()))));
         m_pBackground->Sprite().AttachedMaterial((std::move(pBackMat)));
         m_pBackground->Sprite().Origin({0.0f, 0.0f});
         m_pBackground->Sprite().Size({winWidth, windHeight});
@@ -83,13 +87,15 @@ namespace nate::BreakOut
 
         Vector2<float> paddleSize{100.0f, 20.0f};
         Vector2<float> playerPos{winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]};
-        m_pPaddle = std::make_unique<Paddle>(std::move(
-            m_pWorld->CreateEntity<Paddle>(Render::Sprite(pRenderer, static_cast<float>(paddle.AspectRatio())))));
+        m_pPaddle = std::make_unique<Paddle>(m_pWorld->CreateEntity<Paddle>(
+            Render::Sprite(pRenderer, static_cast<float>(paddle.AspectRatio())),
+            Physics::RigidBody2D()));
         m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
         m_pPaddle->Sprite().Size(paddleSize);
         m_pPaddle->Sprite().Origin(playerPos);
 
-        m_pBall = std::make_unique<Ball>(std::move(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer))));
+        m_pBall =
+            std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pBall->Sprite().AttachedMaterial(std::move(pBallMat));
 
         Vector2<float> ballPos =
@@ -112,6 +118,7 @@ namespace nate::BreakOut
     {
         // TODO this should be handled automatically
         m_pCamera->Update(time);
+        m_pPhysicsSys->Update(time);
 
         GetWindow()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
             if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed ||

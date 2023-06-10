@@ -1,9 +1,11 @@
+#pragma once
+
 #include "RigidBody2D.h"
 
 #include <System.h>
 
-#include <vector>
 #include <chrono>
+#include <vector>
 
 namespace nate::Modules::Physics
 {

@@ -2,6 +2,8 @@
 
 #include "BreakOutEntity.h"
 
+#include <utility>
+
 namespace nate::BreakOut
 {
     enum class BrickType
@@ -17,10 +19,9 @@ namespace nate::BreakOut
         BrickType m_Type;
 
       public:
-        Brick(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)
-            : BreakOutEntity(std::move(val))
-        {
-        }
+        Brick(
+            Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
+            Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
 
         BrickType Type() const { return m_Type; }
         void      Type(BrickType val) { m_Type = val; }
