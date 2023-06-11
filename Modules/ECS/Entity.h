@@ -54,5 +54,12 @@ namespace nate::Modules::ECS
             auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
             return *pComponent;
         }
+
+        template <typename T>
+        T* GetPointer()
+        {
+            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            return pComponent.get();
+        }
     };
 } // namespace nate::Modules::ECS
