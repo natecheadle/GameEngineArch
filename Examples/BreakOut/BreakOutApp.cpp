@@ -74,8 +74,8 @@ namespace nate::BreakOut
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
 
-        m_pBackground =
-            m_pWorld->CreateEntity<Background>(Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio())));
+        m_pBackground = std::make_unique<Background>(m_pWorld->CreateEntity<Background>(
+            Render::Sprite(pRenderer, static_cast<float>(background.AspectRatio()))));
         m_pBackground->Sprite().AttachedMaterial((std::move(pBackMat)));
         m_pBackground->Sprite().Origin({0.0f, 0.0f});
         m_pBackground->Sprite().Size({winWidth, windHeight});
@@ -92,12 +92,13 @@ namespace nate::BreakOut
         Render::Sprite paddleSprite(pRenderer, static_cast<float>(paddle.AspectRatio()));
         paddleSprite.AttachedMaterial(std::move(pPaddleMat));
         paddleSprite.Size(paddleSize);
-        m_pPaddle = m_pWorld->CreateEntity<Paddle>(std::move(paddleSprite), Physics::RigidBody2D());
+        m_pPaddle =
+            std::make_unique<Paddle>(m_pWorld->CreateEntity<Paddle>(std::move(paddleSprite), Physics::RigidBody2D()));
         m_pPaddle->Position(playerPos);
 
         Render::Sprite spriteBall(pRenderer);
         spriteBall.AttachedMaterial(std::move(pBallMat));
-        m_pBall = m_pWorld->CreateEntity<Ball>(std::move(spriteBall), Physics::RigidBody2D());
+        m_pBall = std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(std::move(spriteBall), Physics::RigidBody2D()));
 
         Vector2<float> ballPos =
             playerPos + Vector2<float>({paddleSize[0] / 2.0f - m_pBall->Radius(), -m_pBall->Radius() * 2.0f});

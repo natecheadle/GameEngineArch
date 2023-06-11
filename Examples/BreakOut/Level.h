@@ -18,9 +18,9 @@ namespace nate::BreakOut
 {
     class Level
     {
-        std::vector<std::unique_ptr<Brick>> m_Bricks;
-        BreakOutWorld*                      m_pWorld;
-        Modules::Render::Renderer*          m_pRenderer;
+        std::vector<Brick>         m_Bricks;
+        BreakOutWorld*             m_pWorld;
+        Modules::Render::Renderer* m_pRenderer;
 
       public:
         Level(BreakOutWorld* pWorld, Modules::Render::Renderer* pRenderer);

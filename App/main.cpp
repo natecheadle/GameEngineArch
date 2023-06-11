@@ -51,7 +51,7 @@ class TestAppEntity : ECS::Entity<Render::Mesh3D>
 
 class TestApp : public App::App
 {
-    std::vector<std::unique_ptr<TestAppEntity>>                 m_Cubes;
+    std::vector<TestAppEntity>                                  m_Cubes;
     Render::Light_Directional                                   m_DirLight;
     Render::Light_Spotlight                                     m_SpotLight;
     Render::Light_Point                                         m_PointLight;
@@ -102,7 +102,7 @@ class TestApp : public App::App
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
         m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(GetRenderer())));
-        m_Cubes[0]->Mesh().AttachedMaterial(std::move(cubeMaterial));
+        m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
             Vector3<float>(0.0f, 0.0f, 0.0f),
@@ -120,8 +120,8 @@ class TestApp : public App::App
 
         for (size_t i = 1; i < numOfCubes; ++i)
         {
-            m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D(m_Cubes[0]->Mesh())));
-            m_Cubes[i]->Mesh().Origin(cubePositions[i]);
+            m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D(m_Cubes[0].Mesh())));
+            m_Cubes[i].Mesh().Origin(cubePositions[i]);
         }
 
         m_pCamera = std::make_unique<Render::Fly_Camera>(GetWindow());
@@ -159,7 +159,7 @@ class TestApp : public App::App
 
             for (auto& cube : m_Cubes)
             {
-                m_pShader->SetShaderVar("material", *(cube->Mesh().AttachedMaterial()));
+                m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
             }
         };
         pRenderer->ExecuteFunction(initShaderVars);
@@ -180,7 +180,7 @@ class TestApp : public App::App
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {
-            cube->Mesh().RotX(M_PI / 500.0);
+            cube.Mesh().RotX(M_PI / 500.0);
         }
         // m_pBackpackModel->RotY(M_PI / 500.0);
 

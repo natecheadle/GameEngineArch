@@ -26,10 +26,10 @@ namespace nate::Modules::ECS
         virtual ~Entity() = default;
 
         Entity(const Entity& other) = delete;
-        Entity(Entity&& other)      = delete;
+        Entity(Entity&& other)      = default;
 
         Entity& operator=(const Entity& other) = delete;
-        Entity& operator=(Entity&& other)      = delete;
+        Entity& operator=(Entity&& other)      = default;
 
         std::uint64_t ID() const { return m_ID; }
 

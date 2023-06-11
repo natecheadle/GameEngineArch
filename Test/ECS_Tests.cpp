@@ -100,7 +100,7 @@ namespace nate::Test
         void Process(float timeStep)
         {
             m_TotalTime += timeStep;
-            m_TotalTime = std::fmod(m_TotalTime, 1.0f);
+            m_TotalTime = std::fmod(m_TotalTime, 1.0);
             auto& pool  = GetPool<Color>();
             for (auto& val : pool)
             {
@@ -113,11 +113,11 @@ namespace nate::Test
     {
         Modules::ECS::World<KinematicData, Color> world;
 
-        KinematicData               init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
-        Color                       col({1.0, 1.0, 1.0});
-        std::unique_ptr<TestEntity> entity = world.CreateEntity<TestEntity>(KinematicData(init), Color(col));
-        ASSERT_EQ(init, entity->Kinematic());
-        ASSERT_EQ(col, entity->Color());
+        KinematicData init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
+        Color         col({1.0, 1.0, 1.0});
+        TestEntity    entity = world.CreateEntity<TestEntity>(KinematicData(init), Color(col));
+        ASSERT_EQ(init, entity.Kinematic());
+        ASSERT_EQ(col, entity.Color());
     }
 
     TEST(ECS_Tests, InitWorldAndSystem)
@@ -126,7 +126,7 @@ namespace nate::Test
         ;
 
         std::unique_ptr<TestSystem> system = world.CreateSystem<TestSystem, KinematicData>();
-        std::unique_ptr<TestEntity> entity = world.CreateEntity<TestEntity>(
+        TestEntity                  entity = world.CreateEntity<TestEntity>(
             KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})}),
             Color({1.0, 1.0, 1.0}));
 
@@ -135,7 +135,7 @@ namespace nate::Test
         KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
         Color         expectCol({std::sin(1.0f), std::sin(1.0f), std::sin(1.0f)});
 
-        ASSERT_EQ(entity->Kinematic(), expect);
+        ASSERT_EQ(entity.Kinematic(), expect);
         ASSERT_EQ(expectCol, expectCol);
     }
 } // namespace nate::Test

@@ -4,14 +4,5 @@ namespace nate::Modules::Physics
 {
     void RigidBody2D::Update(float dt) {}
 
-    void RigidBody2D::CollisionOccurred(const RigidBody2D& other)
-    {
-        m_OnCollision(other);
-    }
-
-    void RigidBody2D::ClearCallbacks()
-    {
-        m_OnPosChange = nullptr;
-        m_OnCollision = nullptr;
-    }
+    void RigidBody2D::CollisionOccurred(const RigidBody2D& other) {}
 } // namespace nate::Modules::Physics
