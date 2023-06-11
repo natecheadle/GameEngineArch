@@ -51,7 +51,7 @@ namespace nate::BreakOut
     {
         for (auto& brick : m_Bricks)
         {
-            brick.Sprite().Draw(pProgram);
+            brick.Draw(pProgram);
         }
     }
 
@@ -82,16 +82,18 @@ namespace nate::BreakOut
         {
             for (unsigned int x = 0; x < width; ++x)
             {
-                Brick brick(m_pWorld->CreateEntity<Brick>(Render::Sprite(m_pRenderer), Physics::RigidBody2D()));
+                Render::Sprite sprite(m_pRenderer);
+
                 // check block type from level data (2D level array)
                 if (tileData[y][x] == 1) // solid
                 {
                     Vector2<float> pos({unit_width * static_cast<float>(x), unit_height * static_cast<float>(y)});
                     Vector2<float> size({unit_width, unit_height});
-                    brick.Sprite().AttachedMaterial(pSolidBlockMat);
-                    brick.Sprite().Origin(pos);
-                    brick.Sprite().Size(size);
-                    brick.Sprite().Color({0.8f, 0.8f, 0.7f});
+                    sprite.AttachedMaterial(pSolidBlockMat);
+                    sprite.Size(size);
+                    sprite.Color({0.8f, 0.8f, 0.7f});
+                    Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
+                    brick.Position(pos);
                     brick.Type(BrickType::Solid);
                     m_Bricks.push_back(std::move(brick));
                 }
@@ -110,10 +112,12 @@ namespace nate::BreakOut
                     Vector2<float> pos({unit_width * static_cast<float>(x), unit_height * static_cast<float>(y)});
                     Vector2<float> size({unit_width, unit_height});
 
-                    brick.Sprite().AttachedMaterial(pBlockMat);
-                    brick.Sprite().Origin(pos);
-                    brick.Sprite().Size(size);
-                    brick.Sprite().Color(color);
+                    sprite.AttachedMaterial(pBlockMat);
+                    sprite.Size(size);
+                    sprite.Color(color);
+
+                    Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
+                    brick.Position(pos);
                     m_Bricks.push_back(std::move(brick));
                 }
             }

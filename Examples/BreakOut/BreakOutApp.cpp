@@ -12,6 +12,7 @@
 #include <Units/Degree.hpp>
 
 #include <memory>
+#include <utility>
 
 using namespace nate::Modules;
 using namespace std::chrono_literals;
@@ -87,20 +88,21 @@ namespace nate::BreakOut
 
         Vector2<float> paddleSize{100.0f, 20.0f};
         Vector2<float> playerPos{winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]};
-        m_pPaddle = std::make_unique<Paddle>(m_pWorld->CreateEntity<Paddle>(
-            Render::Sprite(pRenderer, static_cast<float>(paddle.AspectRatio())),
-            Physics::RigidBody2D()));
-        m_pPaddle->Sprite().AttachedMaterial(std::move(pPaddleMat));
-        m_pPaddle->Sprite().Size(paddleSize);
-        m_pPaddle->Sprite().Origin(playerPos);
 
-        m_pBall =
-            std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
-        m_pBall->Sprite().AttachedMaterial(std::move(pBallMat));
+        Render::Sprite paddleSprite(pRenderer, static_cast<float>(paddle.AspectRatio()));
+        paddleSprite.AttachedMaterial(std::move(pPaddleMat));
+        paddleSprite.Size(paddleSize);
+        m_pPaddle =
+            std::make_unique<Paddle>(m_pWorld->CreateEntity<Paddle>(std::move(paddleSprite), Physics::RigidBody2D()));
+        m_pPaddle->Position(playerPos);
+
+        Render::Sprite spriteBall(pRenderer);
+        spriteBall.AttachedMaterial(std::move(pBallMat));
+        m_pBall = std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(std::move(spriteBall), Physics::RigidBody2D()));
 
         Vector2<float> ballPos =
             playerPos + Vector2<float>({paddleSize[0] / 2.0f - m_pBall->Radius(), -m_pBall->Radius() * 2.0f});
-        m_pBall->Sprite().Origin(ballPos);
+        m_pBall->Position(ballPos);
         m_pBall->WindowWidth(winWidth);
     }
 
@@ -124,12 +126,16 @@ namespace nate::BreakOut
             if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed ||
                  keyStates[GUI::Key::Left].first == GUI::KeyState::Repeat))
             {
-                if (m_pPaddle->Sprite().Origin()[0] > 0.0)
+                if (m_pPaddle->Position()[0] > 0.0)
                 {
-                    m_pPaddle->Sprite().TranslateX(-PADDLE_SPEED);
+                    auto pos = m_pPaddle->Position();
+                    pos.x(pos.x() - PADDLE_SPEED);
+                    m_pPaddle->Position(pos);
                     if (m_pBall->IsStuck())
                     {
-                        m_pBall->Sprite().TranslateX(-PADDLE_SPEED);
+                        pos = m_pBall->Position();
+                        pos.x(pos.x() - PADDLE_SPEED);
+                        m_pBall->Position(pos);
                     }
                 }
             }
@@ -137,13 +143,17 @@ namespace nate::BreakOut
             if ((keyStates[GUI::Key::Right].first == GUI::KeyState::Pressed ||
                  keyStates[GUI::Key::Right].first == GUI::KeyState::Repeat))
             {
-                if (m_pPaddle->Sprite().Origin()[0] <
-                    static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->Sprite().Size()[0])
+                if (m_pPaddle->Position()[0] <
+                    static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->Position()[0])
                 {
-                    m_pPaddle->Sprite().TranslateX(PADDLE_SPEED);
+                    auto pos = m_pPaddle->Position();
+                    pos.x(pos.x() + PADDLE_SPEED);
+                    m_pPaddle->Position(pos);
                     if (m_pBall->IsStuck())
                     {
-                        m_pBall->Sprite().TranslateX(PADDLE_SPEED);
+                        auto pos = m_pBall->Position();
+                        pos.x(pos.x() + PADDLE_SPEED);
+                        m_pBall->Position(pos);
                     }
                 }
             }

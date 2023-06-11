@@ -14,6 +14,12 @@ namespace nate::BreakOut
         Sprite().SizeY(m_Radius * 2);
     }
 
+    void Ball::Position(const Modules::Vector2<float>& pos)
+    {
+        Sprite().Origin(pos);
+        Body().Position(pos);
+    }
+
     void Ball::Update(std::chrono::nanoseconds /* del */)
     {
         if (!m_IsStuck)
@@ -40,6 +46,7 @@ namespace nate::BreakOut
             }
 
             Sprite().Origin(pos);
+            Body().Position(pos);
         }
     }
 } // namespace nate::BreakOut
