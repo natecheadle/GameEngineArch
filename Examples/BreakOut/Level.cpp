@@ -51,7 +51,7 @@ namespace nate::BreakOut
     {
         for (auto& brick : m_Bricks)
         {
-            brick.Draw(pProgram);
+            brick->Draw(pProgram);
         }
     }
 
@@ -92,9 +92,10 @@ namespace nate::BreakOut
                     sprite.AttachedMaterial(pSolidBlockMat);
                     sprite.Size(size);
                     sprite.Color({0.8f, 0.8f, 0.7f});
-                    Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
-                    brick.Position(pos);
-                    brick.Type(BrickType::Solid);
+                    std::unique_ptr<Brick> brick(
+                        m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
+                    brick->Position(pos);
+                    brick->Type(BrickType::Solid);
                     m_Bricks.push_back(std::move(brick));
                 }
                 else if (tileData[y][x] > 1)
@@ -116,8 +117,9 @@ namespace nate::BreakOut
                     sprite.Size(size);
                     sprite.Color(color);
 
-                    Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
-                    brick.Position(pos);
+                    std::unique_ptr<Brick> brick(
+                        m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
+                    brick->Position(pos);
                     m_Bricks.push_back(std::move(brick));
                 }
             }

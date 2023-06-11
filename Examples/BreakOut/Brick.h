@@ -24,6 +24,8 @@ namespace nate::BreakOut
             Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
             Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
 
+        ~Brick();
+
         BrickType Type() const { return m_Type; }
         void      Type(BrickType val) { m_Type = val; }
 

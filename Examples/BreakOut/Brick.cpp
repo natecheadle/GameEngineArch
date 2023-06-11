@@ -12,6 +12,13 @@ namespace nate::BreakOut
         Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body)
         : BreakOutEntity(std::move(sprite), std::move(body))
     {
+        using namespace std::placeholders;
+        Body().AttachOnCollision(std::bind(&Brick::OnCollision, this, _1));
+    }
+
+    Brick::~Brick()
+    {
+        Body().ClearCallbacks();
     }
 
     void Brick::Position(const Modules::Vector2<float>& pos)

@@ -26,10 +26,10 @@ namespace nate::Modules::ECS
         World& operator=(World&& other)      = default;
 
         template <typename T, typename... ComponentTypes>
-        T CreateEntity(ComponentTypes&&... args)
+        std::unique_ptr<T> CreateEntity(ComponentTypes&&... args)
         {
             static_assert(std::is_base_of_v<Entity<ComponentTypes...>, T>, "T must be derive from Entity.");
-            return T(CreatePoolObject(std::move(args))...);
+            return std::make_unique<T>(CreatePoolObject(std::move(args))...);
         }
 
         template <typename T, typename... ComponentTypes>

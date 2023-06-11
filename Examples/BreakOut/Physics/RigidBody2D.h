@@ -15,10 +15,20 @@ namespace nate::Modules::Physics
         Vector2<float> m_HitBox;
         bool           m_IsFixed;
 
+        std::function<void(const Vector2<float>&)>    m_OnPosChange;
+        std::function<void(const RigidBody2D& other)> m_OnCollision;
+
         friend PhysicsSystem;
 
       public:
         void Update(float dt);
+
+        void AttachOnPosChange(std::function<void(const Vector2<float>&)>&& func) { m_OnPosChange = std::move(func); }
+        void AttachOnCollision(std::function<void(const RigidBody2D& other)>&& func)
+        {
+            m_OnCollision = std::move(func);
+        }
+        void ClearCallbacks();
 
         void IsFixed(bool val) { m_IsFixed = val; }
         bool IsFixed() const { return m_IsFixed; }
