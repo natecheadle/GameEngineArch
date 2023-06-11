@@ -8,4 +8,9 @@ namespace nate::BreakOut
         : BreakOutEntity(std::move(sprite), std::move(body))
     {
     }
+
+    void Brick::OnCollision(const Modules::Physics::RigidBody2D& /* other */)
+    {
+        Sprite().Color({0.0, 0.0, 0.0});
+    }
 } // namespace nate::BreakOut

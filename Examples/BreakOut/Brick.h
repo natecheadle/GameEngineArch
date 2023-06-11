@@ -28,5 +28,8 @@ namespace nate::BreakOut
 
         Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
         const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
+
+      private:
+        void OnCollision(const Modules::Physics::RigidBody2D& other);
     };
 } // namespace nate::BreakOut

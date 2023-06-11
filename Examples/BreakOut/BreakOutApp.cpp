@@ -26,7 +26,7 @@ namespace nate::BreakOut
               window_size,
               std::move(window_name))
         , m_pWorld(std::move(pWorld))
-        , m_pPhysicsSys(pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Modules::Physics::RigidBody2D>())
+        , m_pPhysicsSys(m_pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Modules::Physics::RigidBody2D>())
     {
         std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
         m_LevelDir = shader_dir / "Levels";
