@@ -13,7 +13,7 @@ namespace nate::Modules::Physics
         Vector2<float> m_Position;
         Vector2<float> m_Velocity;
         Vector2<float> m_HitBox;
-        bool           m_IsFixed;
+        bool           m_IsFixed{true};
 
         std::function<void(const Vector2<float>&)>    m_OnPosChange;
         std::function<void(const RigidBody2D& other)> m_OnCollision;
@@ -34,8 +34,12 @@ namespace nate::Modules::Physics
         bool IsFixed() const { return m_IsFixed; }
 
         const Vector2<float>& Position() const { return m_Position; }
-        Vector2<float>&       Position() { return m_Position; }
-        void                  Position(const Vector2<float>& val) { m_Position = val; }
+        void                  Position(const Vector2<float>& val)
+        {
+            m_Position = val;
+            if (m_OnPosChange)
+                m_OnPosChange(m_Position);
+        }
 
         const Vector2<float>& Velocity() const { return m_Velocity; }
         void                  Velocity(const Vector2<float>& val) { m_Velocity = val; }

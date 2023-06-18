@@ -12,13 +12,17 @@ namespace nate::BreakOut
     {
         float                   m_Radius{12.5};
         float                   m_WinWidth{600.0};
-        bool                    m_IsStuck;
-        Modules::Vector2<float> m_Velocity{1.5f, -10.0f};
+        Modules::Vector2<float> m_InitialVel{.1f, -1.0f};
 
       public:
         Ball(
             Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
             Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
+
+        ~Ball();
+
+        Ball(Ball&& other);
+        Ball& operator=(Ball&& other);
 
         void                           Position(const Modules::Vector2<float>& pos);
         const Modules::Vector2<float>& Position() const { return Body().Position(); }
@@ -29,10 +33,8 @@ namespace nate::BreakOut
         void  Radius(float val) { m_Radius = val; }
         float Radius() const { return m_Radius; }
 
-        void Update(std::chrono::nanoseconds del);
-
-        void Release() { m_IsStuck = false; }
-        bool IsStuck() const { return m_IsStuck; }
+        void Release() { Body().Velocity(m_InitialVel); }
+        bool IsStuck() const { return Body().Velocity() == Modules::Vector2<float>{0.0, 0.0}; }
 
       private:
         Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
@@ -43,5 +45,8 @@ namespace nate::BreakOut
         {
             return BreakOutEntity::Get<Modules::Physics::RigidBody2D>();
         }
+
+        void OnCollision(const Modules::Physics::RigidBody2D& other);
+        void OnPosChange(const Modules::Vector2<float>& newPos) { Sprite().Origin(newPos); }
     };
 } // namespace nate::BreakOut

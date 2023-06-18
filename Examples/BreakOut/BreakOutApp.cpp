@@ -165,8 +165,6 @@ namespace nate::BreakOut
             }
         });
 
-        m_pBall->Update(time);
-
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
             m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());

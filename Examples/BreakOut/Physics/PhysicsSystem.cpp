@@ -22,6 +22,12 @@ namespace nate::Modules::Physics
             if (body.Velocity() != Vector2<float>{0.0f, 0.0f})
             {
                 m_MovingObjects.push_back(&body);
+                Vector2<float> pos = body.Position();
+                Vector2<float> vel = body.Velocity();
+                pos.x(pos.x() + vel.x());
+                pos.y(pos.y() + vel.y());
+
+                body.Position(pos);
             }
         }
 
@@ -29,6 +35,9 @@ namespace nate::Modules::Physics
         {
             for (auto& body : pool)
             {
+                if (&body == pBody)
+                    continue;
+
                 if (CheckCollision(*pBody, body))
                 {
                     pBody->CollisionOccurred(body);

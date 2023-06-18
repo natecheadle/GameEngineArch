@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <utility>
 
 using namespace nate::Modules;
 
@@ -45,6 +46,25 @@ namespace nate::BreakOut
             if (!tileData.empty())
                 Initialize(tileData, lvlWidth, lvlHeight);
         }
+
+        float wall_thickness = 50.0;
+        float lvl_width_flt  = static_cast<float>(lvlWidth);
+        float lvl_height_flt = static_cast<float>(lvlHeight);
+
+        Wall top(m_pWorld->CreateEntity<Wall>(Physics::RigidBody2D()));
+        Wall left(m_pWorld->CreateEntity<Wall>(Physics::RigidBody2D()));
+        Wall right(m_pWorld->CreateEntity<Wall>(Physics::RigidBody2D()));
+        left.Position({-0.5f * wall_thickness, lvl_width_flt / 2.0f});
+        right.Position({0.5f * wall_thickness + lvl_width_flt, lvl_width_flt / 2.0f});
+        top.Position({lvl_width_flt / 2.0f, -0.5f * wall_thickness});
+
+        top.HitBox({lvl_width_flt, wall_thickness});
+        left.HitBox({wall_thickness, lvl_height_flt});
+        right.HitBox({wall_thickness, lvl_height_flt});
+
+        m_Walls.push_back(std::move(top));
+        m_Walls.push_back(std::move(left));
+        m_Walls.push_back(std::move(right));
     }
 
     void Level::Draw(Modules::Render::ShaderProgram* pProgram)
@@ -94,6 +114,7 @@ namespace nate::BreakOut
                     sprite.Color({0.8f, 0.8f, 0.7f});
                     Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
                     brick.Position(pos);
+                    brick.HitBox({static_cast<float>(width), static_cast<float>(height)});
                     brick.Type(BrickType::Solid);
                     m_Bricks.push_back(std::move(brick));
                 }
@@ -118,6 +139,7 @@ namespace nate::BreakOut
 
                     Brick brick(m_pWorld->CreateEntity<Brick>(std::move(sprite), Physics::RigidBody2D()));
                     brick.Position(pos);
+                    brick.HitBox({static_cast<float>(width), static_cast<float>(height)});
                     m_Bricks.push_back(std::move(brick));
                 }
             }

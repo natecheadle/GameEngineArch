@@ -5,6 +5,7 @@
 #include "Brick.h"
 #include "Paddle.h"
 #include "Shader/ShaderProgram.h"
+#include "Wall.h"
 
 #include <filesystem>
 #include <vector>
@@ -19,6 +20,7 @@ namespace nate::BreakOut
     class Level
     {
         std::vector<Brick>         m_Bricks;
+        std::vector<Wall>          m_Walls;
         BreakOutWorld*             m_pWorld;
         Modules::Render::Renderer* m_pRenderer;
 

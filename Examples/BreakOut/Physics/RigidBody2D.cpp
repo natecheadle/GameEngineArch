@@ -6,7 +6,8 @@ namespace nate::Modules::Physics
 
     void RigidBody2D::CollisionOccurred(const RigidBody2D& other)
     {
-        m_OnCollision(other);
+        if (m_OnCollision)
+            m_OnCollision(other);
     }
 
     void RigidBody2D::ClearCallbacks()

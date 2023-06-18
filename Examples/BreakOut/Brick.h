@@ -26,14 +26,17 @@ namespace nate::BreakOut
 
         ~Brick();
 
-        Brick(Brick&& other)            = default;
-        Brick& operator=(Brick&& other) = default;
+        Brick(Brick&& other);
+        Brick& operator=(Brick&& other);
 
         BrickType Type() const { return m_Type; }
         void      Type(BrickType val) { m_Type = val; }
 
         void                           Position(const Modules::Vector2<float>& pos);
         const Modules::Vector2<float>& Position() const { return Body().Position(); }
+
+        const Modules::Vector2<float>& HitBox() const { return Body().HitBox(); }
+        void                           HitBox(const Modules::Vector2<float>& val) { Body().HitBox(val); }
 
         void Draw(Modules::Render::ShaderProgram* pProgram) { Sprite().Draw(pProgram); }
 

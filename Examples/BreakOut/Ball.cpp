@@ -1,6 +1,9 @@
 #include "Ball.h"
 
+#include "BreakOutEntity.h"
+
 using namespace std::chrono_literals;
+using namespace std::placeholders;
 
 namespace nate::BreakOut
 {
@@ -8,10 +11,45 @@ namespace nate::BreakOut
         Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
         Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body)
         : BreakOutEntity(std::move(sprite), std::move(body))
-        , m_IsStuck(true)
     {
         Sprite().SizeX(m_Radius * 2);
         Sprite().SizeY(m_Radius * 2);
+        Body().HitBox({m_Radius * 2.0f, m_Radius * 2.0f});
+
+        Body().AttachOnCollision(std::bind(&Ball::OnCollision, this, _1));
+        Body().AttachOnPosChange(std::bind(&Ball::OnPosChange, this, _1));
+    }
+
+    Ball::~Ball()
+    {
+        auto* pBody = GetPointer<Modules::Physics::RigidBody2D>();
+        if (pBody)
+        {
+            pBody->ClearCallbacks();
+        }
+    }
+
+    Ball::Ball(Ball&& other)
+        : BreakOutEntity(std::move(other))
+        , m_Radius(other.m_Radius)
+        , m_WinWidth(other.m_WinWidth)
+        , m_InitialVel(std::move(other.m_InitialVel))
+    {
+        Body().AttachOnCollision(std::bind(&Ball::OnCollision, this, _1));
+        Body().AttachOnPosChange(std::bind(&Ball::OnPosChange, this, _1));
+    }
+    Ball& Ball::operator=(Ball&& other)
+    {
+        BreakOutEntity::operator=(std::move(other));
+
+        m_Radius     = other.m_Radius;
+        m_WinWidth   = other.m_WinWidth;
+        m_InitialVel = std::move(other.m_InitialVel);
+
+        Body().AttachOnCollision(std::bind(&Ball::OnCollision, this, _1));
+        Body().AttachOnPosChange(std::bind(&Ball::OnPosChange, this, _1));
+
+        return *this;
     }
 
     void Ball::Position(const Modules::Vector2<float>& pos)
@@ -20,33 +58,17 @@ namespace nate::BreakOut
         Body().Position(pos);
     }
 
-    void Ball::Update(std::chrono::nanoseconds /* del */)
+    void Ball::OnCollision(const Modules::Physics::RigidBody2D& other)
     {
-        if (!m_IsStuck)
+        auto vel = Body().Velocity();
+        if (std::abs(other.Position().x() - Body().Position().x()) < m_Radius)
         {
-            Modules::Vector2<float> pos  = Sprite().Origin();
-            Modules::Vector2<float> size = Sprite().Size();
-
-            pos += m_Velocity;
-
-            if (pos[0] <= 0.0f)
-            {
-                m_Velocity[0] = -m_Velocity[0];
-                pos[0]        = 0.0f;
-            }
-            else if (pos[0] + size[0] >= m_WinWidth)
-            {
-                m_Velocity[0] = -m_Velocity[0];
-                pos[0]        = m_WinWidth - size[0];
-            }
-            if (pos[1] <= 0.0f)
-            {
-                m_Velocity[1] = -m_Velocity[1];
-                pos[1]        = 0.0f;
-            }
-
-            Sprite().Origin(pos);
-            Body().Position(pos);
+            vel.x(Body().Velocity().x() * -1);
         }
+        else
+        {
+            vel.y(Body().Velocity().y() * -1);
+        }
+        Body().Velocity(vel);
     }
 } // namespace nate::BreakOut
