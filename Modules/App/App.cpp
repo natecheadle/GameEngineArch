@@ -25,10 +25,11 @@ namespace nate::Modules::App
     {
         Initialize();
 
-        std::chrono::nanoseconds period{0};
+        double period{0};
         while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
         {
-            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
+            std::chrono::time_point<std::chrono::high_resolution_clock> begin =
+                std::chrono::high_resolution_clock::now();
             m_pRenderer->ClearColorBuffer();
             m_pRenderer->ClearDepthBuffer();
 
@@ -43,12 +44,10 @@ namespace nate::Modules::App
                 return 1;
             }
 
-            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
-            period                             = duration_cast<std::chrono::nanoseconds>(end - begin);
-            std::chrono::nanoseconds sleepTime = std::chrono::nanoseconds(std::int64_t(1.0 / 60.0 * 1e9)) - period;
-            std::this_thread::sleep_for(sleepTime);
-
             m_pRenderer->SwapBuffers();
+
+            std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+            period = std::chrono::duration<double>(end - begin).count();
         }
 
         Close();

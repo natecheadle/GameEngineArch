@@ -105,7 +105,7 @@ namespace nate::Modules::Render
         Translate({0, 0, -value});
     }
 
-    void Fly_Camera::Update(std::chrono::nanoseconds /* time */)
+    void Fly_Camera::Update(double dt)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
     }

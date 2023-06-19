@@ -174,10 +174,10 @@ class TestApp : public App::App
         m_Cubes.clear();
     }
 
-    void UpdateApp(std::chrono::nanoseconds time) override
+    void UpdateApp(double dt) override
     {
         // TODO this should be handled automatically
-        m_pCamera->Update(time);
+        m_pCamera->Update(dt);
         auto* pRenderer = GetRenderer();
         for (auto& cube : m_Cubes)
         {

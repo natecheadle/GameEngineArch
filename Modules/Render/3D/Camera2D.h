@@ -63,7 +63,7 @@ namespace nate::Modules::Render
         void ZoomIn(float value);
         void ZoomOut(float value);
 
-        void Update(std::chrono::nanoseconds /* time */) override;
+        void Update(double /* dt */) override;
 
       private:
         void PanUp() { PanUp(m_PanSpeed); }

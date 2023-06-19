@@ -20,8 +20,8 @@ namespace nate::Modules::App
       protected:
         GUI::IWindow*     GetWindow() const { return m_pWindow; }
         Render::Renderer* GetRenderer() const { return m_pRenderer.get(); }
-        virtual void      UpdateApp(std::chrono::nanoseconds time) = 0;
-        virtual void      Initialize()                             = 0;
-        virtual void      Shutdown()                               = 0;
+        virtual void      UpdateApp(double dt) = 0;
+        virtual void      Initialize()         = 0;
+        virtual void      Shutdown()           = 0;
     }; // namespace nate::Modules::App
 } // namespace nate::Modules::App
