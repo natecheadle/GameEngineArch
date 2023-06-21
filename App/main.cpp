@@ -90,19 +90,20 @@ class TestApp : public App::App
         auto backpack_path        = shader_dir / "backpack/backpack.obj";
 
         auto cubeMaterial = std::make_unique<Render::Material>();
+        auto pRenderer    = Render::Renderer::Instance();
 
-        cubeMaterial->Diffuse = GetRenderer()->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Diffuse = pRenderer->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
         cubeMaterial->Specular =
-            GetRenderer()->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
+            pRenderer->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
-        auto pVertexShader   = GetRenderer()->CreateShader(vertex_shader_path, {shader_inc_dir});
-        auto pFragmentShader = GetRenderer()->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = GetRenderer()->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
-        m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(GetRenderer())));
+        m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(pRenderer)));
         m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
@@ -151,7 +152,6 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
-        auto* pRenderer      = GetRenderer();
         auto  initShaderVars = [&]() -> void {
             m_pShader->Use();
             m_pShader->SetShaderVar("dirLight", m_DirLight);
@@ -178,7 +178,7 @@ class TestApp : public App::App
     {
         // TODO this should be handled automatically
         m_pCamera->Update(dt);
-        auto* pRenderer = GetRenderer();
+        auto* pRenderer = Render::Renderer::Instance();
         for (auto& cube : m_Cubes)
         {
             cube.Mesh().RotX(M_PI / 500.0);

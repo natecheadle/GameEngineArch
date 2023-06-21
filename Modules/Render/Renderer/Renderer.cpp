@@ -13,6 +13,8 @@
 
 namespace nate::Modules::Render
 {
+    std::unique_ptr<Renderer> Renderer::s_pInstance;
+
     Renderer::Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool)
         : ECS::System<Mesh3D, Sprite>(pMeshPool, pSpritePool)
     {
