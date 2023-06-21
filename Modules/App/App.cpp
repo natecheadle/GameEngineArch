@@ -10,15 +10,16 @@ namespace nate::Modules::App
 {
 
     App::App(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
-        : m_pRenderer(std::move(pRenderer))
     {
+        Render::Renderer::Initialize(std::move(pRenderer));
+        m_pRenderer = Render::Renderer::Instance();
         m_pWindow = m_pRenderer->Initialize(window_size, std::move(window_name));
     }
 
     void App::Close()
     {
         Shutdown();
-        m_pRenderer.reset();
+        Render::Renderer::Shutdown();
     }
 
     int App::Run()

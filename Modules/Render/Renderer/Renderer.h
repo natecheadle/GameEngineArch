@@ -46,11 +46,17 @@ namespace nate::Modules::Render
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
 
+        static std::unique_ptr<Renderer> s_pInstance;
+
       protected:
         Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
 
       public:
         virtual ~Renderer();
+
+        static void      Initialize(std::unique_ptr<Renderer> pInstance) { s_pInstance = std::move(pInstance); }
+        static void      Shutdown() { s_pInstance.reset(); }
+        static Renderer* Instance() { return s_pInstance.get(); }
 
         const std::exception& Error() { return Job::GetCaughtException(); }
         bool                  IsErrored() const { return Job::IsFailed(); }
