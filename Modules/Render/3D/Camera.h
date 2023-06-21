@@ -35,7 +35,7 @@ namespace nate::Modules::Render
         virtual SquareMatrix4x4<float> ViewPerspective() const;
         virtual SquareMatrix4x4<float> ViewOrthographic() const;
 
-        virtual void Update(std::chrono::nanoseconds /* time */) {}
+        virtual void Update(double /* dt */) {}
 
         const Vector3<float>& CameraPosition() const { return m_Position; }
         const Vector3<float>& CameraDirection() const { return m_Direction; }

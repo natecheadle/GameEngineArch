@@ -72,7 +72,7 @@ namespace nate::Modules::Render
         Translate({0, 0, -value});
     }
 
-    void Camera2D::Update(std::chrono::nanoseconds /* time */)
+    void Camera2D::Update(double /* dt */)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
     }

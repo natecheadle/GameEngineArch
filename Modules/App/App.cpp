@@ -24,32 +24,48 @@ namespace nate::Modules::App
 
     int App::Run()
     {
-        Initialize();
-
-        std::chrono::nanoseconds period{0};
-        while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
+        try
         {
-            std::chrono::time_point<std::chrono::steady_clock> begin = std::chrono::steady_clock::now();
-            m_pRenderer->ClearColorBuffer();
-            m_pRenderer->ClearDepthBuffer();
 
-            if (m_pWindow->ShouldClose())
-                break;
+            Initialize();
 
-            UpdateApp(period);
-
-            if (m_pRenderer->IsErrored())
+            double            period{0};
+            std::future<void> swap_future;
+            while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
             {
-                std::cerr << m_pRenderer->Error().what();
-                return 1;
+                std::chrono::time_point<std::chrono::high_resolution_clock> begin =
+                    std::chrono::high_resolution_clock::now();
+                m_pRenderer->ClearColorBuffer();
+                m_pRenderer->ClearDepthBuffer();
+
+                if (m_pWindow->ShouldClose())
+                    break;
+
+                UpdateApp(period);
+
+                if (m_pRenderer->IsErrored())
+                {
+                    std::cerr << m_pRenderer->Error().what();
+                    return 1;
+                }
+                if (swap_future.valid())
+                {
+                    if (std::future_status::ready != swap_future.wait_for(std::chrono::seconds(1)))
+                    {
+                        throw std::runtime_error("Failed to swap buffers within 1 second.");
+                    }
+                }
+                swap_future = std::move(m_pRenderer->SwapBuffers());
+
+                std::chrono::time_point<std::chrono::high_resolution_clock> end =
+                    std::chrono::high_resolution_clock::now();
+                period = std::chrono::duration<double>(end - begin).count();
             }
-
-            std::chrono::time_point<std::chrono::steady_clock> end = std::chrono::steady_clock::now();
-            period                             = duration_cast<std::chrono::nanoseconds>(end - begin);
-            std::chrono::nanoseconds sleepTime = std::chrono::nanoseconds(std::int64_t(1.0 / 60.0 * 1e9)) - period;
-            std::this_thread::sleep_for(sleepTime);
-
-            m_pRenderer->SwapBuffers();
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "caught exception e " << e.what();
+            //TODO there is probably other state managment that needs to happen here.
         }
 
         Close();

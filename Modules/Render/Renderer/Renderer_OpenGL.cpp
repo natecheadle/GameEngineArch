@@ -178,13 +178,14 @@ namespace nate::Modules::Render
         ExecuteFunction([]() -> void { glClear(GL_COLOR_BUFFER_BIT); });
     }
 
-    void Renderer_OpenGL::SwapBuffers()
+    std::future<void> Renderer_OpenGL::SwapBuffers()
     {
 #ifdef __APPLE__
         glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
         m_pWin->PollEvents();
+        return std::future<void>();
 #else
-        ExecuteFunction([this]() -> void {
+        return ExecuteFunctionAsync([this]() -> void {
             glfwSwapBuffers(this->m_pWin->GetGLFWWindow());
             m_pWin->PollEvents();
         });

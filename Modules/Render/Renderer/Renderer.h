@@ -90,17 +90,17 @@ namespace nate::Modules::Render
         virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
         virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
-        virtual void ClearDepthBuffer() = 0;
-        virtual void ClearColorBuffer() = 0;
-        virtual void SwapBuffers()      = 0;
+        virtual void              ClearDepthBuffer() = 0;
+        virtual void              ClearColorBuffer() = 0;
+        virtual std::future<void> SwapBuffers()      = 0;
 
         void ExecuteFunction(std::function<void()> func);
 
       protected:
         void ExecuteJob() final;
+        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
 
       private:
-        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
         std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> PopFunc();
         static void ExecuteFunction(std::promise<void>& prom, std::function<void()>& func);
         void        FlushQueue();

@@ -48,7 +48,7 @@ namespace nate::Modules::Render
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
-        void SwapBuffers() override;
+        std::future<void> SwapBuffers() override;
 
       private:
         static bool Validate(void* pVoid);
