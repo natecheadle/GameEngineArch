@@ -31,10 +31,10 @@ namespace nate::Modules
         Vector2& operator=(const Vector2& other) noexcept = default;
         Vector2& operator=(Vector2&& other) noexcept      = default;
 
-        T    x() const { return Vector<4, T>::at(0); }
-        void x(T val) { Vector<3, T>::at(0) = val; }
+        T    x() const { return Vector<2, T>::at(0U); }
+        void x(T val) { Vector<2, T>::at(0U) = val; }
 
-        T    y() const { return Vector<4, T>::at(1); }
-        void y(T val) { Vector<3, T>::at(1) = val; }
+        T    y() const { return Vector<2, T>::at(1U); }
+        void y(T val) { Vector<2, T>::at(1U) = val; }
     };
 } // namespace nate::Modules

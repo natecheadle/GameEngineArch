@@ -9,6 +9,7 @@ add_subdirectory("Messaging")
 add_subdirectory("Generic")
 add_subdirectory("App")
 add_subdirectory("ECS")
+add_subdirectory("Phsics")
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -20,4 +21,5 @@ target_link_libraries(${PROJECT_NAME} INTERFACE
     Modules_GUI 
     Modules_Render
     Modules_App
-    Modules_ECS)
+    Modules_ECS
+    Modules_Physics)
