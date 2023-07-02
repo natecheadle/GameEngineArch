@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <size_t SIZE, typename T = float>
     class SquareMatrix
@@ -381,4 +381,4 @@ namespace nate::Modules
 
     template <typename T = float>
     using SquareMatrix3x3 = SquareMatrix<3, T>;
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

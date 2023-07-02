@@ -8,9 +8,9 @@
 #include <fstream>
 #include <thread>
 
-using namespace nate::Modules::Debug;
+using namespace Ignosi::Modules::Debug;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
 
     class Logging_Tests : public testing::Test
@@ -210,4 +210,4 @@ namespace nate::Test
             }
         }
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

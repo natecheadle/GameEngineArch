@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace nate::Modules::Messaging {
+namespace Ignosi::Modules::Messaging {
     template <class ID_T, class DATA>
     class LargeDataMessage : public Message<ID_T> {
       public:
@@ -30,4 +30,4 @@ namespace nate::Modules::Messaging {
     };
 
     using GenericDataMessage = LargeDataMessage<std::int64_t, std::int64_t>;
-} // namespace nate::Modules::Messaging
+} // namespace Ignosi::Modules::Messaging

@@ -35,7 +35,7 @@
 #include <utility>
 #include <vector>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 using namespace std::chrono_literals;
 
 class TestAppEntity : ECS::Entity<Render::Mesh3D>
@@ -92,9 +92,9 @@ class TestApp : public App::App
         auto cubeMaterial = std::make_unique<Render::Material>();
         auto pRenderer    = Render::Renderer::Instance();
 
-        cubeMaterial->Diffuse = pRenderer->CreateTexture(cont_path, nate::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Diffuse = pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
         cubeMaterial->Specular =
-            pRenderer->CreateTexture(cont_spec_path, nate::Modules::Render::TextureUnit::Texture1);
+            pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
         auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});

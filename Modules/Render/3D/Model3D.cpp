@@ -16,7 +16,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Model3D::Model3D(Renderer* pRenderer, const std::filesystem::path& file)
         : m_pRenderer(pRenderer)
@@ -190,4 +190,4 @@ namespace nate::Modules::Render
         // TODO need to support mutliple textures
         return textures[0];
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

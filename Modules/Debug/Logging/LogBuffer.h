@@ -5,7 +5,7 @@
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/spdlog.h>
 
-namespace nate::Modules::Debug::Logging
+namespace Ignosi::Modules::Debug::Logging
 {
 
     class LogBuffer : public ILogBuffer
@@ -24,4 +24,4 @@ namespace nate::Modules::Debug::Logging
 
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> GetSink() const { return m_Sink; }
     };
-} // namespace nate::Modules::Debug::Logging
+} // namespace Ignosi::Modules::Debug::Logging

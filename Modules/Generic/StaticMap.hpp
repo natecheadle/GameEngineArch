@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <class KEY, KEY Begin, KEY End, class VALUE>
     class StaticMap
@@ -100,4 +100,4 @@ namespace nate::Modules
         bool operator==(const StaticMap& other) { return m_Data == other.m_Data; }
         bool operator!=(const StaticMap& other) { return m_Data != other.m_Data; }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

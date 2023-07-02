@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace nate::Modules::Debug::Logging
+namespace Ignosi::Modules::Debug::Logging
 {
 
     class ILogBuffer
@@ -16,4 +16,4 @@ namespace nate::Modules::Debug::Logging
         ILogBuffer()  = default;
         ~ILogBuffer() = default;
     };
-} // namespace nate::Modules::Debug::Logging
+} // namespace Ignosi::Modules::Debug::Logging

@@ -5,7 +5,7 @@
 
 #include <tuple>
 
-namespace nate::Modules::ECS
+namespace Ignosi::Modules::ECS
 {
     template <typename... Types>
     class System
@@ -34,4 +34,4 @@ namespace nate::Modules::ECS
             return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
         }
     };
-} // namespace nate::Modules::ECS
+} // namespace Ignosi::Modules::ECS

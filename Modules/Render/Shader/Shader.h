@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     enum class ShaderType
     {
@@ -32,4 +32,4 @@ namespace nate::Modules::Render
         Shader() = default;
         void LoadShaderCode(const std::filesystem::path& shaderLoc);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

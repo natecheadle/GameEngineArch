@@ -2,11 +2,11 @@
 
 #include "Light.h"
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct Light_Directional
     {
         Vector3<float> Direction;
         Light          Light;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

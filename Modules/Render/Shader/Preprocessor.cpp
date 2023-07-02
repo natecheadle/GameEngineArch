@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <string_view>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     std::string Preprocessor::PreProcess(const std::filesystem::path& file_path, const std::string& code)
     {
@@ -83,4 +83,4 @@ namespace nate::Modules::Render
 
         throw std::runtime_error("Include file not found: " + path.string());
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

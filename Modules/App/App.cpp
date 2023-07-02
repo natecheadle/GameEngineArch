@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 
-namespace nate::Modules::App
+namespace Ignosi::Modules::App
 {
 
     App::App(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
@@ -73,4 +73,4 @@ namespace nate::Modules::App
         return 0;
     }
 
-} // namespace nate::Modules::App
+} // namespace Ignosi::Modules::App

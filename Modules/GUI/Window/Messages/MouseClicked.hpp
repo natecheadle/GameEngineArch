@@ -5,7 +5,7 @@
 
 #include <SmallDataMessage.hpp>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class MouseClicked : public Messaging::SmallDataMessage<WindowMessages, MouseClickedInfo*> {
       public:
         MouseClicked(MouseClickedInfo* mouseClickedInfo)
@@ -15,4 +15,4 @@ namespace nate::Modules::GUI {
         {
         }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

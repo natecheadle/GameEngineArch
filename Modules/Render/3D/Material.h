@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct Material
     {
@@ -17,4 +17,4 @@ namespace nate::Modules::Render
 
         float Shininess;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

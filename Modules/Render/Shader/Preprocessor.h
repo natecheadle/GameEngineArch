@@ -5,7 +5,7 @@
 #include <regex>
 #include <string>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Preprocessor
     {
@@ -25,4 +25,4 @@ namespace nate::Modules::Render
         std::string           ProcessInclude(const std::filesystem::path& file_path, const std::filesystem::path& path);
         std::filesystem::path FindInclude(const std::filesystem::path& file_path, const std::filesystem::path& path);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

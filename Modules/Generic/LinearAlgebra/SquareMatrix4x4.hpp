@@ -7,7 +7,7 @@
 
 #include <stdexcept>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T = float>
     class SquareMatrix4x4 : public SquareMatrix<4, T>
@@ -287,4 +287,4 @@ namespace nate::Modules
     {
         return lhs * Vector4<T>(rhs);
     }
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <stdexcept>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     ImageFile::ImageFile(const std::filesystem::path& path, bool flipVerticallyOnLoad)
         : m_Width(0)
@@ -41,4 +41,4 @@ namespace nate::Modules::Render
         stbi_image_free(m_pData);
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

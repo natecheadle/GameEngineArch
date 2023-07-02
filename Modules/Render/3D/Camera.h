@@ -14,7 +14,7 @@
 #include <cmath>
 #include <functional>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Camera
     {
@@ -61,4 +61,4 @@ namespace nate::Modules::Render
 
         void Translate(const Vector3<float>& value);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

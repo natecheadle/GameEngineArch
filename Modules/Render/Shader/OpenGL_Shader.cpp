@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     OpenGL_Shader::~OpenGL_Shader()
     {
@@ -95,4 +95,4 @@ namespace nate::Modules::Render
         }
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

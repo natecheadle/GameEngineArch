@@ -6,9 +6,9 @@
 #include <fstream>
 #include <sstream>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     namespace
     {
@@ -65,4 +65,4 @@ namespace nate::Test
 
         Validate(test_file_path, processed_file_path);
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

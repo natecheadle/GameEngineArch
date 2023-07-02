@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class ShaderProgram
     {
@@ -37,4 +37,4 @@ namespace nate::Modules::Render
         virtual void SetShaderVar(std::string_view name, const Light_Attenuation& value) const      = 0;
         virtual void SetShaderVar(std::string_view name, const Light& value) const                  = 0;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

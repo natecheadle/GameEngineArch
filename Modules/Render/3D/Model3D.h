@@ -14,7 +14,7 @@ struct aiScene;
 class aiMesh;
 class aiMaterial;
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
 
     class Renderer;
@@ -57,4 +57,4 @@ namespace nate::Modules::Render
         std::shared_ptr<Mesh3D>  processMesh(aiMesh* mesh, const aiScene* scene);
         std::shared_ptr<Texture> loadMaterialTextures(aiMaterial* mat, int type);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

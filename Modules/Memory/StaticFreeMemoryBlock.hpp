@@ -10,7 +10,7 @@
 #include <memory>
 #include <mutex>
 
-namespace nate::Modules::Memory {
+namespace Ignosi::Modules::Memory {
     template <typename T>
     using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
 
@@ -219,4 +219,4 @@ namespace nate::Modules::Memory {
             return returnVal;
         }
     };
-} // namespace nate::Modules::Memory
+} // namespace Ignosi::Modules::Memory

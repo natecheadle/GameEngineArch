@@ -4,7 +4,7 @@
 
 #include "OpenGL_Shader.h"
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Vertex_OpenGL_Shader : public OpenGL_Shader
     {
@@ -16,4 +16,4 @@ namespace nate::Modules::Render
       protected:
         unsigned int CreateGLShader() override;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

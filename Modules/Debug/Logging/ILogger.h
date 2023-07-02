@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace nate::Modules::Debug::Logging
+namespace Ignosi::Modules::Debug::Logging
 {
 
     class ILogManager;
@@ -37,4 +37,4 @@ namespace nate::Modules::Debug::Logging
         ILogger()  = default;
         ~ILogger() = default;
     };
-} // namespace nate::Modules::Debug::Logging
+} // namespace Ignosi::Modules::Debug::Logging

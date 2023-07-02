@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-namespace nate::Modules::Memory
+namespace Ignosi::Modules::Memory
 {
     template <class T>
     class PoolMemoryBlock
@@ -501,4 +501,4 @@ namespace nate::Modules::Memory
 
     template <class T>
     using pool_pointer = typename PoolMemoryBlock<T>::pointer;
-} // namespace nate::Modules::Memory
+} // namespace Ignosi::Modules::Memory

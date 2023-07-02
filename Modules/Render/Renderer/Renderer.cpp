@@ -11,7 +11,7 @@
 #include <optional>
 #include <thread>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     std::unique_ptr<Renderer> Renderer::s_pInstance;
 
@@ -151,4 +151,4 @@ namespace nate::Modules::Render
             ExecuteFunction(func.first, func.second);
         }
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

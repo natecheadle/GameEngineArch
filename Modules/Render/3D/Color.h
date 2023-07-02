@@ -2,7 +2,7 @@
 
 #include <LinearAlgebra/Vector3.hpp>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Color
     {
@@ -20,4 +20,4 @@ namespace nate::Modules::Render
         Vector3<float>&       Data() { return m_Value; }
         void                  Data(const Vector3<float>& val) { m_Value = val; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

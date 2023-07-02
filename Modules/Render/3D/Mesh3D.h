@@ -13,7 +13,7 @@
 #include <memory>
 #include <span>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Renderer;
 
@@ -66,4 +66,4 @@ namespace nate::Modules::Render
         void RotY(const Radian<float>& val) { m_Rotation[1] += val; }
         void RotZ(const Radian<float>& val) { m_Rotation[2] += val; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

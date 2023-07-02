@@ -13,7 +13,7 @@
 #include <iterator>
 #include <type_traits>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <size_t SIZE, typename T>
     class Vector
@@ -169,4 +169,4 @@ namespace nate::Modules
             return os;
         }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

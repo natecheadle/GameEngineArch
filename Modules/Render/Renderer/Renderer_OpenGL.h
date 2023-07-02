@@ -8,7 +8,7 @@
 
 #include <memory>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
 
     class Renderer_OpenGL : public Renderer
@@ -76,4 +76,4 @@ namespace nate::Modules::Render
             }
         }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

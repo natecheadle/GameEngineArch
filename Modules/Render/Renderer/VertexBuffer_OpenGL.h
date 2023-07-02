@@ -5,7 +5,7 @@
 
 #include <span>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class VertexBuffer_OpenGL : public VertexBuffer
     {
@@ -36,4 +36,4 @@ namespace nate::Modules::Render
 
         static int ConvertType(VertexDataConfig::DataType type);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

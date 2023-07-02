@@ -8,7 +8,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace nate::Modules::ECS
+namespace Ignosi::Modules::ECS
 {
     template <typename... Types>
     class World
@@ -48,4 +48,4 @@ namespace nate::Modules::ECS
             return pool.template CreateObject<T>(std::forward<T>(val));
         }
     };
-} // namespace nate::Modules::ECS
+} // namespace Ignosi::Modules::ECS

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class OpenGL_ShaderProgram : public ShaderProgram
     {
@@ -35,4 +35,4 @@ namespace nate::Modules::Render
         void SetShaderVar(std::string_view name, const Light_Attenuation& value) const final;
         void SetShaderVar(std::string_view name, const Light& value) const final;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render
