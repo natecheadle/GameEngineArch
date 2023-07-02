@@ -31,7 +31,7 @@
 #include <queue>
 #include <span>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     using VertexBuffer_ptr  = std::unique_ptr<VertexBuffer, std::function<void(VertexBuffer*)>>;
     using Shader_ptr        = std::unique_ptr<Shader, std::function<void(Shader*)>>;
@@ -101,4 +101,4 @@ namespace nate::Modules::Render
         static void ExecuteFunction(std::promise<void>& prom, std::function<void()>& func);
         void        FlushQueue();
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

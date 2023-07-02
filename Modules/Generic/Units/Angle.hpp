@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <class T, class DERIVED>
     class Angle
@@ -153,4 +153,4 @@ namespace nate::Modules
     {
         return std::tan(val.Radians());
     }
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

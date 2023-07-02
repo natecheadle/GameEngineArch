@@ -13,8 +13,8 @@
 #include <future>
 #include <vector>
 
-using namespace nate::Modules;
-namespace nate::Test
+using namespace Ignosi::Modules;
+namespace Ignosi::Test
 {
     namespace
     {
@@ -557,4 +557,4 @@ namespace nate::Test
 
         ASSERT_EQ(0, memBlock.UsedSize());
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

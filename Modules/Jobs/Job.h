@@ -6,7 +6,7 @@
 #include <future>
 #include <mutex>
 
-namespace nate::Modules::Jobs
+namespace Ignosi::Modules::Jobs
 {
 
     class Job
@@ -43,4 +43,4 @@ namespace nate::Modules::Jobs
         void         Yield();
         bool         ShouldStop() const { return m_ShouldStop; }
     };
-} // namespace nate::Modules::Jobs
+} // namespace Ignosi::Modules::Jobs

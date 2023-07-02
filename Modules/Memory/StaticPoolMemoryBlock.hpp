@@ -11,7 +11,7 @@
 #include <thread>
 #include <type_traits>
 
-namespace nate::Modules::Memory {
+namespace Ignosi::Modules::Memory {
     template <typename T>
     using unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
 
@@ -108,4 +108,4 @@ namespace nate::Modules::Memory {
         size_t PrivUsedSize() { return m_UsedBlocks * sizeof(T); }
         size_t PrivRemainingSize() { return SIZE - PrivUsedSize(); }
     };
-} // namespace nate::Modules::Memory
+} // namespace Ignosi::Modules::Memory

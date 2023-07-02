@@ -11,7 +11,7 @@
 #include <map>
 #include <mutex>
 
-namespace nate::Modules::Messaging
+namespace Ignosi::Modules::Messaging
 {
     template <class ID_T, class MUTEX = NullMutex>
     class MessagePump
@@ -112,4 +112,4 @@ namespace nate::Modules::Messaging
             return false;
         }
     };
-} // namespace nate::Modules::Messaging
+} // namespace Ignosi::Modules::Messaging

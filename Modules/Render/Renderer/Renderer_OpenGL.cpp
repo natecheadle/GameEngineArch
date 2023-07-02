@@ -21,7 +21,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Renderer_OpenGL::Renderer_OpenGL(
         Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
@@ -227,4 +227,4 @@ namespace nate::Modules::Render
     {
         DeleteObj(pProgram);
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

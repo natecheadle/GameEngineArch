@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace nate::Modules::App
+namespace Ignosi::Modules::App
 {
     class App
     {
@@ -28,5 +28,5 @@ namespace nate::Modules::App
         virtual void  UpdateApp(double dt) = 0;
         virtual void  Initialize()         = 0;
         virtual void  Shutdown()           = 0;
-    }; // namespace nate::Modules::App
+    };
 } // namespace nate::Modules::App

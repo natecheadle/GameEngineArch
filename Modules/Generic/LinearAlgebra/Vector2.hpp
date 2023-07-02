@@ -2,7 +2,7 @@
 
 #include "Vector.hpp"
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector2 : public Vector<2, T>
@@ -37,4 +37,4 @@ namespace nate::Modules
         T    y() const { return Vector<2, T>::at(1U); }
         void y(T val) { Vector<2, T>::at(1U) = val; }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

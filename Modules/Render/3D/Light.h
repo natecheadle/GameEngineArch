@@ -4,7 +4,7 @@
 
 #include <LinearAlgebra/Vector3.hpp>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct Light
     {
@@ -12,4 +12,4 @@ namespace nate::Modules::Render
         RGB_Color Diffuse;
         RGB_Color Specular;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

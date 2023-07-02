@@ -13,7 +13,7 @@
 #include <memory>
 #include <span>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Renderer;
 
@@ -74,4 +74,4 @@ namespace nate::Modules::Render
         void TranslateX(float val) { m_Origin[0] += val; }
         void TranslateY(float val) { m_Origin[1] += val; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

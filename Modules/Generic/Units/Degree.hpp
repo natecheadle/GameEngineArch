@@ -2,7 +2,7 @@
 
 #include "Angle.hpp"
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <class T>
     class Degree : public Angle<T, Degree<T>>
@@ -27,4 +27,4 @@ namespace nate::Modules
       protected:
         float ValPerRad() const override { return Angle<T, Degree<T>>::DegreePerRad(); };
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class KeyPressed : public Messaging::SmallDataMessage<WindowMessages, KeyPressedInfo*> {
       public:
         KeyPressed(KeyPressedInfo* keyPressInfo)
@@ -15,4 +15,4 @@ namespace nate::Modules::GUI {
         {
         }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

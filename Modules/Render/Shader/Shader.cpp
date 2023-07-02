@@ -6,7 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     void Shader::LoadShaderCode(const std::filesystem::path& shaderLoc)
     {
@@ -19,4 +19,4 @@ namespace nate::Modules::Render
         m_ShaderCode = sstream.str();
         m_ShaderLoc  = shaderLoc;
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

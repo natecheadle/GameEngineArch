@@ -7,9 +7,9 @@
 #include <memory>
 #include <thread>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     enum class MessageID
     {
@@ -235,4 +235,4 @@ namespace nate::Test
         EXPECT_EQ(1, m_DoSmallDataCount);
         EXPECT_EQ(1, m_DoDataCount);
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

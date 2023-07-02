@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <string>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     enum class TextureUnit : unsigned int
     {
@@ -42,4 +42,4 @@ namespace nate::Modules::Render
         virtual void Activate() const = 0;
         virtual void Bind() const     = 0;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

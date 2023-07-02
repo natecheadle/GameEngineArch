@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     struct Position
     {
@@ -97,4 +97,4 @@ namespace nate::Test
 
         ASSERT_EQ(entity.Kinematic(), expect);
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

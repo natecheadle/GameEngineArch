@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 
-namespace nate::Modules::App
+namespace Ignosi::Modules::App
 {
 
     App::App(
@@ -78,4 +78,4 @@ namespace nate::Modules::App
         return 0;
     }
 
-} // namespace nate::Modules::App
+} // namespace Ignosi::Modules::App

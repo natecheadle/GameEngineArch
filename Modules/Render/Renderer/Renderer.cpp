@@ -11,7 +11,7 @@
 #include <optional>
 #include <thread>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Renderer::Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool)
         : ECS::System<Mesh3D, Sprite>(pMeshPool, pSpritePool)
@@ -149,4 +149,4 @@ namespace nate::Modules::Render
             ExecuteFunction(func.first, func.second);
         }
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

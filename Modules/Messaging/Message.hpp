@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <cstdint>
 
-namespace nate::Modules::Messaging {
+namespace Ignosi::Modules::Messaging {
     template <class ID_T>
     class Message {
         static_assert(std::is_integral_v<ID_T> || std::is_enum_v<ID_T>, "ID Type must be integral or enum type.");
@@ -22,4 +22,4 @@ namespace nate::Modules::Messaging {
     };
 
     using GenericMessage = Message<std::int64_t>;
-} // namespace nate::Modules::Messaging
+} // namespace Ignosi::Modules::Messaging

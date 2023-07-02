@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct Light_Attenuation
     {
@@ -8,4 +8,4 @@ namespace nate::Modules::Render
         float Linear;
         float Quadratic;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

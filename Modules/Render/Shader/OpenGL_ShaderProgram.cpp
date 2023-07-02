@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     OpenGL_ShaderProgram::OpenGL_ShaderProgram(
         const Shader* pFragmentShader,
@@ -164,4 +164,4 @@ namespace nate::Modules::Render
         SetShaderVar(fmt::format("{}.{}", name, "Specular"), value.Specular.Data());
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     enum class WindowMessages
     {
         WindowResized,
@@ -8,4 +8,4 @@ namespace nate::Modules::GUI {
         KeyPressed,
         MouseClicked,
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

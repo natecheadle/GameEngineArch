@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-namespace nate::Modules {
+namespace Ignosi::Modules {
     class NullMutex {
       public:
         static void lock() noexcept {}
@@ -25,4 +25,4 @@ namespace nate::Modules {
 
         [[nodiscard]] static bool try_lock_shared() noexcept { return true; }
     };
-}; // namespace nate::Modules
+}; // namespace Ignosi::Modules

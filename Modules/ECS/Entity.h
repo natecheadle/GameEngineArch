@@ -8,7 +8,7 @@
 #include <memory>
 #include <tuple>
 
-namespace nate::Modules::ECS
+namespace Ignosi::Modules::ECS
 {
 
     template <typename... ComponentTypes>
@@ -56,4 +56,4 @@ namespace nate::Modules::ECS
             return *pComponent;
         }
     };
-} // namespace nate::Modules::ECS
+} // namespace Ignosi::Modules::ECS

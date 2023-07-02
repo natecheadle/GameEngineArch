@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector3 : public Vector<3, T>
@@ -78,4 +78,4 @@ namespace nate::Modules
             return *this;
         }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

@@ -5,7 +5,7 @@
 #include <Renderer/Renderer.h>
 #include <Units/Radian.hpp>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     const SpriteVertexData Sprite::m_BasicSpritePoints[] = {
 
@@ -103,4 +103,4 @@ namespace nate::Modules::Render
 
         m_pBuffer->Draw();
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

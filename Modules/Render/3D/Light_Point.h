@@ -3,7 +3,7 @@
 #include "Light.h"
 #include "Light_Attenuation.h"
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct Light_Point
     {
@@ -11,4 +11,4 @@ namespace nate::Modules::Render
         Light_Attenuation Attenuation;
         Light             Light;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render
