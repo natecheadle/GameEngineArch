@@ -7,7 +7,7 @@
 #include <mutex>
 #include <shared_mutex>
 
-namespace nate::Modules::Messaging
+namespace Ignosi::Modules::Messaging
 {
     template <class ID_T, class MUTEX>
     class MessageSubscribers
@@ -71,4 +71,4 @@ namespace nate::Modules::Messaging
             }
         }
     };
-} // namespace nate::Modules::Messaging
+} // namespace Ignosi::Modules::Messaging

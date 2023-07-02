@@ -3,7 +3,7 @@
 #include <functional>
 #include <mutex>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <class MUTEX, class LOCKED_ITEM>
     class MutexProtected
@@ -44,4 +44,4 @@ namespace nate::Modules
             return func(m_Data);
         }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

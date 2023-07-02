@@ -3,9 +3,9 @@
 
 #include <gtest/gtest.h>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     TEST(Units_Tests, ValidateConstruction)
     {
@@ -74,4 +74,4 @@ namespace nate::Test
         ASSERT_LT(small_val, deg_val);
         ASSERT_GT(large_val, deg_val);
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

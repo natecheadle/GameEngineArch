@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     const VertexData Mesh3D::m_CubePoints[] = {
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {{0.0f, 0.0f}}},
@@ -121,4 +121,4 @@ namespace nate::Modules::Render
 
         m_pBuffer->Draw();
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

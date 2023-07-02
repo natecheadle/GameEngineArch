@@ -5,7 +5,7 @@
 #include <LinearAlgebra/Vector2.hpp>
 #include <LinearAlgebra/Vector3.hpp>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct SpriteVertexData
     {
@@ -25,4 +25,4 @@ namespace nate::Modules::Render
     };
 
     static_assert(sizeof(SpriteVertexData) == sizeof(float) * 4, "SpriteVertexData must be tightly packed");
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

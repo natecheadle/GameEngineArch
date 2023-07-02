@@ -2,7 +2,7 @@
 
 #include "Color.h"
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class RGB_Color : public Color
     {
@@ -26,4 +26,4 @@ namespace nate::Modules::Render
         void Green(float val) { Data()[1] = val; }
         void Blue(float val) { Data()[2] = val; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

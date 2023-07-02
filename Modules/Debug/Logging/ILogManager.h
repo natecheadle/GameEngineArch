@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace nate::Modules::Debug::Logging
+namespace Ignosi::Modules::Debug::Logging
 {
 
     class ILogManager
@@ -38,4 +38,4 @@ namespace nate::Modules::Debug::Logging
         virtual ILogger*              InitializeLogger(const std::string& moduleName) = 0;
         virtual ILogger*              GetLogger(const std::string& moduleName) const  = 0;
     };
-} // namespace nate::Modules::Debug::Logging
+} // namespace Ignosi::Modules::Debug::Logging

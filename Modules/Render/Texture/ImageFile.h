@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class ImageFile
     {
@@ -23,4 +23,4 @@ namespace nate::Modules::Render
         int                  GetChannels() const { return m_Width; }
         int                  GetFormat() const { return m_Format; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

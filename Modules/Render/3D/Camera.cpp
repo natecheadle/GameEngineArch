@@ -11,7 +11,7 @@
 #include <cassert>
 #include <chrono>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Camera::Camera(GUI::IWindow* pWindow)
         : m_pWindow(pWindow)
@@ -64,4 +64,4 @@ namespace nate::Modules::Render
         m_Position += value;
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

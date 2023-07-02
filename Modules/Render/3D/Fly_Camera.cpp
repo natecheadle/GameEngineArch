@@ -9,7 +9,7 @@
 
 #include <functional>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Fly_Camera::Fly_Camera(GUI::IWindow* pWindow)
         : Camera(pWindow)
@@ -148,4 +148,4 @@ namespace nate::Modules::Render
         mappingUpdate(m_ZoomInMap);
         mappingUpdate(m_ZoomOutMap);
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

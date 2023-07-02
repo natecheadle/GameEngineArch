@@ -30,7 +30,7 @@
 
 #include <map>
 
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
 
     std::atomic<size_t> Window_GLFW::WindowCount = 0;
@@ -465,4 +465,4 @@ namespace nate::Modules::GUI
         assert(false);
         return MouseButton::Left;
     }
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

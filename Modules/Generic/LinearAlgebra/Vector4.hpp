@@ -2,7 +2,7 @@
 
 #include "Vector.hpp"
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector4 : public Vector<4, T>
@@ -55,4 +55,4 @@ namespace nate::Modules
 
         Vector3<T> ToVector3() const { return Vector3<T>(x(), y(), z()); }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

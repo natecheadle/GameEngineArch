@@ -2,9 +2,9 @@
 
 #include <gtest/gtest.h>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     enum alphabet
     {
@@ -71,4 +71,4 @@ namespace nate::Test
         test_map.at(alphabet::g) = 29;
         ASSERT_EQ(29, test_map[alphabet::g]);
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

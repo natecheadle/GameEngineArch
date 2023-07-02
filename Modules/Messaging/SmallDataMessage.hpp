@@ -2,7 +2,7 @@
 
 #include "Message.hpp"
 
-namespace nate::Modules::Messaging {
+namespace Ignosi::Modules::Messaging {
     template <class ID_T, class DATA>
     class SmallDataMessage : public Message<ID_T> {
       public:
@@ -20,4 +20,4 @@ namespace nate::Modules::Messaging {
       private:
         DATA m_Data;
     };
-} // namespace nate::Modules::Messaging
+} // namespace Ignosi::Modules::Messaging

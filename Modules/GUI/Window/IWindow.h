@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
 
     using KeyStateMap   = StaticMap<Key, Key::None, Key::LAST, std::pair<KeyState, KeyModifiers>>;
@@ -48,4 +48,4 @@ namespace nate::Modules::GUI
         virtual std::pair<KeyState, KeyModifiers> GetLastKeyState(Key key) const             = 0;
         virtual void ExecuteWithKeyStates(std::function<void(const KeyStateMap&)> exe) const = 0;
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

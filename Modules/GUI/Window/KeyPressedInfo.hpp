@@ -3,7 +3,7 @@
 #include "KeyModifiers.hpp"
 #include "Keys.h"
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class KeyPressedInfo {
         Key          m_Key{Key::A};
         KeyModifiers m_KeyMods;
@@ -36,4 +36,4 @@ namespace nate::Modules::GUI {
         void KeyState(enum KeyState value) { m_KeyState = value; }
         void ScanCode(int value) { m_ScanCode = value; }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

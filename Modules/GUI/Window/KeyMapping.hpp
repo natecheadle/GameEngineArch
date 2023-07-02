@@ -7,7 +7,7 @@
 #include <functional>
 #include <utility>
 
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
     class KeyMapping
     {
@@ -52,4 +52,4 @@ namespace nate::Modules::GUI
         void AttachKeyEvent(std::function<void()> func) { m_ExecuteKeyMappingEvent = std::move(func); }
         void ExecuteKeyEvent() const { m_ExecuteKeyMappingEvent(); }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

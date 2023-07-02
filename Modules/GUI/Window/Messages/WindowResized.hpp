@@ -5,7 +5,7 @@
 
 #include <SmallDataMessage.hpp>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class WindowResized : public Messaging::SmallDataMessage<WindowMessages, WindowSize*> {
       public:
         WindowResized(WindowSize* size)
@@ -13,4 +13,4 @@ namespace nate::Modules::GUI {
         {
         }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

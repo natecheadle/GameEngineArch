@@ -17,9 +17,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
-namespace nate::Test
+namespace Ignosi::Test
 {
     class MatrixTests : public testing::Test
     {
@@ -233,4 +233,4 @@ namespace nate::Test
         ASSERT_EQ(Vector3<float>(3.0, 3.0, 3.0), translated);
     }
 
-} // namespace nate::Test
+} // namespace Ignosi::Test
