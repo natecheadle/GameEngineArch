@@ -14,6 +14,7 @@
 
 #include <IWindow.h>
 #include <Job.h>
+#include <Singleton.hpp>
 #include <System.h>
 
 #include <algorithm>
@@ -40,23 +41,18 @@ namespace nate::Modules::Render
     class Renderer
         : public ECS::System<Mesh3D, Sprite>
         , protected Jobs::Job
+        , public Singleton<Renderer>
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
 
-        static std::unique_ptr<Renderer> s_pInstance;
-
       protected:
         Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
 
       public:
         virtual ~Renderer();
-
-        static void      Initialize(std::unique_ptr<Renderer> pInstance) { s_pInstance = std::move(pInstance); }
-        static void      Shutdown() { s_pInstance.reset(); }
-        static Renderer* Instance() { return s_pInstance.get(); }
 
         const std::exception& Error() { return Job::GetCaughtException(); }
         bool                  IsErrored() const { return Job::IsFailed(); }
@@ -97,7 +93,7 @@ namespace nate::Modules::Render
         void ExecuteFunction(std::function<void()> func);
 
       protected:
-        void ExecuteJob() final;
+        void              ExecuteJob() final;
         std::future<void> ExecuteFunctionAsync(std::function<void()> func);
 
       private:

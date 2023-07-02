@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IEntity.h"
+
 #include <PoolMemoryBlock.hpp>
 #include <UID.hpp>
 
@@ -10,7 +12,7 @@ namespace nate::Modules::ECS
 {
 
     template <typename... ComponentTypes>
-    class Entity
+    class Entity : public IEntity
     {
         std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
 

@@ -9,17 +9,22 @@
 namespace nate::Modules::App
 {
 
-    App::App(std::unique_ptr<Render::Renderer> pRenderer, const GUI::WindowSize& window_size, std::string window_name)
+    App::App(
+        std::unique_ptr<Render::Renderer>       pRenderer,
+        const GUI::WindowSize&                  window_size,
+        std::string                             window_name,
+        std::unique_ptr<Physics::PhysicsSystem> pPhysics)
     {
-        Render::Renderer::Initialize(std::move(pRenderer));
+        Render::Renderer::SetInstance(std::move(pRenderer));
         m_pRenderer = Render::Renderer::Instance();
-        m_pWindow = m_pRenderer->Initialize(window_size, std::move(window_name));
+        m_pWindow   = m_pRenderer->Initialize(window_size, std::move(window_name));
+        m_pPhysics  = std::move(pPhysics);
     }
 
     void App::Close()
     {
         Shutdown();
-        Render::Renderer::Shutdown();
+        Render::Renderer::Reset();
     }
 
     int App::Run()
@@ -65,7 +70,7 @@ namespace nate::Modules::App
         catch (const std::exception& e)
         {
             std::cerr << "caught exception e " << e.what();
-            //TODO there is probably other state managment that needs to happen here.
+            // TODO there is probably other state managment that needs to happen here.
         }
 
         Close();
