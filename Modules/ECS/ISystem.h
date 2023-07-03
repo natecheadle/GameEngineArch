@@ -1,8 +1,10 @@
-namespace nate::Modules::ECS
+#pragma once
+
+namespace Ignosi::Modules::ECS
 {
     class ISystem
     {
       public:
         virtual ~ISystem() = default;
     };
-} // namespace nate::Modules::ECS
+} // namespace Ignosi::Modules::ECS

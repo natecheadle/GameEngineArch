@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} 
     "PhysicsTestApp.cpp"
     "main.cpp" 
-    "Ball.cpp" "Wall.h" "Wall.cpp")
+    "Ball.cpp"
+    "Wall.cpp")
 
 
 add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")

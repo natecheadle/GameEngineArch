@@ -1,6 +1,6 @@
 #include "RigidBody2D.h"
 
-namespace nate::Modules::Physics
+namespace Ignosi::Modules::Physics
 {
     void RigidBody2D::Update(float dt) {}
 
@@ -15,4 +15,4 @@ namespace nate::Modules::Physics
         m_OnPosChange = nullptr;
         m_OnCollision = nullptr;
     }
-} // namespace nate::Modules::Physics
+} // namespace Ignosi::Modules::Physics

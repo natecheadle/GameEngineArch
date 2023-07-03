@@ -7,7 +7,7 @@
 #include <chrono>
 #include <vector>
 
-namespace nate::Modules::Physics
+namespace Ignosi::Modules::Physics
 {
     class PhysicsSystem : public ECS::System<RigidBody2D>
     {
@@ -21,4 +21,4 @@ namespace nate::Modules::Physics
       private:
         static bool CheckCollision(const RigidBody2D& one, const RigidBody2D& two);
     };
-} // namespace nate::Modules::Physics
+} // namespace Ignosi::Modules::Physics

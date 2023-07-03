@@ -4,7 +4,7 @@
 
 #include <functional>
 
-namespace nate::Modules::Physics
+namespace Ignosi::Modules::Physics
 {
     class PhysicsSystem;
 
@@ -50,4 +50,4 @@ namespace nate::Modules::Physics
       private:
         void CollisionOccurred(const RigidBody2D& other);
     };
-} // namespace nate::Modules::Physics
+} // namespace Ignosi::Modules::Physics

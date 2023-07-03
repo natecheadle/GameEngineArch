@@ -1,6 +1,8 @@
+#pragma once
+
 #include <cstdint>
 
-namespace nate::Modules::ECS
+namespace Ignosi::Modules::ECS
 {
     class IEntity
     {
@@ -8,4 +10,4 @@ namespace nate::Modules::ECS
         virtual ~IEntity()               = default;
         virtual std::uint64_t ID() const = 0;
     };
-} // namespace nate::Modules::ECS
+} // namespace Ignosi::Modules::ECS

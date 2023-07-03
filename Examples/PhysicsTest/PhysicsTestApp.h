@@ -8,7 +8,7 @@
 
 #include <string_view>
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
 class PhysicsTestApp : public App::App
 {

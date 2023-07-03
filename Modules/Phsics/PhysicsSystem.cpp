@@ -4,7 +4,7 @@
 
 using namespace std::chrono_literals;
 
-namespace nate::Modules::Physics
+namespace Ignosi::Modules::Physics
 {
     PhysicsSystem::PhysicsSystem(Memory::PoolMemoryBlock<RigidBody2D>* pRigidBodyPool)
         : ECS::System<RigidBody2D>(pRigidBodyPool)
@@ -58,4 +58,4 @@ namespace nate::Modules::Physics
         // collision only if on both axes
         return collisionX && collisionY;
     }
-} // namespace nate::Modules::Physics
+} // namespace Ignosi::Modules::Physics

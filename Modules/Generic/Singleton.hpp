@@ -1,10 +1,12 @@
+#pragma once
+
 #include "MutexProtected.hpp"
 #include "NullMutex.hpp"
 
 #include <memory>
 #include <utility>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <class T, class MUTEX = NullMutex>
     class Singleton
@@ -37,4 +39,4 @@ namespace nate::Modules
     MutexProtected<MUTEX, std::unique_ptr<T>> Singleton<T, MUTEX>::m_Singleton =
         MutexProtected<MUTEX, std::unique_ptr<T>>();
 
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

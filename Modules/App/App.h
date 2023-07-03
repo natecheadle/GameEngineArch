@@ -29,4 +29,4 @@ namespace Ignosi::Modules::App
         virtual void  Initialize()         = 0;
         virtual void  Shutdown()           = 0;
     };
-} // namespace nate::Modules::App
+} // namespace Ignosi::Modules::App
