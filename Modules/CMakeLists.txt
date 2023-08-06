@@ -9,7 +9,7 @@ add_subdirectory("Messaging")
 add_subdirectory("Generic")
 add_subdirectory("App")
 add_subdirectory("ECS")
-add_subdirectory("Phsics")
+add_subdirectory("Physics")
 
 add_library(${PROJECT_NAME} INTERFACE)
 

@@ -10,7 +10,7 @@ add_executable(${PROJECT_NAME}
     "Wall.cpp")
 
 
-add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")
+add_compile_definitions(RESOURCE_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}/Resources\)")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Modules)
 target_compile_definitions(${PROJECT_NAME} PRIVATE "APP_OUT_DIR=\"${CMAKE_CURRENT_BINARY_DIR}\"")

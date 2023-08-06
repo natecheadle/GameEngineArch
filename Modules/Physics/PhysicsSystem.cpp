@@ -49,13 +49,6 @@ namespace Ignosi::Modules::Physics
 
     bool PhysicsSystem::CheckCollision(const RigidBody2D& one, const RigidBody2D& two)
     {
-        // collision x-axis?
-        bool collisionX = one.Position()[0] + one.HitBox()[0] >= two.Position()[0] &&
-                          two.Position()[0] + two.HitBox()[0] >= one.Position()[0];
-        // collision y-axis?
-        bool collisionY = one.Position()[1] + one.HitBox()[1] >= two.Position()[1] &&
-                          two.Position()[1] + two.HitBox()[1] >= one.Position()[1];
-        // collision only if on both axes
-        return collisionX && collisionY;
+        return false;
     }
 } // namespace Ignosi::Modules::Physics

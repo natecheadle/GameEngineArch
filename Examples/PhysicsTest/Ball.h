@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Entity.h>
 #include <3D/Sprite.h>
+#include <Entity.h>
 #include <RigidBody2D.h>
 
 namespace Ignosi::Examples::PhysicsTest

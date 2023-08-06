@@ -9,19 +9,21 @@
 #include <string_view>
 
 using namespace Ignosi::Modules;
-
-class PhysicsTestApp : public App::App
+namespace Ignosi::Examples::PhysicsTest
 {
-    static constexpr GUI::WindowSize  WINDOW_SIZE{800, 600};
-    static constexpr std::string_view WINDOW_NAME{"Physics Test App"};
+    class PhysicsTestApp : public App::App
+    {
+        static constexpr GUI::WindowSize  WINDOW_SIZE{800, 600};
+        static constexpr std::string_view WINDOW_NAME{"Physics Test App"};
 
-    std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>> m_pWorld;
+        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>> m_pWorld;
 
-  public:
-    PhysicsTestApp(std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>> pWorld);
+      public:
+        PhysicsTestApp(std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>> pWorld);
 
-  protected:
-    void Initialize() override;
-    void UpdateApp(double dt) override;
-    void Shutdown() override;
-};
+      protected:
+        void Initialize() override;
+        void UpdateApp(double dt) override;
+        void Shutdown() override;
+    };
+} // namespace Ignosi::Examples::PhysicsTest

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "HitShape.h"
+
 #include <LinearAlgebra/Vector2.hpp>
 
 #include <functional>
+#include <vector>
 
 namespace Ignosi::Modules::Physics
 {
@@ -10,10 +13,10 @@ namespace Ignosi::Modules::Physics
 
     class RigidBody2D
     {
-        Vector2<float> m_Position;
-        Vector2<float> m_Velocity;
-        Vector2<float> m_HitBox;
-        bool           m_IsFixed{true};
+        Vector2<float>                         m_Position;
+        Vector2<float>                         m_Velocity;
+        std::vector<std::unique_ptr<HitShape>> m_HitBoxes;
+        bool                                   m_IsFixed{true};
 
         std::function<void(const Vector2<float>&)>    m_OnPosChange;
         std::function<void(const RigidBody2D& other)> m_OnCollision;
@@ -44,8 +47,8 @@ namespace Ignosi::Modules::Physics
         const Vector2<float>& Velocity() const { return m_Velocity; }
         void                  Velocity(const Vector2<float>& val) { m_Velocity = val; }
 
-        const Vector2<float>& HitBox() const { return m_HitBox; }
-        void                  HitBox(const Vector2<float>& val) { m_HitBox = val; }
+        const std::vector<std::unique_ptr<HitShape>>& HitBoxes() const { return m_HitBoxes; }
+        void HitBoxes(std::vector<std::unique_ptr<HitShape>> val) { m_HitBoxes = std::move(val); }
 
       private:
         void CollisionOccurred(const RigidBody2D& other);
