@@ -7,21 +7,23 @@ namespace Ignosi::Modules
     template <typename T>
     class Vector2 : public Vector<2, T>
     {
+        using BASE = Vector<2, T>;
+
       public:
-        Vector2() noexcept = default;
+        constexpr Vector2() noexcept = default;
 
-        Vector2(T x, T y)
-            : Vector<2, T>({x, y})
+        constexpr Vector2(T x, T y) noexcept
+            : BASE({x, y})
         {
         }
 
-        Vector2(T val)
-            : Vector<2, T>(val)
+        constexpr Vector2(T val)
+            : BASE(val)
         {
         }
 
-        Vector2(std::initializer_list<T> vals) noexcept
-            : Vector<2, T>(std::move(vals))
+        constexpr Vector2(std::initializer_list<T> vals) noexcept
+            : BASE(std::move(vals))
         {
         }
 

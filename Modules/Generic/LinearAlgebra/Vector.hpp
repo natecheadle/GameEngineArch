@@ -24,9 +24,9 @@ namespace Ignosi::Modules
         using const_iterator = typename std::array<T, SIZE>::const_iterator;
         using iterator       = typename std::array<T, SIZE>::iterator;
 
-        Vector() noexcept { m_Data.fill(T()); }
+        constexpr Vector() noexcept { m_Data.fill(T()); }
 
-        Vector(std::initializer_list<T> vals) noexcept
+        constexpr Vector(std::initializer_list<T> vals) noexcept
         {
             assert(vals.size() <= SIZE);
             size_t i = 0;
@@ -36,7 +36,7 @@ namespace Ignosi::Modules
             }
         }
 
-        Vector(T val) noexcept { m_Data.fill(val); }
+        constexpr Vector(T val) noexcept { m_Data.fill(val); }
 
         Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }
         Vector(Vector&& other) noexcept = default;

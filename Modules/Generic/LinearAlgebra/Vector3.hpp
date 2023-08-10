@@ -14,17 +14,22 @@ namespace Ignosi::Modules
       public:
         Vector3() noexcept = default;
 
-        Vector3(T x, T y, T z) noexcept
+        constexpr Vector3(T x, T y, T z) noexcept
             : BASE({x, y, z})
         {
         }
 
-        Vector3(const Vector<3, T>& other) noexcept
+        constexpr Vector3(std::initializer_list<T> vals) noexcept
+            : BASE(std::move(vals))
+        {
+        }
+
+        constexpr Vector3(const Vector<3, T>& other) noexcept
             : BASE(other)
         {
         }
 
-        Vector3(T val)
+        constexpr Vector3(T val)
             : Vector<3, T>(val)
         {
         }
