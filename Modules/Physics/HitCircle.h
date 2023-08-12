@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HitShape.h"
+#include <3D/
 
 namespace Ignosi::Modules::Physics
 {
