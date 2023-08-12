@@ -6,7 +6,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
-#include <math.h>
+#include <gcem.hpp>
 
 #include <type_traits>
 
@@ -18,7 +18,7 @@ namespace Ignosi::Modules
         T m_RadValue{0.0};
 
       protected:
-        Angle(T val)
+        constexpr Angle(T val)
             : m_RadValue(val)
         {
         }
@@ -70,7 +70,7 @@ namespace Ignosi::Modules
         void Value(T val) { m_RadValue = val / static_cast<DERIVED*>(this)->ValPerRad(); }
         T    Value() const { return static_cast<DERIVED*>(this)->ValPerRad() * m_RadValue; }
 
-        T Radians() const { return m_RadValue; }
+        constexpr T Radians() const { return m_RadValue; }
 
         template <class DERIVED_OTHER>
         friend DERIVED operator-(const Angle& lhs, const Angle<T, DERIVED_OTHER>& rhs)
@@ -137,20 +137,20 @@ namespace Ignosi::Modules
     };
 
     template <class T, class DERIVED>
-    T sin(const Angle<T, DERIVED>& val)
+    constexpr T sin(const Angle<T, DERIVED>& val)
     {
-        return std::sin(val.Radians());
+        return gcem::sin(val.Radians());
     }
 
     template <class T, class DERIVED>
-    T cos(const Angle<T, DERIVED>& val)
+    constexpr T cos(const Angle<T, DERIVED>& val)
     {
-        return std::cos(val.Radians());
+        return gcem::cos(val.Radians());
     }
 
     template <class T, class DERIVED>
-    T tan(const Angle<T, DERIVED>& val)
+    constexpr T tan(const Angle<T, DERIVED>& val)
     {
-        return std::tan(val.Radians());
+        return gcem::tan(val.Radians());
     }
 } // namespace Ignosi::Modules

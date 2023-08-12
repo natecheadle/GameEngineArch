@@ -39,7 +39,7 @@ namespace Ignosi::Modules::Render
     };
 
     template <size_t VERT_COUNT>
-    static constexpr std::array<Vector2<float>, 3 * (VERT_COUNT - 2)> GenerateCircleVertexes()
+    static constexpr std::array<Vector2<float>, 3 * (VERT_COUNT - 2)> GenerateCircleVertexes() noexcept
     {
         float angle = 360.0f / (float)VERT_COUNT;
 

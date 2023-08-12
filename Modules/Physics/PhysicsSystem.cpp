@@ -1,13 +1,16 @@
 #include "PhysicsSystem.h"
 
+#include "3D/Mesh3D.h"
+
 #include <LinearAlgebra/Vector2.hpp>
 
 using namespace std::chrono_literals;
 
 namespace Ignosi::Modules::Physics
 {
-    PhysicsSystem::PhysicsSystem(Memory::PoolMemoryBlock<RigidBody2D>* pRigidBodyPool)
+    PhysicsSystem::PhysicsSystem(Memory::PoolMemoryBlock<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer)
         : ECS::System<RigidBody2D>(pRigidBodyPool)
+        , m_pRenderer(pRenderer)
     {
     }
 

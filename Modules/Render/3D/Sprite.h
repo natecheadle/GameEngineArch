@@ -38,7 +38,7 @@ namespace Ignosi::Modules::Render
             std::span<float>         vertexes,
             std::span<std::uint32_t> indeces);
 
-        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
+        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
 
         Sprite(const Sprite& other);
         Sprite(Sprite&& other) = default;

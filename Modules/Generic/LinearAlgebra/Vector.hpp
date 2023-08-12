@@ -44,9 +44,9 @@ namespace Ignosi::Modules
         Vector& operator=(const Vector& other) noexcept = default;
         Vector& operator=(Vector&& other) noexcept      = default;
 
-        static constexpr size_t size() { return SIZE; }
-        T*                      data() { return m_Data.data(); }
-        const T*                data() const { return m_Data.data(); }
+        static constexpr size_t size() noexcept { return SIZE; }
+        T*                      data() noexcept { return m_Data.data(); }
+        const T*                data() const noexcept { return m_Data.data(); }
 
         T magnitude() const
         {
@@ -68,11 +68,11 @@ namespace Ignosi::Modules
             return sum;
         }
 
-        T&       operator[](size_t i) { return m_Data[i]; }
-        const T& operator[](size_t i) const { return m_Data[i]; }
+        constexpr T&       operator[](size_t i) { return m_Data[i]; }
+        constexpr const T& operator[](size_t i) const { return m_Data[i]; }
 
-        T&       at(size_t i) { return m_Data.at(i); }
-        const T& at(size_t i) const { return m_Data.at(i); }
+        constexpr T&       at(size_t i) { return m_Data.at(i); }
+        constexpr const T& at(size_t i) const { return m_Data.at(i); }
 
         iterator       begin() { return m_Data.begin(); }
         const_iterator begin() const { return m_Data.begin(); }
