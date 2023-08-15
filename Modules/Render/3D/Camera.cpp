@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include "LinearAlgebra/Vector3.hpp"
-
 #include <DebugCast.hpp>
 #include <IWindow.h>
 #include <KeyPressedInfo.hpp>

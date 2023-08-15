@@ -14,5 +14,8 @@ namespace Ignosi::Examples::PhysicsTest
         Wall(
             Modules::Memory::pool_pointer<Modules::Render::Sprite>       sprite,
             Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D> rigidBody);
+
+        Modules::Render::Sprite&       Sprite() { return BASE::Get<Modules::Render::Sprite>(); }
+        const Modules::Render::Sprite& Sprite() const { return BASE::Get<Modules::Render::Sprite>(); }
     };
 } // namespace Ignosi::Examples::PhysicsTest

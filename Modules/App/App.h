@@ -24,9 +24,10 @@ namespace Ignosi::Modules::App
         void Close();
 
       protected:
-        GUI::IWindow* GetWindow() const { return m_pWindow; }
-        virtual void  UpdateApp(double dt) = 0;
-        virtual void  Initialize()         = 0;
-        virtual void  Shutdown()           = 0;
+        GUI::IWindow*     GetWindow() const { return m_pWindow; }
+        Render::Renderer* GetRenderer() const { return m_pRenderer; }
+        virtual void      UpdateApp(double dt) = 0;
+        virtual void      Initialize()         = 0;
+        virtual void      Shutdown()           = 0;
     };
 } // namespace Ignosi::Modules::App

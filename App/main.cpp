@@ -152,7 +152,7 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
-        auto  initShaderVars = [&]() -> void {
+        auto initShaderVars = [&]() -> void {
             m_pShader->Use();
             m_pShader->SetShaderVar("dirLight", m_DirLight);
             m_pShader->SetShaderVar("pointLight", m_PointLight);
@@ -177,7 +177,7 @@ class TestApp : public App::App
     void UpdateApp(double dt) override
     {
         // TODO this should be handled automatically
-        m_pCamera->Update(dt);
+        m_pCamera->Update(std::chrono::nanoseconds((unsigned long long)(dt * 1e9)));
         auto* pRenderer = Render::Renderer::Instance();
         for (auto& cube : m_Cubes)
         {

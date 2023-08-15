@@ -29,36 +29,32 @@ namespace Ignosi::Modules::Render
         GUI::IWindow* m_pWindow;
 
       public:
+        Camera(GUI::IWindow* pWindow);
         virtual ~Camera();
 
         virtual SquareMatrix4x4<float> Projection() const;
         virtual SquareMatrix4x4<float> ViewPerspective() const;
         virtual SquareMatrix4x4<float> ViewOrthographic() const;
 
-        virtual void Update(double /* dt */) {}
+        virtual void Update(std::chrono::nanoseconds /* time */) {}
 
         const Vector3<float>& CameraPosition() const { return m_Position; }
         const Vector3<float>& CameraDirection() const { return m_Direction; }
         const Vector3<float>& WorldUp() const { return m_WorldUp; }
+        const Radian<float>&  FOV() const { return m_FOV; }
+        float                 Near() const { return m_Near; }
+        float                 Far() const { return m_Far; }
 
         void CameraPosition(const Vector3<float>& val);
-
-      protected:
-        Camera(GUI::IWindow* pWindow);
-        const GUI::IWindow* Window() const { return m_pWindow; }
-
         void CameraDirection(const Vector3<float>& val);
-        void CameraTarget(const Vector3<float>& val);
         void WorldUp(const Vector3<float>& val);
-
-        const Radian<float>& FOV() const { return m_FOV; }
-        float                Near() const { return m_Near; }
-        float                Far() const { return m_Far; }
-
         void FOV(const Radian<float>& val) { m_FOV = val; }
         void Near(float val) { m_Near = val; }
         void Far(float val) { m_Far = val; }
 
         void Translate(const Vector3<float>& value);
+
+      protected:
+        const GUI::IWindow* Window() const { return m_pWindow; }
     };
 } // namespace Ignosi::Modules::Render
