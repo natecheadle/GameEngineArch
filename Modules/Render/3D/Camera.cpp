@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include "LinearAlgebra/Vector3.hpp"
+
 #include <DebugCast.hpp>
 #include <IWindow.h>
 #include <KeyPressedInfo.hpp>
@@ -27,8 +29,8 @@ namespace Ignosi::Modules::Render
 
     SquareMatrix4x4<float> Camera::ViewPerspective() const
     {
-        auto right = m_Direction.cross(m_WorldUp).normalize_this();
-        auto up    = right.cross(m_Direction).normalize_this();
+        Vector3<float> right = m_Direction.cross(m_WorldUp).normalize_this();
+        auto           up    = right.cross(m_Direction).normalize_this();
         return SquareMatrix4x4<float>::lookat(m_Position, m_Position + m_Direction, up);
     }
 

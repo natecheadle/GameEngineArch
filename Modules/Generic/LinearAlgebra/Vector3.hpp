@@ -70,17 +70,5 @@ namespace Ignosi::Modules
 
             return rslt;
         }
-
-        Vector3 normalize() const
-        {
-            Vector3 rslt(*this);
-            return rslt / BASE::magnitude();
-        }
-
-        Vector3& normalize_this()
-        {
-            *this /= BASE::magnitude();
-            return *this;
-        }
     };
 } // namespace Ignosi::Modules

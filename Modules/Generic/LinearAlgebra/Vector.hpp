@@ -58,7 +58,7 @@ namespace Ignosi::Modules
             return std::sqrt(sum);
         }
 
-        T dot(const Vector& other)
+        T dot(const Vector& other) const
         {
             T sum{0};
             for (size_t i = 0; i < other.size(); ++i)
@@ -66,6 +66,30 @@ namespace Ignosi::Modules
                 sum += other.at(i) * at(i);
             }
             return sum;
+        }
+
+        T distance(const Vector& other) const
+        {
+            T sum = 0.0f;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                T temp = (other.at(i) - at(i));
+                sum += temp * temp;
+            }
+
+            return std::sqrt(sum);
+        }
+
+        Vector normalize() const
+        {
+            Vector rslt(*this);
+            return rslt / magnitude();
+        }
+
+        Vector& normalize_this()
+        {
+            *this /= magnitude();
+            return *this;
         }
 
         constexpr T&       operator[](size_t i) { return m_Data[i]; }

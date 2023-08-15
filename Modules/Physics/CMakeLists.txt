@@ -8,7 +8,6 @@ add_library(${PROJECT_NAME} STATIC
     "RigidBody2D.cpp"
     "HitShape.cpp"
     "HitRectangle.cpp"
-    "HitSquare.cpp"
     "HitCircle.cpp"
 )
 

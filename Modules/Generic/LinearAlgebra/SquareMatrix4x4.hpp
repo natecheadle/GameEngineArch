@@ -266,25 +266,12 @@ namespace Ignosi::Modules
             }
             return rslt;
         }
+
+        friend Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector4<T>& rhs)
+        {
+            Vector4<T> rslt(lhs * rhs);
+            return rslt;
+        }
     };
 
-    template <class T>
-    Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector4<T>& rhs)
-    {
-        Vector4<T> rslt;
-        for (size_t i = 0; i < Vector4<T>::size(); ++i)
-        {
-            for (size_t j = 0; j < Vector4<T>::size(); ++j)
-            {
-                rslt[i] += lhs[j][i] * rhs[i];
-            }
-        }
-        return rslt;
-    }
-
-    template <class T>
-    Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector3<T>& rhs)
-    {
-        return lhs * Vector4<T>(rhs);
-    }
 } // namespace Ignosi::Modules

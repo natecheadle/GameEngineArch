@@ -12,6 +12,11 @@ namespace Ignosi::Modules
       public:
         constexpr Vector2() noexcept = default;
 
+        constexpr Vector2(const BASE& other)
+            : BASE(other)
+        {
+        }
+
         constexpr Vector2(T x, T y) noexcept
             : BASE({x, y})
         {
