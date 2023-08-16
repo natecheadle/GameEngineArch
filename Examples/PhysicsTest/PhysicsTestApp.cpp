@@ -54,35 +54,37 @@ namespace Ignosi::Examples::PhysicsTest
         float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
 
+        float wallWidth = 50.0f;
+
         m_pTopWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pTopWall->Sprite().AttachedMaterial(pWallMat);
-        m_pTopWall->Sprite().Origin({winWidth / 2.0f, windHeight});
-        m_pTopWall->Sprite().Size({winWidth, 10.0f});
+        m_pTopWall->Sprite().Origin({0.0, 0.0f});
+        m_pTopWall->Sprite().Size({winWidth, wallWidth});
 
         m_pBottomWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pBottomWall->Sprite().AttachedMaterial(pWallMat);
-        m_pBottomWall->Sprite().Origin({winWidth / 2.0f, 0.0f});
-        m_pBottomWall->Sprite().Size({winWidth, 10.0f});
+        m_pBottomWall->Sprite().Origin({0.0, windHeight - wallWidth});
+        m_pBottomWall->Sprite().Size({winWidth, wallWidth});
 
         m_pLeftWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pLeftWall->Sprite().AttachedMaterial(pWallMat);
-        m_pLeftWall->Sprite().Origin({0.0f, windHeight / 2.0f});
-        m_pLeftWall->Sprite().Size({10.0f, windHeight});
+        m_pLeftWall->Sprite().Origin({0.0f, 0.0});
+        m_pLeftWall->Sprite().Size({wallWidth, windHeight});
 
         m_pRightWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pRightWall->Sprite().AttachedMaterial(pWallMat);
-        m_pRightWall->Sprite().Origin({winWidth, windHeight / 2.0f});
-        m_pRightWall->Sprite().Size({10.0f, windHeight});
+        m_pRightWall->Sprite().Origin({winWidth - wallWidth, 0.0f});
+        m_pRightWall->Sprite().Size({wallWidth, windHeight});
 
         m_pBall =
             std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pBall->Sprite().AttachedMaterial(pBallMat);
         m_pBall->Sprite().Origin({winWidth / 2.0f, windHeight / 2.0f});
-        m_pBall->Sprite().Size({20.0f, 20.0f});
+        m_pBall->Sprite().Size({40.0f, 40.0f});
     }
     void PhysicsTestApp::UpdateApp(double dt)
     {
