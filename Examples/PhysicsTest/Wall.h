@@ -6,7 +6,7 @@
 
 namespace Ignosi::Examples::PhysicsTest
 {
-    class Wall : Modules::ECS::Entity<Modules::Render::Sprite, Modules::Physics::RigidBody2D>
+    class Wall : public Modules::ECS::Entity<Modules::Render::Sprite, Modules::Physics::RigidBody2D>
     {
         using BASE = Modules::ECS::Entity<Modules::Render::Sprite, Modules::Physics::RigidBody2D>;
 
@@ -17,5 +17,8 @@ namespace Ignosi::Examples::PhysicsTest
 
         Modules::Render::Sprite&       Sprite() { return BASE::Get<Modules::Render::Sprite>(); }
         const Modules::Render::Sprite& Sprite() const { return BASE::Get<Modules::Render::Sprite>(); }
+
+        Modules::Physics::RigidBody2D&       RigidBody() { return BASE::Get<Modules::Physics::RigidBody2D>(); }
+        const Modules::Physics::RigidBody2D& RigidBody() const { return BASE::Get<Modules::Physics::RigidBody2D>(); }
     };
 } // namespace Ignosi::Examples::PhysicsTest

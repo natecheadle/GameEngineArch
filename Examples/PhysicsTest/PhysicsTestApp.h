@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Ball.h"
+#include "PhysicsSystem.h"
 #include "Wall.h"
 #include "WindowSize.hpp"
 
@@ -30,6 +31,7 @@ namespace Ignosi::Examples::PhysicsTest
         std::unique_ptr<Wall>                                                             m_pBottomWall;
         std::unique_ptr<Wall>                                                             m_pLeftWall;
         std::unique_ptr<Wall>                                                             m_pRightWall;
+        std::unique_ptr<Physics::PhysicsSystem>                                           m_pPhysicsSystem;
 
       public:
         PhysicsTestApp(std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>> pWorld);

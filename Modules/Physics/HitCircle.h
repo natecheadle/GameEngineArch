@@ -23,6 +23,7 @@ namespace Ignosi::Modules::Physics
         void  Radius(float value) { m_Radius = value; }
 
         const std::vector<Vector2<float>>& TestAxes(const HitShape& other) override;
+        const std::vector<Vector2<float>>& Corners() const override { return m_Corners; }
         std::array<Vector2<float>, 2>      ProjectShape(const Vector2<float>& other) const override;
 
       protected:

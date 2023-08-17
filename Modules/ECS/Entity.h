@@ -55,5 +55,12 @@ namespace Ignosi::Modules::ECS
             auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
             return *pComponent;
         }
+
+        template <typename T>
+        T* GetPointer()
+        {
+            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            return pComponent.get();
+        }
     };
 } // namespace Ignosi::Modules::ECS

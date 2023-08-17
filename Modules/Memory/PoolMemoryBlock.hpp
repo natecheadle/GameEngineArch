@@ -77,7 +77,7 @@ namespace Ignosi::Modules::Memory
 
                 other.m_pPool = nullptr;
                 m_pPool->UnsubscribeOnDestroy(&other);
-                m_pPool->SubscribeOnDestroy(this, this->PoolParentDestroyed());
+                m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
 
                 m_pPool->UnsubscribeOnMove(m_PoolIndex);
                 m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });

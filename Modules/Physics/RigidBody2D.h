@@ -4,7 +4,9 @@
 
 #include <LinearAlgebra/Vector2.hpp>
 
+#include <algorithm>
 #include <functional>
+#include <memory>
 #include <vector>
 
 namespace Ignosi::Modules::Physics
@@ -47,6 +49,8 @@ namespace Ignosi::Modules::Physics
         const Vector2<float>& Velocity() const { return m_Velocity; }
         void                  Velocity(const Vector2<float>& val) { m_Velocity = val; }
 
+        void ClearHitShapes() { m_HitBoxes.clear(); }
+        void AddHitShape(std::unique_ptr<HitShape> pVal) { m_HitBoxes.push_back(std::move(pVal)); }
         const std::vector<std::unique_ptr<HitShape>>& HitBoxes() const { return m_HitBoxes; }
         void HitBoxes(std::vector<std::unique_ptr<HitShape>> val) { m_HitBoxes = std::move(val); }
 

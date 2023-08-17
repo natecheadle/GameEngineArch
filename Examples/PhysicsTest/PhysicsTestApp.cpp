@@ -1,6 +1,9 @@
 #include "PhysicsTestApp.h"
 
 #include "Ball.h"
+#include "HitCircle.h"
+#include "HitRectangle.h"
+#include "HitShape.h"
 #include "RigidBody2D.h"
 
 #include <Renderer/Renderer_OpenGL.h>
@@ -8,6 +11,7 @@
 #include <chrono>
 #include <filesystem>
 #include <memory>
+#include <vector>
 namespace Ignosi::Examples::PhysicsTest
 {
     PhysicsTestApp::PhysicsTestApp(
@@ -17,6 +21,7 @@ namespace Ignosi::Examples::PhysicsTest
               WINDOW_SIZE,
               std::string(WINDOW_NAME))
         , m_pWorld(std::move(pWorld))
+        , m_pPhysicsSystem(m_pWorld->CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D>())
     {
     }
 
@@ -61,34 +66,61 @@ namespace Ignosi::Examples::PhysicsTest
         m_pTopWall->Sprite().AttachedMaterial(pWallMat);
         m_pTopWall->Sprite().Origin({0.0, 0.0f});
         m_pTopWall->Sprite().Size({winWidth, wallWidth});
+        auto pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
+        pHitShape->Width(winWidth);
+        pHitShape->Height(wallWidth);
+        m_pTopWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pTopWall->RigidBody().Position(m_pTopWall->Sprite().Origin());
 
         m_pBottomWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pBottomWall->Sprite().AttachedMaterial(pWallMat);
         m_pBottomWall->Sprite().Origin({0.0, windHeight - wallWidth});
         m_pBottomWall->Sprite().Size({winWidth, wallWidth});
+        pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
+        pHitShape->Width(winWidth);
+        pHitShape->Height(wallWidth);
+        m_pBottomWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pBottomWall->RigidBody().Position(m_pBottomWall->Sprite().Origin());
 
         m_pLeftWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pLeftWall->Sprite().AttachedMaterial(pWallMat);
         m_pLeftWall->Sprite().Origin({0.0f, 0.0});
         m_pLeftWall->Sprite().Size({wallWidth, windHeight});
+        pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
+        pHitShape->Width(wallWidth);
+        pHitShape->Height(windHeight);
+        m_pLeftWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pLeftWall->RigidBody().Position(m_pLeftWall->Sprite().Origin());
 
         m_pRightWall =
             std::make_unique<Wall>(m_pWorld->CreateEntity<Wall>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
         m_pRightWall->Sprite().AttachedMaterial(pWallMat);
         m_pRightWall->Sprite().Origin({winWidth - wallWidth, 0.0f});
         m_pRightWall->Sprite().Size({wallWidth, windHeight});
+        pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
+        pHitShape->Width(wallWidth);
+        pHitShape->Height(windHeight);
+        m_pRightWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pRightWall->RigidBody().Position(m_pRightWall->Sprite().Origin());
 
-        m_pBall =
-            std::make_unique<Ball>(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer), Physics::RigidBody2D()));
+        m_pBall = std::make_unique<Ball>(
+            std::move(m_pWorld->CreateEntity<Ball>(Render::Sprite(pRenderer), Physics::RigidBody2D())));
         m_pBall->Sprite().AttachedMaterial(pBallMat);
         m_pBall->Sprite().Origin({winWidth / 2.0f, windHeight / 2.0f});
         m_pBall->Sprite().Size({40.0f, 40.0f});
+        auto pHitCircle = std::make_unique<Physics::HitCircle>(pRenderer);
+        pHitCircle->Radius(20.0f);
+        m_pBall->RigidBody().AddHitShape(std::move(pHitCircle));
+        m_pBall->RigidBody().Position(m_pBall->Sprite().Origin());
+        m_pBall->RigidBody().Velocity({0.0f, 0.5f});
     }
     void PhysicsTestApp::UpdateApp(double dt)
     {
-        m_pCamera->Update(std::chrono::nanoseconds(static_cast<unsigned long long>(dt * 1e-9)));
+        auto dt_nano = std::chrono::nanoseconds(static_cast<unsigned long long>(dt * 1e-9));
+        m_pCamera->Update(dt_nano);
+        m_pPhysicsSystem->Update(dt_nano);
 
         auto renderUpdate = [&]() -> void {
             m_pShader->Use();
