@@ -91,6 +91,7 @@ plt.show()
 # Before jumping to seperating axis theorem we can use some simpler algorithms to detect collisions for rectangles if the axes are aligned. This is called the axis aligned bounding box method. It is essentially a simplied special case of seperating axis theorem.
 
 # %%
+
 def get_rotation_matrix_2d(angle : float) -> np.array:
     return np.array([[np.cos(angle),np.sin(angle)],[-np.sin(angle), np.cos(angle)]])
 
@@ -104,8 +105,10 @@ class Shape:
     
     def _get_test_axes(self) -> np.array:
         axes = []
-        for i in range(1, len(_corners)):
-            axes.append(_corners[i] - _corners[i-1])
+        for i in range(1, len(self._corners)):
+            axes.append(get_perp(self._corners[i] - self._corners[i-1]))
+        
+        axes.append(get_perp(self._corners[len(self._corners) - 1] - self._corners[0]))
         return axes
     
     def __init__(self, corners : np.array):
@@ -157,19 +160,19 @@ class Rectangle(Shape):
     
     def _set_length(self, value : float):
         self._length = value
-        self._set_corners(_get_rect_corners(value, self._width, self._rotation, self._center))
+        self._set_corners(self._get_rect_corners(value, self._width, self._rotation, self._center))
         
     def _set_width(self, value : float):
         self._width = value
-        self._set_corners(_get_rect_corners(self._length, value, self._rotation, self._center))
+        self._set_corners(self._get_rect_corners(self._length, value, self._rotation, self._center))
         
     def _set_rotation(self, value : float):
         self._rotation = value
-        self._set_corners(_get_rect_corners(self._length, self._width, value, self._center))
+        self._set_corners(self._get_rect_corners(self._length, self._width, value, self._center))
         
     def _set_center(self, value : np.array):
         self._center = value
-        self._set_corners(_get_rect_corners(self._length, self._width, self._rotation, value))
+        self._set_corners(self._get_rect_corners(self._length, self._width, self._rotation, value))
         
     Length : float = property(fget=_get_length, fset=_set_length)
     Width : float = property(fget=_get_width, fset=_set_width)
@@ -203,10 +206,11 @@ display(rect2_y)
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
-rect1 = Rectangle(length=rect_size.value, width=rect_size.value, rotation=0.0, center=[rect1_x.value, rect1_y.value])
-rect2 = Rectangle(length=rect_size.value, width=rect_size.value, rotation=0.0, center=[rect2_x.value, rect2_y.value])
+def plot_aabb_method():
+    
+    rect1 = Rectangle(length=rect_size.value, width=rect_size.value, rotation=0.0, center=[rect1_x.value, rect1_y.value])
+    rect2 = Rectangle(length=rect_size.value, width=rect_size.value, rotation=0.0, center=[rect2_x.value, rect2_y.value])
 
-def plot_aabb_method(rect1 : Rectangle, rect2 : Rectangle):
     rect1_points = rect1.Corners
     rect2_points = rect2.Corners
     
@@ -227,10 +231,28 @@ def plot_aabb_method(rect1 : Rectangle, rect2 : Rectangle):
     ax.set_ylim([-10,10])
     plt.show()
     
-plot_aabb_method(rect1, rect2)
+plot_aabb_method()
 
 # %% [markdown]
-# To do seperating axis theorem we will first need to create a helper function that gets the corners of a shape projected onto an axis
+# To do seperating axis theorem we will first need to create a helper function that gets the corners of a shape projected onto an axis.
+#
+# To do this we will solve a simple system of linear equations to find the intersection point of an arbitrary axis and a line perpendicular to that axis and crossing through a corner.
+#
+# $$
+#
+# let\;c = corner\\
+# ax(x) = m_{ax} * x + 0.0\\
+# ax_{perp}(x) = -(m_{ax}) * (x - c_x) + c_y\\
+# $$
+#
+# intersection occurs when f(x) == ax(x)
+#
+# $$
+# \\
+# -(m_{ax}) * (x - c_x) + c_y = m_{ax} * x + 0.0\\
+# x = (m_{ax} * c_x + c_y) / (2.0 * m_{ax})
+#
+# $$
 #
 
 # %%
@@ -255,12 +277,16 @@ display(testaxis_y)
 def get_projected_points(shape : Shape, axis : np.array) -> np.array:
     corners = shape.Corners
     points = np.zeros([len(corners), 2])
+    
+    axis_perp = get_perp(axis)
+    
     for i in range(0, len(corners)):
         x = 0.0
         y = 0.0
         if axis[0] != 0.0 and axis[1] != 0.0:
             m = axis[1] / axis[0]
-            x = (m * corners[i][0] + corners[i][1]) / (2.0 * m)
+            m2 = axis_perp[1] / axis_perp[0]
+            x = (-m2 * corners[i][0] + corners[i][1]) / (m - m2)
             y = m * x
             
         elif axis[0] == 0.0:
@@ -276,7 +302,7 @@ def get_projected_points(shape : Shape, axis : np.array) -> np.array:
 def plot_shape_projected_on_line():
     rect = Rectangle(length=rect_len.value, width=rect_width.value, rotation=rect_rot.value * np.pi / 180.0, center=[rect_x.value,rect_y.value])
     
-    rect_points = rect1.Corners
+    rect_points = rect.Corners
     testaxis = np.array([testaxis_x.value,testaxis_y.value])
     
     intersection_points = get_projected_points(rect, testaxis)
@@ -296,3 +322,129 @@ def plot_shape_projected_on_line():
     
 plot_shape_projected_on_line()
 
+
+# %% [markdown]
+# To do seperating axis theorem our axes we will project one will be one for each side of the polygon. In the case of parallelograms we can skip parallel sides. 
+#
+# Onces all the points are projected we sort them according to their order on the axis. If there is overlap of points from two shapes that indicates their might be a collision and we should keep testing.
+#
+# If there is overlap on all test axes that means there is a collision. If there is no overlap on a single axis that means there is no collision.
+
+# %%
+from functools import cmp_to_key
+
+def sort_point_x(point1, point2):
+    if point1[1][0] < point2[1][0]:
+        return -1
+    if point1[1][0] > point2[1][0]:
+        return 1
+    return 0
+
+def sort_point_y(point1, point2):
+    if point1[1][1] < point2[1][1]:
+        return -1
+    if point1[1][1] > point2[1][1]:
+        return 1
+    return 0
+
+def sat_collision( shape1 : Shape,  shape2 :Shape) -> bool :
+    test_axes =  shape1.TestAxes
+    test_axes2  = shape2.TestAxes
+    for axis in test_axes2:
+        test_axes.append(axis)
+    
+    for axis in test_axes:
+        points1 = get_projected_points(shape1, axis)
+        points2 = get_projected_points(shape2, axis)
+        
+        all_points = []
+        for point in points1:
+            all_points.append((shape1, point))
+        for point in points2:
+            all_points.append((shape2, point))
+        
+        if abs(axis[0]) > abs(axis[1]):
+            all_points.sort(key=cmp_to_key(sort_point_x))
+        else:
+            all_points.sort(key=cmp_to_key(sort_point_y))
+        
+        overlap = False
+        firstShape = all_points[0][0]
+        for i in range(1, len(firstShape.Corners)):
+            if all_points[i][0] is not firstShape:
+                overlap = True
+                break
+        #no collision on this test axis return false
+        if not overlap:
+            return False
+    
+    #made it to the end with all axes having a collision
+    return True
+
+sat_rect_size = widgets.FloatSlider(min=0.0, max=5.0, value=1.0, step=1.0, description="RECT_SIZE", orientation='horizontal', readout=True, readout_format='.1f',)
+
+rect3_rot = widgets.FloatSlider(min=-180, max=180.0, value=0.0, step=10.0, description="RECT3_ROT", orientation='horizontal', readout=True, readout_format='.1f',)
+rect3_x = widgets.FloatSlider(min=-5.0, max=5.0, value=0.0, step=0.1, description="RECT3_X", orientation='horizontal', readout=True, readout_format='.1f',)
+rect3_y = widgets.FloatSlider(min=-5.0, max=5.0, value=0.0, step=0.1, description="RECT3_Y", orientation='horizontal', readout=True, readout_format='.1f',)
+
+rect4_rot = widgets.FloatSlider(min=-180, max=180.0, value=0.0, step=10.0, description="RECT4_ROT", orientation='horizontal', readout=True, readout_format='.1f',)
+rect4_x = widgets.FloatSlider(min=-5.0, max=5.0, value=0.0, step=0.1, description="RECT4_X", orientation='horizontal', readout=True, readout_format='.1f',)
+rect4_y = widgets.FloatSlider(min=-5.0, max=5.0, value=0.0, step=0.1, description="RECT4_Y", orientation='horizontal', readout=True, readout_format='.1f',)
+
+test_axis = widgets.IntSlider(min=0, max=7, value=0, step=1, description="TEST_AXIS", orientation='horizontal', readout=True,)
+
+display(sat_rect_size)
+display(rect3_rot)
+display(rect3_x)
+display(rect3_y)
+display(rect4_rot)
+display(rect4_x)
+display(rect4_y)
+display(test_axis)
+        
+
+# %%
+def test_plot_sat_collision():
+    rect3 = Rectangle(length = sat_rect_size.value, width=sat_rect_size.value, rotation=rect3_rot.value * np.pi / 180.0, center=[rect3_x.value, rect3_y.value])
+    rect4 = Rectangle(length = sat_rect_size.value, width=sat_rect_size.value, rotation=rect4_rot.value * np.pi / 180.0, center=[rect4_x.value, rect4_y.value])
+    
+    rect3_points = rect3.Corners
+    rect4_points = rect4.Corners
+    
+    p1 = Polygon(rect3_points, facecolor='red', closed=True)
+    p2 = Polygon(rect4_points, facecolor='red', closed=True)
+    
+    if not sat_collision(rect3, rect4):
+        p1 = Polygon(rect3_points, facecolor='green', closed=True)
+        p2 = Polygon(rect4_points, facecolor='green', closed=True)
+
+    test_axes =  rect3.TestAxes
+    test_axes2  = rect4.TestAxes
+    for axis in test_axes2:
+        test_axes.append(axis)
+    
+    points1 = get_projected_points(rect3, test_axes[test_axis.value])
+    points2 = get_projected_points(rect4, test_axes[test_axis.value])
+    
+    fig,ax = plt.subplots()
+    
+    plt.axline([0,0], test_axes[test_axis.value], color='b')
+    
+    all_points =[]
+    for point in points1:
+        all_points.append(point)
+    for point in points2:
+        all_points.append(point)
+    
+    for point in all_points:
+        plt.plot(point[0], point[1], 'ro')
+        
+
+    ax.add_patch(p1)
+    ax.add_patch(p2)
+        
+    ax.set_xlim([-10,10])
+    ax.set_ylim([-10,10])
+    plt.show()
+    
+test_plot_sat_collision()
