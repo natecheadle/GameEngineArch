@@ -26,7 +26,7 @@ namespace Ignosi::Modules::Physics
         virtual void         Rotation(const Radian<float>& value) { m_Rotation = value; }
 
         const Vector2<float>& Origin() const { return m_Origin; }
-        void                  Origin(const Vector2<float>& value) { m_Origin = value; }
+        virtual void          Origin(const Vector2<float>& value) { m_Origin = value; }
 
         bool IsDebugModeEnabled() const { return m_IsDebugModeEnabled; }
         void EnableDebugMode();

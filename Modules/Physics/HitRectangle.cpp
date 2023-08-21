@@ -48,6 +48,12 @@ namespace Ignosi::Modules::Physics
         UpdatePrivateVectors();
     }
 
+    void HitRectangle::Origin(const Vector2<float>& value)
+    {
+        HitShape::Origin(value);
+        UpdatePrivateVectors();
+    }
+
     std::span<const float> HitRectangle::VertexData() const
     {
         return std::span<const float>(rect_begin, rect_end);
@@ -71,9 +77,9 @@ namespace Ignosi::Modules::Physics
         const float x = m_Width / 2.0f;
         const float y = m_Height / 2.0f;
 
-        m_Corners[0] = rotMat * (Origin() + Vector2<float>(x, y));
-        m_Corners[1] = rotMat * (Origin() + Vector2<float>(x, -y));
-        m_Corners[2] = rotMat * (Origin() + Vector2<float>(-x, -y));
-        m_Corners[3] = rotMat * (Origin() + Vector2<float>(-x, y));
+        m_Corners[0] = rotMat * (HitShape::Origin() + Vector2<float>(x, y));
+        m_Corners[1] = rotMat * (HitShape::Origin() + Vector2<float>(x, -y));
+        m_Corners[2] = rotMat * (HitShape::Origin() + Vector2<float>(-x, -y));
+        m_Corners[3] = rotMat * (HitShape::Origin() + Vector2<float>(-x, y));
     }
 } // namespace Ignosi::Modules::Physics

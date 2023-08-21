@@ -26,6 +26,7 @@ namespace Ignosi::Modules::Physics
         float Height() const { return m_Height; }
         void  Height(float value);
 
+        void Origin(const Vector2<float>& value) override;
         void Rotation(const Radian<float>& value) override;
 
         const std::vector<Vector2<float>>& Corners() const override { return m_Corners; }

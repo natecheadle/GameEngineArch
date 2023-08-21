@@ -39,15 +39,7 @@ namespace Ignosi::Modules::Memory
             size_t              m_PoolIndex;
 
           public:
-            ~pointer()
-            {
-                if (m_pPool)
-                {
-                    m_pPool->DestroyObject(m_PoolIndex);
-                    m_pPool->UnsubscribeOnDestroy(this);
-                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
-                }
-            }
+            ~pointer() { reset(); }
 
             pointer(const pointer& other)            = delete;
             pointer& operator=(const pointer& other) = delete;
@@ -83,6 +75,16 @@ namespace Ignosi::Modules::Memory
                 m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
 
                 return *this;
+            }
+
+            void reset()
+            {
+                if (m_pPool)
+                {
+                    m_pPool->DestroyObject(m_PoolIndex);
+                    m_pPool->UnsubscribeOnDestroy(this);
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                }
             }
 
             bool IsPoolDestroyed() { return !m_pPool; }

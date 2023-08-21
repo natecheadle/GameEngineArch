@@ -42,6 +42,8 @@ namespace Ignosi::Modules::Physics
         void                  Position(const Vector2<float>& val)
         {
             m_Position = val;
+            if (m_HitShape)
+                m_HitShape->Origin(m_HitShape->Origin() + m_Position);
             if (m_OnPosChange)
                 m_OnPosChange(m_Position);
         }
