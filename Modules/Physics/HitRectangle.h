@@ -14,11 +14,13 @@ namespace Ignosi::Modules::Physics
         float                       m_Height{1.0f};
         std::vector<Vector2<float>> m_TestAxes;
         std::vector<Vector2<float>> m_Corners;
+        float                       m_Radius{1.0f};
 
       public:
         HitRectangle(Render::Renderer* pRenderer);
         ~HitRectangle() override = default;
 
+        float Radius() const override { return m_Radius; }
         float Width() const { return m_Width; }
         void  Width(float value);
         float Height() const { return m_Height; }
@@ -26,9 +28,8 @@ namespace Ignosi::Modules::Physics
 
         void Rotation(const Radian<float>& value) override;
 
-        const std::vector<Vector2<float>>& TestAxes(const HitShape& /*other*/) override { return m_TestAxes; }
         const std::vector<Vector2<float>>& Corners() const override { return m_Corners; }
-        std::array<Vector2<float>, 2>      ProjectShape(const Vector2<float>& other) const override;
+        const std::vector<Vector2<float>>& TestAxes() const override { return m_TestAxes; }
 
       protected:
         std::span<const float> VertexData() const override;

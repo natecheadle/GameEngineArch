@@ -69,7 +69,7 @@ namespace Ignosi::Examples::PhysicsTest
         auto pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
         pHitShape->Width(winWidth);
         pHitShape->Height(wallWidth);
-        m_pTopWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pTopWall->RigidBody().HitShape(std::move(pHitShape));
         m_pTopWall->RigidBody().Position(m_pTopWall->Sprite().Origin());
 
         m_pBottomWall =
@@ -80,7 +80,7 @@ namespace Ignosi::Examples::PhysicsTest
         pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
         pHitShape->Width(winWidth);
         pHitShape->Height(wallWidth);
-        m_pBottomWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pBottomWall->RigidBody().HitShape(std::move(pHitShape));
         m_pBottomWall->RigidBody().Position(m_pBottomWall->Sprite().Origin());
 
         m_pLeftWall =
@@ -91,7 +91,7 @@ namespace Ignosi::Examples::PhysicsTest
         pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
         pHitShape->Width(wallWidth);
         pHitShape->Height(windHeight);
-        m_pLeftWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pLeftWall->RigidBody().HitShape(std::move(pHitShape));
         m_pLeftWall->RigidBody().Position(m_pLeftWall->Sprite().Origin());
 
         m_pRightWall =
@@ -102,7 +102,7 @@ namespace Ignosi::Examples::PhysicsTest
         pHitShape = std::make_unique<Physics::HitRectangle>(pRenderer);
         pHitShape->Width(wallWidth);
         pHitShape->Height(windHeight);
-        m_pRightWall->RigidBody().AddHitShape(std::move(pHitShape));
+        m_pRightWall->RigidBody().HitShape(std::move(pHitShape));
         m_pRightWall->RigidBody().Position(m_pRightWall->Sprite().Origin());
 
         m_pBall = std::make_unique<Ball>(
@@ -112,7 +112,7 @@ namespace Ignosi::Examples::PhysicsTest
         m_pBall->Sprite().Size({40.0f, 40.0f});
         auto pHitCircle = std::make_unique<Physics::HitCircle>(pRenderer);
         pHitCircle->Radius(20.0f);
-        m_pBall->RigidBody().AddHitShape(std::move(pHitCircle));
+        m_pBall->RigidBody().HitShape(std::move(pHitCircle));
         m_pBall->RigidBody().Position(m_pBall->Sprite().Origin());
         m_pBall->RigidBody().Velocity({0.0f, 0.5f});
     }

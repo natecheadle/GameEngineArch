@@ -7,6 +7,7 @@
 
 #include <3D/GenericVertexes.hpp>
 
+#include <cmath>
 #include <vector>
 
 namespace Ignosi::Modules::Physics
@@ -29,13 +30,15 @@ namespace Ignosi::Modules::Physics
 
     void HitRectangle::Width(float value)
     {
-        m_Width = value;
+        m_Width  = value;
+        m_Radius = std::sqrt(m_Height * m_Height + m_Width * m_Width);
         UpdatePrivateVectors();
     }
 
     void HitRectangle::Height(float value)
     {
         m_Height = value;
+        m_Radius = std::sqrt(m_Height * m_Height + m_Width * m_Width);
         UpdatePrivateVectors();
     }
 
@@ -43,38 +46,6 @@ namespace Ignosi::Modules::Physics
     {
         HitShape::Rotation(value);
         UpdatePrivateVectors();
-    }
-
-    std::array<Vector2<float>, 2> HitRectangle::ProjectShape(const Vector2<float>& other) const
-    {
-        std::array<Vector2<float>, 2> rslt;
-
-        std::array<Vector2<float>, 4> projectedPoints;
-        for (size_t i = 0; i < projectedPoints.size(); ++i)
-        {
-            projectedPoints[i] = other.dot(m_Corners[i]);
-        }
-
-        // this test allows us to compare the values with the largest theoretical deltas.
-        // also handles the case where our projection axis is the x or y axis
-        if (other.x() > other.y())
-        {
-            std::sort(
-                projectedPoints.begin(),
-                projectedPoints.end(),
-                [](const Vector2<float>& val1, const Vector2<float>& val2) { return val1.y() < val2.y(); });
-        }
-        else
-        {
-            std::sort(
-                projectedPoints.begin(),
-                projectedPoints.end(),
-                [](const Vector2<float>& val1, const Vector2<float>& val2) { return val1.x() < val2.x(); });
-        }
-
-        rslt[0] = projectedPoints.front();
-        rslt[1] = projectedPoints.back();
-        return rslt;
     }
 
     std::span<const float> HitRectangle::VertexData() const

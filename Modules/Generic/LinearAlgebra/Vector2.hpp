@@ -43,5 +43,20 @@ namespace Ignosi::Modules
 
         constexpr T    y() const { return Vector<2, T>::at(1U); }
         constexpr void y(T val) { Vector<2, T>::at(1U) = val; }
+
+        Vector2<T> perp() const
+        {
+            Vector2<T> perp(T(1), T(1));
+            if (x() != T(0))
+            {
+                perp[0] = -y() / x();
+            }
+            else
+            {
+                perp[1] = -x() / y();
+            }
+
+            return perp;
+        }
     };
 } // namespace Ignosi::Modules

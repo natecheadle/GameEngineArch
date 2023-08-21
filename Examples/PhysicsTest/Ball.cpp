@@ -48,7 +48,7 @@ namespace Ignosi::Examples::PhysicsTest
     void Ball::OnCollision(const Modules::Physics::RigidBody2D& other)
     {
         auto  vel    = RigidBody().Velocity();
-        float radius = dynamic_cast<Modules::Physics::HitCircle*>(RigidBody().HitBoxes()[0].get())->Radius();
+        float radius = RigidBody().HitShape()->Radius();
         if (std::abs(other.Position().x() - RigidBody().Position().x()) < radius)
         {
             vel.x(RigidBody().Velocity().x() * -1);
