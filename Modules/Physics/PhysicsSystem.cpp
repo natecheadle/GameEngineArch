@@ -56,12 +56,10 @@ namespace Ignosi::Modules::Physics
     bool PhysicsSystem::CheckCollision(const RigidBody2D& one, const RigidBody2D& two)
     {
         HitShape* pHitShape1 = one.HitShape().get();
-        HitShape* pHitShape2 = one.HitShape().get();
+        HitShape* pHitShape2 = two.HitShape().get();
 
         if ((pHitShape2->Origin() - pHitShape1->Origin()).magnitude() > pHitShape1->Radius() + pHitShape2->Radius())
             return false;
-
-        const auto& test_axes = pHitShape1->TestAxes();
 
         auto evalute_test_axes = [&](const std::vector<Vector2<float>>& axes) -> bool {
             for (const auto& axis : axes)

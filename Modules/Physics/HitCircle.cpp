@@ -21,7 +21,6 @@ namespace Ignosi::Modules::Physics
     HitCircle::HitCircle(Render::Renderer* pRenderer)
         : HitShape(pRenderer)
     {
-        m_TestAxes.resize(1);
     }
 
     std::span<const float> HitCircle::VertexData() const
