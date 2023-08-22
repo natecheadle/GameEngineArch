@@ -19,9 +19,9 @@ using namespace Ignosi::Modules;
 
 namespace Ignosi::Test
 {
-    struct CollisionInputData
+    struct RectangleCollisionInputData
     {
-        CollisionInputData(
+        RectangleCollisionInputData(
             const Vector2<float>& origin1,
             float                 rotation1,
             const Vector2<float>& origin2,
@@ -44,34 +44,34 @@ namespace Ignosi::Test
 
     namespace
     {
-        std::vector<CollisionInputData> GetRectangleTests()
+        std::vector<RectangleCollisionInputData> GetRectangleTests()
         {
-            std::vector<CollisionInputData> tests;
+            std::vector<RectangleCollisionInputData> tests;
 
-            tests.push_back(CollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, 0.0f, false));
-            tests.push_back(CollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, 0.0f, true));
-            tests.push_back(CollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, 0.0f, false));
-            tests.push_back(CollisionInputData({0.0f, 0.0f}, M_PI_4, {0.5f, 0.5f}, 0.0f, false));
-            tests.push_back(CollisionInputData({0.5f, 0.5f}, 0.0, {0.0f, 0.0f}, -M_PI_4, false));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, 0.0f, false));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, 0.0f, true));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, 0.0f, false));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, M_PI_4, {0.5f, 0.5f}, 0.0f, false));
+            tests.push_back(RectangleCollisionInputData({0.5f, 0.5f}, 0.0, {0.0f, 0.0f}, -M_PI_4, false));
 
             return tests;
         }
     } // namespace
 
-    class Physics_Tests : public testing::TestWithParam<CollisionInputData>
+    class Rectangle_Physics_Tests : public testing::TestWithParam<RectangleCollisionInputData>
     {
       protected:
         Memory::PoolMemoryBlock<Physics::RigidBody2D> m_RigidBodies;
         Physics::PhysicsSystem                        m_PhysicsSystem;
 
       public:
-        Physics_Tests()
+        Rectangle_Physics_Tests()
             : m_PhysicsSystem(&m_RigidBodies)
         {
         }
     };
 
-    TEST_P(Physics_Tests, ValidateRectangleCollision)
+    TEST_P(Rectangle_Physics_Tests, ValidateRectangleCollision)
     {
         auto test = GetParam();
 
@@ -112,5 +112,5 @@ namespace Ignosi::Test
         ASSERT_EQ(collisionOccurred, test.Result);
     }
 
-    INSTANTIATE_TEST_SUITE_P(RectangleCollisions, Physics_Tests, testing::ValuesIn(GetRectangleTests()));
+    INSTANTIATE_TEST_SUITE_P(RectangleCollisions, Rectangle_Physics_Tests, testing::ValuesIn(GetRectangleTests()));
 } // namespace Ignosi::Test

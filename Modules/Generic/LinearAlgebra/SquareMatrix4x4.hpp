@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LinearAlgebra/Vector.hpp"
 #include "SquareMatrix.hpp"
 #include "Units/Radian.hpp"
 #include "Vector3.hpp"
@@ -264,12 +265,6 @@ namespace Ignosi::Modules
                     rslt[i][j] = col[j];
                 }
             }
-            return rslt;
-        }
-
-        friend Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector4<T>& rhs)
-        {
-            Vector4<T> rslt(lhs * rhs);
             return rslt;
         }
     };

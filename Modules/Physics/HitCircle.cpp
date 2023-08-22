@@ -49,13 +49,19 @@ namespace Ignosi::Modules::Physics
         }
         else if (axis[0] == 0.0)
         {
+            rslt[1][0] = 0.0;
+            rslt[0][0] = 0.0;
+
             rslt[1][1] += m_Radius;
-            rslt[0][1] += m_Radius;
+            rslt[0][1] -= m_Radius;
         }
         else
         {
             rslt[1][0] += m_Radius;
-            rslt[0][0] += m_Radius;
+            rslt[0][0] -= m_Radius;
+
+            rslt[1][1] = 0.0;
+            rslt[0][1] = 0.0;
         }
 
         return rslt;

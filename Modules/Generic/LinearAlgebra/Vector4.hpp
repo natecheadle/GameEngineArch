@@ -35,6 +35,11 @@ namespace Ignosi::Modules
         {
         }
 
+        Vector4(const Vector<4, T>& other)
+            : Vector<4, T>(other)
+        {
+        }
+
         Vector4(const Vector4& other) noexcept = default;
         Vector4(Vector4&& other) noexcept      = default;
 

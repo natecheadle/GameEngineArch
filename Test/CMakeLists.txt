@@ -15,7 +15,8 @@ add_executable(${PROJECT_NAME}
     "LinearAlg_Tests.cpp"
     "Units_Tests.cpp"
     "PreProcessor_Tests.cpp"
-    "Physics_Tests.cpp"
+    "Circle_Physics_Tests.cpp"
+    "Rectangle_Physics_Tests.cpp"
 )
 
 add_compile_definitions(TEST_SOURCE_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")
