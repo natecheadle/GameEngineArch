@@ -8,9 +8,9 @@
         "spdlog",
         "fmt",
         "glad",
-        "opengl",
         "glm",
         "stb",
-        "assimp"
+        "assimp",
+        "gcem"
     ]
 }

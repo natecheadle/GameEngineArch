@@ -38,7 +38,7 @@ namespace Ignosi::Modules::Render
     {
     }
 
-    Sprite::Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes)
+    Sprite::Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes)
         : m_pRenderer(pRenderer)
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {

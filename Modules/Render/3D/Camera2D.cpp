@@ -40,6 +40,9 @@ namespace Ignosi::Modules::Render
         m_ZoomOutMap.KeyMappings({
             {{GUI::Key::X, GUI::KeyModifiers()}, {GUI::Key::None, GUI::KeyModifiers()}}
         });
+
+        Near(-1.0);
+        Far(1.0);
     }
 
     void Camera2D::PanUp(float value)
@@ -72,7 +75,7 @@ namespace Ignosi::Modules::Render
         Translate({0, 0, -value});
     }
 
-    void Camera2D::Update(double /* dt */)
+    void Camera2D::Update(std::chrono::nanoseconds /* time */)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
     }

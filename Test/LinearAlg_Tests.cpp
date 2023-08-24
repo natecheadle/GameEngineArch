@@ -201,36 +201,36 @@ namespace Ignosi::Test
     TEST(LinearAlg_Tests, ValidateRotateX)
     {
         Vector3<float> init(0, 1, 1);
-        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * Vector4<float>(init));
+        ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateRotateY)
     {
         Vector3<float> init(1, 0, 1);
-        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * Vector4<float>(init));
+        ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateRotateZ)
     {
         Vector3<float> init(1, 1, 0);
-        Vector3<float> rotated = (SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * init).ToVector3();
-        ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * Vector4<float>(init));
+        ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateScale)
     {
         Vector3<float> init(1, 1, 1);
-        Vector3<float> scaled = (SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * init).ToVector3();
-        ASSERT_EQ(Vector3<float>(2.0, 2.0, 2.0), scaled);
+        Vector4<float> scaled(SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * Vector4<float>(init));
+        ASSERT_EQ(Vector3<float>(2.0, 2.0, 2.0), scaled.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateTranslate)
     {
         Vector3<float> init(1.0f, 1.0f, 1.0f);
-        Vector3<float> translated = (SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * init).ToVector3();
-        ASSERT_EQ(Vector3<float>(3.0, 3.0, 3.0), translated);
+        Vector4<float> translated(SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * Vector4<float>(init));
+        ASSERT_EQ(Vector3<float>(3.0, 3.0, 3.0), translated.ToVector3());
     }
 
 } // namespace Ignosi::Test

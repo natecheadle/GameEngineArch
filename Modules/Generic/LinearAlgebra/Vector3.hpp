@@ -14,17 +14,22 @@ namespace Ignosi::Modules
       public:
         Vector3() noexcept = default;
 
-        Vector3(T x, T y, T z) noexcept
+        constexpr Vector3(T x, T y, T z) noexcept
             : BASE({x, y, z})
         {
         }
 
-        Vector3(const Vector<3, T>& other) noexcept
+        constexpr Vector3(std::initializer_list<T> vals) noexcept
+            : BASE(std::move(vals))
+        {
+        }
+
+        constexpr Vector3(const Vector<3, T>& other) noexcept
             : BASE(other)
         {
         }
 
-        Vector3(T val)
+        constexpr Vector3(T val)
             : Vector<3, T>(val)
         {
         }
@@ -64,18 +69,6 @@ namespace Ignosi::Modules
             rslt.z((x() * other.y()) - (y() * other.x()));
 
             return rslt;
-        }
-
-        Vector3 normalize() const
-        {
-            Vector3 rslt(*this);
-            return rslt / BASE::magnitude();
-        }
-
-        Vector3& normalize_this()
-        {
-            *this /= BASE::magnitude();
-            return *this;
         }
     };
 } // namespace Ignosi::Modules

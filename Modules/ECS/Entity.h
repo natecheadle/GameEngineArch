@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IEntity.h"
+
 #include <PoolMemoryBlock.hpp>
 #include <UID.hpp>
 
@@ -10,7 +12,7 @@ namespace Ignosi::Modules::ECS
 {
 
     template <typename... ComponentTypes>
-    class Entity
+    class Entity : public IEntity
     {
         std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
 
@@ -52,6 +54,13 @@ namespace Ignosi::Modules::ECS
         {
             auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
             return *pComponent;
+        }
+
+        template <typename T>
+        T* GetPointer()
+        {
+            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            return pComponent.get();
         }
     };
 } // namespace Ignosi::Modules::ECS

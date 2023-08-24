@@ -105,7 +105,7 @@ namespace Ignosi::Modules::Render
         Translate({0, 0, -value});
     }
 
-    void Fly_Camera::Update(double dt)
+    void Fly_Camera::Update(std::chrono::nanoseconds /* time */)
     {
         Window()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) { ExecuteKeyMappings(keyStates); });
     }

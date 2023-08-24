@@ -26,7 +26,7 @@ namespace Ignosi::Modules::Render
         Radian<float>                 m_Rotation{0.0};
         std::shared_ptr<VertexBuffer> m_pBuffer;
         std::shared_ptr<Material>     m_pMaterial;
-        RGB_Color                     m_Color;
+        RGB_Color                     m_Color{1.0, 1.0, 1.0};
 
         static const SpriteVertexData m_BasicSpritePoints[];
 
@@ -38,7 +38,7 @@ namespace Ignosi::Modules::Render
             std::span<float>         vertexes,
             std::span<std::uint32_t> indeces);
 
-        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes);
+        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
 
         Sprite(const Sprite& other);
         Sprite(Sprite&& other) = default;

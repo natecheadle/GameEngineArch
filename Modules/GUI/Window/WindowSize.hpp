@@ -9,7 +9,7 @@ namespace Ignosi::Modules::GUI
 
       public:
         WindowSize() = default;
-        WindowSize(int width, int height)
+        constexpr WindowSize(int width, int height)
             : m_Width(width)
             , m_Height(height)
         {

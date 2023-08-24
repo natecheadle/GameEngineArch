@@ -230,6 +230,19 @@ namespace Ignosi::Modules
             return rslt;
         }
 
+        friend Vector<SIZE, T> operator*(const SquareMatrix<SIZE, T>& lhs, const Vector<SIZE, T>& rhs)
+        {
+            Vector<SIZE, T> rslt;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                for (size_t j = 0; j < SIZE; ++j)
+                {
+                    rslt[i] += lhs[j][i] * rhs[i];
+                }
+            }
+            return rslt;
+        }
+
         friend SquareMatrix& operator*=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)

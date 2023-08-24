@@ -11,7 +11,7 @@ namespace Ignosi::Modules
 
       public:
         Radian() = default;
-        Radian(float val)
+        constexpr Radian(float val)
             : Angle<T, Radian>(val)
         {
         }

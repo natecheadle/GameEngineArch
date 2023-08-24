@@ -84,7 +84,7 @@ namespace Ignosi::Modules::Render
         void ZoomIn(float value);
         void ZoomOut(float value);
 
-        void Update(double /* dt */) override;
+        void Update(std::chrono::nanoseconds /* time */) override;
 
       private:
         Vector3<float> CalcDir() const;

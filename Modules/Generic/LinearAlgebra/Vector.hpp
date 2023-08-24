@@ -24,9 +24,9 @@ namespace Ignosi::Modules
         using const_iterator = typename std::array<T, SIZE>::const_iterator;
         using iterator       = typename std::array<T, SIZE>::iterator;
 
-        Vector() noexcept { m_Data.fill(T()); }
+        constexpr Vector() noexcept { m_Data.fill(T()); }
 
-        Vector(std::initializer_list<T> vals) noexcept
+        constexpr Vector(std::initializer_list<T> vals) noexcept
         {
             assert(vals.size() <= SIZE);
             size_t i = 0;
@@ -36,7 +36,7 @@ namespace Ignosi::Modules
             }
         }
 
-        Vector(T val) noexcept { m_Data.fill(val); }
+        constexpr Vector(T val) noexcept { m_Data.fill(val); }
 
         Vector(const Vector& other) noexcept { std::copy(other.begin(), other.end(), m_Data.begin()); }
         Vector(Vector&& other) noexcept = default;
@@ -44,9 +44,9 @@ namespace Ignosi::Modules
         Vector& operator=(const Vector& other) noexcept = default;
         Vector& operator=(Vector&& other) noexcept      = default;
 
-        static constexpr size_t size() { return SIZE; }
-        T*                      data() { return m_Data.data(); }
-        const T*                data() const { return m_Data.data(); }
+        static constexpr size_t size() noexcept { return SIZE; }
+        T*                      data() noexcept { return m_Data.data(); }
+        const T*                data() const noexcept { return m_Data.data(); }
 
         T magnitude() const
         {
@@ -58,7 +58,7 @@ namespace Ignosi::Modules
             return std::sqrt(sum);
         }
 
-        T dot(const Vector& other)
+        T dot(const Vector& other) const
         {
             T sum{0};
             for (size_t i = 0; i < other.size(); ++i)
@@ -68,11 +68,35 @@ namespace Ignosi::Modules
             return sum;
         }
 
-        T&       operator[](size_t i) { return m_Data[i]; }
-        const T& operator[](size_t i) const { return m_Data[i]; }
+        T distance(const Vector& other) const
+        {
+            T sum = 0.0f;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                T temp = (other.at(i) - at(i));
+                sum += temp * temp;
+            }
 
-        T&       at(size_t i) { return m_Data.at(i); }
-        const T& at(size_t i) const { return m_Data.at(i); }
+            return std::sqrt(sum);
+        }
+
+        Vector normalize() const
+        {
+            Vector rslt(*this);
+            return rslt / magnitude();
+        }
+
+        Vector& normalize_this()
+        {
+            *this /= magnitude();
+            return *this;
+        }
+
+        constexpr T&       operator[](size_t i) { return m_Data[i]; }
+        constexpr const T& operator[](size_t i) const { return m_Data[i]; }
+
+        constexpr T&       at(size_t i) { return m_Data.at(i); }
+        constexpr const T& at(size_t i) const { return m_Data.at(i); }
 
         iterator       begin() { return m_Data.begin(); }
         const_iterator begin() const { return m_Data.begin(); }

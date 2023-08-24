@@ -20,7 +20,7 @@ namespace Ignosi::Modules
         {
         }
 
-        Vector4(T x, T y, T z, T w)
+        constexpr Vector4(T x, T y, T z, T w) noexcept
             : Vector<4, T>({x, y, z, w})
         {
         }
@@ -32,6 +32,11 @@ namespace Ignosi::Modules
 
         Vector4(const Vector<3, T>& other, T w = 1)
             : Vector<4, T>({other[0], other[1], other[2], w})
+        {
+        }
+
+        Vector4(const Vector<4, T>& other)
+            : Vector<4, T>(other)
         {
         }
 
