@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <map>
 #include <memory>
 #include <vector>
@@ -35,10 +36,11 @@ namespace Ignosi::Modules::Memory
         {
             friend PoolMemoryBlock<T>;
 
-            PoolMemoryBlock<T>* m_pPool;
-            size_t              m_PoolIndex;
+            PoolMemoryBlock<T>* m_pPool{nullptr};
+            size_t              m_PoolIndex{0};
 
           public:
+            pointer() = default;
             ~pointer() { reset(); }
 
             pointer(const pointer& other)            = delete;

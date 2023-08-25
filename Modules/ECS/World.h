@@ -2,11 +2,18 @@
 
 #include "Entity.h"
 #include "System.h"
+#include "Tag.h"
 
+#include <MutexProtected.hpp>
 #include <PoolMemoryBlock.hpp>
 
+#include <cstddef>
+#include <mutex>
+#include <queue>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
+#include <vector>
 
 namespace Ignosi::Modules::ECS
 {
@@ -14,6 +21,7 @@ namespace Ignosi::Modules::ECS
     class World
     {
         std::tuple<Memory::PoolMemoryBlock<Types>...> m_Pools;
+        Memory::PoolMemoryBlock<Entity<Types...>>     m_EntityPool;
 
       public:
         World()          = default;
@@ -25,11 +33,13 @@ namespace Ignosi::Modules::ECS
         World& operator=(const World& other) = delete;
         World& operator=(World&& other)      = default;
 
-        template <typename T, typename... ComponentTypes>
-        T CreateEntity(ComponentTypes&&... args)
+        template <class... Components>
+        Memory::pool_pointer<Entity<Types...>> CreateEntity()
         {
-            static_assert(std::is_base_of_v<Entity<ComponentTypes...>, T>, "T must be derive from Entity.");
-            return T(CreatePoolObject(std::move(args))...);
+            Memory::pool_pointer<Entity<Types...>> pEntity = m_EntityPool.CreateObject();
+
+            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>())), ...);
+            return std::move(pEntity);
         }
 
         template <typename T, typename... ComponentTypes>
@@ -38,14 +48,12 @@ namespace Ignosi::Modules::ECS
             static_assert(std::is_base_of_v<System<ComponentTypes...>, T>, "T must be derive from System.");
             return std::make_unique<T>(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
         }
-
-      private:
         template <typename T>
-        Memory::pool_pointer<T> CreatePoolObject(T&& val)
+        Memory::pool_pointer<T> CreateComponent()
         {
             auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
 
-            return pool.template CreateObject<T>(std::forward<T>(val));
+            return std::move(pool.template CreateObject<T>(T()));
         }
     };
 } // namespace Ignosi::Modules::ECS

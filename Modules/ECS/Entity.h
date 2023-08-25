@@ -1,30 +1,34 @@
 #pragma once
 
-#include "IEntity.h"
+#include "Tag.h"
 
 #include <PoolMemoryBlock.hpp>
 #include <UID.hpp>
 
+#include <atomic>
+#include <cassert>
+#include <cstddef>
 #include <memory>
 #include <tuple>
+#include <vector>
 
 namespace Ignosi::Modules::ECS
 {
+    template <typename... Types>
+    class World;
 
     template <typename... ComponentTypes>
-    class Entity : public IEntity
+    class Entity final
     {
+
+        std::uint64_t     m_ID{UID()};
+        std::atomic<bool> m_IsAlive{true};
+        std::vector<Tag>  m_Tags;
+
         std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
 
-        std::uint64_t m_ID{UID()};
-
-      protected:
-        Entity(Memory::pool_pointer<ComponentTypes>... args)
-            : m_Components(std::move(args)...)
-        {
-        }
-
       public:
+        Entity()          = default;
         virtual ~Entity() = default;
 
         Entity(const Entity& other) = delete;
@@ -34,6 +38,20 @@ namespace Ignosi::Modules::ECS
         Entity& operator=(Entity&& other)      = default;
 
         std::uint64_t ID() const { return m_ID; }
+
+        bool IsAlive() const { return m_IsAlive; }
+
+        template <typename T>
+        void InitializeComponent(Memory::pool_pointer<T>&& value)
+        {
+            std::get<Memory::pool_pointer<T>>(m_Components) = std::move(value);
+        }
+
+        template <typename T>
+        void ClearComponent()
+        {
+            std::get<Memory::pool_pointer<T>>(m_Components).reset();
+        }
 
         template <typename T>
         void Set(const T& val)
@@ -61,6 +79,34 @@ namespace Ignosi::Modules::ECS
         {
             auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
             return pComponent.get();
+        }
+
+        bool AddTag(const Tag& value)
+        {
+            if (!value.IsValid())
+                return false;
+
+            if (std::find(m_Tags.begin(), m_Tags.end(), value) == m_Tags.end())
+            {
+                m_Tags.push_back(value);
+                return true;
+            }
+
+            return false;
+        }
+
+        bool RemoveTag(const Tag& value)
+        {
+            if (!value.IsValid())
+                return false;
+
+            auto it = std::find(m_Tags.begin(), m_Tags.end(), value);
+            if (it != m_Tags.end())
+            {
+                m_Tags.erase(it);
+            }
+
+            return false;
         }
     };
 } // namespace Ignosi::Modules::ECS

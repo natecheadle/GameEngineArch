@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ISystem.h"
-
 #include <PoolMemoryBlock.hpp>
 #include <UID.hpp>
 
@@ -10,7 +8,7 @@
 namespace Ignosi::Modules::ECS
 {
     template <typename... Types>
-    class System : ISystem
+    class System
     {
         std::tuple<Memory::PoolMemoryBlock<Types>*...> m_Pools;
 

@@ -34,22 +34,24 @@ namespace Ignosi::Test
         friend bool operator==(const KinematicData& lhs, const KinematicData& rhs) = default;
     };
 
-    class TestEntity : public Modules::ECS::Entity<KinematicData>
+    class TestEntity
     {
+        Modules::Memory::pool_pointer<Modules::ECS::Entity<KinematicData>> m_pEntity;
+
       public:
-        TestEntity(Modules::Memory::pool_pointer<KinematicData>&& val)
-            : Modules::ECS::Entity<KinematicData>(std::move(val))
+        TestEntity(Modules::Memory::pool_pointer<Modules::ECS::Entity<KinematicData>>&& pEntity)
+            : m_pEntity(std::move(pEntity))
         {
         }
 
-        KinematicData&       Kinematic() { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>(); }
-        const KinematicData& Kinematic() const { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>(); }
+        KinematicData&       Kinematic() { return m_pEntity->Get<KinematicData>(); }
+        const KinematicData& Kinematic() const { return m_pEntity->Get<KinematicData>(); }
 
-        Position& Pos() { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>().Pos; }
-        Velocity& Vel() { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>().Vel; }
+        Position& Pos() { return m_pEntity->Get<KinematicData>().Pos; }
+        Velocity& Vel() { return m_pEntity->Get<KinematicData>().Vel; }
 
-        const Position& Pos() const { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>().Pos; }
-        const Velocity& Vel() const { return Modules::ECS::Entity<KinematicData>::Get<KinematicData>().Vel; }
+        const Position& Pos() const { return m_pEntity->Get<KinematicData>().Pos; }
+        const Velocity& Vel() const { return m_pEntity->Get<KinematicData>().Vel; }
     };
 
     class TestSystem : public Modules::ECS::System<KinematicData>
@@ -78,7 +80,8 @@ namespace Ignosi::Test
 
         KinematicData init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        TestEntity entity = world.CreateEntity<TestEntity>(KinematicData(init));
+        TestEntity entity(world.CreateEntity<KinematicData>());
+        entity.Kinematic() = init;
         ASSERT_EQ(init, entity.Kinematic());
     }
 
@@ -88,8 +91,8 @@ namespace Ignosi::Test
         ;
 
         std::unique_ptr<TestSystem> system = world.CreateSystem<TestSystem, KinematicData>();
-        TestEntity                  entity = world.CreateEntity<TestEntity>(
-            KinematicData(KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})})));
+        TestEntity                  entity(world.CreateEntity<KinematicData>());
+        entity.Kinematic() = KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
         ASSERT_NO_THROW(system->Process(1.0));
 
