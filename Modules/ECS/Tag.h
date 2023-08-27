@@ -11,7 +11,7 @@ namespace Ignosi::Modules::ECS
     class Tag
     {
         static std::vector<std::string> m_TagNames;
-        size_t                          m_ID;
+        std::uint32_t                   m_ID;
         std::string_view                m_Name;
 
         Tag(size_t id, std::string_view name);
@@ -27,9 +27,14 @@ namespace Ignosi::Modules::ECS
         Tag& operator=(const Tag& other) = default;
         Tag& operator=(Tag&& other)      = default;
 
-        size_t           ID() const { return m_ID; }
+        std::uint32_t    ID() const { return m_ID; }
         std::string_view Name() const { return m_Name; }
 
         bool operator==(const Tag& other) const { return m_ID == other.m_ID; }
+        bool operator!=(const Tag& other) const { return !(*this == other); }
+        bool operator<(const Tag& other) const { return m_ID < other.m_ID; }
+        bool operator>(const Tag& other) const { return m_ID > other.m_ID; }
+        bool operator<=(const Tag& other) const { return m_ID <= other.m_ID; }
+        bool operator>=(const Tag& other) const { return m_ID >= other.m_ID; }
     };
 } // namespace Ignosi::Modules::ECS

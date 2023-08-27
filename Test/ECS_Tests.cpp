@@ -92,16 +92,16 @@ namespace Ignosi::Test
         {
             if (i % 3 == 0)
             {
-                Entities.clear();
+                ASSERT_NO_THROW(Entities.clear());
             }
             else
             {
                 for (int j = 0; j < 5; ++j)
                 {
-                    Entities.push_back(World.CreateEntity<KinematicData>());
+                    ASSERT_NO_THROW(Entities.push_back(World.CreateEntity<KinematicData>()));
                 }
             }
-            World.Update();
+            ASSERT_NO_THROW(World.Update());
         }
     }
 
@@ -115,24 +115,24 @@ namespace Ignosi::Test
         {
             if (i % 4 == 0)
             {
-                Entities2.clear();
+                ASSERT_NO_THROW(Entities2.clear());
             }
             else if (i % 4 == 1 || i % 4 == 2)
             {
                 for (int j = 0; j < 5; ++j)
                 {
-                    Entities1.push_back(World.CreateEntity<KinematicData>());
+                    ASSERT_NO_THROW(Entities1.push_back(World.CreateEntity<KinematicData>()));
                 }
-                Entities2.clear();
+                ASSERT_NO_THROW(Entities2.clear());
             }
             else
             {
                 for (int j = 0; j < 5; ++j)
                 {
-                    Entities2.push_back(World.CreateEntity<KinematicData>());
+                    ASSERT_NO_THROW(Entities2.push_back(World.CreateEntity<KinematicData>()));
                 }
             }
-            World.Update();
+            ASSERT_NO_THROW(World.Update());
         }
     }
 
@@ -147,5 +147,50 @@ namespace Ignosi::Test
 
         ASSERT_EQ(tag.ID(), tag3.ID());
         ASSERT_EQ(tag.Name(), tag3.Name());
+    }
+
+    TEST(ECS_Tests, ValidateAddRemoveTag)
+    {
+
+        Modules::ECS::World<KinematicData>                      World;
+        std::vector<Modules::ECS::EntityPointer<KinematicData>> Entities;
+        Modules::ECS::Tag                                       tag = Modules::ECS::Tag::Create("TestTag");
+
+        for (int i = 0; i < 12; ++i)
+        {
+            if (i % 4 == 0)
+            {
+                ASSERT_NO_THROW(Entities.clear());
+            }
+            else if (i % 4 == 1)
+            {
+                for (int j = 0; j < 5; ++j)
+                {
+                    ASSERT_NO_THROW(Entities.push_back(World.CreateEntity<KinematicData>()));
+                }
+                std::sort(
+                    Entities.begin(),
+                    Entities.end(),
+                    [](const Modules::ECS::EntityPointer<KinematicData>& lhs,
+                       const Modules::ECS::EntityPointer<KinematicData>& rhs) { return lhs->ID() < rhs->ID(); });
+            }
+            else if (i % 4 == 2)
+            {
+                for (auto& entity : Entities)
+                {
+                    ASSERT_TRUE(World.AddTag(tag, entity.get()));
+                }
+            }
+            else
+            {
+                const auto& taggedEntities = World.GetEntitiesByTag(tag);
+                ASSERT_EQ(taggedEntities.size(), Entities.size());
+                for (size_t i = 0; i < taggedEntities.size(); ++i)
+                {
+                    ASSERT_EQ(taggedEntities[i], Entities[i].get());
+                }
+            }
+            ASSERT_NO_THROW(World.Update());
+        }
     }
 } // namespace Ignosi::Test

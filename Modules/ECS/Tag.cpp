@@ -15,10 +15,12 @@ namespace Ignosi::Modules::ECS
         auto it = std::find(m_TagNames.begin(), m_TagNames.end(), name);
         if (it != m_TagNames.end())
         {
-            return Tag(it - m_TagNames.begin(), std::string_view(it->begin(), it->end()));
+            return Tag(static_cast<std::uint32_t>(it - m_TagNames.begin()), std::string_view(it->begin(), it->end()));
         }
 
         m_TagNames.push_back(std::string(name));
-        return Tag(m_TagNames.size() - 1, std::string_view(m_TagNames.back().begin(), m_TagNames.back().end()));
+        return Tag(
+            static_cast<std::uint32_t>(m_TagNames.size() - 1),
+            std::string_view(m_TagNames.back().begin(), m_TagNames.back().end()));
     }
 } // namespace Ignosi::Modules::ECS
