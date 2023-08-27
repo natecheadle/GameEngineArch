@@ -331,7 +331,7 @@ namespace Ignosi::Modules::Memory
             else if (m_FirstDataIndex > newObjLocation)
             {
                 m_Data[newObjLocation].PreviousObject   = m_Data.size();
-                m_Data[newObjLocation].NextObject       = newObjLocation;
+                m_Data[newObjLocation].NextObject       = m_FirstDataIndex;
                 m_Data[m_FirstDataIndex].PreviousObject = newObjLocation;
                 m_FirstDataIndex                        = newObjLocation;
             }
@@ -340,7 +340,11 @@ namespace Ignosi::Modules::Memory
                 size_t previousObj                    = FindPreviousRealObject(newObjLocation);
                 m_Data[newObjLocation].PreviousObject = previousObj;
                 m_Data[newObjLocation].NextObject     = m_Data[previousObj].NextObject;
-                m_Data[previousObj].NextObject        = newObjLocation;
+                if (m_Data[newObjLocation].NextObject < m_Data.size())
+                {
+                    m_Data[m_Data[newObjLocation].NextObject].PreviousObject = newObjLocation;
+                }
+                m_Data[previousObj].NextObject = newObjLocation;
             }
 
             return newObj;
