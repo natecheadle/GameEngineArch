@@ -1,5 +1,7 @@
+#include "EntityPointer.h"
 #include "PoolMemoryBlock.hpp"
 #include "System.h"
+#include "Tag.h"
 #include "World.h"
 
 #include <gtest/gtest.h>
@@ -34,26 +36,6 @@ namespace Ignosi::Test
         friend bool operator==(const KinematicData& lhs, const KinematicData& rhs) = default;
     };
 
-    class TestEntity
-    {
-        Modules::Memory::pool_pointer<Modules::ECS::Entity<KinematicData>> m_pEntity;
-
-      public:
-        TestEntity(Modules::Memory::pool_pointer<Modules::ECS::Entity<KinematicData>>&& pEntity)
-            : m_pEntity(std::move(pEntity))
-        {
-        }
-
-        KinematicData&       Kinematic() { return m_pEntity->Get<KinematicData>(); }
-        const KinematicData& Kinematic() const { return m_pEntity->Get<KinematicData>(); }
-
-        Position& Pos() { return m_pEntity->Get<KinematicData>().Pos; }
-        Velocity& Vel() { return m_pEntity->Get<KinematicData>().Vel; }
-
-        const Position& Pos() const { return m_pEntity->Get<KinematicData>().Pos; }
-        const Velocity& Vel() const { return m_pEntity->Get<KinematicData>().Vel; }
-    };
-
     class TestSystem : public Modules::ECS::System<KinematicData>
     {
       public:
@@ -76,28 +58,94 @@ namespace Ignosi::Test
 
     TEST(ECS_Tests, InitWorldAndEntity)
     {
-        Modules::ECS::World<KinematicData> world;
+        Modules::ECS::World<KinematicData> World;
 
         KinematicData init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        TestEntity entity(world.CreateEntity<KinematicData>());
-        entity.Kinematic() = init;
-        ASSERT_EQ(init, entity.Kinematic());
+        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>();
+        entity->Get<KinematicData>()                      = init;
+        ASSERT_EQ(init, entity->Get<KinematicData>());
     }
 
     TEST(ECS_Tests, InitWorldAndSystem)
     {
-        Modules::ECS::World<KinematicData> world;
-        ;
+        Modules::ECS::World<KinematicData> World;
 
-        std::unique_ptr<TestSystem> system = world.CreateSystem<TestSystem, KinematicData>();
-        TestEntity                  entity(world.CreateEntity<KinematicData>());
-        entity.Kinematic() = KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
+        std::unique_ptr<TestSystem>                system = World.CreateSystem<TestSystem, KinematicData>();
+        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>();
+        entity->Get<KinematicData>() = KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
+        World.Update();
         ASSERT_NO_THROW(system->Process(1.0));
 
         KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        ASSERT_EQ(entity.Kinematic(), expect);
+        ASSERT_EQ(entity->Get<KinematicData>(), expect);
+    }
+
+    TEST(ECS_Tests, ValidateBasicEntityCreateDelete)
+    {
+        Modules::ECS::World<KinematicData>                      World;
+        std::vector<Modules::ECS::EntityPointer<KinematicData>> Entities;
+        Entities.reserve(10);
+        for (int i = 0; i < 12; ++i)
+        {
+            if (i % 3 == 0)
+            {
+                Entities.clear();
+            }
+            else
+            {
+                for (int j = 0; j < 5; ++j)
+                {
+                    Entities.push_back(World.CreateEntity<KinematicData>());
+                }
+            }
+            World.Update();
+        }
+    }
+
+    TEST(ECS_Tests, ValidateAdvancedEntityCreateDelete)
+    {
+        Modules::ECS::World<KinematicData>                      World;
+        std::vector<Modules::ECS::EntityPointer<KinematicData>> Entities1;
+        std::vector<Modules::ECS::EntityPointer<KinematicData>> Entities2;
+
+        for (int i = 0; i < 12; ++i)
+        {
+            if (i % 4 == 0)
+            {
+                Entities2.clear();
+            }
+            else if (i % 4 == 1 || i % 4 == 2)
+            {
+                for (int j = 0; j < 5; ++j)
+                {
+                    Entities1.push_back(World.CreateEntity<KinematicData>());
+                }
+                Entities2.clear();
+            }
+            else
+            {
+                for (int j = 0; j < 5; ++j)
+                {
+                    Entities2.push_back(World.CreateEntity<KinematicData>());
+                }
+            }
+            World.Update();
+        }
+    }
+
+    TEST(ECS_Tests, ValidateTag)
+    {
+        Modules::ECS::Tag tag  = Modules::ECS::Tag::Create("TestTag");
+        auto              tag2 = tag;
+        Modules::ECS::Tag tag3 = Modules::ECS::Tag::Create("TestTag");
+
+        ASSERT_EQ(tag.ID(), tag2.ID());
+        ASSERT_EQ(tag.Name(), tag2.Name());
+
+        ASSERT_EQ(tag.ID(), tag3.ID());
+        ASSERT_EQ(tag.Name(), tag3.Name());
     }
 } // namespace Ignosi::Test

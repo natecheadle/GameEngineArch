@@ -37,7 +37,7 @@ namespace Ignosi::Modules::Memory
             friend PoolMemoryBlock<T>;
 
             PoolMemoryBlock<T>* m_pPool{nullptr};
-            size_t              m_PoolIndex{0};
+            size_t              m_PoolIndex{std::numeric_limits<size_t>::max()};
 
           public:
             pointer() = default;
@@ -70,11 +70,14 @@ namespace Ignosi::Modules::Memory
                 m_pPool     = other.m_pPool;
 
                 other.m_pPool = nullptr;
-                m_pPool->UnsubscribeOnDestroy(&other);
-                m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+                if (m_pPool)
+                {
+                    m_pPool->UnsubscribeOnDestroy(&other);
+                    m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
 
-                m_pPool->UnsubscribeOnMove(m_PoolIndex);
-                m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                    m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                }
 
                 return *this;
             }

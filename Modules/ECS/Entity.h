@@ -3,39 +3,77 @@
 #include "Tag.h"
 
 #include <PoolMemoryBlock.hpp>
-#include <UID.hpp>
 
 #include <atomic>
 #include <cassert>
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <tuple>
 #include <vector>
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... Types>
+    template <typename... ComponentTypes>
     class World;
 
     template <typename... ComponentTypes>
     class Entity final
     {
+        friend class World<ComponentTypes...>;
 
-        std::uint64_t     m_ID{UID()};
-        std::atomic<bool> m_IsAlive{true};
+        std::uint64_t     m_ID{std::numeric_limits<std::uint64_t>::max()};
+        std::atomic<bool> m_IsAlive{false};
         std::vector<Tag>  m_Tags;
 
         std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
 
+        void Kill() { m_IsAlive = false; }
+
+        void Revive()
+        {
+            // Doing the "reset" during revive to prevent iterator invalidation during Kill().
+            (std::get<Memory::pool_pointer<ComponentTypes>>(m_Components).reset(), ...);
+            m_IsAlive = true;
+        }
+
+        Entity(std::uint64_t id)
+            : m_ID(id)
+        {
+        }
+
       public:
-        Entity()          = default;
+        Entity() = default;
+
         virtual ~Entity() = default;
 
         Entity(const Entity& other) = delete;
-        Entity(Entity&& other)      = default;
+        Entity(Entity&& other)
+        {
+            m_Tags = std::move(other.m_Tags);
+            m_ID   = other.m_ID;
+            ((std::get<Memory::pool_pointer<ComponentTypes>>(m_Components) =
+                  std::move(std::get<Memory::pool_pointer<ComponentTypes>>(other.m_Components))),
+             ...);
+
+            other.m_IsAlive = false;
+            other.m_ID      = std::numeric_limits<std::uint64_t>::max();
+        }
 
         Entity& operator=(const Entity& other) = delete;
-        Entity& operator=(Entity&& other)      = default;
+        Entity& operator=(Entity&& other)
+        {
+            m_Tags = std::move(other.m_Tags);
+            m_ID   = other.m_ID;
+            ((std::get<Memory::pool_pointer<ComponentTypes>>(m_Components) =
+                  std::move(std::get<Memory::pool_pointer<ComponentTypes>>(other.m_Components))),
+             ...);
+
+            other.m_IsAlive = false;
+            other.m_ID      = std::numeric_limits<std::uint64_t>::max();
+
+            return *this;
+        }
 
         std::uint64_t ID() const { return m_ID; }
 
@@ -83,8 +121,6 @@ namespace Ignosi::Modules::ECS
 
         bool AddTag(const Tag& value)
         {
-            if (!value.IsValid())
-                return false;
 
             if (std::find(m_Tags.begin(), m_Tags.end(), value) == m_Tags.end())
             {
@@ -97,8 +133,6 @@ namespace Ignosi::Modules::ECS
 
         bool RemoveTag(const Tag& value)
         {
-            if (!value.IsValid())
-                return false;
 
             auto it = std::find(m_Tags.begin(), m_Tags.end(), value);
             if (it != m_Tags.end())
