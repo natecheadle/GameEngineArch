@@ -178,7 +178,7 @@ namespace Ignosi::Test
             {
                 for (auto& entity : Entities)
                 {
-                    ASSERT_TRUE(World.AddTag(tag, entity.get()));
+                    ASSERT_TRUE(World.AddTag(tag, entity));
                 }
             }
             else
@@ -187,7 +187,7 @@ namespace Ignosi::Test
                 ASSERT_EQ(taggedEntities.size(), Entities.size());
                 for (size_t i = 0; i < taggedEntities.size(); ++i)
                 {
-                    ASSERT_EQ(taggedEntities[i], Entities[i].get());
+                    ASSERT_EQ(taggedEntities[i], Entities[i]->ID());
                 }
             }
             ASSERT_NO_THROW(World.Update());

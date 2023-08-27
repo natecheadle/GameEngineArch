@@ -6,6 +6,7 @@
 #include "Tag.h"
 
 #include <PoolMemoryBlock.hpp>
+#include <sys/_types/_size_t.h>
 
 #include <algorithm>
 #include <atomic>
@@ -26,14 +27,14 @@ namespace Ignosi::Modules::ECS
 
         std::vector<Entity<Types...>> m_Entities;
 
-        std::vector<Entity<Types...>*> m_LivingEntities;
-        std::queue<std::uint64_t>      m_FreedEntities;
-        std::vector<std::uint64_t>     m_ToDelete;
-        std::vector<std::uint64_t>     m_ToAdd;
+        std::vector<std::uint64_t> m_LivingEntities;
+        std::queue<std::uint64_t>  m_FreedEntities;
+        std::vector<std::uint64_t> m_ToDelete;
+        std::vector<std::uint64_t> m_ToAdd;
 
-        std::map<Tag, std::vector<Entity<Types...>*>>  m_TaggedLists;
-        std::vector<std::pair<Tag, Entity<Types...>*>> m_TaggedEntitiesToAdd;
-        std::vector<std::pair<Tag, Entity<Types...>*>> m_TaggedEntitiesToRemove;
+        std::map<Tag, std::vector<std::uint64_t>>  m_TaggedLists;
+        std::vector<std::pair<Tag, std::uint64_t>> m_TaggedEntitiesToAdd;
+        std::vector<std::pair<Tag, std::uint64_t>> m_TaggedEntitiesToRemove;
 
         friend EntityPointer<Types...>;
 
@@ -46,6 +47,20 @@ namespace Ignosi::Modules::ECS
 
         World& operator=(const World& other) = delete;
         World& operator=(World&& other)      = default;
+
+        Entity<Types...>& GetEntity(size_t id)
+        {
+            assert(id < m_Entities.size());
+            assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
+            return m_Entities[id];
+        }
+
+        const Entity<Types...>& GetEntity(size_t id) const
+        {
+            assert(id < m_Entities.size());
+            assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
+            return m_Entities[id];
+        }
 
         template <class... Components>
         EntityPointer<Types...> CreateEntity()
@@ -86,11 +101,7 @@ namespace Ignosi::Modules::ECS
 
             for (auto destroyID : m_ToDelete)
             {
-                auto it = std::lower_bound(
-                    m_LivingEntities.begin(),
-                    m_LivingEntities.end(),
-                    destroyID,
-                    [](const Entity<Types...>* pEntity, std::uint64_t id) { return pEntity->ID() < id; });
+                auto it = std::lower_bound(m_LivingEntities.begin(), m_LivingEntities.end(), destroyID);
 
                 assert(it != m_LivingEntities.end());
                 m_LivingEntities.erase(it);
@@ -98,8 +109,7 @@ namespace Ignosi::Modules::ECS
 
                 for (auto& taggedLists : m_TaggedLists)
                 {
-                    auto it =
-                        std::lower_bound(taggedLists.second.begin(), taggedLists.second.end(), &m_Entities[destroyID]);
+                    auto it = std::lower_bound(taggedLists.second.begin(), taggedLists.second.end(), destroyID);
                     if (it != taggedLists.second.end())
                     {
                         taggedLists.second.erase(it);
@@ -109,7 +119,7 @@ namespace Ignosi::Modules::ECS
 
             for (auto addID : m_ToAdd)
             {
-                m_LivingEntities.push_back(&m_Entities[addID]);
+                m_LivingEntities.push_back(addID);
             }
 
             if (!m_ToAdd.empty())
@@ -148,23 +158,23 @@ namespace Ignosi::Modules::ECS
             return std::make_unique<T>(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
         }
 
-        bool AddTag(const Tag& tag, Entity<Types...>* pEntity)
+        bool AddTag(const Tag& tag, std::uint64_t entity)
         {
-            if (pEntity->AddTag(tag))
+            if (GetEntity(entity).AddTag(tag))
             {
-                m_TaggedEntitiesToAdd.push_back({tag, pEntity});
+                m_TaggedEntitiesToAdd.push_back({tag, entity});
                 return true;
             }
             return false;
         }
 
-        bool AddTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return AddTag(tag, pEntity.get()); }
+        bool AddTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return AddTag(tag, pEntity->ID()); }
 
-        bool RemoveTag(const Tag& tag, Entity<Types...>* pEntity)
+        bool RemoveTag(const Tag& tag, std::uint64_t entity)
         {
-            if (pEntity->RemoveTag(tag))
+            if (GetEntity(entity)->RemoveTag(tag))
             {
-                m_TaggedEntitiesToRemove.push_back({tag, pEntity});
+                m_TaggedEntitiesToRemove.push_back({tag, entity});
                 return true;
             }
             return false;
@@ -172,8 +182,8 @@ namespace Ignosi::Modules::ECS
 
         bool RemoveTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
 
-        const std::vector<Entity<Types...>*>& AllEntities() const { return m_LivingEntities; }
-        const std::vector<Entity<Types...>*>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
+        const std::vector<std::uint64_t>& AllEntities() const { return m_LivingEntities; }
+        const std::vector<std::uint64_t>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
 
       private:
         void DestroyEntity(std::uint64_t id)
