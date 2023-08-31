@@ -2,15 +2,16 @@
 
 #include "Entity.h"
 #include "EntityPointer.h"
+#include "IEntity.h"
 #include "System.h"
 #include "Tag.h"
 
 #include <PoolMemoryBlock.hpp>
-#include <sys/_types/_size_t.h>
 
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
+#include <memory>
 #include <queue>
 #include <string_view>
 #include <tuple>
@@ -27,14 +28,16 @@ namespace Ignosi::Modules::ECS
 
         std::vector<Entity<Types...>> m_Entities;
 
-        std::vector<std::uint64_t> m_LivingEntities;
-        std::queue<std::uint64_t>  m_FreedEntities;
-        std::vector<std::uint64_t> m_ToDelete;
-        std::vector<std::uint64_t> m_ToAdd;
+        std::vector<EntityID> m_LivingEntities;
+        std::queue<EntityID>  m_FreedEntities;
+        std::vector<EntityID> m_ToDelete;
+        std::vector<EntityID> m_ToAdd;
 
-        std::map<Tag, std::vector<std::uint64_t>>  m_TaggedLists;
-        std::vector<std::pair<Tag, std::uint64_t>> m_TaggedEntitiesToAdd;
-        std::vector<std::pair<Tag, std::uint64_t>> m_TaggedEntitiesToRemove;
+        std::map<Tag, std::vector<EntityID>>  m_TaggedLists;
+        std::vector<std::pair<Tag, EntityID>> m_TaggedEntitiesToAdd;
+        std::vector<std::pair<Tag, EntityID>> m_TaggedEntitiesToRemove;
+
+        std::vector<std::unique_ptr<ISystem>> m_Systems;
 
         friend EntityPointer<Types...>;
 
@@ -48,18 +51,18 @@ namespace Ignosi::Modules::ECS
         World& operator=(const World& other) = delete;
         World& operator=(World&& other)      = default;
 
-        Entity<Types...>& GetEntity(size_t id)
+        IEntity* GetEntity(EntityID id)
         {
             assert(id < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
-            return m_Entities[id];
+            return &m_Entities[id];
         }
 
-        const Entity<Types...>& GetEntity(size_t id) const
+        const IEntity* GetEntity(EntityID id) const
         {
             assert(id < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
-            return m_Entities[id];
+            return &m_Entities[id];
         }
 
         template <class... Components>
@@ -68,13 +71,13 @@ namespace Ignosi::Modules::ECS
             Entity<Types...>* pEntity{nullptr};
             if (!m_FreedEntities.empty())
             {
-                std::uint64_t newId = m_FreedEntities.front();
+                EntityID newId = m_FreedEntities.front();
                 m_FreedEntities.pop();
                 pEntity = &m_Entities[newId];
             }
             else
             {
-                std::uint64_t newID = m_Entities.size();
+                EntityID newID = m_Entities.size();
                 m_Entities.push_back(std::move(Entity<Types...>(newID)));
                 pEntity = &m_Entities[m_Entities.size() - 1];
             }
@@ -87,7 +90,80 @@ namespace Ignosi::Modules::ECS
             return {pEntity->ID(), this};
         }
 
-        void Update()
+        void Update(double dt)
+        {
+            ManageEntityLifespans();
+            for (auto& pSystem : m_Systems)
+            {
+                pSystem->Update(dt);
+            }
+        }
+
+        template <typename T>
+        T* CreateSystem()
+        {
+            static_assert(std::is_base_of_v<ISystem, T>, "T must be derive from System.");
+            std::unique_ptr<ISystem> pNewSystem = std::make_unique<T>();
+            pNewSystem->Initialize(static_cast<std::uint32_t>(m_Systems.size()));
+            T* pReturn = pNewSystem.get();
+            m_Systems.push_back(std::move(pNewSystem));
+            std::sort(
+                m_Systems.begin(),
+                m_Systems.end(),
+                [](const std::unique_ptr<ISystem>& lhs, const std::unique_ptr<ISystem>& rhs) {
+                    return lhs->Priority() < rhs->Priority();
+                });
+
+            return pReturn;
+        }
+
+        bool AddTag(const Tag& tag, EntityID entity)
+        {
+            if (GetEntity(entity).AddTag(tag))
+            {
+                m_TaggedEntitiesToAdd.push_back({tag, entity});
+                return true;
+            }
+            return false;
+        }
+
+        bool AddTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return AddTag(tag, pEntity->ID()); }
+
+        bool RemoveTag(const Tag& tag, EntityID entity)
+        {
+            if (GetEntity(entity)->RemoveTag(tag))
+            {
+                m_TaggedEntitiesToRemove.push_back({tag, entity});
+                return true;
+            }
+            return false;
+        }
+
+        bool RemoveTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
+
+        const std::vector<EntityID>& AllEntities() const { return m_LivingEntities; }
+        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
+
+      private:
+        void DestroyEntity(EntityID id)
+        {
+            assert(id < m_Entities.size());
+            if (m_Entities[id].IsAlive())
+            {
+                m_Entities[id].Kill();
+                m_ToDelete.push_back(m_Entities[id].ID());
+            }
+        }
+
+        template <typename T>
+        Memory::pool_pointer<T> CreateComponent()
+        {
+            auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
+
+            return std::move(pool.template CreateObject<T>(T()));
+        }
+
+        void ManageEntityLifespans()
         {
             for (auto& taggedEntities : m_TaggedEntitiesToRemove)
             {
@@ -149,59 +225,6 @@ namespace Ignosi::Modules::ECS
             m_TaggedEntitiesToAdd.clear();
             m_ToAdd.clear();
             m_ToDelete.clear();
-        }
-
-        template <typename T, typename... ComponentTypes>
-        std::unique_ptr<T> CreateSystem()
-        {
-            static_assert(std::is_base_of_v<System<ComponentTypes...>, T>, "T must be derive from System.");
-            return std::make_unique<T>(&(std::get<Memory::PoolMemoryBlock<ComponentTypes>>(m_Pools))...);
-        }
-
-        bool AddTag(const Tag& tag, std::uint64_t entity)
-        {
-            if (GetEntity(entity).AddTag(tag))
-            {
-                m_TaggedEntitiesToAdd.push_back({tag, entity});
-                return true;
-            }
-            return false;
-        }
-
-        bool AddTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return AddTag(tag, pEntity->ID()); }
-
-        bool RemoveTag(const Tag& tag, std::uint64_t entity)
-        {
-            if (GetEntity(entity)->RemoveTag(tag))
-            {
-                m_TaggedEntitiesToRemove.push_back({tag, entity});
-                return true;
-            }
-            return false;
-        }
-
-        bool RemoveTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
-
-        const std::vector<std::uint64_t>& AllEntities() const { return m_LivingEntities; }
-        const std::vector<std::uint64_t>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
-
-      private:
-        void DestroyEntity(std::uint64_t id)
-        {
-            assert(id < m_Entities.size());
-            if (m_Entities[id].IsAlive())
-            {
-                m_Entities[id].Kill();
-                m_ToDelete.push_back(m_Entities[id].ID());
-            }
-        }
-
-        template <typename T>
-        Memory::pool_pointer<T> CreateComponent()
-        {
-            auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
-
-            return std::move(pool.template CreateObject<T>(T()));
         }
     };
 } // namespace Ignosi::Modules::ECS

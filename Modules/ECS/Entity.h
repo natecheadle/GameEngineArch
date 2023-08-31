@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ComponentPool.h"
+#include "IEntity.h"
 #include "Tag.h"
 
 #include <PoolMemoryBlock.hpp>
@@ -7,6 +9,7 @@
 #include <atomic>
 #include <cassert>
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <tuple>
@@ -18,28 +21,29 @@ namespace Ignosi::Modules::ECS
     class World;
 
     template <typename... ComponentTypes>
-    class Entity final
+    class Entity final : IEntity
     {
         friend class World<ComponentTypes...>;
 
-        std::uint64_t    m_ID{std::numeric_limits<std::uint64_t>::max()};
-        bool             m_IsAlive{false};
-        std::vector<Tag> m_Tags;
+        EntityID                    m_ID{EntityID::RESET_VAL};
+        bool                        m_IsAlive{false};
+        std::vector<Tag>            m_Tags;
+        std::function<void(double)> m_OnUpdate;
 
-        std::tuple<Memory::pool_pointer<ComponentTypes>...> m_Components;
+        std::tuple<ComponentPointer<ComponentTypes>...> m_Components;
 
         void Kill() { m_IsAlive = false; }
 
         void Revive()
         {
             // Doing the "reset" during revive to prevent iterator invalidation during Kill().
-            (std::get<Memory::pool_pointer<ComponentTypes>>(m_Components).reset(), ...);
+            (std::get<ComponentPointer<ComponentTypes>>(m_Components).reset(), ...);
             m_Tags.clear();
 
             m_IsAlive = true;
         }
 
-        Entity(std::uint64_t id)
+        Entity(EntityID id)
             : m_ID(id)
         {
         }
@@ -55,12 +59,12 @@ namespace Ignosi::Modules::ECS
             m_Tags    = std::move(other.m_Tags);
             m_ID      = other.m_ID;
             m_IsAlive = other.m_IsAlive;
-            ((std::get<Memory::pool_pointer<ComponentTypes>>(m_Components) =
-                  std::move(std::get<Memory::pool_pointer<ComponentTypes>>(other.m_Components))),
+            ((std::get<ComponentPointer<ComponentTypes>>(m_Components) =
+                  std::move(std::get<ComponentPointer<ComponentTypes>>(other.m_Components))),
              ...);
 
             other.m_IsAlive = false;
-            other.m_ID      = std::numeric_limits<std::uint64_t>::max();
+            other.m_ID.Reset();
             other.m_Tags.clear();
         }
 
@@ -70,58 +74,64 @@ namespace Ignosi::Modules::ECS
             m_Tags    = std::move(other.m_Tags);
             m_ID      = other.m_ID;
             m_IsAlive = other.m_IsAlive;
-            ((std::get<Memory::pool_pointer<ComponentTypes>>(m_Components) =
-                  std::move(std::get<Memory::pool_pointer<ComponentTypes>>(other.m_Components))),
+            ((std::get<ComponentPointer<ComponentTypes>>(m_Components) =
+                  std::move(std::get<ComponentPointer<ComponentTypes>>(other.m_Components))),
              ...);
 
             other.m_IsAlive = false;
-            other.m_ID      = std::numeric_limits<std::uint64_t>::max();
+            other.m_ID.Reset();
             other.m_Tags.clear();
 
             return *this;
         }
 
-        std::uint64_t           ID() const { return m_ID; }
-        bool                    IsAlive() const { return m_IsAlive; }
-        const std::vector<Tag>& Tags() const { return m_Tags; }
+        EntityID ID() const override { return m_ID; }
+        bool     IsAlive() const override { return m_IsAlive; }
+        void     Update(double dt) override
+        {
+            if (m_OnUpdate)
+                m_OnUpdate(dt);
+        }
+        void AttachOnUpdate(std::function<void(double)> callback) override { m_OnUpdate = std::move(callback); }
+        const std::vector<Tag>& Tags() const override { return m_Tags; }
 
         template <typename T>
-        void InitializeComponent(Memory::pool_pointer<T>&& value)
+        void InitializeComponent(ComponentPointer<T>&& value)
         {
-            std::get<Memory::pool_pointer<T>>(m_Components) = std::move(value);
+            std::get<ComponentPointer<T>>(m_Components) = std::move(value);
         }
 
         template <typename T>
         void ClearComponent()
         {
-            std::get<Memory::pool_pointer<T>>(m_Components).reset();
+            std::get<ComponentPointer<T>>(m_Components).reset();
         }
 
         template <typename T>
         void Set(const T& val)
         {
-            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             *pComponent      = val;
         }
 
         template <typename T>
         const T& Get() const
         {
-            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return *pComponent;
         }
 
         template <typename T>
         T& Get()
         {
-            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return *pComponent;
         }
 
         template <typename T>
         T* GetPointer()
         {
-            auto& pComponent = std::get<Memory::pool_pointer<T>>(m_Components);
+            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return pComponent.get();
         }
 
