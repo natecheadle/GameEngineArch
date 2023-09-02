@@ -21,7 +21,7 @@ namespace Ignosi::Modules::ECS
     class World;
 
     template <typename... ComponentTypes>
-    class Entity final : IEntity
+    class Entity : public IEntity
     {
         friend class World<ComponentTypes...>;
 
@@ -92,7 +92,7 @@ namespace Ignosi::Modules::ECS
             if (m_OnUpdate)
                 m_OnUpdate(dt);
         }
-        void AttachOnUpdate(std::function<void(double)> callback) override { m_OnUpdate = std::move(callback); }
+        void                    AttachOnUpdate(std::function<void(double)> callback) override { m_OnUpdate = std::move(callback); }
         const std::vector<Tag>& Tags() const override { return m_Tags; }
 
         template <typename T>
@@ -115,21 +115,14 @@ namespace Ignosi::Modules::ECS
         }
 
         template <typename T>
-        const T& Get() const
+        const T* Get() const
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
-            return *pComponent;
+            return pComponent.get();
         }
 
         template <typename T>
-        T& Get()
-        {
-            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
-            return *pComponent;
-        }
-
-        template <typename T>
-        T* GetPointer()
+        T* Get()
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return pComponent.get();

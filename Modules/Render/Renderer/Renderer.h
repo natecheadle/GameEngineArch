@@ -49,7 +49,7 @@ namespace Ignosi::Modules::Render
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
 
       protected:
-        Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+        Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
 
       public:
         virtual ~Renderer();

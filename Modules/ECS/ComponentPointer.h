@@ -1,9 +1,12 @@
 #pragma once
 
-#include "ComponentPool.h"
+#include "ComponentID.h"
 
 namespace Ignosi::Modules::ECS
 {
+    template <class T>
+    class ComponentPool;
+
     template <class T>
     class ComponentPointer
     {
@@ -18,6 +21,8 @@ namespace Ignosi::Modules::ECS
         }
 
       public:
+        ComponentPointer() = default;
+
         ComponentPointer(const ComponentPointer& other) = delete;
         ComponentPointer(ComponentPointer&& other)
         {
@@ -31,9 +36,6 @@ namespace Ignosi::Modules::ECS
         ComponentPointer& operator=(const ComponentPointer& other) = delete;
         ComponentPointer& operator=(ComponentPointer&& other)
         {
-            if (this == *other)
-                return *this;
-
             m_pPool = other.m_pPool;
             m_ID    = other.m_ID;
 
@@ -47,6 +49,15 @@ namespace Ignosi::Modules::ECS
         const T* operator->() const { return &(m_pPool->GetComponent(m_ID)); }
         T&       operator*() { return m_pPool->GetComponent(m_ID); }
         const T& operator*() const { return m_pPool->GetComponent(m_ID); }
+
+        void reset()
+        {
+            m_pPool = nullptr;
+            m_ID.Reset();
+        }
+
+        T*       get() { return &(m_pPool->GetComponent(m_ID)); }
+        const T* get() const { return &(m_pPool->GetComponent(m_ID)); }
     };
 
 } // namespace Ignosi::Modules::ECS

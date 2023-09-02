@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ComponentID.h"
+#include "ComponentPointer.h"
 #include "IEntity.h"
 
 #include <algorithm>
@@ -10,16 +12,6 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <class T>
-    class ComponentPointer;
-
-    struct ComponentID
-    {
-        size_t ID;
-
-        void                    Reset() { ID = RESET_VAL; }
-        static constexpr size_t RESET_VAL = std::numeric_limits<size_t>::max();
-    };
 
     template <class T>
     class ComponentPool
@@ -29,10 +21,10 @@ namespace Ignosi::Modules::ECS
         std::vector<ComponentID> m_EntityLookup;
 
       public:
-        T&       GetComponent(const IEntity* pEntity) { return m_Components[m_EntityLookup[pEntity->ID()]]; }
-        const T& GetComponent(const IEntity* pEntity) const { return m_Components[m_EntityLookup[pEntity->ID()]]; }
-        T&       GetComponent(ComponentID id) { return m_Components[id.ID]; }
-        const T& GetComponent(ComponentID id) const { return m_Components[id.ID]; }
+        T&       GetComponent(const IEntity* pEntity) { return m_Components.at(m_EntityLookup.at(pEntity->ID())); }
+        const T& GetComponent(const IEntity* pEntity) const { return m_Components.atm_EntityLookup.at(pEntity->ID()); }
+        T&       GetComponent(ComponentID id) { return m_Components.at(id.ID); }
+        const T& GetComponent(ComponentID id) const { return m_Components.at(id.ID); }
 
         ComponentPointer<T> CreateComponent(EntityID id) { return CreateComponent(T(), id); }
 
@@ -47,15 +39,15 @@ namespace Ignosi::Modules::ECS
             {
                 ComponentPointer<T> newObj(m_FreedComponents.front(), this);
                 m_FreedComponents.pop();
-                m_Components[newObj.m_ID] = std::move(component);
-                m_EntityLookup[id]        = newObj.m_ID;
+                m_Components.at(newObj.m_ID.ID) = std::move(component);
+                m_EntityLookup[id.ID]           = newObj.m_ID;
                 return std::move(newObj);
             }
 
             m_Components.push_back(std::move(component));
-            ComponentID newId     = m_Components.size() - 1;
+            ComponentID newId{.ID = m_Components.size() - 1};
             m_EntityLookup[id.ID] = newId;
-            return pointer(newId, this);
+            return ComponentPointer<T>(newId, this);
         }
     };
 }; // namespace Ignosi::Modules::ECS

@@ -13,7 +13,7 @@
 
 namespace Ignosi::Modules::Render
 {
-    Renderer::Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+    Renderer::Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool)
         : ECS::System<Mesh3D, Sprite>(pMeshPool, pSpritePool)
     {
         Start();
@@ -26,25 +26,25 @@ namespace Ignosi::Modules::Render
     }
 
     void Renderer::DrawAllMesh(ShaderProgram* pProgram)
-    {
-        ExecuteFunction([&]() -> void {
-            auto& pool = GetPool<Mesh3D>();
-            for (auto& val : pool)
-            {
-                val.Draw(pProgram);
-            }
-        });
+    { /*
+         ExecuteFunction([&]() -> void {
+             auto& pool = GetPool<Mesh3D>();
+             for (auto& val : pool)
+             {
+                 val.Draw(pProgram);
+             }
+         });*/
     }
 
     void Renderer::DrawAllSprites(ShaderProgram* pProgram)
-    {
-        ExecuteFunction([&]() -> void {
-            auto& pool = GetPool<Sprite>();
-            for (auto& val : pool)
-            {
-                val.Draw(pProgram);
-            }
-        });
+    { /*
+         ExecuteFunction([&]() -> void {
+             auto& pool = GetPool<Sprite>();
+             for (auto& val : pool)
+             {
+                 val.Draw(pProgram);
+             }
+         });*/
     }
 
     void Renderer::ExecuteJob()

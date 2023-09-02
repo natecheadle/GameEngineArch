@@ -39,21 +39,15 @@ namespace Ignosi::Test
     class TestSystem : public Modules::ECS::System<KinematicData>
     {
       public:
-        TestSystem(Modules::Memory::PoolMemoryBlock<KinematicData>* pPool)
+        TestSystem(Modules::ECS::ComponentPool<KinematicData>* pPool)
             : Modules::ECS::System<KinematicData>(pPool)
         {
         }
 
-        void Process(float timeStep)
-        {
-            auto& pool = GetPool<KinematicData>();
-            for (auto& val : pool)
-            {
-                val.Pos.X += val.Vel.dX * timeStep;
-                val.Pos.Y += val.Vel.dY * timeStep;
-                val.Pos.Z += val.Vel.dZ * timeStep;
-            }
-        }
+        void             Process(float timeStep) { auto& pool = GetPool<KinematicData>(); }
+        std::string_view Name() const override { return "Test System"; }
+        std::uint32_t    Priority() const override { return 0; }
+        void             Update(double dt) override {}
     };
 
     TEST(ECS_Tests, InitWorldAndEntity)
@@ -62,25 +56,24 @@ namespace Ignosi::Test
 
         KinematicData init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>();
-        entity->Get<KinematicData>()                      = init;
-        ASSERT_EQ(init, entity->Get<KinematicData>());
+        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>(init);
+
+        ASSERT_EQ(init, *(entity->Get<KinematicData>()));
     }
 
     TEST(ECS_Tests, InitWorldAndSystem)
     {
         Modules::ECS::World<KinematicData> World;
 
-        std::unique_ptr<TestSystem>                system = World.CreateSystem<TestSystem, KinematicData>();
-        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>();
-        entity->Get<KinematicData>() = KinematicData({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
+        TestSystem*                                system = World.CreateSystem<TestSystem, KinematicData>();
+        Modules::ECS::EntityPointer<KinematicData> entity =
+            World.CreateEntity<KinematicData>({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        World.Update();
-        ASSERT_NO_THROW(system->Process(1.0));
+        ASSERT_NO_THROW(World.Update(1.0));
 
         KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
 
-        ASSERT_EQ(entity->Get<KinematicData>(), expect);
+        ASSERT_EQ(*(entity->Get<KinematicData>()), expect);
     }
 
     TEST(ECS_Tests, ValidateBasicEntityCreateDelete)
@@ -101,7 +94,7 @@ namespace Ignosi::Test
                     ASSERT_NO_THROW(Entities.push_back(World.CreateEntity<KinematicData>()));
                 }
             }
-            ASSERT_NO_THROW(World.Update());
+            ASSERT_NO_THROW(World.Update(1.0));
         }
     }
 
@@ -132,7 +125,7 @@ namespace Ignosi::Test
                     ASSERT_NO_THROW(Entities2.push_back(World.CreateEntity<KinematicData>()));
                 }
             }
-            ASSERT_NO_THROW(World.Update());
+            ASSERT_NO_THROW(World.Update(1.0));
         }
     }
 
@@ -171,8 +164,9 @@ namespace Ignosi::Test
                 std::sort(
                     Entities.begin(),
                     Entities.end(),
-                    [](const Modules::ECS::EntityPointer<KinematicData>& lhs,
-                       const Modules::ECS::EntityPointer<KinematicData>& rhs) { return lhs->ID() < rhs->ID(); });
+                    [](const Modules::ECS::EntityPointer<KinematicData>& lhs, const Modules::ECS::EntityPointer<KinematicData>& rhs) {
+                        return lhs->ID() < rhs->ID();
+                    });
             }
             else if (i % 4 == 2)
             {
@@ -190,7 +184,7 @@ namespace Ignosi::Test
                     ASSERT_EQ(taggedEntities[i], Entities[i]->ID());
                 }
             }
-            ASSERT_NO_THROW(World.Update());
+            ASSERT_NO_THROW(World.Update(1.0));
         }
     }
 } // namespace Ignosi::Test

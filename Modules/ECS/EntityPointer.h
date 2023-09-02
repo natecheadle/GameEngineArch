@@ -14,10 +14,10 @@ namespace Ignosi::Modules::ECS
     {
         friend World<ComponentTypes...>;
 
-        std::uint64_t             m_EntityID{std::numeric_limits<std::uint64_t>::max()};
+        EntityID                  m_EntityID{EntityID::RESET_VAL};
         World<ComponentTypes...>* m_pWorld{nullptr};
 
-        EntityPointer(std::uint64_t id, World<ComponentTypes...>* pWorld)
+        EntityPointer(EntityID id, World<ComponentTypes...>* pWorld)
             : m_EntityID(id)
             , m_pWorld(pWorld)
         {
@@ -31,17 +31,17 @@ namespace Ignosi::Modules::ECS
 
         EntityPointer(EntityPointer&& other)
         {
-            m_EntityID       = other.m_EntityID;
-            m_pWorld         = other.m_pWorld;
-            other.m_EntityID = std::numeric_limits<std::uint64_t>::max();
-            other.m_pWorld   = nullptr;
+            m_EntityID     = other.m_EntityID;
+            m_pWorld       = other.m_pWorld;
+            other.m_pWorld = nullptr;
+            other.m_EntityID.Reset();
         }
         EntityPointer& operator=(EntityPointer&& other)
         {
-            m_EntityID       = other.m_EntityID;
-            m_pWorld         = other.m_pWorld;
-            other.m_EntityID = std::numeric_limits<std::uint64_t>::max();
-            other.m_pWorld   = nullptr;
+            m_EntityID     = other.m_EntityID;
+            m_pWorld       = other.m_pWorld;
+            other.m_pWorld = nullptr;
+            other.m_EntityID.Reset();
 
             return *this;
         }
@@ -50,32 +50,32 @@ namespace Ignosi::Modules::ECS
 
         Entity<ComponentTypes...>* operator->()
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return &m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return &m_pWorld->m_Entities[m_EntityID.ID];
         }
         const Entity<ComponentTypes...>* operator->() const
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return &m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return &m_pWorld->m_Entities[m_EntityID.ID];
         }
 
         Entity<ComponentTypes...>& operator*()
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return m_pWorld->m_Entities[m_EntityID.ID];
         }
         const Entity<ComponentTypes...>& operator*() const
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return m_pWorld->m_Entities[m_EntityID.ID];
         }
 
         void reset()
         {
-            if (m_pWorld && m_EntityID < m_pWorld->m_Entities.size())
+            if (m_pWorld && m_EntityID.ID < m_pWorld->m_Entities.size())
                 m_pWorld->DestroyEntity(m_EntityID);
-            m_EntityID = std::numeric_limits<std::uint64_t>::max();
-            m_pWorld   = nullptr;
+            m_EntityID.Reset();
+            m_pWorld = nullptr;
         }
 
         Entity<ComponentTypes...>* get()

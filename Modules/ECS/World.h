@@ -1,12 +1,11 @@
 #pragma once
 
+#include "ComponentPool.h"
 #include "Entity.h"
 #include "EntityPointer.h"
 #include "IEntity.h"
 #include "System.h"
 #include "Tag.h"
-
-#include <PoolMemoryBlock.hpp>
 
 #include <algorithm>
 #include <atomic>
@@ -22,9 +21,9 @@ namespace Ignosi::Modules::ECS
 {
 
     template <typename... Types>
-    class World
+    class World : public IWorld
     {
-        std::tuple<Memory::PoolMemoryBlock<Types>...> m_Pools;
+        std::tuple<ComponentPool<Types>...> m_Pools;
 
         std::vector<Entity<Types...>> m_Entities;
 
@@ -53,16 +52,41 @@ namespace Ignosi::Modules::ECS
 
         IEntity* GetEntity(EntityID id)
         {
-            assert(id < m_Entities.size());
+            assert(id.ID < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
-            return &m_Entities[id];
+            return &m_Entities[id.ID];
         }
 
         const IEntity* GetEntity(EntityID id) const
         {
-            assert(id < m_Entities.size());
+            assert(id.ID < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
-            return &m_Entities[id];
+            const Entity<Types...>& entity = m_Entities[id.ID];
+            return static_cast<const IEntity*>(&entity);
+        }
+        template <class... Components>
+        EntityPointer<Types...> CreateEntity(Components... components)
+        {
+            Entity<Types...>* pEntity{nullptr};
+            if (!m_FreedEntities.empty())
+            {
+                EntityID newId = m_FreedEntities.front();
+                m_FreedEntities.pop();
+                pEntity = &m_Entities[newId.ID];
+            }
+            else
+            {
+                EntityID newID{m_Entities.size()};
+                m_Entities.push_back(std::move(Entity<Types...>(newID)));
+                pEntity = &m_Entities[m_Entities.size() - 1];
+            }
+
+            m_ToAdd.push_back(pEntity->ID());
+
+            pEntity->Revive();
+            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>(pEntity->ID(), components))), ...);
+
+            return {pEntity->ID(), this};
         }
 
         template <class... Components>
@@ -73,11 +97,11 @@ namespace Ignosi::Modules::ECS
             {
                 EntityID newId = m_FreedEntities.front();
                 m_FreedEntities.pop();
-                pEntity = &m_Entities[newId];
+                pEntity = &m_Entities[newId.ID];
             }
             else
             {
-                EntityID newID = m_Entities.size();
+                EntityID newID{m_Entities.size()};
                 m_Entities.push_back(std::move(Entity<Types...>(newID)));
                 pEntity = &m_Entities[m_Entities.size() - 1];
             }
@@ -85,7 +109,7 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
-            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>())), ...);
+            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>(pEntity->ID()))), ...);
 
             return {pEntity->ID(), this};
         }
@@ -99,27 +123,24 @@ namespace Ignosi::Modules::ECS
             }
         }
 
-        template <typename T>
+        template <typename T, class... Components>
         T* CreateSystem()
         {
-            static_assert(std::is_base_of_v<ISystem, T>, "T must be derive from System.");
-            std::unique_ptr<ISystem> pNewSystem = std::make_unique<T>();
-            pNewSystem->Initialize(static_cast<std::uint32_t>(m_Systems.size()));
+            static_assert(std::is_base_of_v<System<Components...>, T>, "T must be derive from System.");
+            std::unique_ptr<T> pNewSystem = std::make_unique<T>(&(std::get<ComponentPool<Components>>(m_Pools))...);
+            pNewSystem->Initialize(static_cast<std::uint32_t>(m_Systems.size()), this);
             T* pReturn = pNewSystem.get();
             m_Systems.push_back(std::move(pNewSystem));
-            std::sort(
-                m_Systems.begin(),
-                m_Systems.end(),
-                [](const std::unique_ptr<ISystem>& lhs, const std::unique_ptr<ISystem>& rhs) {
-                    return lhs->Priority() < rhs->Priority();
-                });
+            std::sort(m_Systems.begin(), m_Systems.end(), [](const std::unique_ptr<ISystem>& lhs, const std::unique_ptr<ISystem>& rhs) {
+                return lhs->Priority() < rhs->Priority();
+            });
 
             return pReturn;
         }
 
         bool AddTag(const Tag& tag, EntityID entity)
         {
-            if (GetEntity(entity).AddTag(tag))
+            if (m_Entities.at(entity.ID).AddTag(tag))
             {
                 m_TaggedEntitiesToAdd.push_back({tag, entity});
                 return true;
@@ -131,7 +152,7 @@ namespace Ignosi::Modules::ECS
 
         bool RemoveTag(const Tag& tag, EntityID entity)
         {
-            if (GetEntity(entity)->RemoveTag(tag))
+            if (m_Entities.at(entity.ID).RemoveTag(tag))
             {
                 m_TaggedEntitiesToRemove.push_back({tag, entity});
                 return true;
@@ -147,20 +168,26 @@ namespace Ignosi::Modules::ECS
       private:
         void DestroyEntity(EntityID id)
         {
-            assert(id < m_Entities.size());
-            if (m_Entities[id].IsAlive())
+            assert(id.ID < m_Entities.size());
+            if (m_Entities[id.ID].IsAlive())
             {
-                m_Entities[id].Kill();
-                m_ToDelete.push_back(m_Entities[id].ID());
+                m_Entities[id.ID].Kill();
+                m_ToDelete.push_back(m_Entities[id.ID].ID());
             }
         }
 
         template <typename T>
-        Memory::pool_pointer<T> CreateComponent()
+        ComponentPointer<T> CreateComponent(EntityID id)
         {
-            auto& pool = std::get<Memory::PoolMemoryBlock<T>>(m_Pools);
+            return CreateComponent(id, T());
+        }
 
-            return std::move(pool.template CreateObject<T>(T()));
+        template <typename T>
+        ComponentPointer<T> CreateComponent(EntityID id, T init)
+        {
+            auto& pool = std::get<ComponentPool<T>>(m_Pools);
+
+            return std::move(pool.CreateComponent(std::move(init), id));
         }
 
         void ManageEntityLifespans()

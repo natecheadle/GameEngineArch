@@ -16,9 +16,10 @@ namespace Ignosi::Modules::Physics
         Render::Renderer*         m_pRenderer;
 
       public:
-        PhysicsSystem(Memory::PoolMemoryBlock<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer = nullptr);
-
-        void Update(std::chrono::nanoseconds dt);
+        PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer = nullptr);
+        std::string_view Name() const override { return "Physics System"; }
+        std::uint32_t    Priority() const override { return 0; }
+        void             Update(double dt) override;
 
       private:
         static bool CheckCollision(const RigidBody2D& one, const RigidBody2D& two);

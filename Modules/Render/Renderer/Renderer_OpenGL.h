@@ -16,7 +16,7 @@ namespace Ignosi::Modules::Render
         std::unique_ptr<GUI::Window_GLFW> m_pWin;
 
       public:
-        Renderer_OpenGL(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+        Renderer_OpenGL(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
 
         ~Renderer_OpenGL() override;
 
@@ -46,8 +46,8 @@ namespace Ignosi::Modules::Render
         Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
         Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
-        void ClearDepthBuffer() override;
-        void ClearColorBuffer() override;
+        void              ClearDepthBuffer() override;
+        void              ClearColorBuffer() override;
         std::future<void> SwapBuffers() override;
 
       private:
