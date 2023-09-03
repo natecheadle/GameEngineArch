@@ -21,10 +21,34 @@ namespace Ignosi::Modules::ECS
         std::vector<ComponentID> m_EntityLookup;
 
       public:
-        T&       GetComponent(const IEntity* pEntity) { return m_Components.at(m_EntityLookup.at(pEntity->ID())); }
-        const T& GetComponent(const IEntity* pEntity) const { return m_Components.atm_EntityLookup.at(pEntity->ID()); }
-        T&       GetComponent(ComponentID id) { return m_Components.at(id.ID); }
-        const T& GetComponent(ComponentID id) const { return m_Components.at(id.ID); }
+        bool HasComponent(const IEntity* pEntity) const
+        {
+            return m_EntityLookup.size() > pEntity->ID().ID && m_EntityLookup[pEntity->ID().ID].ID < m_Components.size();
+        }
+
+        T& GetComponent(const IEntity* pEntity)
+        {
+            assert(HasComponent(pEntity));
+            return m_Components.at(m_EntityLookup.at(pEntity->ID().ID).ID);
+        }
+
+        const T& GetComponent(const IEntity* pEntity) const
+        {
+            assert(HasComponent(pEntity));
+            return m_Components.atm_EntityLookup.at(pEntity->ID().ID);
+        }
+
+        T& GetComponent(ComponentID id)
+        {
+            assert(m_Components.size() > id.ID);
+            return m_Components.at(id.ID);
+        }
+
+        const T& GetComponent(ComponentID id) const
+        {
+            assert(m_Components.size() > id.ID);
+            return m_Components.at(id.ID);
+        }
 
         ComponentPointer<T> CreateComponent(EntityID id) { return CreateComponent(T(), id); }
 
@@ -32,7 +56,7 @@ namespace Ignosi::Modules::ECS
         {
             if (m_EntityLookup.size() <= id.ID)
             {
-                m_EntityLookup.resize(id.ID + 1);
+                m_EntityLookup.resize(id.ID + 1, ComponentID::Create());
             }
 
             if (!m_FreedComponents.empty())

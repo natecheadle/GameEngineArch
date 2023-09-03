@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ComponentPool.h"
+#include "IEntity.h"
 #include "ISystem.h"
 #include "IWorld.h"
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IEntity.h"
 #include "IWorld.h"
 
 #include <string_view>

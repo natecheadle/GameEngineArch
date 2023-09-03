@@ -1,4 +1,5 @@
 #include "EntityPointer.h"
+#include "LinearAlgebra/Vector3.hpp"
 #include "PoolMemoryBlock.hpp"
 #include "System.h"
 #include "Tag.h"
@@ -10,51 +11,44 @@
 
 namespace Ignosi::Test
 {
-    struct Position
-    {
-        float X;
-        float Y;
-        float Z;
-
-        friend bool operator==(const Position& lhs, const Position& rhs) = default;
-    };
-
-    struct Velocity
-    {
-        float dX;
-        float dY;
-        float dZ;
-
-        friend bool operator==(const Velocity& lhs, const Velocity& rhs) = default;
-    };
-
     struct KinematicData
     {
-        Position Pos;
-        Velocity Vel;
-
-        friend bool operator==(const KinematicData& lhs, const KinematicData& rhs) = default;
+        Modules::Vector3<float> Pos;
+        Modules::Vector3<float> Vel;
+        friend bool             operator==(const KinematicData& lhs, const KinematicData& rhs) = default;
     };
 
     class TestSystem : public Modules::ECS::System<KinematicData>
     {
+        Modules::ECS::Tag m_TestTag;
+
       public:
         TestSystem(Modules::ECS::ComponentPool<KinematicData>* pPool)
             : Modules::ECS::System<KinematicData>(pPool)
+            , m_TestTag(Modules::ECS::Tag::Create("Test System"))
         {
         }
 
-        void             Process(float timeStep) { auto& pool = GetPool<KinematicData>(); }
         std::string_view Name() const override { return "Test System"; }
         std::uint32_t    Priority() const override { return 0; }
-        void             Update(double dt) override {}
+        void             Update(double dt) override
+        {
+            auto&       pool     = GetPool<KinematicData>();
+            const auto& entities = World()->GetEntitiesByTag(m_TestTag);
+            for (const auto& enitity : entities)
+            {
+                assert(pool.HasComponent(World()->GetEntity(enitity)));
+                auto& data = pool.GetComponent(World()->GetEntity(enitity));
+                data.Pos += data.Vel * (float)dt;
+            }
+        }
     };
 
     TEST(ECS_Tests, InitWorldAndEntity)
     {
         Modules::ECS::World<KinematicData> World;
 
-        KinematicData init({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
+        KinematicData init({Modules::Vector3<float>({1.0, 2.0, 3.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
 
         Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>(init);
 
@@ -67,11 +61,12 @@ namespace Ignosi::Test
 
         TestSystem*                                system = World.CreateSystem<TestSystem, KinematicData>();
         Modules::ECS::EntityPointer<KinematicData> entity =
-            World.CreateEntity<KinematicData>({Position({1.0, 2.0, 3.0}), Velocity({-1.0, 0.0, 1.0})});
+            World.CreateEntity<KinematicData>({Modules::Vector3<float>({1.0, 2.0, 3.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
 
+        World.AddTag(Modules::ECS::Tag::Create(system->Name()), entity);
         ASSERT_NO_THROW(World.Update(1.0));
 
-        KinematicData expect({Position({0.0, 2.0, 4.0}), Velocity({-1.0, 0.0, 1.0})});
+        KinematicData expect({Modules::Vector3<float>({0.0, 2.0, 4.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
 
         ASSERT_EQ(*(entity->Get<KinematicData>()), expect);
     }
