@@ -12,11 +12,18 @@ namespace Ignosi::Modules::ECS
         EntityPointer<ComponentTypes...> m_pEntity;
 
       protected:
+        CustomEntity() = default;
         CustomEntity(EntityPointer<ComponentTypes...> pEntity)
             : m_pEntity(std::move(pEntity))
         {
             m_pEntity->AttachOnUpdate(std::bind(&CustomEntity<ComponentTypes...>::OnUpdate, this, _1));
         }
+
+        CustomEntity(CustomEntity& other)           = delete;
+        CustomEntity(CustomEntity&& other) noexcept = default;
+
+        CustomEntity& operator=(const CustomEntity& other)     = delete;
+        CustomEntity& operator=(CustomEntity&& other) noexcept = default;
 
       public:
         virtual ~CustomEntity() { m_pEntity->AttachOnUpdate(nullptr); }
@@ -29,13 +36,13 @@ namespace Ignosi::Modules::ECS
         template <typename Component>
         Component* Get()
         {
-            return m_pEntity->Get<Component>();
+            return m_pEntity->template Get<Component>();
         }
 
         template <typename Component>
         const Component* Get() const
         {
-            return m_pEntity->Get<Component>();
+            return m_pEntity->template Get<Component>();
         }
         virtual void OnUpdate(double dt) = 0;
     };

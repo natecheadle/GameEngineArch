@@ -44,10 +44,16 @@ class TestAppEntity : ECS::CustomEntity<Render::Mesh3D, Render::Sprite>
     using BASE = ECS::CustomEntity<Render::Mesh3D, Render::Sprite>;
 
   public:
+    TestAppEntity() = default;
     TestAppEntity(ECS::EntityPointer<Render::Mesh3D, Render::Sprite>&& val)
         : BASE(std::move(val))
     {
     }
+    TestAppEntity(const TestAppEntity& other)     = delete;
+    TestAppEntity(TestAppEntity&& other) noexcept = default;
+
+    TestAppEntity& operator=(const TestAppEntity& other)     = delete;
+    TestAppEntity& operator=(TestAppEntity&& other) noexcept = default;
 
     Render::Mesh3D&       Mesh() { return *(BASE::Get<Render::Mesh3D>()); }
     const Render::Mesh3D& Mesh() const { return *(BASE::Get<Render::Mesh3D>()); }
@@ -103,7 +109,7 @@ class TestApp : public App::App
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
-        m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity(Render::Mesh3D::CreateCube(pRenderer))));
+        m_Cubes.push_back(TestAppEntity((m_pWorld->CreateEntity(std::move(Render::Mesh3D::CreateCube(pRenderer))))));
         m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {

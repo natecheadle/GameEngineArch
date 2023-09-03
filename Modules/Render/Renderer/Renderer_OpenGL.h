@@ -38,10 +38,8 @@ namespace Ignosi::Modules::Render
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
 
-        ShaderProgram_ptr CreateShaderProgram(
-            const Shader* pFragmentShader,
-            const Shader* pGeometryShader,
-            const Shader* pVertexShader) final;
+        ShaderProgram_ptr CreateShaderProgram(const Shader* pFragmentShader, const Shader* pGeometryShader, const Shader* pVertexShader)
+            final;
 
         Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
         Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
@@ -49,6 +47,10 @@ namespace Ignosi::Modules::Render
         void              ClearDepthBuffer() override;
         void              ClearColorBuffer() override;
         std::future<void> SwapBuffers() override;
+
+        std::string_view Name() const override { return "Renderer_OpenGL"; }
+        std::uint32_t    Priority() const override { return 32; }
+        void             Update(double dt) override {}
 
       private:
         static bool Validate(void* pVoid);
