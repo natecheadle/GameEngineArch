@@ -24,7 +24,7 @@ namespace Ignosi::Modules::ECS
         ComponentPointer() = default;
 
         ComponentPointer(const ComponentPointer& other) = delete;
-        ComponentPointer(ComponentPointer&& other)
+        ComponentPointer(ComponentPointer&& other) noexcept
         {
             m_pPool = other.m_pPool;
             m_ID    = other.m_ID;
@@ -34,7 +34,7 @@ namespace Ignosi::Modules::ECS
         }
 
         ComponentPointer& operator=(const ComponentPointer& other) = delete;
-        ComponentPointer& operator=(ComponentPointer&& other)
+        ComponentPointer& operator=(ComponentPointer&& other) noexcept
         {
             m_pPool = other.m_pPool;
             m_ID    = other.m_ID;

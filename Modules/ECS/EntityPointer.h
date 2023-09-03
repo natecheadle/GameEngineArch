@@ -29,14 +29,14 @@ namespace Ignosi::Modules::ECS
         EntityPointer(const EntityPointer& other)            = delete;
         EntityPointer& operator=(const EntityPointer& other) = delete;
 
-        EntityPointer(EntityPointer&& other)
+        EntityPointer(EntityPointer&& other) noexcept
         {
             m_EntityID     = other.m_EntityID;
             m_pWorld       = other.m_pWorld;
             other.m_pWorld = nullptr;
             other.m_EntityID.Reset();
         }
-        EntityPointer& operator=(EntityPointer&& other)
+        EntityPointer& operator=(EntityPointer&& other) noexcept
         {
             m_EntityID     = other.m_EntityID;
             m_pWorld       = other.m_pWorld;

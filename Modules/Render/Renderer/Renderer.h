@@ -61,8 +61,8 @@ namespace Ignosi::Modules::Render
         virtual void DrawAllMesh(ShaderProgram* pProgram);
         virtual void DrawAllSprites(ShaderProgram* pProgram);
 
-        virtual GUI::IWindow* Window() const                                  = 0;
-        virtual GUI::IWindow* Initialize(const GUI::WindowSize&, std::string) = 0;
+        virtual GUI::IWindow* Window() const                                        = 0;
+        virtual GUI::IWindow* InitializeWindow(const GUI::WindowSize&, std::string) = 0;
 
         virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
         virtual VertexBuffer_ptr CreateBuffer(

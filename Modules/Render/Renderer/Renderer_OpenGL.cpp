@@ -34,7 +34,7 @@ namespace Ignosi::Modules::Render
         m_pWin.reset();
     }
 
-    GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
+    GUI::IWindow* Renderer_OpenGL::InitializeWindow(const GUI::WindowSize& size, std::string name)
     {
 #ifdef __APPLE__
         // Mac requires the window to be in the main thread.

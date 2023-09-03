@@ -54,7 +54,7 @@ namespace Ignosi::Modules::ECS
         virtual ~Entity() = default;
 
         Entity(const Entity& other) = delete;
-        Entity(Entity&& other)
+        Entity(Entity&& other) noexcept
         {
             m_Tags    = std::move(other.m_Tags);
             m_ID      = other.m_ID;

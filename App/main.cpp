@@ -8,6 +8,7 @@
 #include <3D/Model3D.h>
 #include <3D/Sprite.h>
 #include <App.h>
+#include <CustomEntity.h>
 #include <DebugCast.hpp>
 #include <Entity.h>
 #include <IWindow.h>
@@ -38,16 +39,21 @@
 using namespace Ignosi::Modules;
 using namespace std::chrono_literals;
 
-class TestAppEntity : ECS::Entity<Render::Mesh3D>
+class TestAppEntity : ECS::CustomEntity<Render::Mesh3D, Render::Sprite>
 {
+    using BASE = ECS::CustomEntity<Render::Mesh3D, Render::Sprite>;
+
   public:
-    TestAppEntity(Memory::pool_pointer<Render::Mesh3D>&& val)
-        : ECS::Entity<Render::Mesh3D>(std::move(val))
+    TestAppEntity(ECS::EntityPointer<Render::Mesh3D, Render::Sprite>&& val)
+        : BASE(std::move(val))
     {
     }
 
-    Render::Mesh3D&       Mesh() { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
-    const Render::Mesh3D& Mesh() const { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
+    Render::Mesh3D&       Mesh() { return *(BASE::Get<Render::Mesh3D>()); }
+    const Render::Mesh3D& Mesh() const { return *(BASE::Get<Render::Mesh3D>()); }
+
+  protected:
+    void OnUpdate(double dt) override {}
 };
 
 class TestApp : public App::App
@@ -61,13 +67,8 @@ class TestApp : public App::App
     std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> m_pWorld;
 
   public:
-    TestApp(
-        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld,
-        const GUI::WindowSize&                                      window_size,
-        std::string                                                 window_name)
-        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
-              window_size,
-              std::move(window_name))
+    TestApp(std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld, const GUI::WindowSize& window_size, std::string window_name)
+        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(), window_size, std::move(window_name))
         , m_pWorld(std::move(pWorld))
     {
     }
@@ -92,9 +93,8 @@ class TestApp : public App::App
         auto cubeMaterial = std::make_unique<Render::Material>();
         auto pRenderer    = Render::Renderer::Instance();
 
-        cubeMaterial->Diffuse = pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
-        cubeMaterial->Specular =
-            pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
+        cubeMaterial->Diffuse   = pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Specular  = pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
         auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
@@ -103,7 +103,7 @@ class TestApp : public App::App
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
-        m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(pRenderer)));
+        m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity(Render::Mesh3D::CreateCube(pRenderer))));
         m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
@@ -122,7 +122,7 @@ class TestApp : public App::App
 
         for (size_t i = 1; i < numOfCubes; ++i)
         {
-            m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D(m_Cubes[0].Mesh())));
+            m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity(Render::Mesh3D(m_Cubes[0].Mesh()))));
             m_Cubes[i].Mesh().Origin(cubePositions[i]);
         }
 

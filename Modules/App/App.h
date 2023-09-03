@@ -9,15 +9,15 @@ namespace Ignosi::Modules::App
 {
     class App
     {
-        GUI::IWindow*                           m_pWindow;
-        Render::Renderer*                       m_pRenderer;
-        std::unique_ptr<Physics::PhysicsSystem> m_pPhysics;
+        GUI::IWindow*           m_pWindow;
+        Render::Renderer*       m_pRenderer;
+        Physics::PhysicsSystem* m_pPhysics;
 
       public:
-        App(std::unique_ptr<Render::Renderer>       pRenderer,
-            const GUI::WindowSize&                  window_size,
-            std::string                             window_name,
-            std::unique_ptr<Physics::PhysicsSystem> pPhysics = nullptr);
+        App(Render::Renderer*       pRenderer,
+            const GUI::WindowSize&  window_size,
+            std::string             window_name,
+            Physics::PhysicsSystem* pPhysics = nullptr);
         ~App() = default;
 
         int  Run();

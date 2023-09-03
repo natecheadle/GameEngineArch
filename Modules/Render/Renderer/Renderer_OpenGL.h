@@ -22,7 +22,7 @@ namespace Ignosi::Modules::Render
 
         GUI::IWindow* Window() const override { return m_pWin.get(); }
 
-        GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
+        GUI::IWindow* InitializeWindow(const GUI::WindowSize& size, std::string name) override;
 
         VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) override;
         VertexBuffer_ptr CreateBuffer(

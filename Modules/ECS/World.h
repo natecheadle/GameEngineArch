@@ -128,7 +128,7 @@ namespace Ignosi::Modules::ECS
         {
             static_assert(std::is_base_of_v<System<Components...>, T>, "T must be derive from System.");
             std::unique_ptr<T> pNewSystem = std::make_unique<T>(&(std::get<ComponentPool<Components>>(m_Pools))...);
-            pNewSystem->Initialize(static_cast<std::uint32_t>(m_Systems.size()), this);
+            pNewSystem->Initialize(SystemID{.ID = m_Systems.size()}, this);
             T* pReturn = pNewSystem.get();
             m_Systems.push_back(std::move(pNewSystem));
             std::sort(m_Systems.begin(), m_Systems.end(), [](const std::unique_ptr<ISystem>& lhs, const std::unique_ptr<ISystem>& rhs) {

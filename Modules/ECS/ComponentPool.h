@@ -30,9 +30,9 @@ namespace Ignosi::Modules::ECS
 
         ComponentPointer<T> CreateComponent(T&& component, EntityID id)
         {
-            if (m_EntityLookup.size() < id.ID)
+            if (m_EntityLookup.size() <= id.ID)
             {
-                m_EntityLookup.resize(id.ID);
+                m_EntityLookup.resize(id.ID + 1);
             }
 
             if (!m_FreedComponents.empty())
@@ -41,7 +41,7 @@ namespace Ignosi::Modules::ECS
                 m_FreedComponents.pop();
                 m_Components.at(newObj.m_ID.ID) = std::move(component);
                 m_EntityLookup[id.ID]           = newObj.m_ID;
-                return std::move(newObj);
+                return newObj;
             }
 
             m_Components.push_back(std::move(component));

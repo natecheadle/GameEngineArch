@@ -12,8 +12,8 @@ namespace Ignosi::Modules::ECS
     template <typename... ComponentTypes>
     class System : public ISystem
     {
-        std::uint32_t                                 m_ID;
-        IWorld*                                       m_pWorld;
+        SystemID                                      m_ID{SystemID::RESET_VAL};
+        IWorld*                                       m_pWorld{nullptr};
         std::tuple<ComponentPool<ComponentTypes>*...> m_ComponentPools;
 
       protected:
@@ -32,7 +32,7 @@ namespace Ignosi::Modules::ECS
         System& operator=(System&& other)      = default;
 
         SystemID ID() const override { return m_ID; }
-        void     Initialize(std::uint32_t id, IWorld* pWorld) override
+        void     Initialize(SystemID id, IWorld* pWorld) override
         {
             m_ID     = id;
             m_pWorld = pWorld;
