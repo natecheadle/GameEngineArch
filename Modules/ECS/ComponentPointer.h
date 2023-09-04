@@ -10,7 +10,7 @@ namespace Ignosi::Modules::ECS
     template <class T>
     class ComponentPointer
     {
-        ComponentID       m_ID{ComponentID::RESET_VAL};
+        ComponentID       m_ID;
         ComponentPool<T>* m_pPool{nullptr};
         friend ComponentPool<T>;
 

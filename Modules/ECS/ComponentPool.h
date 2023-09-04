@@ -5,11 +5,11 @@
 #include "IEntity.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <limits>
 #include <queue>
 #include <vector>
-#include <cassert>
 
 namespace Ignosi::Modules::ECS
 {
@@ -57,7 +57,7 @@ namespace Ignosi::Modules::ECS
         {
             if (m_EntityLookup.size() <= id.ID)
             {
-                m_EntityLookup.resize(id.ID + 1, ComponentID::Create());
+                m_EntityLookup.resize(id.ID + 1, ComponentID());
             }
 
             if (!m_FreedComponents.empty())
@@ -70,7 +70,7 @@ namespace Ignosi::Modules::ECS
             }
 
             m_Components.push_back(std::move(component));
-            ComponentID newId{.ID = m_Components.size() - 1};
+            ComponentID newId(m_Components.size() - 1);
             m_EntityLookup[id.ID] = newId;
             return ComponentPointer<T>(newId, this);
         }
