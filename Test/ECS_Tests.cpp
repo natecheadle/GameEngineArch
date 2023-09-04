@@ -53,7 +53,7 @@ namespace Ignosi::Test
 
         Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>(init);
 
-        ASSERT_EQ(init, *(entity->Get<KinematicData>()));
+        ASSERT_EQ(init, *(entity->GetComponent<KinematicData>()));
     }
 
     TEST(ECS_Tests, InitWorldAndSystem)
@@ -69,7 +69,7 @@ namespace Ignosi::Test
 
         KinematicData expect({Modules::Vector3<float>({0.0, 2.0, 4.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
 
-        ASSERT_EQ(*(entity->Get<KinematicData>()), expect);
+        ASSERT_EQ(*(entity->GetComponent<KinematicData>()), expect);
     }
 
     TEST(ECS_Tests, ValidateBasicEntityCreateDelete)

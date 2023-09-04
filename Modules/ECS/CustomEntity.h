@@ -41,15 +41,15 @@ namespace Ignosi::Modules::ECS
 
       protected:
         template <typename Component>
-        Component* Get()
+        Component* GetComponent()
         {
-            return m_pEntity->template Get<Component>();
+            return m_pEntity->template GetComponent<Component>();
         }
 
         template <typename Component>
-        const Component* Get() const
+        const Component* GetComponent() const
         {
-            return m_pEntity->template Get<Component>();
+            return m_pEntity->template GetComponent<Component>();
         }
         virtual void OnUpdate(double dt) = 0;
     };

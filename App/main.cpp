@@ -55,8 +55,8 @@ class TestAppEntity : public ECS::CustomEntity<Render::Mesh3D, Render::Sprite>
     TestAppEntity& operator=(const TestAppEntity& other)     = delete;
     TestAppEntity& operator=(TestAppEntity&& other) noexcept = default;
 
-    Render::Mesh3D&       Mesh() { return *(BASE::Get<Render::Mesh3D>()); }
-    const Render::Mesh3D& Mesh() const { return *(BASE::Get<Render::Mesh3D>()); }
+    Render::Mesh3D&       Mesh() { return *(BASE::GetComponent<Render::Mesh3D>()); }
+    const Render::Mesh3D& Mesh() const { return *(BASE::GetComponent<Render::Mesh3D>()); }
 
   protected:
     void OnUpdate(double dt) override {}

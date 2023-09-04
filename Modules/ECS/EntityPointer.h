@@ -36,6 +36,7 @@ namespace Ignosi::Modules::ECS
             other.m_pWorld = nullptr;
             other.m_EntityID.Reset();
         }
+
         EntityPointer& operator=(EntityPointer&& other) noexcept
         {
             m_EntityID     = other.m_EntityID;

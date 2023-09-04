@@ -93,8 +93,10 @@ namespace Ignosi::Modules::ECS
                 m_OnUpdate(dt);
         }
         void                    AttachOnUpdate(std::function<void(double)> callback) override { m_OnUpdate = std::move(callback); }
+
         const std::vector<Tag>& Tags() const override { return m_Tags; }
         bool HasTag(const Tag& tag) const override { return std::find(m_Tags.begin(), m_Tags.end(), tag) != m_Tags.end(); }
+
         template <typename T>
         void InitializeComponent(ComponentPointer<T>&& value)
         {
@@ -108,21 +110,21 @@ namespace Ignosi::Modules::ECS
         }
 
         template <typename T>
-        void Set(const T& val)
+        void SetComponent(const T& val)
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             *pComponent      = val;
         }
 
         template <typename T>
-        const T* Get() const
+        const T* GetComponent() const
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return pComponent.get();
         }
 
         template <typename T>
-        T* Get()
+        T* GetComponent()
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             return pComponent.get();

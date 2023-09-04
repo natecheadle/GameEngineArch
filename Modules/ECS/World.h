@@ -20,12 +20,12 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... Types>
+    template <typename... ComponentTypes>
     class World : public IWorld
     {
-        std::tuple<ComponentPool<Types>...> m_Pools;
+        std::tuple<ComponentPool<ComponentTypes>...> m_Pools;
 
-        std::vector<Entity<Types...>> m_Entities;
+        std::vector<Entity<ComponentTypes...>> m_Entities;
 
         std::vector<EntityID> m_LivingEntities;
         std::queue<EntityID>  m_FreedEntities;
@@ -38,7 +38,7 @@ namespace Ignosi::Modules::ECS
 
         std::vector<std::unique_ptr<ISystem>> m_Systems;
 
-        friend EntityPointer<Types...>;
+        friend EntityPointer<ComponentTypes...>;
 
       public:
         World()          = default;
@@ -61,7 +61,7 @@ namespace Ignosi::Modules::ECS
         {
             assert(id.ID < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
-            const Entity<Types...>& entity = m_Entities[id.ID];
+            const Entity<ComponentTypes...>& entity = m_Entities[id.ID];
             return static_cast<const IEntity*>(&entity);
         }
 
@@ -87,9 +87,9 @@ namespace Ignosi::Modules::ECS
         }
 
         template <class... Components>
-        EntityPointer<Types...> CreateEntity(Components... components)
+        EntityPointer<ComponentTypes...> CreateEntity(Components... components)
         {
-            Entity<Types...>* pEntity{nullptr};
+            Entity<ComponentTypes...>* pEntity{nullptr};
             if (!m_FreedEntities.empty())
             {
                 EntityID newId = m_FreedEntities.front();
@@ -99,7 +99,7 @@ namespace Ignosi::Modules::ECS
             else
             {
                 EntityID newID{m_Entities.size()};
-                m_Entities.push_back(std::move(Entity<Types...>(newID)));
+                m_Entities.push_back(std::move(Entity<ComponentTypes...>(newID)));
                 pEntity = &m_Entities[m_Entities.size() - 1];
             }
 
@@ -112,9 +112,9 @@ namespace Ignosi::Modules::ECS
         }
 
         template <class... Components>
-        EntityPointer<Types...> CreateEntity()
+        EntityPointer<ComponentTypes...> CreateEntity()
         {
-            Entity<Types...>* pEntity{nullptr};
+            Entity<ComponentTypes...>* pEntity{nullptr};
             if (!m_FreedEntities.empty())
             {
                 EntityID newId = m_FreedEntities.front();
@@ -124,7 +124,7 @@ namespace Ignosi::Modules::ECS
             else
             {
                 EntityID newID{m_Entities.size()};
-                m_Entities.push_back(std::move(Entity<Types...>(newID)));
+                m_Entities.push_back(std::move(Entity<ComponentTypes...>(newID)));
                 pEntity = &m_Entities[m_Entities.size() - 1];
             }
 
@@ -160,17 +160,17 @@ namespace Ignosi::Modules::ECS
             return pReturn;
         }
 
-        template <class... SystemComponents>
-        void RegisterEntityInSystem(const System<SystemComponents...>& system, EntityPointer<Types...>& pEntity)
+        template <class... Components>
+        void RegisterEntityInSystem(const System<Components...>& system, EntityPointer<ComponentTypes...>& pEntity)
         {
             RegisterEntityInSystem(system, pEntity.get());
         }
 
-        template <class... SystemComponents>
-        void RegisterEntityInSystem(const System<SystemComponents...>& system, const IEntity* pEntity)
+        template <class... Components>
+        void RegisterEntityInSystem(const System<Components...>& system, const IEntity* pEntity)
         {
             AddTag(system.Tag(), pEntity->ID());
-            (AddComponent<SystemComponents>(pEntity), ...);
+            (AddComponent<Components>(pEntity), ...);
         }
 
         bool AddTag(const Tag& tag, EntityID entity)
@@ -183,7 +183,7 @@ namespace Ignosi::Modules::ECS
             return false;
         }
 
-        bool AddTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return AddTag(tag, pEntity->ID()); }
+        bool AddTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return AddTag(tag, pEntity->ID()); }
 
         bool RemoveTag(const Tag& tag, EntityID entity)
         {
@@ -195,7 +195,7 @@ namespace Ignosi::Modules::ECS
             return false;
         }
 
-        bool RemoveTag(const Tag& tag, EntityPointer<Types...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
+        bool RemoveTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
 
         const std::vector<EntityID>& AllEntities() const { return m_LivingEntities; }
         const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
@@ -211,16 +211,16 @@ namespace Ignosi::Modules::ECS
             }
         }
 
-        template <typename T>
-        ComponentPointer<T> CreateComponent(EntityID id)
+        template <typename ComponentType>
+        ComponentPointer<ComponentType> CreateComponent(EntityID id)
         {
-            return CreateComponent(id, T());
+            return CreateComponent(id, ComponentType());
         }
 
-        template <typename T>
-        ComponentPointer<T> CreateComponent(EntityID id, T init)
+        template <typename ComponentType>
+        ComponentPointer<ComponentType> CreateComponent(EntityID id, ComponentType init)
         {
-            auto& pool = std::get<ComponentPool<T>>(m_Pools);
+            auto& pool = std::get<ComponentPool<ComponentType>>(m_Pools);
 
             return std::move(pool.CreateComponent(std::move(init), id));
         }
@@ -234,6 +234,7 @@ namespace Ignosi::Modules::ECS
                     std::move(CreateComponent<ComponentType>(pEntity->ID())));
             }
         }
+
         void ManageEntityLifespans()
         {
             for (auto& taggedEntities : m_TaggedEntitiesToRemove)
