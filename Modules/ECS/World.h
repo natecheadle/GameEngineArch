@@ -148,22 +148,8 @@ namespace Ignosi::Modules::ECS
         template <class... SystemComponents>
         void RegisterEntityInSystem(const System<SystemComponents...>& system, IEntity* pEntity)
         {
-            bool hasTag        = pEntity->HasTag(system.Tag());
-            bool hasComponents = system.EntityHasNecessaryComponents(pEntity);
-
-            if (hasTag && hasComponents)
-            {
-                return;
-            }
-
-            if (!hasTag)
-            {
-                AddTag(system.Tag(), pEntity->ID());
-            }
-            if (!hasComponents)
-            {
-                (AddComponent<SystemComponents>(pEntity), ...);
-            }
+            AddTag(system.Tag(), pEntity->ID());
+            (AddComponent<SystemComponents>(pEntity), ...);
         }
 
         bool AddTag(const Tag& tag, EntityID entity)
