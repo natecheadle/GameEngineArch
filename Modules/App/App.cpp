@@ -19,7 +19,6 @@ namespace Ignosi::Modules::App
     void App::Close()
     {
         Shutdown();
-        Render::Renderer::Reset();
     }
 
     int App::Run()

@@ -65,6 +65,28 @@ namespace Ignosi::Modules::ECS
             const Entity<Types...>& entity = m_Entities[id.ID];
             return static_cast<const IEntity*>(&entity);
         }
+
+        ISystem* GetSystem(SystemID id)
+        {
+            assert(id.ID < m_Systems.size());
+            return m_Systems[id.ID].get();
+        }
+
+        template <class SystemType>
+        SystemType* GetSystem()
+        {
+            for (auto& system : m_Systems)
+            {
+                SystemType* pSys = dynamic_cast<SystemType*>(system.get());
+                if (pSys)
+                {
+                    return pSys;
+                }
+            }
+
+            return nullptr;
+        }
+
         template <class... Components>
         EntityPointer<Types...> CreateEntity(Components... components)
         {
@@ -146,7 +168,7 @@ namespace Ignosi::Modules::ECS
         }
 
         template <class... SystemComponents>
-        void RegisterEntityInSystem(const System<SystemComponents...>& system, IEntity* pEntity)
+        void RegisterEntityInSystem(const System<SystemComponents...>& system, const IEntity* pEntity)
         {
             AddTag(system.Tag(), pEntity->ID());
             (AddComponent<SystemComponents>(pEntity), ...);
@@ -205,7 +227,7 @@ namespace Ignosi::Modules::ECS
         }
 
         template <class ComponentType>
-        void AddComponent(IEntity* pEntity)
+        void AddComponent(const IEntity* pEntity)
         {
             if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
             {

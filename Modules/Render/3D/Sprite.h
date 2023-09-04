@@ -20,7 +20,7 @@ namespace Ignosi::Modules::Render
     class Sprite
     {
 
-        Renderer*                     m_pRenderer;
+        Renderer*                     m_pRenderer{nullptr};
         Vector2<float>                m_Origin{0.0, 0.0};
         Vector2<float>                m_Size{1.0, 1.0};
         Radian<float>                 m_Rotation{0.0};
@@ -31,21 +31,21 @@ namespace Ignosi::Modules::Render
         static const SpriteVertexData m_BasicSpritePoints[];
 
       public:
+        Sprite() = default;
         Sprite(Renderer* pRenderer);
-        Sprite(
-            Renderer*                pRenderer,
-            const VertexDataConfig&  config,
-            std::span<float>         vertexes,
-            std::span<std::uint32_t> indeces);
+        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes, std::span<std::uint32_t> indeces);
 
         Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
+
+        virtual ~Sprite() = default;
 
         Sprite(const Sprite& other);
         Sprite(Sprite&& other) = default;
 
-        virtual ~Sprite() = default;
+        Sprite& operator=(const Sprite& other)     = default;
+        Sprite& operator=(Sprite&& other) noexcept = default;
 
-        void AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
+        void                             AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
         const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
 
         virtual void Draw(ShaderProgram* pShader);

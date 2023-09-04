@@ -26,25 +26,29 @@ namespace Ignosi::Modules::Render
     }
 
     void Renderer::DrawAllMesh(ShaderProgram* pProgram)
-    { /*
-         ExecuteFunction([&]() -> void {
-             auto& pool = GetPool<Mesh3D>();
-             for (auto& val : pool)
-             {
-                 val.Draw(pProgram);
-             }
-         });*/
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool     = GetPool<Mesh3D>();
+            auto& entities = World()->GetEntitiesByTag(Tag());
+            for (auto& entity : entities)
+            {
+                auto& val = pool.GetComponent(World()->GetEntity(entity));
+                val.Draw(pProgram);
+            }
+        });
     }
 
     void Renderer::DrawAllSprites(ShaderProgram* pProgram)
-    { /*
-         ExecuteFunction([&]() -> void {
-             auto& pool = GetPool<Sprite>();
-             for (auto& val : pool)
-             {
-                 val.Draw(pProgram);
-             }
-         });*/
+    {
+        ExecuteFunction([&]() -> void {
+            auto& pool     = GetPool<Sprite>();
+            auto& entities = World()->GetEntitiesByTag(Tag());
+            for (auto& entity : entities)
+            {
+                auto& val = pool.GetComponent(World()->GetEntity(entity));
+                val.Draw(pProgram);
+            }
+        });
     }
 
     void Renderer::ExecuteJob()
@@ -98,7 +102,7 @@ namespace Ignosi::Modules::Render
         }
 
         m_QueueCondition.notify_all();
-        return std::move(fut);
+        return fut;
     }
 
     std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> Renderer::PopFunc()

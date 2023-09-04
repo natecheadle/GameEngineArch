@@ -20,15 +20,16 @@ namespace Ignosi::Modules::Render
     class Mesh3D
     {
 
-        Renderer*                     m_pRenderer;
-        Vector3<float>                m_Origin;
-        Vector3<Radian<float>>        m_Rotation;
-        std::shared_ptr<VertexBuffer> m_pBuffer;
-        std::shared_ptr<Material>     m_pMaterial;
+        Renderer*                     m_pRenderer{nullptr};
+        Vector3<float>                m_Origin{0.0f, 0.0f, 0.0f};
+        Vector3<Radian<float>>        m_Rotation{0.0f};
+        std::shared_ptr<VertexBuffer> m_pBuffer{nullptr};
+        std::shared_ptr<Material>     m_pMaterial{nullptr};
 
         static const VertexData m_CubePoints[];
 
       public:
+        Mesh3D() = default;
         Mesh3D(
             Renderer*                      pRenderer,
             const VertexDataConfig&        config,

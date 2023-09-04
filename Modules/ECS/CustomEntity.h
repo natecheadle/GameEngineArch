@@ -26,8 +26,15 @@ namespace Ignosi::Modules::ECS
         CustomEntity& operator=(CustomEntity&& other) noexcept = default;
 
       public:
-        virtual ~CustomEntity() { m_pEntity->AttachOnUpdate(nullptr); }
+        virtual ~CustomEntity()
+        {
+            if (m_pEntity.IsValid())
+            {
+                m_pEntity->AttachOnUpdate(nullptr);
+            }
+        }
 
+        const IEntity*          Entity() const { return m_pEntity.get(); }
         EntityID                ID() const { return m_pEntity->ID(); }
         bool                    IsAlive() const { return m_pEntity->IsAlive(); }
         const std::vector<Tag>& Tags() const { return m_pEntity->Tags(); }

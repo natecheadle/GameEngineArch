@@ -41,7 +41,6 @@ namespace Ignosi::Modules::Render
     class Renderer
         : public ECS::System<Mesh3D, Sprite>
         , protected Jobs::Job
-        , public Singleton<Renderer>
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;

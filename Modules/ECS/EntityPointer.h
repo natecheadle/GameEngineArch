@@ -78,6 +78,8 @@ namespace Ignosi::Modules::ECS
             m_pWorld = nullptr;
         }
 
+        bool IsValid() const { return m_pWorld != nullptr && m_EntityID.ID != EntityID::RESET_VAL; }
+
         Entity<ComponentTypes...>* get()
         {
             assert(m_EntityID.ID < m_pWorld->m_Entities.size());
