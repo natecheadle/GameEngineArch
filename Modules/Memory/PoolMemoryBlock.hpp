@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <map>
 #include <memory>
 #include <vector>
@@ -35,10 +36,11 @@ namespace Ignosi::Modules::Memory
         {
             friend PoolMemoryBlock<T>;
 
-            PoolMemoryBlock<T>* m_pPool;
-            size_t              m_PoolIndex;
+            PoolMemoryBlock<T>* m_pPool{nullptr};
+            size_t              m_PoolIndex{std::numeric_limits<size_t>::max()};
 
           public:
+            pointer() = default;
             ~pointer() { reset(); }
 
             pointer(const pointer& other)            = delete;
@@ -68,11 +70,14 @@ namespace Ignosi::Modules::Memory
                 m_pPool     = other.m_pPool;
 
                 other.m_pPool = nullptr;
-                m_pPool->UnsubscribeOnDestroy(&other);
-                m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
+                if (m_pPool)
+                {
+                    m_pPool->UnsubscribeOnDestroy(&other);
+                    m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
 
-                m_pPool->UnsubscribeOnMove(m_PoolIndex);
-                m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                    m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                }
 
                 return *this;
             }
@@ -326,7 +331,7 @@ namespace Ignosi::Modules::Memory
             else if (m_FirstDataIndex > newObjLocation)
             {
                 m_Data[newObjLocation].PreviousObject   = m_Data.size();
-                m_Data[newObjLocation].NextObject       = newObjLocation;
+                m_Data[newObjLocation].NextObject       = m_FirstDataIndex;
                 m_Data[m_FirstDataIndex].PreviousObject = newObjLocation;
                 m_FirstDataIndex                        = newObjLocation;
             }
@@ -335,7 +340,11 @@ namespace Ignosi::Modules::Memory
                 size_t previousObj                    = FindPreviousRealObject(newObjLocation);
                 m_Data[newObjLocation].PreviousObject = previousObj;
                 m_Data[newObjLocation].NextObject     = m_Data[previousObj].NextObject;
-                m_Data[previousObj].NextObject        = newObjLocation;
+                if (m_Data[newObjLocation].NextObject < m_Data.size())
+                {
+                    m_Data[m_Data[newObjLocation].NextObject].PreviousObject = newObjLocation;
+                }
+                m_Data[previousObj].NextObject = newObjLocation;
             }
 
             return newObj;

@@ -5,6 +5,7 @@
 #include <PoolMemoryBlock.hpp>
 #include <RigidBody2D.h>
 #include <Units/Radian.hpp>
+#include <World.h>
 
 #include <gtest/gtest.h>
 
@@ -61,13 +62,19 @@ namespace Ignosi::Test
     class Rectangle_Physics_Tests : public testing::TestWithParam<RectangleCollisionInputData>
     {
       protected:
-        Memory::PoolMemoryBlock<Physics::RigidBody2D> m_RigidBodies;
-        Physics::PhysicsSystem                        m_PhysicsSystem;
+        ECS::World<Physics::RigidBody2D>                      m_World;
+        Physics::PhysicsSystem*                               m_PhysicsSystem;
+        std::vector<ECS::EntityPointer<Physics::RigidBody2D>> m_Entities;
 
       public:
         Rectangle_Physics_Tests()
-            : m_PhysicsSystem(&m_RigidBodies)
+            : m_PhysicsSystem(m_World.CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D>())
         {
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
+
+            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[0]);
+            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[1]);
         }
     };
 
@@ -78,8 +85,8 @@ namespace Ignosi::Test
         bool collisionOccurred = false;
         auto onCollision       = [&](const Physics::RigidBody2D&) { collisionOccurred = true; };
 
-        auto pRigidBody1 = m_RigidBodies.CreateObject();
-        auto pRigidBody2 = m_RigidBodies.CreateObject();
+        auto pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
+        auto pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
 
         pRigidBody2->AttachOnCollision(onCollision);
         pRigidBody1->AttachOnCollision(onCollision);
@@ -104,10 +111,7 @@ namespace Ignosi::Test
 
         pRigidBody2->Velocity({1.0f, 1.0f});
 
-        m_PhysicsSystem.Update(std::chrono::seconds(1));
-
-        pRigidBody1.reset();
-        pRigidBody2.reset();
+        m_World.Update(1.0);
 
         ASSERT_EQ(collisionOccurred, test.Result);
     }

@@ -20,15 +20,16 @@ namespace Ignosi::Modules::Render
     class Mesh3D
     {
 
-        Renderer*                     m_pRenderer;
-        Vector3<float>                m_Origin;
-        Vector3<Radian<float>>        m_Rotation;
-        std::shared_ptr<VertexBuffer> m_pBuffer;
-        std::shared_ptr<Material>     m_pMaterial;
+        Renderer*                     m_pRenderer{nullptr};
+        Vector3<float>                m_Origin{0.0f, 0.0f, 0.0f};
+        Vector3<Radian<float>>        m_Rotation{0.0f};
+        std::shared_ptr<VertexBuffer> m_pBuffer{nullptr};
+        std::shared_ptr<Material>     m_pMaterial{nullptr};
 
         static const VertexData m_CubePoints[];
 
       public:
+        Mesh3D() = default;
         Mesh3D(
             Renderer*                      pRenderer,
             const VertexDataConfig&        config,
@@ -36,14 +37,17 @@ namespace Ignosi::Modules::Render
             std::span<const std::uint32_t> indeces);
         Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
 
-        Mesh3D(const Mesh3D& other) = default;
-        Mesh3D(Mesh3D&& other)      = default;
+        Mesh3D(const Mesh3D& other)     = default;
+        Mesh3D(Mesh3D&& other) noexcept = default;
+
+        Mesh3D& operator=(const Mesh3D& other)     = default;
+        Mesh3D& operator=(Mesh3D&& other) noexcept = default;
 
         static Mesh3D CreateCube(Renderer* pRenderer);
 
         virtual ~Mesh3D() = default;
 
-        void AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
+        void                             AttachedMaterial(std::shared_ptr<Material> pMat) { m_pMaterial = std::move(pMat); }
         const std::shared_ptr<Material>& AttachedMaterial() const { return m_pMaterial; }
 
         virtual void Draw(ShaderProgram* pShader);

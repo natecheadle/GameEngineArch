@@ -1,22 +1,25 @@
 #pragma once
 
+#include "ComponentPool.h"
+#include "IEntity.h"
 #include "ISystem.h"
+#include "IWorld.h"
 
-#include <PoolMemoryBlock.hpp>
-#include <UID.hpp>
-
+#include <string_view>
 #include <tuple>
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... Types>
-    class System : ISystem
+    template <typename... ComponentTypes>
+    class System : public ISystem
     {
-        std::tuple<Memory::PoolMemoryBlock<Types>*...> m_Pools;
+        SystemID                                      m_ID;
+        IWorld*                                       m_pWorld{nullptr};
+        std::tuple<ComponentPool<ComponentTypes>*...> m_ComponentPools;
 
       protected:
-        System(Memory::PoolMemoryBlock<Types>*... args)
-            : m_Pools(std::move(args)...)
+        System(ComponentPool<ComponentTypes>*... pools)
+            : m_ComponentPools(std::move(pools)...)
         {
         }
 
@@ -29,11 +32,31 @@ namespace Ignosi::Modules::ECS
         System& operator=(const System& other) = delete;
         System& operator=(System&& other)      = default;
 
-      protected:
-        template <typename T>
-        Memory::PoolMemoryBlock<T>& GetPool()
+        SystemID ID() const override { return m_ID; }
+        void     Initialize(SystemID id, IWorld* pWorld) override
         {
-            return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
+            m_ID     = id;
+            m_pWorld = pWorld;
+        }
+
+        bool EntityHasNecessaryComponents(IEntity* pEntity) const override
+        {
+            return (std::get<ComponentPool<ComponentTypes>*>(m_ComponentPools)->HasComponent(pEntity) && ...);
+        }
+
+      protected:
+        IWorld* World() const { return m_pWorld; }
+
+        template <class ComponentType>
+        ComponentPool<ComponentType>& GetPool()
+        {
+            return *std::get<ComponentPool<ComponentType>*>(m_ComponentPools);
+        }
+
+        template <class ComponentType>
+        const ComponentPool<ComponentType>& GetPool() const
+        {
+            return *std::get<ComponentPool<ComponentType>*>(m_ComponentPools);
         }
     };
 } // namespace Ignosi::Modules::ECS

@@ -3,6 +3,6 @@ project("Modules_ECS")
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(${PROJECT_NAME} INTERFACE Modules_Generic Modules_Memory)
+add_library(${PROJECT_NAME} STATIC "Tag.cpp" )
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC Modules_Generic Modules_Memory)

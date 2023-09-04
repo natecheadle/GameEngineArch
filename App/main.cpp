@@ -8,6 +8,7 @@
 #include <3D/Model3D.h>
 #include <3D/Sprite.h>
 #include <App.h>
+#include <CustomEntity.h>
 #include <DebugCast.hpp>
 #include <Entity.h>
 #include <IWindow.h>
@@ -38,16 +39,27 @@
 using namespace Ignosi::Modules;
 using namespace std::chrono_literals;
 
-class TestAppEntity : ECS::Entity<Render::Mesh3D>
+class TestAppEntity : public ECS::CustomEntity<Render::Mesh3D, Render::Sprite>
 {
+    using BASE = ECS::CustomEntity<Render::Mesh3D, Render::Sprite>;
+
   public:
-    TestAppEntity(Memory::pool_pointer<Render::Mesh3D>&& val)
-        : ECS::Entity<Render::Mesh3D>(std::move(val))
+    TestAppEntity() = default;
+    TestAppEntity(ECS::EntityPointer<Render::Mesh3D, Render::Sprite>&& val)
+        : BASE(std::move(val))
     {
     }
+    TestAppEntity(const TestAppEntity& other)     = delete;
+    TestAppEntity(TestAppEntity&& other) noexcept = default;
 
-    Render::Mesh3D&       Mesh() { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
-    const Render::Mesh3D& Mesh() const { return ECS::Entity<Render::Mesh3D>::Get<Render::Mesh3D>(); }
+    TestAppEntity& operator=(const TestAppEntity& other)     = delete;
+    TestAppEntity& operator=(TestAppEntity&& other) noexcept = default;
+
+    Render::Mesh3D&       Mesh() { return *(BASE::GetComponent<Render::Mesh3D>()); }
+    const Render::Mesh3D& Mesh() const { return *(BASE::GetComponent<Render::Mesh3D>()); }
+
+  protected:
+    void OnUpdate(double dt) override {}
 };
 
 class TestApp : public App::App
@@ -59,16 +71,13 @@ class TestApp : public App::App
     std::unique_ptr<Render::Fly_Camera>                         m_pCamera;
     Render::ShaderProgram_ptr                                   m_pShader;
     std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> m_pWorld;
+    Render::Renderer*                                           m_pRenderer;
 
   public:
-    TestApp(
-        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld,
-        const GUI::WindowSize&                                      window_size,
-        std::string                                                 window_name)
-        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
-              window_size,
-              std::move(window_name))
+    TestApp(std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> pWorld, const GUI::WindowSize& window_size, std::string window_name)
+        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(), window_size, std::move(window_name))
         , m_pWorld(std::move(pWorld))
+        , m_pRenderer(m_pWorld->GetSystem<Render::Renderer>())
     {
     }
 
@@ -90,20 +99,18 @@ class TestApp : public App::App
         auto backpack_path        = shader_dir / "backpack/backpack.obj";
 
         auto cubeMaterial = std::make_unique<Render::Material>();
-        auto pRenderer    = Render::Renderer::Instance();
 
-        cubeMaterial->Diffuse = pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
-        cubeMaterial->Specular =
-            pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
+        cubeMaterial->Diffuse   = m_pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Specular  = m_pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
-        auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
-        auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto pVertexShader   = m_pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto pFragmentShader = m_pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader            = m_pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
-        m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D::CreateCube(pRenderer)));
+        m_Cubes.push_back(TestAppEntity((m_pWorld->CreateEntity(std::move(Render::Mesh3D::CreateCube(m_pRenderer))))));
         m_Cubes[0].Mesh().AttachedMaterial(std::move(cubeMaterial));
 
         Vector3<float> cubePositions[] = {
@@ -122,8 +129,9 @@ class TestApp : public App::App
 
         for (size_t i = 1; i < numOfCubes; ++i)
         {
-            m_Cubes.push_back(m_pWorld->CreateEntity<TestAppEntity>(Render::Mesh3D(m_Cubes[0].Mesh())));
+            m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity(Render::Mesh3D(m_Cubes[0].Mesh()))));
             m_Cubes[i].Mesh().Origin(cubePositions[i]);
+            m_pWorld->RegisterEntityInSystem(*m_pRenderer, m_Cubes[i].Entity());
         }
 
         m_pCamera = std::make_unique<Render::Fly_Camera>(GetWindow());
@@ -163,9 +171,9 @@ class TestApp : public App::App
                 m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
             }
         };
-        pRenderer->ExecuteFunction(initShaderVars);
+        m_pRenderer->ExecuteFunction(initShaderVars);
 
-        // m_pBackpackModel = std::make_unique<Render::Model3D>(pRenderer, backpack_path);
+        // m_pBackpackModel = std::make_unique<Render::Model3D>(m_pRenderer, backpack_path);
     }
 
     void Shutdown() override
@@ -178,7 +186,7 @@ class TestApp : public App::App
     {
         // TODO this should be handled automatically
         m_pCamera->Update(std::chrono::nanoseconds((unsigned long long)(dt * 1e9)));
-        auto* pRenderer = Render::Renderer::Instance();
+        m_pWorld->Update(dt);
         for (auto& cube : m_Cubes)
         {
             cube.Mesh().RotX(M_PI / 500.0);
@@ -197,10 +205,10 @@ class TestApp : public App::App
 
             m_pShader->SetShaderVar("spotLight", m_SpotLight);
 
-            pRenderer->DrawAllMesh(m_pShader.get());
+            m_pRenderer->DrawAllMesh(m_pShader.get());
         };
 
-        pRenderer->ExecuteFunction(renderUpdate);
+        m_pRenderer->ExecuteFunction(renderUpdate);
     }
 };
 

@@ -8,6 +8,7 @@
 
 #include <gcem.hpp>
 
+#include <math.h>
 #include <type_traits>
 
 namespace Ignosi::Modules

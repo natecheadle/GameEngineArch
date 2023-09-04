@@ -41,7 +41,6 @@ namespace Ignosi::Modules::Render
     class Renderer
         : public ECS::System<Mesh3D, Sprite>
         , protected Jobs::Job
-        , public Singleton<Renderer>
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
@@ -49,7 +48,7 @@ namespace Ignosi::Modules::Render
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
 
       protected:
-        Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+        Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
 
       public:
         virtual ~Renderer();
@@ -61,8 +60,8 @@ namespace Ignosi::Modules::Render
         virtual void DrawAllMesh(ShaderProgram* pProgram);
         virtual void DrawAllSprites(ShaderProgram* pProgram);
 
-        virtual GUI::IWindow* Window() const                                  = 0;
-        virtual GUI::IWindow* Initialize(const GUI::WindowSize&, std::string) = 0;
+        virtual GUI::IWindow* Window() const                                        = 0;
+        virtual GUI::IWindow* InitializeWindow(const GUI::WindowSize&, std::string) = 0;
 
         virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
         virtual VertexBuffer_ptr CreateBuffer(

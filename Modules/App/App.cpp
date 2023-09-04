@@ -9,22 +9,16 @@
 namespace Ignosi::Modules::App
 {
 
-    App::App(
-        std::unique_ptr<Render::Renderer>       pRenderer,
-        const GUI::WindowSize&                  window_size,
-        std::string                             window_name,
-        std::unique_ptr<Physics::PhysicsSystem> pPhysics)
+    App::App(Render::Renderer* pRenderer, const GUI::WindowSize& window_size, std::string window_name, Physics::PhysicsSystem* pPhysics)
+        : m_pRenderer(pRenderer)
+        , m_pWindow(pRenderer->InitializeWindow(window_size, std::move(window_name)))
+        , m_pPhysics(pPhysics)
     {
-        Render::Renderer::SetInstance(std::move(pRenderer));
-        m_pRenderer = Render::Renderer::Instance();
-        m_pWindow   = m_pRenderer->Initialize(window_size, std::move(window_name));
-        m_pPhysics  = std::move(pPhysics);
     }
 
     void App::Close()
     {
         Shutdown();
-        Render::Renderer::Reset();
     }
 
     int App::Run()
@@ -38,8 +32,7 @@ namespace Ignosi::Modules::App
             std::future<void> swap_future;
             while (!m_pWindow->ShouldClose() && m_pRenderer->IsRunning())
             {
-                std::chrono::time_point<std::chrono::high_resolution_clock> begin =
-                    std::chrono::high_resolution_clock::now();
+                std::chrono::time_point<std::chrono::high_resolution_clock> begin = std::chrono::high_resolution_clock::now();
                 m_pRenderer->ClearColorBuffer();
                 m_pRenderer->ClearDepthBuffer();
 
@@ -62,9 +55,8 @@ namespace Ignosi::Modules::App
                 }
                 swap_future = std::move(m_pRenderer->SwapBuffers());
 
-                std::chrono::time_point<std::chrono::high_resolution_clock> end =
-                    std::chrono::high_resolution_clock::now();
-                period = std::chrono::duration<double>(end - begin).count();
+                std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+                period                                                          = std::chrono::duration<double>(end - begin).count();
             }
         }
         catch (const std::exception& e)

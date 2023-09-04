@@ -1,6 +1,7 @@
 #include "PhysicsSystem.h"
 
 #include "HitShape.h"
+#include "Tag.h"
 
 #include <3D/Mesh3D.h>
 #include <LinearAlgebra/Vector2.hpp>
@@ -11,19 +12,22 @@ using namespace std::chrono_literals;
 
 namespace Ignosi::Modules::Physics
 {
-    PhysicsSystem::PhysicsSystem(Memory::PoolMemoryBlock<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer)
+    PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer)
         : ECS::System<RigidBody2D>(pRigidBodyPool)
         , m_pRenderer(pRenderer)
+        , m_SystemTag(ECS::Tag::Create(PhysicsSystem::NAME))
     {
     }
 
-    void PhysicsSystem::Update(std::chrono::nanoseconds dt)
+    void PhysicsSystem::Update(double dt)
     {
-        float del_t = static_cast<float>(dt / 1.0s);
-        auto& pool  = GetPool<RigidBody2D>();
+        float       del_t    = static_cast<float>(dt);
+        auto&       pool     = GetPool<RigidBody2D>();
+        const auto& entities = World()->GetEntitiesByTag(Tag());
         m_MovingObjects.clear();
-        for (auto& body : pool)
+        for (auto& entity : entities)
         {
+            auto& body = pool.GetComponent(World()->GetEntity(entity));
             body.Update(del_t);
             if (body.Velocity() != Vector2<float>{0.0f, 0.0f})
             {
@@ -39,8 +43,10 @@ namespace Ignosi::Modules::Physics
 
         for (auto& pBody : m_MovingObjects)
         {
-            for (auto& body : pool)
+
+            for (auto& entity : entities)
             {
+                auto& body = pool.GetComponent(World()->GetEntity(entity));
                 if (&body == pBody)
                     continue;
 
@@ -79,8 +85,7 @@ namespace Ignosi::Modules::Physics
                     std::sort(
                         points.begin(),
                         points.end(),
-                        [](const std::pair<HitShape*, Vector2<float>>& lhs,
-                           const std::pair<HitShape*, Vector2<float>>& rhs) {
+                        [](const std::pair<HitShape*, Vector2<float>>& lhs, const std::pair<HitShape*, Vector2<float>>& rhs) {
                             return lhs.second.x() > rhs.second.x();
                         });
                 }
@@ -89,8 +94,7 @@ namespace Ignosi::Modules::Physics
                     std::sort(
                         points.begin(),
                         points.end(),
-                        [](const std::pair<HitShape*, Vector2<float>>& lhs,
-                           const std::pair<HitShape*, Vector2<float>>& rhs) {
+                        [](const std::pair<HitShape*, Vector2<float>>& lhs, const std::pair<HitShape*, Vector2<float>>& rhs) {
                             return lhs.second.y() > rhs.second.y();
                         });
                 }

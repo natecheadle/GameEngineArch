@@ -6,6 +6,7 @@
 #include "IWindow.h"
 #include "Renderer/VertexBuffer.h"
 #include "Shader/ShaderProgram.h"
+#include "Tag.h"
 #include "VertexBuffer_OpenGL.h"
 #include "WindowMessages.hpp"
 
@@ -23,10 +24,9 @@
 
 namespace Ignosi::Modules::Render
 {
-    Renderer_OpenGL::Renderer_OpenGL(
-        Memory::PoolMemoryBlock<Mesh3D>* pMeshPool,
-        Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+    Renderer_OpenGL::Renderer_OpenGL(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool)
         : Renderer(pMeshPool, pSpritePool)
+        , m_Tag(ECS::Tag::Create(NAME))
     {
     }
 
@@ -36,7 +36,7 @@ namespace Ignosi::Modules::Render
         m_pWin.reset();
     }
 
-    GUI::IWindow* Renderer_OpenGL::Initialize(const GUI::WindowSize& size, std::string name)
+    GUI::IWindow* Renderer_OpenGL::InitializeWindow(const GUI::WindowSize& size, std::string name)
     {
 #ifdef __APPLE__
         // Mac requires the window to be in the main thread.
@@ -75,10 +75,9 @@ namespace Ignosi::Modules::Render
             // TODO this should be user configurable.
             glEnable(GL_DEPTH_TEST);
 
-            m_pWin->SubscribeToMessage(
-                this,
-                GUI::WindowMessages::WindowResized,
-                [this](const GUI::WindowMessage* pMsg) { OnWindowResized(pMsg); });
+            m_pWin->SubscribeToMessage(this, GUI::WindowMessages::WindowResized, [this](const GUI::WindowMessage* pMsg) {
+                OnWindowResized(pMsg);
+            });
         });
 #endif
         return m_pWin.get();
@@ -88,9 +87,7 @@ namespace Ignosi::Modules::Render
     {
         VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(config, vertexes), [this](VertexBuffer* pObj) {
-                Destroy(pObj);
-            });
+            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(config, vertexes), [this](VertexBuffer* pObj) { Destroy(pObj); });
         });
         return rslt;
     }
@@ -102,22 +99,16 @@ namespace Ignosi::Modules::Render
     {
         VertexBuffer_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(config, vertexes, indeces), [this](VertexBuffer* pObj) {
-                Destroy(pObj);
-            });
+            rslt = VertexBuffer_ptr(new VertexBuffer_OpenGL(config, vertexes, indeces), [this](VertexBuffer* pObj) { Destroy(pObj); });
         });
         return rslt;
     }
 
-    Shader_ptr Renderer_OpenGL::CreateShader(
-        const std::filesystem::path&              path,
-        const std::vector<std::filesystem::path>& inc_paths)
+    Shader_ptr Renderer_OpenGL::CreateShader(const std::filesystem::path& path, const std::vector<std::filesystem::path>& inc_paths)
     {
         Shader_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = Shader_ptr(OpenGL_Shader::Create(path, inc_paths).release(), [this](Shader* pShader) {
-                Destroy(pShader);
-            });
+            rslt = Shader_ptr(OpenGL_Shader::Create(path, inc_paths).release(), [this](Shader* pShader) { Destroy(pShader); });
         });
         return rslt;
     }
@@ -129,9 +120,7 @@ namespace Ignosi::Modules::Render
     {
         Shader_ptr rslt;
         ExecuteFunction([&]() -> void {
-            rslt = Shader_ptr(OpenGL_Shader::Create(path, type, inc_paths).release(), [this](Shader* pShader) {
-                Destroy(pShader);
-            });
+            rslt = Shader_ptr(OpenGL_Shader::Create(path, type, inc_paths).release(), [this](Shader* pShader) { Destroy(pShader); });
         });
         return rslt;
     }
@@ -153,18 +142,14 @@ namespace Ignosi::Modules::Render
     Texture_ptr Renderer_OpenGL::CreateTexture(const std::filesystem::path& path, TextureUnit unit)
     {
         Texture_ptr rslt;
-        ExecuteFunction([&]() -> void {
-            rslt = Texture_ptr(new OpenGL_Texture(path, unit), [this](Texture* pTex) { Destroy(pTex); });
-        });
+        ExecuteFunction([&]() -> void { rslt = Texture_ptr(new OpenGL_Texture(path, unit), [this](Texture* pTex) { Destroy(pTex); }); });
         return rslt;
     }
 
     Texture_ptr Renderer_OpenGL::CreateTexture(const ImageFile& image, TextureUnit unit)
     {
         Texture_ptr rslt;
-        ExecuteFunction([&]() -> void {
-            rslt = Texture_ptr(new OpenGL_Texture(image, unit), [this](Texture* pTex) { Destroy(pTex); });
-        });
+        ExecuteFunction([&]() -> void { rslt = Texture_ptr(new OpenGL_Texture(image, unit), [this](Texture* pTex) { Destroy(pTex); }); });
         return rslt;
     }
 
@@ -206,9 +191,7 @@ namespace Ignosi::Modules::Render
     void Renderer_OpenGL::OnWindowResized(const GUI::WindowMessage* pMessage)
     {
         const auto* pWindowResized = DebugCast<const GUI::WindowResized*>(pMessage);
-        ExecuteFunction([pWindowResized]() {
-            glViewport(0, 0, pWindowResized->GetData()->Width(), pWindowResized->GetData()->Height());
-        });
+        ExecuteFunction([pWindowResized]() { glViewport(0, 0, pWindowResized->GetData()->Width(), pWindowResized->GetData()->Height()); });
     }
 
     void Renderer_OpenGL::Destroy(VertexBuffer* pObj)

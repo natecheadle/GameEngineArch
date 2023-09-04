@@ -13,7 +13,7 @@
 
 namespace Ignosi::Modules::Render
 {
-    Renderer::Renderer(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool)
+    Renderer::Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool)
         : ECS::System<Mesh3D, Sprite>(pMeshPool, pSpritePool)
     {
         Start();
@@ -28,9 +28,11 @@ namespace Ignosi::Modules::Render
     void Renderer::DrawAllMesh(ShaderProgram* pProgram)
     {
         ExecuteFunction([&]() -> void {
-            auto& pool = GetPool<Mesh3D>();
-            for (auto& val : pool)
+            auto& pool     = GetPool<Mesh3D>();
+            auto& entities = World()->GetEntitiesByTag(Tag());
+            for (auto& entity : entities)
             {
+                auto& val = pool.GetComponent(World()->GetEntity(entity));
                 val.Draw(pProgram);
             }
         });
@@ -39,9 +41,11 @@ namespace Ignosi::Modules::Render
     void Renderer::DrawAllSprites(ShaderProgram* pProgram)
     {
         ExecuteFunction([&]() -> void {
-            auto& pool = GetPool<Sprite>();
-            for (auto& val : pool)
+            auto& pool     = GetPool<Sprite>();
+            auto& entities = World()->GetEntitiesByTag(Tag());
+            for (auto& entity : entities)
             {
+                auto& val = pool.GetComponent(World()->GetEntity(entity));
                 val.Draw(pProgram);
             }
         });
@@ -98,7 +102,7 @@ namespace Ignosi::Modules::Render
         }
 
         m_QueueCondition.notify_all();
-        return std::move(fut);
+        return fut;
     }
 
     std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> Renderer::PopFunc()
