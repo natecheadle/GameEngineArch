@@ -72,6 +72,9 @@ namespace Ignosi::Test
         {
             m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
             m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
+
+            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[0]);
+            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[1]);
         }
     };
 
@@ -108,7 +111,7 @@ namespace Ignosi::Test
 
         pRigidBody2->Velocity({1.0f, 1.0f});
 
-        m_PhysicsSystem->Update(1.0);
+        m_World.Update(1.0);
 
         ASSERT_EQ(collisionOccurred, test.Result);
     }

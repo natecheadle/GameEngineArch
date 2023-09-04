@@ -20,39 +20,43 @@ namespace Ignosi::Modules::Physics
     }
 
     void PhysicsSystem::Update(double dt)
-    { /*
-         float del_t = static_cast<float>(dt / 1.0s);
-         auto& pool  = GetPool<RigidBody2D>();
-         m_MovingObjects.clear();
-         for (auto& body : pool)
-         {
-             body.Update(del_t);
-             if (body.Velocity() != Vector2<float>{0.0f, 0.0f})
-             {
-                 m_MovingObjects.push_back(&body);
-                 Vector2<float> pos = body.Position();
-                 Vector2<float> vel = body.Velocity();
-                 pos.x(pos.x() + vel.x());
-                 pos.y(pos.y() + vel.y());
+    {
+        float       del_t    = static_cast<float>(dt);
+        auto&       pool     = GetPool<RigidBody2D>();
+        const auto& entities = World()->GetEntitiesByTag(Tag());
+        m_MovingObjects.clear();
+        for (auto& entity : entities)
+        {
+            auto& body = pool.GetComponent(World()->GetEntity(entity));
+            body.Update(del_t);
+            if (body.Velocity() != Vector2<float>{0.0f, 0.0f})
+            {
+                m_MovingObjects.push_back(&body);
+                Vector2<float> pos = body.Position();
+                Vector2<float> vel = body.Velocity();
+                pos.x(pos.x() + vel.x());
+                pos.y(pos.y() + vel.y());
 
-                 body.Position(pos);
-             }
-         }
+                body.Position(pos);
+            }
+        }
 
-         for (auto& pBody : m_MovingObjects)
-         {
-             for (auto& body : pool)
-             {
-                 if (&body == pBody)
-                     continue;
+        for (auto& pBody : m_MovingObjects)
+        {
 
-                 if (CheckCollision(*pBody, body))
-                 {
-                     pBody->CollisionOccurred(body);
-                     body.CollisionOccurred(*pBody);
-                 }
-             }
-         }*/
+            for (auto& entity : entities)
+            {
+                auto& body = pool.GetComponent(World()->GetEntity(entity));
+                if (&body == pBody)
+                    continue;
+
+                if (CheckCollision(*pBody, body))
+                {
+                    pBody->CollisionOccurred(body);
+                    body.CollisionOccurred(*pBody);
+                }
+            }
+        }
     }
 
     bool PhysicsSystem::CheckCollision(const RigidBody2D& one, const RigidBody2D& two)

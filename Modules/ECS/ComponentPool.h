@@ -9,6 +9,7 @@
 #include <limits>
 #include <queue>
 #include <vector>
+#include <cassert>
 
 namespace Ignosi::Modules::ECS
 {
