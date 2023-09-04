@@ -13,7 +13,7 @@ namespace Ignosi::Modules::ECS
     template <typename... ComponentTypes>
     class System : public ISystem
     {
-        SystemID                                      m_ID{SystemID::RESET_VAL};
+        SystemID                                      m_ID;
         IWorld*                                       m_pWorld{nullptr};
         std::tuple<ComponentPool<ComponentTypes>*...> m_ComponentPools;
 

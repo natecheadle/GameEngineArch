@@ -14,7 +14,7 @@ namespace Ignosi::Modules::ECS
     {
         friend World<ComponentTypes...>;
 
-        EntityID                  m_EntityID{EntityID::RESET_VAL};
+        EntityID                  m_EntityID;
         World<ComponentTypes...>* m_pWorld{nullptr};
 
         EntityPointer(EntityID id, World<ComponentTypes...>* pWorld)
@@ -78,7 +78,7 @@ namespace Ignosi::Modules::ECS
             m_pWorld = nullptr;
         }
 
-        bool IsValid() const { return m_pWorld != nullptr && m_EntityID.ID != EntityID::RESET_VAL; }
+        bool IsValid() const { return m_pWorld != nullptr && m_EntityID.IsValid(); }
 
         Entity<ComponentTypes...>* get()
         {

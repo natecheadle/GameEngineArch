@@ -25,7 +25,7 @@ namespace Ignosi::Modules::ECS
     {
         friend class World<ComponentTypes...>;
 
-        EntityID                    m_ID{EntityID::RESET_VAL};
+        EntityID                    m_ID;
         bool                        m_IsAlive{false};
         std::vector<Tag>            m_Tags;
         std::function<void(double)> m_OnUpdate;
