@@ -39,6 +39,11 @@ namespace Ignosi::Modules::ECS
             m_pWorld = pWorld;
         }
 
+        bool EntityHasNecessaryComponents(IEntity* pEntity) const override
+        {
+            return (std::get<ComponentPool<ComponentTypes>*>(m_ComponentPools)->HasComponent(pEntity) && ...);
+        }
+
       protected:
         IWorld* World() const { return m_pWorld; }
 

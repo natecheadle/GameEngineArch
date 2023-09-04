@@ -32,5 +32,6 @@ namespace Ignosi::Modules::ECS
         virtual void                    Update(double dt)                                    = 0;
         virtual void                    AttachOnUpdate(std::function<void(double)> callback) = 0;
         virtual const std::vector<Tag>& Tags() const                                         = 0;
+        virtual bool                    HasTag(const Tag& tag) const                         = 0;
     };
 } // namespace Ignosi::Modules::ECS

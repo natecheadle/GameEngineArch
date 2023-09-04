@@ -80,13 +80,13 @@ namespace Ignosi::Modules::ECS
 
         Entity<ComponentTypes...>* get()
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return &m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return &m_pWorld->m_Entities[m_EntityID.ID];
         }
         const Entity<ComponentTypes...>* get() const
         {
-            assert(m_EntityID < m_pWorld->m_Entities.size());
-            return &m_pWorld->m_Entities[m_EntityID];
+            assert(m_EntityID.ID < m_pWorld->m_Entities.size());
+            return &m_pWorld->m_Entities[m_EntityID.ID];
         }
     };
 } // namespace Ignosi::Modules::ECS

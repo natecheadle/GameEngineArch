@@ -94,7 +94,7 @@ namespace Ignosi::Modules::ECS
         }
         void                    AttachOnUpdate(std::function<void(double)> callback) override { m_OnUpdate = std::move(callback); }
         const std::vector<Tag>& Tags() const override { return m_Tags; }
-
+        bool HasTag(const Tag& tag) const override { return std::find(m_Tags.begin(), m_Tags.end(), tag) != m_Tags.end(); }
         template <typename T>
         void InitializeComponent(ComponentPointer<T>&& value)
         {

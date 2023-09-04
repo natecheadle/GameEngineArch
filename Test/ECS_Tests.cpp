@@ -42,6 +42,7 @@ namespace Ignosi::Test
                 data.Pos += data.Vel * (float)dt;
             }
         }
+        const Modules::ECS::Tag& Tag() const override { return m_TestTag; }
     };
 
     TEST(ECS_Tests, InitWorldAndEntity)
@@ -63,7 +64,7 @@ namespace Ignosi::Test
         Modules::ECS::EntityPointer<KinematicData> entity =
             World.CreateEntity<KinematicData>({Modules::Vector3<float>({1.0, 2.0, 3.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
 
-        World.AddTag(Modules::ECS::Tag::Create(system->Name()), entity);
+        World.RegisterEntityInSystem(*system, entity);
         ASSERT_NO_THROW(World.Update(1.0));
 
         KinematicData expect({Modules::Vector3<float>({0.0, 2.0, 4.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});

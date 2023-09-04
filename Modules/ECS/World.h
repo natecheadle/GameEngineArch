@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "EntityPointer.h"
 #include "IEntity.h"
+#include "ISystem.h"
 #include "System.h"
 #include "Tag.h"
 
@@ -138,6 +139,33 @@ namespace Ignosi::Modules::ECS
             return pReturn;
         }
 
+        template <class... SystemComponents>
+        void RegisterEntityInSystem(const System<SystemComponents...>& system, EntityPointer<Types...>& pEntity)
+        {
+            RegisterEntityInSystem(system, pEntity.get());
+        }
+
+        template <class... SystemComponents>
+        void RegisterEntityInSystem(const System<SystemComponents...>& system, IEntity* pEntity)
+        {
+            bool hasTag        = pEntity->HasTag(system.Tag());
+            bool hasComponents = system.EntityHasNecessaryComponents(pEntity);
+
+            if (hasTag && hasComponents)
+            {
+                return;
+            }
+
+            if (!hasTag)
+            {
+                AddTag(system.Tag(), pEntity->ID());
+            }
+            if (!hasComponents)
+            {
+                (AddComponent<SystemComponents>(pEntity), ...);
+            }
+        }
+
         bool AddTag(const Tag& tag, EntityID entity)
         {
             if (m_Entities.at(entity.ID).AddTag(tag))
@@ -190,6 +218,15 @@ namespace Ignosi::Modules::ECS
             return std::move(pool.CreateComponent(std::move(init), id));
         }
 
+        template <class ComponentType>
+        void AddComponent(IEntity* pEntity)
+        {
+            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
+            {
+                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
+                    std::move(CreateComponent<ComponentType>(pEntity->ID())));
+            }
+        }
         void ManageEntityLifespans()
         {
             for (auto& taggedEntities : m_TaggedEntitiesToRemove)

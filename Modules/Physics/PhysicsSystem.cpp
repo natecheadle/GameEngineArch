@@ -1,6 +1,7 @@
 #include "PhysicsSystem.h"
 
 #include "HitShape.h"
+#include "Tag.h"
 
 #include <3D/Mesh3D.h>
 #include <LinearAlgebra/Vector2.hpp>
@@ -14,6 +15,7 @@ namespace Ignosi::Modules::Physics
     PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer)
         : ECS::System<RigidBody2D>(pRigidBodyPool)
         , m_pRenderer(pRenderer)
+        , m_SystemTag(ECS::Tag::Create(PhysicsSystem::NAME))
     {
     }
 
@@ -79,8 +81,7 @@ namespace Ignosi::Modules::Physics
                     std::sort(
                         points.begin(),
                         points.end(),
-                        [](const std::pair<HitShape*, Vector2<float>>& lhs,
-                           const std::pair<HitShape*, Vector2<float>>& rhs) {
+                        [](const std::pair<HitShape*, Vector2<float>>& lhs, const std::pair<HitShape*, Vector2<float>>& rhs) {
                             return lhs.second.x() > rhs.second.x();
                         });
                 }
@@ -89,8 +90,7 @@ namespace Ignosi::Modules::Physics
                     std::sort(
                         points.begin(),
                         points.end(),
-                        [](const std::pair<HitShape*, Vector2<float>>& lhs,
-                           const std::pair<HitShape*, Vector2<float>>& rhs) {
+                        [](const std::pair<HitShape*, Vector2<float>>& lhs, const std::pair<HitShape*, Vector2<float>>& rhs) {
                             return lhs.second.y() > rhs.second.y();
                         });
                 }
