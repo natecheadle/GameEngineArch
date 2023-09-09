@@ -3,28 +3,26 @@
 #include "Resource.h"
 
 #include <filesystem>
+#include <map>
 #include <memory>
-#include <vector>
 
 namespace Ignosi::Modules::ECS
 {
     class ResourceManager
     {
-        std::vector<std::unique_ptr<Resource>> m_Resources;
+        std::map<std::filesystem::path, std::unique_ptr<Resource>> m_Resources;
 
       public:
         ResourceManager() = default;
 
-        template <class T>
-        T* RegisterResource(std::unique_ptr<T> pResource)
-        {
-            assert(nullptr == GetResource(pResource->ResourcePath()));
-            T* returnVal = pResource.get();
-            m_Resources.push_back(std::move(pResource));
+        ResourceManager(const ResourceManager& other)     = delete;
+        ResourceManager(ResourceManager&& other) noexcept = default;
 
-            return returnVal;
-        }
+        ResourceManager& operator=(const ResourceManager& other) = delete;
+        ResourceManager& operator=(ResourceManager&& other)      = default;
 
-        Resource* GetResource(const std::filesystem::path& path) const;
+        Resource*                 LoadResource(std::unique_ptr<Resource> pResource);
+        std::unique_ptr<Resource> UnloadResource(std::filesystem::path& path);
+        Resource*                 GetResource(const std::filesystem::path& path) const;
     };
 } // namespace Ignosi::Modules::ECS

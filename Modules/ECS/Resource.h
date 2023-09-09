@@ -15,10 +15,10 @@ namespace Ignosi::Modules::ECS
         virtual ~Resource() = default;
 
         Resource(const Resource& other)     = delete;
-        Resource(Resource&& other) noexcept = delete;
+        Resource(Resource&& other) noexcept = default;
 
         Resource& operator=(const Resource& other)     = delete;
-        Resource& operator=(Resource&& other) noexcept = delete;
+        Resource& operator=(Resource&& other) noexcept = default;
 
         const std::filesystem::path& ResourcePath() const { return m_ResourcePath; }
     };

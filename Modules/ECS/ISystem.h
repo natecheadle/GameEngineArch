@@ -2,7 +2,6 @@
 
 #include "ClassID.hpp"
 #include "IEntity.h"
-#include "IWorld.h"
 #include "Tag.h"
 
 #include <string_view>
@@ -10,6 +9,8 @@
 
 namespace Ignosi::Modules::ECS
 {
+    class IWorld;
+
     class SystemID : public ClassID<SystemID>
     {
       public:
