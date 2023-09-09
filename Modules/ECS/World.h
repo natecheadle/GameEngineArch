@@ -5,11 +5,11 @@
 #include "EntityPointer.h"
 #include "IEntity.h"
 #include "ISystem.h"
+#include "ResourceManager.h"
 #include "System.h"
 #include "Tag.h"
 
 #include <algorithm>
-#include <atomic>
 #include <cstddef>
 #include <memory>
 #include <queue>
@@ -38,6 +38,8 @@ namespace Ignosi::Modules::ECS
 
         std::vector<std::unique_ptr<ISystem>> m_Systems;
 
+        ResourceManager m_ResourceManager;
+
         friend EntityPointer<ComponentTypes...>;
 
       public:
@@ -50,14 +52,14 @@ namespace Ignosi::Modules::ECS
         World& operator=(const World& other) = delete;
         World& operator=(World&& other)      = default;
 
-        IEntity* GetEntity(EntityID id)
+        IEntity* GetEntity(EntityID id) override
         {
             assert(id.ID < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
             return &m_Entities[id.ID];
         }
 
-        const IEntity* GetEntity(EntityID id) const
+        const IEntity* GetEntity(EntityID id) const override
         {
             assert(id.ID < m_Entities.size());
             assert(std::find(m_LivingEntities.begin(), m_LivingEntities.end(), id) != m_LivingEntities.end());
@@ -65,7 +67,7 @@ namespace Ignosi::Modules::ECS
             return static_cast<const IEntity*>(&entity);
         }
 
-        ISystem* GetSystem(SystemID id)
+        ISystem* GetSystem(SystemID id) override
         {
             assert(id.ID < m_Systems.size());
             return m_Systems[id.ID].get();
@@ -136,7 +138,7 @@ namespace Ignosi::Modules::ECS
             return {pEntity->ID(), this};
         }
 
-        void Update(double dt)
+        void Update(double dt) override
         {
             ManageEntityLifespans();
             for (auto& pSystem : m_Systems)
@@ -173,7 +175,7 @@ namespace Ignosi::Modules::ECS
             (AddComponent<Components>(pEntity), ...);
         }
 
-        bool AddTag(const Tag& tag, EntityID entity)
+        bool AddTag(const Tag& tag, EntityID entity) override
         {
             if (m_Entities.at(entity.ID).AddTag(tag))
             {
@@ -185,7 +187,7 @@ namespace Ignosi::Modules::ECS
 
         bool AddTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return AddTag(tag, pEntity->ID()); }
 
-        bool RemoveTag(const Tag& tag, EntityID entity)
+        bool RemoveTag(const Tag& tag, EntityID entity) override
         {
             if (m_Entities.at(entity.ID).RemoveTag(tag))
             {
@@ -197,8 +199,11 @@ namespace Ignosi::Modules::ECS
 
         bool RemoveTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
 
-        const std::vector<EntityID>& AllEntities() const { return m_LivingEntities; }
-        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const { return m_TaggedLists.at(tag); }
+        const std::vector<EntityID>& AllEntities() const override { return m_LivingEntities; }
+        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const override { return m_TaggedLists.at(tag); }
+
+        const ResourceManager& Resources() const override { return m_ResourceManager; }
+        ResourceManager&       Resources() override { return m_ResourceManager; }
 
       private:
         void DestroyEntity(EntityID id)
