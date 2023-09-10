@@ -1,36 +1,16 @@
 #include "HitShape.h"
 
+#include "KinematicData.h"
 #include "LinearAlgebra/Vector2.hpp"
 
 namespace Ignosi::Modules::Physics
 {
-    HitShape::HitShape(Render::Renderer* pRenderer)
-        : m_pRenderer(pRenderer)
+    HitShape::HitShape(const KinematicData* pPosition)
+        : m_pPosition(pPosition)
     {
-        m_VertexConfig.PushBackConfig(Vector2<float>());
     }
 
-    void HitShape::EnableDebugMode()
-    {
-        m_IsDebugModeEnabled = true;
-    }
-
-    void HitShape::DisableDebugMode()
-    {
-        m_IsDebugModeEnabled = false;
-    }
-
-    Render::Sprite HitShape::CreateDebugSprite() const
-    {
-        assert(Renderer());
-
-        Render::Sprite rslt(Renderer(), VertexConfig(), VertexData());
-        rslt.Size(Scale());
-        rslt.Rotation(m_Rotation);
-        return std::move(rslt);
-    }
-
-    std::array<Vector2<float>, 2> HitShape::ProjectShape(const Vector2<float>& axis) const
+    std::array<Vector2<float>, 2> HitShape::ProjectShape(const Vector2<float>& axis)
     {
         const std::vector<Vector2<float>>& corners = Corners();
         std::array<Vector2<float>, 2>      points;

@@ -13,8 +13,6 @@
 #include "VertexBuffer.h"
 
 #include <IWindow.h>
-#include <Job.h>
-#include <Singleton.hpp>
 #include <System.h>
 
 #include <algorithm>

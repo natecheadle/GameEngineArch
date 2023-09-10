@@ -1,3 +1,5 @@
+#include "KinematicData.h"
+
 #include <HitCircle.h>
 #include <HitRectangle.h>
 #include <HitShape.h>
@@ -23,11 +25,7 @@ namespace Ignosi::Test
 {
     struct CircleCollisionInputData
     {
-        CircleCollisionInputData(
-            const Vector2<float>& origin1,
-            float                 rotation1,
-            const Vector2<float>& origin2,
-            bool                  result)
+        CircleCollisionInputData(const Vector2<float>& origin1, float rotation1, const Vector2<float>& origin2, bool result)
         {
             Origin1   = origin1;
             Origin2   = origin2;
@@ -49,7 +47,7 @@ namespace Ignosi::Test
 
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, true));
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, true));
-            tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, false));
+            tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, true));
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, true));
             tests.push_back(CircleCollisionInputData({0.5f, 0.5f}, -M_PI_4, {0.0f, 0.0f}, false));
 
@@ -60,16 +58,16 @@ namespace Ignosi::Test
     class Circle_Physics_Tests : public testing::TestWithParam<CircleCollisionInputData>
     {
       protected:
-        ECS::World<Physics::RigidBody2D>                      m_World;
-        Physics::PhysicsSystem*                               m_PhysicsSystem;
-        std::vector<ECS::EntityPointer<Physics::RigidBody2D>> m_Entities;
+        ECS::World<Physics::RigidBody2D, Physics::KinematicData>                      m_World;
+        Physics::PhysicsSystem*                                                       m_PhysicsSystem;
+        std::vector<ECS::EntityPointer<Physics::RigidBody2D, Physics::KinematicData>> m_Entities;
 
       public:
         Circle_Physics_Tests()
-            : m_PhysicsSystem(m_World.CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D>())
+            : m_PhysicsSystem(m_World.CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>())
         {
-            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
-            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
 
             m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[0]);
             m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[1]);
@@ -83,29 +81,31 @@ namespace Ignosi::Test
         bool collisionOccurred = false;
         auto onCollision       = [&](const Physics::RigidBody2D&) { collisionOccurred = true; };
 
-        auto pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
-        auto pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
+        auto* KinematicData1 = m_Entities[0]->GetComponent<Physics::KinematicData>();
+        auto* KinematicData2 = m_Entities[1]->GetComponent<Physics::KinematicData>();
+
+        auto* pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
+        auto* pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
 
         pRigidBody2->AttachOnCollision(onCollision);
         pRigidBody1->AttachOnCollision(onCollision);
 
-        std::unique_ptr<Physics::HitRectangle> pRect1  = std::make_unique<Physics::HitRectangle>(nullptr);
-        std::unique_ptr<Physics::HitCircle>    pCircle = std::make_unique<Physics::HitCircle>(nullptr);
+        std::unique_ptr<Physics::HitRectangle> pRect1  = std::make_unique<Physics::HitRectangle>(KinematicData1);
+        std::unique_ptr<Physics::HitCircle>    pCircle = std::make_unique<Physics::HitCircle>(KinematicData2);
 
         pRect1->Width(3.0f);
         pRect1->Height(3.0f);
 
         pCircle->Radius(3.0f);
 
-        pRect1->Rotation(test.Rotation1);
+        KinematicData1->Angle(test.Rotation1);
 
         pRigidBody1->HitShape(std::move(pRect1));
         pRigidBody2->HitShape(std::move(pCircle));
 
-        pRigidBody1->Position(test.Origin1);
-        pRigidBody2->Position(test.Origin2);
-
-        pRigidBody2->Velocity({1.0f, 1.0f});
+        KinematicData1->Position({test.Origin1.x(), test.Origin2.y(), 0.0f});
+        KinematicData2->Position({test.Origin2.x(), test.Origin2.y(), 0.0f});
+        KinematicData2->Velocity({1.0f, 1.0f, 0.0f});
 
         m_World.Update(1.0);
 

@@ -1,9 +1,13 @@
 #include "Sprite.h"
 
+#include "KinematicData.h"
+
 #include <3D/SpriteVertexData.h>
 #include <LinearAlgebra/Vector.hpp>
 #include <Renderer/Renderer.h>
 #include <Units/Radian.hpp>
+
+#include <cassert>
 
 namespace Ignosi::Modules::Render
 {
@@ -18,34 +22,43 @@ namespace Ignosi::Modules::Render
         {{1.0f, 0.0f}, {1.0f, 0.0f}},
     };
 
-    Sprite::Sprite(Renderer* pRenderer)
+    Sprite::Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition)
         : m_pRenderer(pRenderer)
+        , m_pPosition(pPosition)
         , m_pBuffer(pRenderer->CreateBuffer(
               SpriteVertexData::describe(),
               std::span<const float>(
                   reinterpret_cast<const float*>(m_BasicSpritePoints),
                   reinterpret_cast<const float*>(m_BasicSpritePoints) + sizeof(m_BasicSpritePoints) / (sizeof(float)))))
     {
+        assert(m_pPosition);
     }
 
     Sprite::Sprite(
         Renderer*                pRenderer,
+        Physics::KinematicData*  pPosition,
         const VertexDataConfig&  config,
         std::span<float>         vertexes,
         std::span<std::uint32_t> indeces)
         : m_pRenderer(pRenderer)
+        , m_pPosition(pPosition)
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
+        assert(m_pPosition);
     }
 
-    Sprite::Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes)
+    Sprite::Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes)
         : m_pRenderer(pRenderer)
+        , m_pPosition(pPosition)
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
+        assert(m_pPosition);
     }
+
     Sprite::Sprite(const Sprite& other)
         : m_pRenderer(other.m_pRenderer)
-        , m_Origin(other.m_Origin)
+        , m_pPosition(other.m_pPosition)
+        , m_Translation(other.m_Translation)
         , m_Size(other.m_Size)
         , m_Rotation(other.m_Rotation)
         , m_pBuffer(other.m_pBuffer)
@@ -53,16 +66,17 @@ namespace Ignosi::Modules::Render
         , m_Color(other.m_Color)
     {
     }
+
     SquareMatrix4x4<float> Sprite::ModelMatrix() const
     {
-        if (m_Rotation == Radian<float>(0.0) && m_Origin == Vector2<float>({0.0f, 0.0f}) &&
+        if (m_Rotation == Radian<float>(0.0) && m_pPosition->Position() == Vector3<float>({0.0f, 0.0f, 0.0f}) &&
             m_Size == Vector2<float>({1.0f, 1.0f}))
         {
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
 
-        SquareMatrix4x4<float> rslt{
-            SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Origin[0], m_Origin[1], 0.0))};
+        SquareMatrix4x4<float> rslt{SquareMatrix4x4<float>::translate_init(m_pPosition->Position())};
+        rslt *= SquareMatrix4x4<float>::translate_init(m_Translation);
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * 0.5f, m_Size[1] * 0.5f, 0.0));
         rslt *= SquareMatrix4x4<float>::rotate_z_init(m_Rotation);
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * -0.5f, m_Size[1] * -0.5f, 0.0));

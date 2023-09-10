@@ -24,7 +24,6 @@ namespace Ignosi::Modules
         {
         }
 
-      protected:
         float ValPerRad() const override { return Angle<T, Degree<T>>::DegreePerRad(); };
     };
 } // namespace Ignosi::Modules

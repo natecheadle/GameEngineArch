@@ -15,8 +15,8 @@ namespace Ignosi::Modules
             : Angle<T, Radian>(val)
         {
         }
-
-        virtual ~Radian() = default;
+        Radian(const Radian& other) = default;
+        virtual ~Radian()           = default;
 
         template <class DERIVED_OTHER>
         Radian(const Angle<T, DERIVED_OTHER>& other)
@@ -24,7 +24,6 @@ namespace Ignosi::Modules
         {
         }
 
-      protected:
         float ValPerRad() const override { return 1.0; };
     };
 } // namespace Ignosi::Modules

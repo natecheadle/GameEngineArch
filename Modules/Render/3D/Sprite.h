@@ -2,6 +2,8 @@
 
 #include "3D/Material.h"
 #include "3D/RGB_Color.h"
+#include "KinematicData.h"
+#include "LinearAlgebra/Vector3.hpp"
 #include "Renderer/VertexBuffer.h"
 #include "Shader/ShaderProgram.h"
 #include "SpriteVertexData.h"
@@ -21,8 +23,9 @@ namespace Ignosi::Modules::Render
     {
 
         Renderer*                     m_pRenderer{nullptr};
-        Vector2<float>                m_Origin{0.0, 0.0};
-        Vector2<float>                m_Size{1.0, 1.0};
+        Physics::KinematicData*       m_pPosition;
+        Vector3<float>                m_Translation{0.0, 0.0};
+        Vector2<float>                m_Size{1.0, 0.0};
         Radian<float>                 m_Rotation{0.0};
         std::shared_ptr<VertexBuffer> m_pBuffer;
         std::shared_ptr<Material>     m_pMaterial;
@@ -32,10 +35,14 @@ namespace Ignosi::Modules::Render
 
       public:
         Sprite() = default;
-        Sprite(Renderer* pRenderer);
-        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<float> vertexes, std::span<std::uint32_t> indeces);
-
-        Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes);
+        Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition);
+        Sprite(
+            Renderer*                pRenderer,
+            Physics::KinematicData*  pPosition,
+            const VertexDataConfig&  config,
+            std::span<float>         vertexes,
+            std::span<std::uint32_t> indeces);
+        Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes);
 
         virtual ~Sprite() = default;
 
@@ -57,8 +64,7 @@ namespace Ignosi::Modules::Render
         void             Color(const RGB_Color& val) { m_Color = val; }
         const RGB_Color& Color() const { return m_Color; }
 
-        void                  Origin(const Vector2<float>& val) { m_Origin = val; }
-        const Vector2<float>& Origin() const { return m_Origin; }
+        const Vector3<float>& Origin() const { return m_pPosition->Position(); }
 
         const Vector2<float>& Size() const { return m_Size; }
         void                  Size(const Vector2<float>& val) { m_Size = val; }
@@ -66,12 +72,15 @@ namespace Ignosi::Modules::Render
         void                 Rotation(const Radian<float>& val) { m_Rotation = val; }
         const Radian<float>& Rotation() const { return m_Rotation; }
 
-        void Translate(const Vector2<float>& val) { m_Origin += val; }
+        void Translate(const Vector3<float>& val) { m_Translation += val; }
+        void Translation(Vector3<float> val) { m_Translation = std::move(val); }
         void Rotate(const Radian<float>& val) { m_Rotation += val; }
 
         void SizeX(float val) { m_Size[0] = val; }
         void SizeY(float val) { m_Size[1] = val; }
-        void TranslateX(float val) { m_Origin[0] += val; }
-        void TranslateY(float val) { m_Origin[1] += val; }
+
+        void TranslateX(float val) { m_Translation.x(m_Translation.x() + val); }
+        void TranslateY(float val) { m_Translation.y(m_Translation.y() + val); }
+        void TranslateZ(float val) { m_Translation.z(m_Translation.z() + val); }
     };
 } // namespace Ignosi::Modules::Render

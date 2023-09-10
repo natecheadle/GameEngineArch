@@ -8,7 +8,7 @@
 
 #include <gcem.hpp>
 
-#include <math.h>
+#include <cmath>
 #include <type_traits>
 
 namespace Ignosi::Modules
@@ -24,6 +24,8 @@ namespace Ignosi::Modules
         {
         }
         Angle() = default;
+
+        Angle(const Angle& other) = default;
 
       public:
         virtual ~Angle() = default;
@@ -129,10 +131,11 @@ namespace Ignosi::Modules
             return lhs;
         }
 
+        virtual T ValPerRad() const = 0;
+
       protected:
         Angle(Angle& other) = default;
 
-        virtual T          ValPerRad() const = 0;
         static constexpr T DegreePerRad() { return 180.0f / T(M_PI); }
         static constexpr T RadPerDegree() { return T(M_PI) / 180.0f; }
     };
