@@ -2,6 +2,7 @@
 
 #include "../Texture/Texture.h"
 #include "3D/Mesh3D.h"
+#include "KinematicData.h"
 #include "Shader/ShaderProgram.h"
 
 #include <filesystem>
@@ -21,6 +22,7 @@ namespace Ignosi::Modules::Render
     class Model3D
     {
         Renderer*                                                 m_pRenderer;
+        Physics::KinematicData*                                   m_pPosition;
         std::filesystem::path                                     m_Dir;
         std::vector<std::shared_ptr<Mesh3D>>                      m_Objects;
         std::map<std::filesystem::path, std::shared_ptr<Texture>> m_LoadedTextures;
@@ -30,7 +32,7 @@ namespace Ignosi::Modules::Render
         std::shared_ptr<VertexBuffer> m_pBuffer;
 
       public:
-        Model3D(Renderer* pRenderer, const std::filesystem::path& file);
+        Model3D(Renderer* pRenderer, Physics::KinematicData* pPosition, const std::filesystem::path& file);
         virtual ~Model3D() = default;
         virtual void Draw(ShaderProgram* pShader);
 

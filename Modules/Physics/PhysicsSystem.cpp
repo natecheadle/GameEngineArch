@@ -38,13 +38,16 @@ namespace Ignosi::Modules::Physics
                 if (entity1 == entity2)
                     continue;
 
-                auto& body1 = rigidBodyPool.GetComponent(World()->GetEntity(entity1));
-                auto& body2 = rigidBodyPool.GetComponent(World()->GetEntity(entity2));
-
-                if (CheckCollision(body1, body2))
+                if (rigidBodyPool.HasComponent(World()->GetEntity(entity1)) && rigidBodyPool.HasComponent(World()->GetEntity(entity2)))
                 {
-                    body1.CollisionOccurred(body2);
-                    body2.CollisionOccurred(body1);
+                    auto& body1 = rigidBodyPool.GetComponent(World()->GetEntity(entity1));
+                    auto& body2 = rigidBodyPool.GetComponent(World()->GetEntity(entity2));
+
+                    if (CheckCollision(body1, body2))
+                    {
+                        body1.CollisionOccurred(body2);
+                        body2.CollisionOccurred(body1);
+                    }
                 }
             }
         }

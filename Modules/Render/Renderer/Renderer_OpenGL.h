@@ -59,7 +59,6 @@ namespace Ignosi::Modules::Render
 
         std::string_view Name() const override { return NAME; }
         std::uint32_t    Priority() const override { return 32; }
-        void             Update(double dt) override {}
         const ECS::Tag&  Tag() const override { return m_Tag; }
 
       private:

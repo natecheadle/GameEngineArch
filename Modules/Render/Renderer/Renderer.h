@@ -1,5 +1,6 @@
 #pragma once
 
+#include "3D/Camera.h"
 #include "3D/Light_Directional.h"
 #include "3D/Light_Point.h"
 #include "3D/Light_Spotlight.h"
@@ -38,6 +39,7 @@ namespace Ignosi::Modules::Render
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
+        std::shared_ptr<Camera>                                          m_pCamera;
 
       protected:
         Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
@@ -45,11 +47,11 @@ namespace Ignosi::Modules::Render
       public:
         virtual ~Renderer();
 
-        virtual void DrawAllMesh(ShaderProgram* pProgram);
-        virtual void DrawAllSprites(ShaderProgram* pProgram);
-
         virtual GUI::IWindow* Window() const                                        = 0;
         virtual GUI::IWindow* InitializeWindow(const GUI::WindowSize&, std::string) = 0;
+
+        void                           AttachedCamera(std::shared_ptr<Camera> camera) { m_pCamera = std::move(camera); }
+        const std::shared_ptr<Camera>& AttachedCamera() const { return m_pCamera; }
 
         virtual std::unique_ptr<VertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
         virtual std::unique_ptr<VertexBuffer> CreateBuffer(
@@ -76,5 +78,7 @@ namespace Ignosi::Modules::Render
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;
         virtual void SwapBuffers()      = 0;
+
+        void Update(double dt) override;
     };
 } // namespace Ignosi::Modules::Render

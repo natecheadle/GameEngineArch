@@ -55,30 +55,17 @@ namespace Ignosi::Modules::Render
         assert(m_pPosition);
     }
 
-    Sprite::Sprite(const Sprite& other)
-        : m_pRenderer(other.m_pRenderer)
-        , m_pPosition(other.m_pPosition)
-        , m_Translation(other.m_Translation)
-        , m_Size(other.m_Size)
-        , m_Rotation(other.m_Rotation)
-        , m_pBuffer(other.m_pBuffer)
-        , m_pMaterial(other.m_pMaterial)
-        , m_Color(other.m_Color)
-    {
-    }
-
     SquareMatrix4x4<float> Sprite::ModelMatrix() const
     {
-        if (m_Rotation == Radian<float>(0.0) && m_pPosition->Position() == Vector3<float>({0.0f, 0.0f, 0.0f}) &&
+        if (m_pPosition->Angle() == Radian<float>(0.0) && m_pPosition->Position() == Vector3<float>({0.0f, 0.0f, 0.0f}) &&
             m_Size == Vector2<float>({1.0f, 1.0f}))
         {
             return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
         }
 
         SquareMatrix4x4<float> rslt{SquareMatrix4x4<float>::translate_init(m_pPosition->Position())};
-        rslt *= SquareMatrix4x4<float>::translate_init(m_Translation);
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * 0.5f, m_Size[1] * 0.5f, 0.0));
-        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_Rotation);
+        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_pPosition->Angle());
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * -0.5f, m_Size[1] * -0.5f, 0.0));
         rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(m_Size[0], m_Size[1], 0.0));
 
@@ -93,27 +80,28 @@ namespace Ignosi::Modules::Render
         return norm.to_3x3();
     }
 
-    void Sprite::Draw(ShaderProgram* pShader)
-    {
-        pShader->SetShaderVar("model", ModelMatrix());
-        pShader->SetShaderVar("spriteColor", Color().Data());
-
-        Draw();
-    }
-
     void Sprite::Draw()
     {
-        auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
-            if (texs)
+        if (m_pShader)
+        {
+            m_pShader->SetShaderVar("model", ModelMatrix());
+            m_pShader->SetShaderVar("norm_mat", NormalMatrix());
+            if (m_pMaterial)
             {
-                texs->Activate();
-                texs->Bind();
+                m_pShader->SetShaderVar("material", *m_pMaterial);
+                auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
+                    if (texs)
+                    {
+                        texs->Activate();
+                        texs->Bind();
+                    }
+                };
+                activeTexture(m_pMaterial->Diffuse);
+                activeTexture(m_pMaterial->Specular);
+                activeTexture(m_pMaterial->Height);
+                activeTexture(m_pMaterial->Normal);
             }
-        };
-        activeTexture(m_pMaterial->Diffuse);
-        activeTexture(m_pMaterial->Specular);
-        activeTexture(m_pMaterial->Height);
-        activeTexture(m_pMaterial->Normal);
+        }
 
         m_pBuffer->Draw();
     }

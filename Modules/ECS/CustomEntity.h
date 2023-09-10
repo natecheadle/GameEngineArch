@@ -51,6 +51,7 @@ namespace Ignosi::Modules::ECS
         {
             return m_pEntity->template GetComponent<Component>();
         }
+
         virtual void OnUpdate(double dt) = 0;
     };
 } // namespace Ignosi::Modules::ECS

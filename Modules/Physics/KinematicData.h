@@ -41,7 +41,7 @@ namespace Ignosi::Modules::Physics
         const Radian<float>&  Angle() const { return m_Data.Angle; }
 
         const Vector3<float>&         Velocity() const { return m_Data.Velocity; }
-        const RadianPerSecond<float>& AnglularVelocity() const { return m_Data.AngularVelocity; }
+        const RadianPerSecond<float>& AngularVelocity() const { return m_Data.AngularVelocity; }
 
         const Vector3<float>&                  Acceleration() const { return m_Data.Acceleration; }
         const RadianPerSecondPerSecond<float>& AngularAcceleration() const { return m_Data.AngularAcceleration; }

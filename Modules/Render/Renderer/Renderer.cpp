@@ -20,25 +20,38 @@ namespace Ignosi::Modules::Render
 
     Renderer::~Renderer() {}
 
-    void Renderer::DrawAllMesh(ShaderProgram* pProgram)
+    void Renderer::Update(double dt)
     {
-        auto&       pool     = GetPool<Mesh3D>();
-        const auto& entities = World()->GetEntitiesByTag(Tag());
-        for (const auto& entity : entities)
-        {
-            auto& val = pool.GetComponent(World()->GetEntity(entity));
-            val.Draw(pProgram);
-        }
-    }
+        m_pCamera->Update(std::chrono::nanoseconds((unsigned long long)(dt * 1e9)));
+        auto& meshpool   = GetPool<Mesh3D>();
+        auto& spritepool = GetPool<Sprite>();
 
-    void Renderer::DrawAllSprites(ShaderProgram* pProgram)
-    {
-        auto&       pool     = GetPool<Sprite>();
         const auto& entities = World()->GetEntitiesByTag(Tag());
         for (const auto& entity : entities)
         {
-            auto& val = pool.GetComponent(World()->GetEntity(entity));
-            val.Draw(pProgram);
+            if (meshpool.HasComponent(World()->GetEntity(entity)))
+            {
+                auto&       mesh    = meshpool.GetComponent(World()->GetEntity(entity));
+                const auto& pShader = mesh.Shader();
+
+                pShader->Use();
+                pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
+                pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+                pShader->SetShaderVar("projection", m_pCamera->Projection());
+
+                mesh.Draw();
+            }
+            if (spritepool.HasComponent(World()->GetEntity(entity)))
+            {
+                auto& sprite = spritepool.GetComponent(World()->GetEntity(entity));
+
+                const auto& pShader = sprite.Shader();
+                pShader->Use();
+                pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
+                pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+                pShader->SetShaderVar("projection", m_pCamera->Projection());
+                sprite.Draw();
+            }
         }
     }
 
