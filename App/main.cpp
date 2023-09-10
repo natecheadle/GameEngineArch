@@ -185,16 +185,6 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
-        m_pShader->Use();
-        m_pShader->SetShaderVar("dirLight", m_DirLight);
-        m_pShader->SetShaderVar("pointLight", m_PointLight);
-        m_pShader->SetShaderVar("spotLight", m_SpotLight);
-
-        for (auto& cube : m_Cubes)
-        {
-            m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
-        }
-
         // m_pBackpackModel = std::make_unique<Render::Model3D>(m_pRenderer, backpack_path);
     }
 
@@ -210,7 +200,10 @@ class TestApp : public App::App
         m_SpotLight.Position  = m_pCamera->CameraPosition();
         m_SpotLight.Direction = -1.0 * m_pCamera->CameraDirection();
 
+        m_pShader->SetShaderVar("dirLight", m_DirLight);
+        m_pShader->SetShaderVar("pointLight", m_PointLight);
         m_pShader->SetShaderVar("spotLight", m_SpotLight);
+
         m_pWorld->Update(dt);
         // m_pBackpackModel->RotY(M_PI / 500.0);
     }
