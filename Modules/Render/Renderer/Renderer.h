@@ -33,14 +33,8 @@
 
 namespace Ignosi::Modules::Render
 {
-    using VertexBuffer_ptr  = std::unique_ptr<VertexBuffer, std::function<void(VertexBuffer*)>>;
-    using Shader_ptr        = std::unique_ptr<Shader, std::function<void(Shader*)>>;
-    using Texture_ptr       = std::unique_ptr<Texture, std::function<void(Texture*)>>;
-    using ShaderProgram_ptr = std::unique_ptr<ShaderProgram, std::function<void(ShaderProgram*)>>;
+    class Renderer : public ECS::System<Mesh3D, Sprite>
 
-    class Renderer
-        : public ECS::System<Mesh3D, Sprite>
-        , protected Jobs::Job
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
@@ -53,51 +47,36 @@ namespace Ignosi::Modules::Render
       public:
         virtual ~Renderer();
 
-        const std::exception& Error() { return Job::GetCaughtException(); }
-        bool                  IsErrored() const { return Job::IsFailed(); }
-        bool                  IsRunning() const { return Job::IsExecuting(); }
-
         virtual void DrawAllMesh(ShaderProgram* pProgram);
         virtual void DrawAllSprites(ShaderProgram* pProgram);
 
         virtual GUI::IWindow* Window() const                                        = 0;
         virtual GUI::IWindow* InitializeWindow(const GUI::WindowSize&, std::string) = 0;
 
-        virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
-        virtual VertexBuffer_ptr CreateBuffer(
+        virtual std::unique_ptr<VertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
+        virtual std::unique_ptr<VertexBuffer> CreateBuffer(
             const VertexDataConfig&        config,
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) = 0;
 
-        virtual Shader_ptr CreateShader(
+        virtual std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
-        virtual Shader_ptr CreateShader(
+        virtual std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
 
-        virtual ShaderProgram_ptr CreateShaderProgram(
+        virtual std::unique_ptr<ShaderProgram> CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
-        virtual void              ClearDepthBuffer() = 0;
-        virtual void              ClearColorBuffer() = 0;
-        virtual std::future<void> SwapBuffers()      = 0;
-
-        void ExecuteFunction(std::function<void()> func);
-
-      protected:
-        void              ExecuteJob() final;
-        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
-
-      private:
-        std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> PopFunc();
-        static void ExecuteFunction(std::promise<void>& prom, std::function<void()>& func);
-        void        FlushQueue();
+        virtual void ClearDepthBuffer() = 0;
+        virtual void ClearColorBuffer() = 0;
+        virtual void SwapBuffers()      = 0;
     };
 } // namespace Ignosi::Modules::Render

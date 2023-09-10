@@ -1,3 +1,5 @@
+#include "Shader/ShaderProgram.h"
+
 #include <3D/Camera2D.h>
 #include <3D/Fly_Camera.h>
 #include <3D/Light_Directional.h>
@@ -69,7 +71,7 @@ class TestApp : public App::App
     Render::Light_Spotlight                                     m_SpotLight;
     Render::Light_Point                                         m_PointLight;
     std::unique_ptr<Render::Fly_Camera>                         m_pCamera;
-    Render::ShaderProgram_ptr                                   m_pShader;
+    std::unique_ptr<Render::ShaderProgram>                      m_pShader;
     std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite>> m_pWorld;
     Render::Renderer*                                           m_pRenderer;
 
@@ -160,18 +162,15 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Linear    = 0.09f;
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
-        auto initShaderVars = [&]() -> void {
-            m_pShader->Use();
-            m_pShader->SetShaderVar("dirLight", m_DirLight);
-            m_pShader->SetShaderVar("pointLight", m_PointLight);
-            m_pShader->SetShaderVar("spotLight", m_SpotLight);
+        m_pShader->Use();
+        m_pShader->SetShaderVar("dirLight", m_DirLight);
+        m_pShader->SetShaderVar("pointLight", m_PointLight);
+        m_pShader->SetShaderVar("spotLight", m_SpotLight);
 
-            for (auto& cube : m_Cubes)
-            {
-                m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
-            }
-        };
-        m_pRenderer->ExecuteFunction(initShaderVars);
+        for (auto& cube : m_Cubes)
+        {
+            m_pShader->SetShaderVar("material", *(cube.Mesh().AttachedMaterial()));
+        }
 
         // m_pBackpackModel = std::make_unique<Render::Model3D>(m_pRenderer, backpack_path);
     }
@@ -196,19 +195,15 @@ class TestApp : public App::App
         m_SpotLight.Position  = m_pCamera->CameraPosition();
         m_SpotLight.Direction = -1.0 * m_pCamera->CameraDirection();
 
-        auto renderUpdate = [&]() -> void {
-            m_pShader->Use();
+        m_pShader->Use();
 
-            m_pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
-            m_pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
-            m_pShader->SetShaderVar("projection", m_pCamera->Projection());
+        m_pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
+        m_pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+        m_pShader->SetShaderVar("projection", m_pCamera->Projection());
 
-            m_pShader->SetShaderVar("spotLight", m_SpotLight);
+        m_pShader->SetShaderVar("spotLight", m_SpotLight);
 
-            m_pRenderer->DrawAllMesh(m_pShader.get());
-        };
-
-        m_pRenderer->ExecuteFunction(renderUpdate);
+        m_pRenderer->DrawAllMesh(m_pShader.get());
     }
 };
 
