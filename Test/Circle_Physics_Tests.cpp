@@ -98,7 +98,7 @@ namespace Ignosi::Test
 
         pCircle->Radius(3.0f);
 
-        KinematicData1->Angle(test.Rotation1);
+        KinematicData1->Angle({test.Rotation1, 0.0, 0.0});
 
         pRigidBody1->HitShape(std::move(pRect1));
         pRigidBody2->HitShape(std::move(pCircle));

@@ -105,8 +105,8 @@ namespace Ignosi::Test
         pRect1->Height(3.0f);
         pRect2->Height(3.0f);
 
-        KinematicData1->Angle(test.Rotation1);
-        KinematicData2->Angle(test.Rotation2);
+        KinematicData1->Angle({test.Rotation1, 0.0, 0.0});
+        KinematicData2->Angle({test.Rotation2, 0.0, 0.0});
 
         pRigidBody1->HitShape(std::move(pRect1));
         pRigidBody2->HitShape(std::move(pRect2));

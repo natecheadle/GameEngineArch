@@ -84,11 +84,6 @@ namespace Ignosi::Modules::Render
 
     SquareMatrix4x4<float> Mesh3D::ModelMatrix() const
     {
-        if (m_pPosition->Angle() == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_pPosition->Position() == Vector3<float>(0.0, 0.0, 0.0))
-        {
-            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
-        }
-
         SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_pPosition->Position()));
         rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_pPosition->Angle());
         return rslt;

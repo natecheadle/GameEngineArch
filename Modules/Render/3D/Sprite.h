@@ -65,8 +65,8 @@ namespace Ignosi::Modules::Render
         void             Color(const RGB_Color& val) { m_Color = val; }
         const RGB_Color& Color() const { return m_Color; }
 
-        const Vector3<float>& Origin() const { return m_pPosition->Position(); }
-        const Radian<float>&  Rotation() { return m_pPosition->Angle(); }
+        const Vector3<float>&         Origin() const { return m_pPosition->Position(); }
+        const Vector3<Radian<float>>& Rotation() { return m_pPosition->Angle(); }
 
         const Vector2<float>& Size() const { return m_Size; }
         void                  Size(const Vector2<float>& val) { m_Size = val; }

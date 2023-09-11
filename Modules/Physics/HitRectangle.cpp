@@ -49,7 +49,7 @@ namespace Ignosi::Modules::Physics
 
     void HitRectangle::UpdatePrivateVectors()
     {
-        Radian<float> rotation = HitShape::Rotation();
+        Radian<float> rotation = HitShape::Rotation().x();
         float         cos_rot  = cos(rotation);
         float         sin_rot  = sin(rotation);
 

@@ -62,7 +62,7 @@ namespace Ignosi::Modules::Render
         SquareMatrix4x4<float> ModelMatrix() const;
         SquareMatrix3x3<float> NormalMatrix() const;
 
-        Vector3<float> Origin() const { return m_pPosition->Position(); }
-        Radian<float>  Rotation() const { return m_pPosition->Angle(); }
+        Vector3<float>         Origin() const { return m_pPosition->Position(); }
+        Vector3<Radian<float>> Rotation() const { return m_pPosition->Angle(); }
     };
 } // namespace Ignosi::Modules::Render

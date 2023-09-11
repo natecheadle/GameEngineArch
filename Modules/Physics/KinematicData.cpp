@@ -1,5 +1,7 @@
 #include "KinematicData.h"
 
+#include "LinearAlgebra/Vector3.hpp"
+
 namespace Ignosi::Modules::Physics
 {
     void KinematicData::Update(double dt)
@@ -9,7 +11,11 @@ namespace Ignosi::Modules::Physics
         m_Data.Position = m_Data.Position + (m_Data.Velocity * dtf.Value());
         m_Data.Velocity = m_Data.Velocity + (m_Data.Acceleration * dtf.Value());
 
-        m_Data.Angle           = m_Data.Angle + (m_Data.AngularVelocity * dtf);
-        m_Data.AngularVelocity = m_Data.AngularVelocity + (m_Data.AngularAcceleration * dtf);
+        for (size_t i = 0; i < Vector3<Radian<float>>::size(); ++i)
+        {
+            m_Data.Angle[i] = m_Data.Angle[i] + (m_Data.AngularVelocity[i] * dtf);
+            m_Data.Angle[i].Modulo();
+            m_Data.AngularVelocity[i] = m_Data.AngularVelocity[i] + (m_Data.AngularAcceleration[i] * dtf);
+        }
     }
 } // namespace Ignosi::Modules::Physics

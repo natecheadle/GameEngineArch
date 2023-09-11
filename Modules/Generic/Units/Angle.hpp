@@ -4,6 +4,8 @@
 
 #include <gcem.hpp>
 
+#include <numbers>
+
 namespace Ignosi::Modules
 {
     template <class T, class Derived>
@@ -24,6 +26,9 @@ namespace Ignosi::Modules
 
         Angle& operator=(const Angle& other) = default;
         Angle& operator=(Angle&& other)      = default;
+
+      public:
+        void Modulo() { BASE::BaseValue(std::fmod(BASE::BaseValue(), 2.0f * std::numbers::pi_v<float>)); }
     };
 
     template <class T, class Derived>

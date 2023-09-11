@@ -57,15 +57,9 @@ namespace Ignosi::Modules::Render
 
     SquareMatrix4x4<float> Sprite::ModelMatrix() const
     {
-        if (m_pPosition->Angle() == Radian<float>(0.0) && m_pPosition->Position() == Vector3<float>({0.0f, 0.0f, 0.0f}) &&
-            m_Size == Vector2<float>({1.0f, 1.0f}))
-        {
-            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
-        }
-
         SquareMatrix4x4<float> rslt{SquareMatrix4x4<float>::translate_init(m_pPosition->Position())};
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * 0.5f, m_Size[1] * 0.5f, 0.0));
-        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_pPosition->Angle());
+        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_pPosition->Angle().z());
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * -0.5f, m_Size[1] * -0.5f, 0.0));
         rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(m_Size[0], m_Size[1], 0.0));
 

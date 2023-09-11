@@ -141,7 +141,7 @@ class TestApp : public App::App
             Vector3<float>(-1.3f, 1.0f, -1.5f)};
 
         static_assert(sizeof(cubePositions) / sizeof(Vector3<float>) == numOfCubes, "Incorrect number of cubes");
-        RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 50.0));
+        RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 10.0));
         for (size_t i = 0; i < numOfCubes; ++i)
         {
             m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity()));
@@ -150,7 +150,7 @@ class TestApp : public App::App
                 m_Cubes[i].Entity(),
                 Render::Mesh3D::CreateCube(m_pRenderer, &(m_Cubes[i].KinematicData())));
             m_Cubes[i].KinematicData().Position(cubePositions[i]);
-            m_Cubes[i].KinematicData().AngularVelocity(rotSpeed);
+            m_Cubes[i].KinematicData().AngularVelocity({rotSpeed, 0.0, 0.0});
             m_Cubes[i].Mesh().Shader(m_pShader);
             m_Cubes[i].Mesh().AttachedMaterial(cubeMaterial);
 
