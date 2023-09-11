@@ -7,23 +7,36 @@ namespace Ignosi::Modules
     template <class T>
     class Second : public Time<T, Second<T>>
     {
-        friend Time<T, Second<T>>;
+        using BASE = Time<T, Second<T>>;
 
       public:
-        Second() = default;
-        constexpr Second(float val)
-            : Time<T, Second>(val)
+        constexpr Second(T val)
+            : BASE(val)
         {
         }
 
-        template <class DERIVED_OTHER>
-        Second(const Time<T, DERIVED_OTHER>& other)
-            : Time<T, Second<T>>(other.Seconds())
+        constexpr Second()              = default;
+        Second(const Second& other)     = default;
+        Second(Second&& other) noexcept = default;
+        virtual ~Second()               = default;
+
+        Second& operator=(const Second& other) = default;
+        Second& operator=(Second&& other)      = default;
+
+        template <class OtherDerived>
+        Second(const Time<T, OtherDerived>& other)
+            : BASE(0)
         {
+            BASE::BASE::BaseValue(other.BaseValue());
         }
 
-        virtual ~Second() = default;
+        template <class OtherDerived>
+        Second& operator=(const Time<T, OtherDerived>& other)
+        {
+            BASE::BASE::BaseValue(other.BaseValue());
+            return *this;
+        }
 
-        float ValPerSec() const override { return 1.0; };
+        constexpr T PerBase() const override { return static_cast<T>(1.0); }
     };
 } // namespace Ignosi::Modules

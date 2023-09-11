@@ -1,161 +1,65 @@
 #pragma once
 
-#include "FloatComp.hpp"
 #include "Radian.hpp"
 #include "Second.hpp"
-#include "Units/Radian.hpp"
-
-#include <type_traits>
+#include "Unit.hpp"
 
 namespace Ignosi::Modules
 {
-    template <class T, class DerivedAngle, class DerivedTime>
-    class AngularVelocity
+    template <class T, class AngleUnit, class TimeUnit>
+    class AngularVelocity : public Unit<T, UnitType::AngularVelocity, AngularVelocity<T, AngleUnit, TimeUnit>>
     {
-        T m_RadPerSec;
-
-        static_assert(std::is_base_of_v<Time<T, DerivedTime>, DerivedTime>, "DerivedTime must inherit from Time.");
-        static_assert(std::is_base_of_v<Angle<T, DerivedAngle>, DerivedAngle>, "DerivedAngle must inherit from Time.");
+        using BASE = Unit<T, UnitType::AngularVelocity, AngularVelocity<T, AngleUnit, TimeUnit>>;
+        static constexpr AngleUnit angle;
+        static constexpr TimeUnit  time;
 
       public:
         constexpr AngularVelocity(T val)
-            : m_RadPerSec(ToRadPerSec(val))
-        {
-        }
-        AngularVelocity() = default;
-
-        AngularVelocity(const AngularVelocity& other) = default;
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        AngularVelocity(AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& other)
-            : m_RadPerSec(other.RadPerSec())
+            : BASE(BASE::ToBase(val))
         {
         }
 
-        virtual ~AngularVelocity() = default;
+        AngularVelocity()                                 = default;
+        AngularVelocity(const AngularVelocity& other)     = default;
+        AngularVelocity(AngularVelocity&& other) noexcept = default;
+        virtual ~AngularVelocity()                        = default;
 
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend bool operator==(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
+        AngularVelocity& operator=(const AngularVelocity& other) = default;
+        AngularVelocity& operator=(AngularVelocity&& other)      = default;
+
+        template <class OtherAngleUnit, class OtherTimeUnit>
+        AngularVelocity(const AngularVelocity<T, OtherAngleUnit, OtherTimeUnit>& other)
+            : BASE(other.BaseValue())
         {
-            return almost_eq(lhs.RadPerSec(), rhs.RadPerSec());
         }
 
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend bool operator<(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            return lhs.m_RadPerSec < rhs.RadPerSec();
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend bool operator>(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            return lhs.m_RadPerSec > rhs.RadPerSec();
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend bool operator<=(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            return lhs.m_RadPerSec < rhs.RadPerSec() || lhs == rhs;
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend bool operator>=(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            return lhs.m_RadPerSec > rhs.RadPerSec() || lhs == rhs;
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        AngularVelocity& operator=(const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& other)
+        template <class OtherAngleUnit, class OtherTimeUnit>
+        AngularVelocity& operator=(const AngularVelocity<T, OtherAngleUnit, OtherTimeUnit>& other)
         {
             if (this == &other)
                 return *this;
 
-            m_RadPerSec = other.m_RadPerSec;
+            BASE::BaseValue(other.BaseValue());
             return *this;
         }
 
-        void Value(T val) { m_RadPerSec = ToRadPerSec(val); }
-        T    Value() const { return ToDerived(m_RadPerSec); }
-
-        constexpr T RadPerSec() const { return m_RadPerSec; }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend AngularVelocity operator-(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
+        template <class OtherTimeUnit>
+        AngleUnit operator*(const Time<T, OtherTimeUnit>& other)
         {
-            AngularVelocity rslt;
-            rslt.m_RadPerSec = lhs.RadPerSec() - rhs.RadPerSec();
+            AngleUnit rslt;
+            rslt.Value(rslt.FromBase(BASE::BaseValue() * other.BaseValue()));
             return rslt;
         }
 
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend AngularVelocity operator+(const AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
+        template <class OtherAngleUnit, class OtherTimeUnit>
+        friend AngularVelocity operator/(const Angle<T, OtherAngleUnit>& lhs, const Time<T, OtherTimeUnit>& rhs)
         {
             AngularVelocity rslt;
-            rslt.m_RadPerSec = lhs.RadPerSec() + rhs.RadPerSec();
+            rslt.BaseValue(lhs.BaseValue() / rhs.BaseValue());
             return rslt;
         }
 
-        friend AngularVelocity operator*(const AngularVelocity& lhs, T rhs)
-        {
-            AngularVelocity rslt;
-            rslt.m_RadPerSec = lhs.RadPerSec() * rhs;
-            return rslt;
-        }
-
-        template <class OtherDerivedTime>
-        friend DerivedAngle operator*(const AngularVelocity& lhs, const Time<T, OtherDerivedTime>& rhs)
-        {
-            return DerivedAngle(Radian<T>(lhs.RadPerSec() * rhs.Seconds()));
-        }
-
-        friend AngularVelocity operator/(const AngularVelocity& lhs, T rhs)
-        {
-            AngularVelocity rslt;
-            rslt.m_RadPerSec = lhs.RadPerSec() / rhs;
-            return rslt;
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend AngularVelocity& operator-=(AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            lhs.m_RadPerSec -= rhs.RadPerSec();
-            return lhs;
-        }
-
-        template <class DerivedOtherTime, class DerivedOtherAngle>
-        friend AngularVelocity& operator+=(AngularVelocity& lhs, const AngularVelocity<T, DerivedOtherAngle, DerivedOtherTime>& rhs)
-        {
-            lhs.m_RadPerSec += rhs.RadPerSec();
-            return lhs;
-        }
-
-        friend AngularVelocity& operator*=(AngularVelocity& lhs, T rhs)
-        {
-            lhs.m_RadPerSec *= rhs;
-            return lhs;
-        }
-
-        friend AngularVelocity& operator/=(AngularVelocity& lhs, T rhs)
-        {
-            lhs.m_RadPerSec /= rhs;
-            return lhs;
-        }
-
-      private:
-        static T ToRadPerSec(T value)
-        {
-            static DerivedAngle angle;
-            static DerivedTime  time;
-
-            return value * time.ValPerSec() / angle.ValPerRad();
-        }
-        static T ToDerived(T value)
-        {
-            static DerivedAngle angle;
-            static DerivedTime  time;
-
-            return value / time.ValPerSec() * angle.ValPerRad();
-        }
+        constexpr T PerBase() const override { return angle.PerBase() / time.PerBase(); }
     };
 
     template <class T>

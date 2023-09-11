@@ -7,23 +7,36 @@ namespace Ignosi::Modules
     template <class T>
     class Radian : public Angle<T, Radian<T>>
     {
-        friend Angle<T, Radian<T>>;
+        using BASE = Angle<T, Radian<T>>;
 
       public:
-        Radian() = default;
-        constexpr Radian(float val)
-            : Angle<T, Radian>(val)
-        {
-        }
-        Radian(const Radian& other) = default;
-        virtual ~Radian()           = default;
-
-        template <class DERIVED_OTHER>
-        Radian(const Angle<T, DERIVED_OTHER>& other)
-            : Angle<T, Radian<T>>(other.Radians())
+        constexpr Radian(T val)
+            : BASE(val)
         {
         }
 
-        float ValPerRad() const override { return 1.0; };
+        constexpr Radian()              = default;
+        Radian(const Radian& other)     = default;
+        Radian(Radian&& other) noexcept = default;
+        virtual ~Radian()               = default;
+
+        Radian& operator=(const Radian& other) = default;
+        Radian& operator=(Radian&& other)      = default;
+
+        template <class OtherDerived>
+        Radian(const Angle<T, OtherDerived>& other)
+            : BASE(0)
+        {
+            BASE::BASE::BaseValue(other.BaseValue());
+        }
+
+        template <class OtherDerived>
+        Radian& operator=(const Angle<T, OtherDerived>& other)
+        {
+            BASE::BASE::BaseValue(other.BaseValue());
+            return *this;
+        }
+
+        constexpr T PerBase() const override { return static_cast<T>(1.0); }
     };
 } // namespace Ignosi::Modules

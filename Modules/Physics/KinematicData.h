@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Units/Angle.hpp"
 #include "Units/AngularAcceleration.hpp"
 #include "Units/AngularVelocity.hpp"
-#include "Units/Radian.hpp"
 
 #include <LinearAlgebra/Vector3.hpp>
 

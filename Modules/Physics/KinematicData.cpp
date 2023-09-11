@@ -6,8 +6,8 @@ namespace Ignosi::Modules::Physics
     {
         Second<float> dtf(static_cast<float>(dt));
 
-        m_Data.Position = m_Data.Position + (m_Data.Velocity * dtf.Seconds());
-        m_Data.Velocity = m_Data.Velocity + (m_Data.Acceleration * dtf.Seconds());
+        m_Data.Position = m_Data.Position + (m_Data.Velocity * dtf.Value());
+        m_Data.Velocity = m_Data.Velocity + (m_Data.Acceleration * dtf.Value());
 
         m_Data.Angle           = m_Data.Angle + (m_Data.AngularVelocity * dtf);
         m_Data.AngularVelocity = m_Data.AngularVelocity + (m_Data.AngularAcceleration * dtf);
