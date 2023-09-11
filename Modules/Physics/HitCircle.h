@@ -18,7 +18,7 @@ namespace Ignosi::Modules::Physics
         std::vector<Vector2<float>> m_Corners;
 
       public:
-        HitCircle(const KinematicData* pPosition);
+        HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition);
         ~HitCircle() override = default;
 
         float Radius() const override { return m_Radius; }

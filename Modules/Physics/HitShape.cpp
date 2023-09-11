@@ -5,8 +5,8 @@
 
 namespace Ignosi::Modules::Physics
 {
-    HitShape::HitShape(const KinematicData* pPosition)
-        : m_pPosition(pPosition)
+    HitShape::HitShape(ECS::WeakComponentPointer<KinematicData> pPosition)
+        : m_pPosition(std::move(pPosition))
     {
     }
 

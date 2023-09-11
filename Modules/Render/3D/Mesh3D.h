@@ -10,6 +10,7 @@
 
 #include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <LinearAlgebra/Vector3.hpp>
+#include <WeakComponentPointer.h>
 
 #include <algorithm>
 #include <initializer_list>
@@ -23,23 +24,27 @@ namespace Ignosi::Modules::Render
     class Mesh3D
     {
 
-        Renderer*                      m_pRenderer{nullptr};
-        Physics::KinematicData*        m_pPosition;
-        std::shared_ptr<VertexBuffer>  m_pBuffer{nullptr};
-        std::shared_ptr<ShaderProgram> m_pShader{nullptr};
-        std::shared_ptr<Material>      m_pMaterial{nullptr};
+        Renderer*                                         m_pRenderer{nullptr};
+        ECS::WeakComponentPointer<Physics::KinematicData> m_pPosition;
+        std::shared_ptr<VertexBuffer>                     m_pBuffer{nullptr};
+        std::shared_ptr<ShaderProgram>                    m_pShader{nullptr};
+        std::shared_ptr<Material>                         m_pMaterial{nullptr};
 
         static const VertexData m_CubePoints[];
 
       public:
         Mesh3D() = default;
         Mesh3D(
-            Renderer*                      pRenderer,
-            Physics::KinematicData*        pPosition,
-            const VertexDataConfig&        config,
-            std::span<const float>         vertexes,
-            std::span<const std::uint32_t> indeces);
-        Mesh3D(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes);
+            Renderer*                                         pRenderer,
+            ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+            const VertexDataConfig&                           config,
+            std::span<const float>                            vertexes,
+            std::span<const std::uint32_t>                    indeces);
+        Mesh3D(
+            Renderer*                                         pRenderer,
+            ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+            const VertexDataConfig&                           config,
+            std::span<const float>                            vertexes);
 
         Mesh3D(const Mesh3D& other)     = default;
         Mesh3D(Mesh3D&& other) noexcept = default;
@@ -47,7 +52,7 @@ namespace Ignosi::Modules::Render
         Mesh3D& operator=(const Mesh3D& other)     = default;
         Mesh3D& operator=(Mesh3D&& other) noexcept = default;
 
-        static Mesh3D CreateCube(Renderer* pRenderer, Physics::KinematicData* pPosition);
+        static Mesh3D CreateCube(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition);
 
         virtual ~Mesh3D() = default;
 

@@ -19,7 +19,7 @@
 
 namespace Ignosi::Modules::Render
 {
-    Model3D::Model3D(Renderer* pRenderer, Physics::KinematicData* pPosition, const std::filesystem::path& file)
+    Model3D::Model3D(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition, const std::filesystem::path& file)
         : m_pRenderer(pRenderer)
         , m_pPosition(pPosition)
     {

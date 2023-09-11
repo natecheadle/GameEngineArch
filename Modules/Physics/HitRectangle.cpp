@@ -12,8 +12,8 @@
 namespace Ignosi::Modules::Physics
 {
 
-    HitRectangle::HitRectangle(const KinematicData* pPosition)
-        : HitShape(pPosition)
+    HitRectangle::HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition)
+        : HitShape(std::move(pPosition))
     {
         m_TestAxes.resize(2);
         m_Corners.resize(4);

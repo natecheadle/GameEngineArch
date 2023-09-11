@@ -21,6 +21,8 @@ namespace Ignosi::Modules::ECS
         std::vector<T>           m_Components;
         std::vector<ComponentID> m_EntityLookup;
 
+        friend ComponentPointer<T>;
+
       public:
         bool HasComponent(const IEntity* pEntity) const
         {
@@ -74,5 +76,8 @@ namespace Ignosi::Modules::ECS
             m_EntityLookup[id.ID] = newId;
             return ComponentPointer<T>(newId, this);
         }
+
+      private:
+        void FreeComponent(ComponentID id) { m_FreedComponents.push(id); }
     };
 }; // namespace Ignosi::Modules::ECS

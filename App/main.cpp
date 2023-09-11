@@ -1,3 +1,4 @@
+#include "ComponentPointer.h"
 #include "Units/AngularAcceleration.hpp"
 
 #include <3D/Camera2D.h>
@@ -61,11 +62,8 @@ class TestAppEntity : public ECS::CustomEntity<Render::Mesh3D, Render::Sprite, P
     TestAppEntity& operator=(const TestAppEntity& other)     = delete;
     TestAppEntity& operator=(TestAppEntity&& other) noexcept = default;
 
-    Render::Mesh3D&       Mesh() { return *(BASE::GetComponent<Render::Mesh3D>()); }
-    const Render::Mesh3D& Mesh() const { return *(BASE::GetComponent<Render::Mesh3D>()); }
-
-    Physics::KinematicData&       KinematicData() { return *(BASE::GetComponent<Physics::KinematicData>()); }
-    const Physics::KinematicData& KinematicData() const { return *(BASE::GetComponent<Physics::KinematicData>()); }
+    ECS::WeakComponentPointer<Render::Mesh3D>         Mesh() { return BASE::GetComponent<Render::Mesh3D>(); }
+    ECS::WeakComponentPointer<Physics::KinematicData> KinematicData() { return BASE::GetComponent<Physics::KinematicData>(); }
 
   protected:
     void OnUpdate(double dt) override {}
@@ -148,11 +146,11 @@ class TestApp : public App::App
             m_pWorld->AddComponent<Physics::KinematicData>(m_Cubes[i].Entity());
             m_pWorld->AddComponent<Render::Mesh3D>(
                 m_Cubes[i].Entity(),
-                Render::Mesh3D::CreateCube(m_pRenderer, &(m_Cubes[i].KinematicData())));
-            m_Cubes[i].KinematicData().Position(cubePositions[i]);
-            m_Cubes[i].KinematicData().AngularVelocity({rotSpeed, 0.0, 0.0});
-            m_Cubes[i].Mesh().Shader(m_pShader);
-            m_Cubes[i].Mesh().AttachedMaterial(cubeMaterial);
+                Render::Mesh3D::CreateCube(m_pRenderer, m_Cubes[i].KinematicData()));
+            m_Cubes[i].KinematicData()->Position(cubePositions[i]);
+            m_Cubes[i].KinematicData()->AngularVelocity({rotSpeed, 0.0, 0.0});
+            m_Cubes[i].Mesh()->Shader(m_pShader);
+            m_Cubes[i].Mesh()->AttachedMaterial(cubeMaterial);
 
             m_pWorld->RegisterEntityInSystem(*m_pRenderer, m_Cubes[i].Entity());
             m_pWorld->RegisterEntityInSystem(*m_pPhysicsSystem, m_Cubes[i].Entity());

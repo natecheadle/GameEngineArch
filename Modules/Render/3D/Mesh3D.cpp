@@ -53,29 +53,33 @@ namespace Ignosi::Modules::Render
     };
 
     Mesh3D::Mesh3D(
-        Renderer*                      pRenderer,
-        Physics::KinematicData*        pPosition,
-        const VertexDataConfig&        config,
-        std::span<const float>         vertexes,
-        std::span<const std::uint32_t> indeces)
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes,
+        std::span<const std::uint32_t>                    indeces)
         : m_pRenderer(pRenderer)
-        , m_pPosition(pPosition)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
-    Mesh3D::Mesh3D(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes)
+    Mesh3D::Mesh3D(
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes)
         : m_pRenderer(pRenderer)
-        , m_pPosition(pPosition)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
 
-    Mesh3D Mesh3D::CreateCube(Renderer* pRenderer, Physics::KinematicData* pPosition)
+    Mesh3D Mesh3D::CreateCube(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
     {
         return Mesh3D(
             pRenderer,
-            pPosition,
+            std::move(pPosition),
             VertexData::describe(),
             std::span<const float>(
                 reinterpret_cast<const float*>(m_CubePoints),

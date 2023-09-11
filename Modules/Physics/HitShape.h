@@ -2,6 +2,7 @@
 
 #include "KinematicData.h"
 #include "LinearAlgebra/Vector3.hpp"
+#include "WeakComponentPointer.h"
 
 #include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <LinearAlgebra/Vector2.hpp>
@@ -14,8 +15,8 @@ namespace Ignosi::Modules::Physics
 {
     class HitShape
     {
-        const KinematicData* m_pPosition;
-        Radian<float>        m_Rotation;
+        ECS::WeakComponentPointer<KinematicData> m_pPosition;
+        Radian<float>                            m_Rotation;
 
       public:
         virtual ~HitShape() = default;
@@ -30,6 +31,6 @@ namespace Ignosi::Modules::Physics
         virtual std::array<Vector2<float>, 2> ProjectShape(const Vector2<float>& axis);
 
       protected:
-        HitShape(const KinematicData* pPosition);
+        HitShape(ECS::WeakComponentPointer<KinematicData> pPosition);
     };
 } // namespace Ignosi::Modules::Physics

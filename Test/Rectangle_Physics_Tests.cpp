@@ -87,11 +87,11 @@ namespace Ignosi::Test
         bool collisionOccurred = false;
         auto onCollision       = [&](const Physics::RigidBody2D&) { collisionOccurred = true; };
 
-        auto* KinematicData1 = m_Entities[0]->GetComponent<Physics::KinematicData>();
-        auto* KinematicData2 = m_Entities[1]->GetComponent<Physics::KinematicData>();
+        auto KinematicData1 = m_Entities[0]->GetComponent<Physics::KinematicData>();
+        auto KinematicData2 = m_Entities[1]->GetComponent<Physics::KinematicData>();
 
-        auto* pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
-        auto* pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
+        auto pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
+        auto pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
 
         pRigidBody2->AttachOnCollision(onCollision);
         pRigidBody1->AttachOnCollision(onCollision);

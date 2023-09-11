@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ComponentPointer.h"
 #include "HitShape.h"
 #include "KinematicData.h"
 #include "LinearAlgebra/Vector2.hpp"
@@ -18,7 +19,7 @@ namespace Ignosi::Modules::Physics
         float                       m_Radius{1.0f};
 
       public:
-        HitRectangle(const KinematicData* pPosition);
+        HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition);
         ~HitRectangle() override = default;
 
         float Radius() const override { return m_Radius; }

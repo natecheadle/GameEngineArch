@@ -3,6 +3,7 @@
 #include "ComponentPool.h"
 #include "IEntity.h"
 #include "Tag.h"
+#include "WeakComponentPointer.h"
 
 #include <PoolMemoryBlock.hpp>
 
@@ -117,17 +118,10 @@ namespace Ignosi::Modules::ECS
         }
 
         template <typename T>
-        const T* GetComponent() const
+        WeakComponentPointer<T> GetComponent() const
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
-            return pComponent.get();
-        }
-
-        template <typename T>
-        T* GetComponent()
-        {
-            auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
-            return pComponent.get();
+            return WeakComponentPointer<T>(pComponent);
         }
 
       private:

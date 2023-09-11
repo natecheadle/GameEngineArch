@@ -22,37 +22,38 @@ namespace Ignosi::Modules::Render
         {{1.0f, 0.0f}, {1.0f, 0.0f}},
     };
 
-    Sprite::Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition)
+    Sprite::Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
         : m_pRenderer(pRenderer)
-        , m_pPosition(pPosition)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(
               SpriteVertexData::describe(),
               std::span<const float>(
                   reinterpret_cast<const float*>(m_BasicSpritePoints),
                   reinterpret_cast<const float*>(m_BasicSpritePoints) + sizeof(m_BasicSpritePoints) / (sizeof(float)))))
     {
-        assert(m_pPosition);
     }
 
     Sprite::Sprite(
-        Renderer*                pRenderer,
-        Physics::KinematicData*  pPosition,
-        const VertexDataConfig&  config,
-        std::span<float>         vertexes,
-        std::span<std::uint32_t> indeces)
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<float>                                  vertexes,
+        std::span<std::uint32_t>                          indeces)
         : m_pRenderer(pRenderer)
-        , m_pPosition(pPosition)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
-        assert(m_pPosition);
     }
 
-    Sprite::Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes)
+    Sprite::Sprite(
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes)
         : m_pRenderer(pRenderer)
-        , m_pPosition(pPosition)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
-        assert(m_pPosition);
     }
 
     SquareMatrix4x4<float> Sprite::ModelMatrix() const

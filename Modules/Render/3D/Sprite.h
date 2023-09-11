@@ -7,6 +7,7 @@
 #include "Renderer/VertexBuffer.h"
 #include "Shader/ShaderProgram.h"
 #include "SpriteVertexData.h"
+#include "WeakComponentPointer.h"
 
 #include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <LinearAlgebra/Vector.hpp>
@@ -22,26 +23,30 @@ namespace Ignosi::Modules::Render
     class Sprite
     {
 
-        Renderer*                      m_pRenderer{nullptr};
-        Physics::KinematicData*        m_pPosition;
-        Vector2<float>                 m_Size{1.0, 0.0};
-        std::shared_ptr<VertexBuffer>  m_pBuffer;
-        std::shared_ptr<ShaderProgram> m_pShader{nullptr};
-        std::shared_ptr<Material>      m_pMaterial;
-        RGB_Color                      m_Color{1.0, 1.0, 1.0};
+        Renderer*                                         m_pRenderer{nullptr};
+        ECS::WeakComponentPointer<Physics::KinematicData> m_pPosition;
+        Vector2<float>                                    m_Size{1.0, 0.0};
+        std::shared_ptr<VertexBuffer>                     m_pBuffer;
+        std::shared_ptr<ShaderProgram>                    m_pShader{nullptr};
+        std::shared_ptr<Material>                         m_pMaterial;
+        RGB_Color                                         m_Color{1.0, 1.0, 1.0};
 
         static const SpriteVertexData m_BasicSpritePoints[];
 
       public:
         Sprite() = default;
-        Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition);
+        Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition);
         Sprite(
-            Renderer*                pRenderer,
-            Physics::KinematicData*  pPosition,
-            const VertexDataConfig&  config,
-            std::span<float>         vertexes,
-            std::span<std::uint32_t> indeces);
-        Sprite(Renderer* pRenderer, Physics::KinematicData* pPosition, const VertexDataConfig& config, std::span<const float> vertexes);
+            Renderer*                                         pRenderer,
+            ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+            const VertexDataConfig&                           config,
+            std::span<float>                                  vertexes,
+            std::span<std::uint32_t>                          indeces);
+        Sprite(
+            Renderer*                                         pRenderer,
+            ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+            const VertexDataConfig&                           config,
+            std::span<const float>                            vertexes);
 
         virtual ~Sprite() = default;
 
