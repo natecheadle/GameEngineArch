@@ -1,39 +1,25 @@
 #include "HitCircle.h"
 
-#include "LinearAlgebra/Vector2.hpp"
+#include "HitShape.h"
 
-#include <3D/GenericVertexes.hpp>
 #include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/Vector2.hpp>
 
 #include <vector>
 
 namespace Ignosi::Modules::Physics
 {
-    namespace
-    {
-        constexpr size_t VertCount    = 16;
-        constexpr auto   CIRCLE_VERTS = Render::GenerateCircleVertexes<VertCount>();
-        const float*     circle_begin = CIRCLE_VERTS.data()->data();
-        const size_t     circle_size  = sizeof(CIRCLE_VERTS) / sizeof(float);
-        const float*     circle_end   = circle_begin + circle_size;
-    } // namespace
-
-    HitCircle::HitCircle(Render::Renderer* pRenderer)
-        : HitShape(pRenderer)
+    HitCircle::HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition)
+        : HitShape(std::move(pPosition))
     {
     }
 
-    std::span<const float> HitCircle::VertexData() const
+    std::array<Vector2<float>, 2> HitCircle::ProjectShape(const Vector2<float>& axis)
     {
-        return std::span<const float>(circle_begin, circle_end);
-    }
-
-    std::array<Vector2<float>, 2> HitCircle::ProjectShape(const Vector2<float>& axis) const
-    {
-        Vector2<float>                origin = Origin();
+        Vector3<float>                origin = Origin();
         std::array<Vector2<float>, 2> rslt;
-        rslt[0] = origin;
-        rslt[1] = origin;
+        rslt[0] = Vector2<float>(origin.x(), origin.y());
+        rslt[1] = Vector2<float>(origin.x(), origin.y());
 
         if (axis[0] != 0.0 && axis[1] != 0.0)
         {

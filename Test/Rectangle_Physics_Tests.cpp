@@ -1,3 +1,5 @@
+#include "KinematicData.h"
+
 #include <HitRectangle.h>
 #include <HitShape.h>
 #include <LinearAlgebra/Vector2.hpp>
@@ -49,7 +51,7 @@ namespace Ignosi::Test
         {
             std::vector<RectangleCollisionInputData> tests;
 
-            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, 0.0f, false));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, 0.0f, true));
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, 0.0f, true));
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, 0.0f, false));
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, M_PI_4, {0.5f, 0.5f}, 0.0f, false));
@@ -62,16 +64,16 @@ namespace Ignosi::Test
     class Rectangle_Physics_Tests : public testing::TestWithParam<RectangleCollisionInputData>
     {
       protected:
-        ECS::World<Physics::RigidBody2D>                      m_World;
-        Physics::PhysicsSystem*                               m_PhysicsSystem;
-        std::vector<ECS::EntityPointer<Physics::RigidBody2D>> m_Entities;
+        ECS::World<Physics::RigidBody2D, Physics::KinematicData>                      m_World;
+        Physics::PhysicsSystem*                                                       m_PhysicsSystem;
+        std::vector<ECS::EntityPointer<Physics::RigidBody2D, Physics::KinematicData>> m_Entities;
 
       public:
         Rectangle_Physics_Tests()
-            : m_PhysicsSystem(m_World.CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D>())
+            : m_PhysicsSystem(m_World.CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>())
         {
-            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
-            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D>());
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
+            m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
 
             m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[0]);
             m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[1]);
@@ -85,14 +87,17 @@ namespace Ignosi::Test
         bool collisionOccurred = false;
         auto onCollision       = [&](const Physics::RigidBody2D&) { collisionOccurred = true; };
 
+        auto KinematicData1 = m_Entities[0]->GetComponent<Physics::KinematicData>();
+        auto KinematicData2 = m_Entities[1]->GetComponent<Physics::KinematicData>();
+
         auto pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
         auto pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
 
         pRigidBody2->AttachOnCollision(onCollision);
         pRigidBody1->AttachOnCollision(onCollision);
 
-        std::unique_ptr<Physics::HitRectangle> pRect1 = std::make_unique<Physics::HitRectangle>(nullptr);
-        std::unique_ptr<Physics::HitRectangle> pRect2 = std::make_unique<Physics::HitRectangle>(nullptr);
+        std::unique_ptr<Physics::HitRectangle> pRect1 = std::make_unique<Physics::HitRectangle>(KinematicData1);
+        std::unique_ptr<Physics::HitRectangle> pRect2 = std::make_unique<Physics::HitRectangle>(KinematicData2);
 
         pRect1->Width(3.0f);
         pRect2->Width(3.0f);
@@ -100,16 +105,15 @@ namespace Ignosi::Test
         pRect1->Height(3.0f);
         pRect2->Height(3.0f);
 
-        pRect1->Rotation(test.Rotation1);
-        pRect2->Rotation(test.Rotation2);
+        KinematicData1->Angle({test.Rotation1, 0.0, 0.0});
+        KinematicData2->Angle({test.Rotation2, 0.0, 0.0});
 
         pRigidBody1->HitShape(std::move(pRect1));
         pRigidBody2->HitShape(std::move(pRect2));
 
-        pRigidBody1->Position(test.Origin1);
-        pRigidBody2->Position(test.Origin2);
-
-        pRigidBody2->Velocity({1.0f, 1.0f});
+        KinematicData1->Position({test.Origin1.x(), test.Origin1.y(), 0.0f});
+        KinematicData2->Position({test.Origin2.x(), test.Origin2.y(), 0.0f});
+        KinematicData2->Velocity({1.0f, 1.0f, 0.0f});
 
         m_World.Update(1.0);
 

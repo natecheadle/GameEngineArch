@@ -1,9 +1,13 @@
 #include "Sprite.h"
 
+#include "KinematicData.h"
+
 #include <3D/SpriteVertexData.h>
 #include <LinearAlgebra/Vector.hpp>
 #include <Renderer/Renderer.h>
 #include <Units/Radian.hpp>
+
+#include <cassert>
 
 namespace Ignosi::Modules::Render
 {
@@ -18,8 +22,9 @@ namespace Ignosi::Modules::Render
         {{1.0f, 0.0f}, {1.0f, 0.0f}},
     };
 
-    Sprite::Sprite(Renderer* pRenderer)
+    Sprite::Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
         : m_pRenderer(pRenderer)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(
               SpriteVertexData::describe(),
               std::span<const float>(
@@ -29,42 +34,33 @@ namespace Ignosi::Modules::Render
     }
 
     Sprite::Sprite(
-        Renderer*                pRenderer,
-        const VertexDataConfig&  config,
-        std::span<float>         vertexes,
-        std::span<std::uint32_t> indeces)
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<float>                                  vertexes,
+        std::span<std::uint32_t>                          indeces)
         : m_pRenderer(pRenderer)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
-    Sprite::Sprite(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes)
+    Sprite::Sprite(
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes)
         : m_pRenderer(pRenderer)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
-    Sprite::Sprite(const Sprite& other)
-        : m_pRenderer(other.m_pRenderer)
-        , m_Origin(other.m_Origin)
-        , m_Size(other.m_Size)
-        , m_Rotation(other.m_Rotation)
-        , m_pBuffer(other.m_pBuffer)
-        , m_pMaterial(other.m_pMaterial)
-        , m_Color(other.m_Color)
-    {
-    }
+
     SquareMatrix4x4<float> Sprite::ModelMatrix() const
     {
-        if (m_Rotation == Radian<float>(0.0) && m_Origin == Vector2<float>({0.0f, 0.0f}) &&
-            m_Size == Vector2<float>({1.0f, 1.0f}))
-        {
-            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
-        }
-
-        SquareMatrix4x4<float> rslt{
-            SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Origin[0], m_Origin[1], 0.0))};
+        SquareMatrix4x4<float> rslt{SquareMatrix4x4<float>::translate_init(m_pPosition->Position())};
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * 0.5f, m_Size[1] * 0.5f, 0.0));
-        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_Rotation);
+        rslt *= SquareMatrix4x4<float>::rotate_z_init(m_pPosition->Angle().z());
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(m_Size[0] * -0.5f, m_Size[1] * -0.5f, 0.0));
         rslt *= SquareMatrix4x4<float>::scale_init(Vector3<float>(m_Size[0], m_Size[1], 0.0));
 
@@ -79,27 +75,28 @@ namespace Ignosi::Modules::Render
         return norm.to_3x3();
     }
 
-    void Sprite::Draw(ShaderProgram* pShader)
-    {
-        pShader->SetShaderVar("model", ModelMatrix());
-        pShader->SetShaderVar("spriteColor", Color().Data());
-
-        Draw();
-    }
-
     void Sprite::Draw()
     {
-        auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
-            if (texs)
+        if (m_pShader)
+        {
+            m_pShader->SetShaderVar("model", ModelMatrix());
+            m_pShader->SetShaderVar("norm_mat", NormalMatrix());
+            if (m_pMaterial)
             {
-                texs->Activate();
-                texs->Bind();
+                m_pShader->SetShaderVar("material", *m_pMaterial);
+                auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
+                    if (texs)
+                    {
+                        texs->Activate();
+                        texs->Bind();
+                    }
+                };
+                activeTexture(m_pMaterial->Diffuse);
+                activeTexture(m_pMaterial->Specular);
+                activeTexture(m_pMaterial->Height);
+                activeTexture(m_pMaterial->Normal);
             }
-        };
-        activeTexture(m_pMaterial->Diffuse);
-        activeTexture(m_pMaterial->Specular);
-        activeTexture(m_pMaterial->Height);
-        activeTexture(m_pMaterial->Normal);
+        }
 
         m_pBuffer->Draw();
     }

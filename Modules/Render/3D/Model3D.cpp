@@ -4,6 +4,7 @@
 #include "3D/Mesh3D.h"
 #include "3D/Model3D.h"
 #include "3D/VertexData.h"
+#include "KinematicData.h"
 #include "Renderer/Renderer.h"
 #include "Shader/ShaderProgram.h"
 #include "Texture/Texture.h"
@@ -18,8 +19,9 @@
 
 namespace Ignosi::Modules::Render
 {
-    Model3D::Model3D(Renderer* pRenderer, const std::filesystem::path& file)
+    Model3D::Model3D(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition, const std::filesystem::path& file)
         : m_pRenderer(pRenderer)
+        , m_pPosition(pPosition)
     {
         if (!std::filesystem::is_regular_file(file))
         {
@@ -149,6 +151,7 @@ namespace Ignosi::Modules::Render
             reinterpret_cast<float*>(&vertices.back().TextureBitangent[2]));
         auto pObj = std::make_unique<Mesh3D>(
             m_pRenderer,
+            m_pPosition,
             VertexData::describe(),
             vertData,
             std::span<std::uint32_t>(indices.begin(), indices.end()));

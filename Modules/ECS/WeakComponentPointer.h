@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ComponentID.h"
+#include "ComponentPointer.h"
 
 namespace Ignosi::Modules::ECS
 {
@@ -8,28 +9,22 @@ namespace Ignosi::Modules::ECS
     class ComponentPool;
 
     template <class T>
-    class WeakComponentPointer;
-
-    template <class T>
-    class ComponentPointer
+    class WeakComponentPointer
     {
         ComponentID       m_ID;
         ComponentPool<T>* m_pPool{nullptr};
-
         friend ComponentPool<T>;
-        friend WeakComponentPointer<T>;
-
-        ComponentPointer(ComponentID id, ComponentPool<T>* pPool)
-            : m_ID(id)
-            , m_pPool(pPool)
-        {
-        }
 
       public:
-        ComponentPointer() = default;
+        WeakComponentPointer() = default;
+        WeakComponentPointer(const ComponentPointer<T>& pComponent)
+        {
+            m_ID    = pComponent.m_ID;
+            m_pPool = pComponent.m_pPool;
+        }
 
-        ComponentPointer(const ComponentPointer& other) = delete;
-        ComponentPointer(ComponentPointer&& other) noexcept
+        WeakComponentPointer(const WeakComponentPointer& other) = default;
+        WeakComponentPointer(WeakComponentPointer&& other) noexcept
         {
             m_pPool = other.m_pPool;
             m_ID    = other.m_ID;
@@ -38,8 +33,8 @@ namespace Ignosi::Modules::ECS
             other.m_pPool = nullptr;
         }
 
-        ComponentPointer& operator=(const ComponentPointer& other) = delete;
-        ComponentPointer& operator=(ComponentPointer&& other) noexcept
+        WeakComponentPointer& operator=(const WeakComponentPointer& other) = default;
+        WeakComponentPointer& operator=(WeakComponentPointer&& other) noexcept
         {
             m_pPool = other.m_pPool;
             m_ID    = other.m_ID;
@@ -50,14 +45,7 @@ namespace Ignosi::Modules::ECS
             return *this;
         }
 
-        ~ComponentPointer()
-        {
-            if (m_pPool && m_ID.IsValid())
-            {
-                m_pPool->FreeComponent(m_ID);
-                reset();
-            }
-        }
+        ~WeakComponentPointer() = default;
 
         T*       operator->() { return &(m_pPool->GetComponent(m_ID)); }
         const T* operator->() const { return &(m_pPool->GetComponent(m_ID)); }
@@ -75,3 +63,5 @@ namespace Ignosi::Modules::ECS
     };
 
 } // namespace Ignosi::Modules::ECS
+
+#include "ComponentPool.h"

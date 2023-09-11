@@ -108,7 +108,9 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
-            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>(pEntity->ID(), components))), ...);
+            (pEntity->template InitializeComponent<Components>(
+                 std::move(CreateComponent<Components>(pEntity->ID(), std::move(components)))),
+             ...);
 
             return {pEntity->ID(), this};
         }
@@ -167,13 +169,7 @@ namespace Ignosi::Modules::ECS
         {
             RegisterEntityInSystem(system, pEntity.get());
         }
-
-        template <class... Components>
-        void RegisterEntityInSystem(const System<Components...>& system, const IEntity* pEntity)
-        {
-            AddTag(system.Tag(), pEntity->ID());
-            (AddComponent<Components>(pEntity), ...);
-        }
+        void RegisterEntityInSystem(const ISystem& system, const IEntity* pEntity) override { AddTag(system.Tag(), pEntity->ID()); }
 
         bool AddTag(const Tag& tag, EntityID entity) override
         {
@@ -205,6 +201,25 @@ namespace Ignosi::Modules::ECS
         const ResourceManager& Resources() const override { return m_ResourceManager; }
         ResourceManager&       Resources() override { return m_ResourceManager; }
 
+        template <class ComponentType>
+        void AddComponent(const IEntity* pEntity)
+        {
+            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
+            {
+                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
+                    std::move(CreateComponent<ComponentType>(pEntity->ID())));
+            }
+        }
+        template <class ComponentType>
+        void AddComponent(const IEntity* pEntity, ComponentType value)
+        {
+            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
+            {
+                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
+                    std::move(CreateComponent<ComponentType>(pEntity->ID(), std::move(value))));
+            }
+        }
+
       private:
         void DestroyEntity(EntityID id)
         {
@@ -228,16 +243,6 @@ namespace Ignosi::Modules::ECS
             auto& pool = std::get<ComponentPool<ComponentType>>(m_Pools);
 
             return std::move(pool.CreateComponent(std::move(init), id));
-        }
-
-        template <class ComponentType>
-        void AddComponent(const IEntity* pEntity)
-        {
-            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
-            {
-                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
-                    std::move(CreateComponent<ComponentType>(pEntity->ID())));
-            }
         }
 
         void ManageEntityLifespans()

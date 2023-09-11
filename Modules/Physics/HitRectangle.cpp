@@ -1,26 +1,19 @@
 #include "HitRectangle.h"
 
 #include "HitShape.h"
+#include "KinematicData.h"
 #include "LinearAlgebra/SquareMatrix.hpp"
 #include "LinearAlgebra/Vector2.hpp"
 #include "Units/Radian.hpp"
-
-#include <3D/GenericVertexes.hpp>
 
 #include <cmath>
 #include <vector>
 
 namespace Ignosi::Modules::Physics
 {
-    namespace
-    {
-        const float* rect_begin = Render::RectangleVertexes.data()->data();
-        const size_t rect_size  = sizeof(Render::RectangleVertexes) / sizeof(float);
-        const float* rect_end   = rect_begin + rect_size;
-    } // namespace
 
-    HitRectangle::HitRectangle(Render::Renderer* pRenderer)
-        : HitShape(pRenderer)
+    HitRectangle::HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition)
+        : HitShape(std::move(pPosition))
     {
         m_TestAxes.resize(2);
         m_Corners.resize(4);
@@ -42,26 +35,21 @@ namespace Ignosi::Modules::Physics
         UpdatePrivateVectors();
     }
 
-    void HitRectangle::Rotation(const Radian<float>& value)
+    const std::vector<Vector2<float>>& HitRectangle::Corners()
     {
-        HitShape::Rotation(value);
         UpdatePrivateVectors();
+        return m_Corners;
     }
 
-    void HitRectangle::Origin(const Vector2<float>& value)
+    const std::vector<Vector2<float>>& HitRectangle::TestAxes()
     {
-        HitShape::Origin(value);
         UpdatePrivateVectors();
-    }
-
-    std::span<const float> HitRectangle::VertexData() const
-    {
-        return std::span<const float>(rect_begin, rect_end);
+        return m_TestAxes;
     }
 
     void HitRectangle::UpdatePrivateVectors()
     {
-        Radian<float> rotation = HitShape::Rotation();
+        Radian<float> rotation = HitShape::Rotation().x();
         float         cos_rot  = cos(rotation);
         float         sin_rot  = sin(rotation);
 
@@ -77,9 +65,9 @@ namespace Ignosi::Modules::Physics
         const float x = m_Width / 2.0f;
         const float y = m_Height / 2.0f;
 
-        m_Corners[0] = rotMat * (HitShape::Origin() + Vector2<float>(x, y));
-        m_Corners[1] = rotMat * (HitShape::Origin() + Vector2<float>(x, -y));
-        m_Corners[2] = rotMat * (HitShape::Origin() + Vector2<float>(-x, -y));
-        m_Corners[3] = rotMat * (HitShape::Origin() + Vector2<float>(-x, y));
+        m_Corners[0] = rotMat * (Vector2<float>(HitShape::Origin().x(), HitShape::Origin().y()) + Vector2<float>(x, y));
+        m_Corners[1] = rotMat * (Vector2<float>(HitShape::Origin().x(), HitShape::Origin().y()) + Vector2<float>(x, -y));
+        m_Corners[2] = rotMat * (Vector2<float>(HitShape::Origin().x(), HitShape::Origin().y()) + Vector2<float>(-x, -y));
+        m_Corners[3] = rotMat * (Vector2<float>(HitShape::Origin().x(), HitShape::Origin().y()) + Vector2<float>(-x, y));
     }
 } // namespace Ignosi::Modules::Physics

@@ -116,8 +116,7 @@ namespace Ignosi::Modules
                 return rslt;
             };
 
-            return std::abs(rotAxis.length() - 1.0) > 1e-9 ? createMatrix(rotAxis.normalize(), theta)
-                                                           : createMatrix(rotAxis, theta);
+            return std::abs(rotAxis.length() - 1.0) > 1e-9 ? createMatrix(rotAxis.normalize(), theta) : createMatrix(rotAxis, theta);
         }
 
         static SquareMatrix4x4 rotate_x_init(Radian<T> theta)

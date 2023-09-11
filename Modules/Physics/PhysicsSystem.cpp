@@ -1,9 +1,9 @@
 #include "PhysicsSystem.h"
 
 #include "HitShape.h"
+#include "KinematicData.h"
 #include "Tag.h"
 
-#include <3D/Mesh3D.h>
 #include <LinearAlgebra/Vector2.hpp>
 
 #include <array>
@@ -12,48 +12,42 @@ using namespace std::chrono_literals;
 
 namespace Ignosi::Modules::Physics
 {
-    PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, Render::Renderer* pRenderer)
-        : ECS::System<RigidBody2D>(pRigidBodyPool)
-        , m_pRenderer(pRenderer)
+    PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, ECS::ComponentPool<KinematicData>* pKinematicDataPool)
+        : ECS::System<RigidBody2D, KinematicData>(pRigidBodyPool, pKinematicDataPool)
         , m_SystemTag(ECS::Tag::Create(PhysicsSystem::NAME))
     {
     }
 
     void PhysicsSystem::Update(double dt)
     {
-        float       del_t    = static_cast<float>(dt);
-        auto&       pool     = GetPool<RigidBody2D>();
-        const auto& entities = World()->GetEntitiesByTag(Tag());
-        m_MovingObjects.clear();
-        for (auto& entity : entities)
-        {
-            auto& body = pool.GetComponent(World()->GetEntity(entity));
-            body.Update(del_t);
-            if (body.Velocity() != Vector2<float>{0.0f, 0.0f})
-            {
-                m_MovingObjects.push_back(&body);
-                Vector2<float> pos = body.Position();
-                Vector2<float> vel = body.Velocity();
-                pos.x(pos.x() + vel.x());
-                pos.y(pos.y() + vel.y());
+        float del_t             = static_cast<float>(dt);
+        auto& rigidBodyPool     = GetPool<RigidBody2D>();
+        auto& kinematicDataPool = GetPool<KinematicData>();
 
-                body.Position(pos);
-            }
+        const auto& entities = World()->GetEntitiesByTag(Tag());
+        for (const auto& entity : entities)
+        {
+            auto& kinematicData = kinematicDataPool.GetComponent(World()->GetEntity(entity));
+            kinematicData.Update(dt);
         }
 
-        for (auto& pBody : m_MovingObjects)
+        for (const auto& entity1 : entities)
         {
-
-            for (auto& entity : entities)
+            for (const auto& entity2 : entities)
             {
-                auto& body = pool.GetComponent(World()->GetEntity(entity));
-                if (&body == pBody)
+                if (entity1 == entity2)
                     continue;
 
-                if (CheckCollision(*pBody, body))
+                if (rigidBodyPool.HasComponent(World()->GetEntity(entity1)) && rigidBodyPool.HasComponent(World()->GetEntity(entity2)))
                 {
-                    pBody->CollisionOccurred(body);
-                    body.CollisionOccurred(*pBody);
+                    auto& body1 = rigidBodyPool.GetComponent(World()->GetEntity(entity1));
+                    auto& body2 = rigidBodyPool.GetComponent(World()->GetEntity(entity2));
+
+                    if (CheckCollision(body1, body2))
+                    {
+                        body1.CollisionOccurred(body2);
+                        body2.CollisionOccurred(body1);
+                    }
                 }
             }
         }

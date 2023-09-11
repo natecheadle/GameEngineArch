@@ -1,8 +1,8 @@
 #pragma once
 
 #include "HitShape.h"
+#include "KinematicData.h"
 
-#include <3D/Sprite.h>
 #include <LinearAlgebra/Vector2.hpp>
 #include <Units/Degree.hpp>
 
@@ -18,19 +18,15 @@ namespace Ignosi::Modules::Physics
         std::vector<Vector2<float>> m_Corners;
 
       public:
-        HitCircle(Render::Renderer* pRenderer);
+        HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition);
         ~HitCircle() override = default;
 
         float Radius() const override { return m_Radius; }
         void  Radius(float value) { m_Radius = value; }
 
-        const std::vector<Vector2<float>>& Corners() const override { return m_Corners; }
-        const std::vector<Vector2<float>>& TestAxes() const override { return m_TestAxes; }
+        const std::vector<Vector2<float>>& Corners() override { return m_Corners; }
+        const std::vector<Vector2<float>>& TestAxes() override { return m_TestAxes; }
 
-        std::array<Vector2<float>, 2> ProjectShape(const Vector2<float>& axis) const override;
-
-      protected:
-        std::span<const float> VertexData() const override;
-        Vector2<float>         Scale() const override { return {m_Radius, m_Radius}; }
+        std::array<Vector2<float>, 2> ProjectShape(const Vector2<float>& axis) override;
     };
 } // namespace Ignosi::Modules::Physics

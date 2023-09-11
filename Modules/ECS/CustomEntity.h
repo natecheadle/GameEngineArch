@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ComponentPointer.h"
 #include "EntityPointer.h"
 
 using namespace std::placeholders;
@@ -41,16 +42,11 @@ namespace Ignosi::Modules::ECS
 
       protected:
         template <typename Component>
-        Component* GetComponent()
+        WeakComponentPointer<Component> GetComponent() const
         {
             return m_pEntity->template GetComponent<Component>();
         }
 
-        template <typename Component>
-        const Component* GetComponent() const
-        {
-            return m_pEntity->template GetComponent<Component>();
-        }
         virtual void OnUpdate(double dt) = 0;
     };
 } // namespace Ignosi::Modules::ECS

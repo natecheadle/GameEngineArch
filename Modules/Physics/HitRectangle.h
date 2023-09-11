@@ -1,6 +1,8 @@
 #pragma once
 
+#include "ComponentPointer.h"
 #include "HitShape.h"
+#include "KinematicData.h"
 #include "LinearAlgebra/Vector2.hpp"
 #include "Units/Radian.hpp"
 
@@ -17,7 +19,7 @@ namespace Ignosi::Modules::Physics
         float                       m_Radius{1.0f};
 
       public:
-        HitRectangle(Render::Renderer* pRenderer);
+        HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition);
         ~HitRectangle() override = default;
 
         float Radius() const override { return m_Radius; }
@@ -26,15 +28,8 @@ namespace Ignosi::Modules::Physics
         float Height() const { return m_Height; }
         void  Height(float value);
 
-        void Origin(const Vector2<float>& value) override;
-        void Rotation(const Radian<float>& value) override;
-
-        const std::vector<Vector2<float>>& Corners() const override { return m_Corners; }
-        const std::vector<Vector2<float>>& TestAxes() const override { return m_TestAxes; }
-
-      protected:
-        std::span<const float> VertexData() const override;
-        Vector2<float>         Scale() const override { return {m_Width, m_Height}; }
+        const std::vector<Vector2<float>>& Corners() override;
+        const std::vector<Vector2<float>>& TestAxes() override;
 
       private:
         void UpdatePrivateVectors();

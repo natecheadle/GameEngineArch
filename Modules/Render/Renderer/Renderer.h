@@ -1,5 +1,6 @@
 #pragma once
 
+#include "3D/Camera.h"
 #include "3D/Light_Directional.h"
 #include "3D/Light_Point.h"
 #include "3D/Light_Spotlight.h"
@@ -13,8 +14,6 @@
 #include "VertexBuffer.h"
 
 #include <IWindow.h>
-#include <Job.h>
-#include <Singleton.hpp>
 #include <System.h>
 
 #include <algorithm>
@@ -33,19 +32,14 @@
 
 namespace Ignosi::Modules::Render
 {
-    using VertexBuffer_ptr  = std::unique_ptr<VertexBuffer, std::function<void(VertexBuffer*)>>;
-    using Shader_ptr        = std::unique_ptr<Shader, std::function<void(Shader*)>>;
-    using Texture_ptr       = std::unique_ptr<Texture, std::function<void(Texture*)>>;
-    using ShaderProgram_ptr = std::unique_ptr<ShaderProgram, std::function<void(ShaderProgram*)>>;
+    class Renderer : public ECS::System<Mesh3D, Sprite>
 
-    class Renderer
-        : public ECS::System<Mesh3D, Sprite>
-        , protected Jobs::Job
     {
         std::thread::id                                                  m_RenderThreadID;
         std::mutex                                                       m_QueueMutex;
         std::condition_variable                                          m_QueueCondition;
         std::queue<std::pair<std::promise<void>, std::function<void()>>> m_CommandQueue;
+        std::shared_ptr<Camera>                                          m_pCamera;
 
       protected:
         Renderer(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
@@ -53,51 +47,38 @@ namespace Ignosi::Modules::Render
       public:
         virtual ~Renderer();
 
-        const std::exception& Error() { return Job::GetCaughtException(); }
-        bool                  IsErrored() const { return Job::IsFailed(); }
-        bool                  IsRunning() const { return Job::IsExecuting(); }
-
-        virtual void DrawAllMesh(ShaderProgram* pProgram);
-        virtual void DrawAllSprites(ShaderProgram* pProgram);
-
         virtual GUI::IWindow* Window() const                                        = 0;
         virtual GUI::IWindow* InitializeWindow(const GUI::WindowSize&, std::string) = 0;
 
-        virtual VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
-        virtual VertexBuffer_ptr CreateBuffer(
+        void                           AttachedCamera(std::shared_ptr<Camera> camera) { m_pCamera = std::move(camera); }
+        const std::shared_ptr<Camera>& AttachedCamera() const { return m_pCamera; }
+
+        virtual std::unique_ptr<VertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
+        virtual std::unique_ptr<VertexBuffer> CreateBuffer(
             const VertexDataConfig&        config,
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) = 0;
 
-        virtual Shader_ptr CreateShader(
+        virtual std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
-        virtual Shader_ptr CreateShader(
+        virtual std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
 
-        virtual ShaderProgram_ptr CreateShaderProgram(
+        virtual std::unique_ptr<ShaderProgram> CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
 
-        virtual void              ClearDepthBuffer() = 0;
-        virtual void              ClearColorBuffer() = 0;
-        virtual std::future<void> SwapBuffers()      = 0;
+        virtual void ClearDepthBuffer() = 0;
+        virtual void ClearColorBuffer() = 0;
+        virtual void SwapBuffers()      = 0;
 
-        void ExecuteFunction(std::function<void()> func);
-
-      protected:
-        void              ExecuteJob() final;
-        std::future<void> ExecuteFunctionAsync(std::function<void()> func);
-
-      private:
-        std::pair<std::optional<std::promise<void>>, std::optional<std::function<void()>>> PopFunc();
-        static void ExecuteFunction(std::promise<void>& prom, std::function<void()>& func);
-        void        FlushQueue();
+        void Update(double dt) override;
     };
 } // namespace Ignosi::Modules::Render
