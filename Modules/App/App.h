@@ -1,6 +1,7 @@
+#pragma once
+
 #include <IWindow.h>
-#include <PhysicsSystem.h>
-#include <Renderer/Renderer.h>
+#include <IWorld.h>
 
 #include <cstddef>
 #include <memory>
@@ -9,25 +10,21 @@ namespace Ignosi::Modules::App
 {
     class App
     {
-        GUI::IWindow*           m_pWindow;
-        Render::Renderer*       m_pRenderer;
-        Physics::PhysicsSystem* m_pPhysics;
+        GUI::IWindow*                m_pWindow;
+        std::unique_ptr<ECS::IWorld> m_pWorld;
 
       public:
-        App(Render::Renderer*       pRenderer,
-            const GUI::WindowSize&  window_size,
-            std::string             window_name,
-            Physics::PhysicsSystem* pPhysics = nullptr);
+        App(std::unique_ptr<ECS::IWorld> pWorld);
         ~App() = default;
 
         int  Run();
         void Close();
 
       protected:
-        GUI::IWindow*     GetWindow() const { return m_pWindow; }
-        Render::Renderer* GetRenderer() const { return m_pRenderer; }
-        virtual void      UpdateApp(double dt) = 0;
-        virtual void      Initialize()         = 0;
-        virtual void      Shutdown()           = 0;
+        GUI::IWindow*         GetWindow() const { return m_pWindow; }
+        ECS::IWorld*          GetWorld() const { return m_pWorld.get(); }
+        virtual void          UpdateApp(double dt) = 0;
+        virtual GUI::IWindow* Initialize()         = 0;
+        virtual void          Shutdown()           = 0;
     };
 } // namespace Ignosi::Modules::App

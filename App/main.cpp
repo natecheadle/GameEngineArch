@@ -1,4 +1,5 @@
 #include "ComponentPointer.h"
+#include "IWorld.h"
 #include "Units/AngularAcceleration.hpp"
 
 #include <3D/Camera2D.h>
@@ -71,33 +72,29 @@ class TestAppEntity : public ECS::CustomEntity<Render::Mesh3D, Render::Sprite, P
 
 class TestApp : public App::App
 {
-    std::vector<TestAppEntity>                                                                                m_Cubes;
-    Render::Light_Directional                                                                                 m_DirLight;
-    Render::Light_Spotlight                                                                                   m_SpotLight;
-    Render::Light_Point                                                                                       m_PointLight;
-    std::shared_ptr<Render::Fly_Camera>                                                                       m_pCamera;
-    std::shared_ptr<Render::ShaderProgram>                                                                    m_pShader;
-    std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>> m_pWorld;
-    Render::Renderer*                                                                                         m_pRenderer;
-    Physics::PhysicsSystem*                                                                                   m_pPhysicsSystem;
+    std::vector<TestAppEntity>                                                                m_Cubes;
+    Render::Light_Directional                                                                 m_DirLight;
+    Render::Light_Spotlight                                                                   m_SpotLight;
+    Render::Light_Point                                                                       m_PointLight;
+    std::shared_ptr<Render::Fly_Camera>                                                       m_pCamera;
+    std::shared_ptr<Render::ShaderProgram>                                                    m_pShader;
+    ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>* m_pWorld;
+    Render::Renderer*                                                                         m_pRenderer;
+    Physics::PhysicsSystem*                                                                   m_pPhysicsSystem;
+    GUI::IWindow*                                                                             m_pWindow;
 
   public:
-    TestApp(
-        std::unique_ptr<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>> pWorld,
-        const GUI::WindowSize&                                                                                    window_size,
-        std::string                                                                                               window_name)
-        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(),
-              window_size,
-              std::move(window_name),
-              pWorld->CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>())
-        , m_pWorld(std::move(pWorld))
-        , m_pRenderer(m_pWorld->GetSystem<Render::Renderer>())
-        , m_pPhysicsSystem(m_pWorld->GetSystem<Physics::PhysicsSystem>())
+    TestApp(std::unique_ptr<ECS::IWorld> pWorld, const GUI::WindowSize& window_size, std::string window_name)
+        : App(std::move(pWorld))
     {
+        m_pWorld = dynamic_cast<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>*>(App::GetWorld());
+        m_pRenderer      = m_pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>();
+        m_pPhysicsSystem = m_pWorld->CreateSystem<Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>();
+        m_pWindow        = m_pRenderer->InitializeWindow(window_size, std::move(window_name));
     }
 
   protected:
-    void Initialize() override
+    GUI::IWindow* Initialize() override
     {
         std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
         std::filesystem::path shader_inc_dir = std::filesystem::path(std::string_view(SHADER_DIR));
@@ -156,7 +153,7 @@ class TestApp : public App::App
             m_pWorld->RegisterEntityInSystem(*m_pPhysicsSystem, m_Cubes[i].Entity());
         }
 
-        m_pCamera = std::make_shared<Render::Fly_Camera>(GetWindow());
+        m_pCamera = std::make_shared<Render::Fly_Camera>(m_pWindow);
         m_pRenderer->AttachedCamera(m_pCamera);
 
         m_DirLight.Direction      = {0.0f, 0.0f, -1.0f};
@@ -184,6 +181,8 @@ class TestApp : public App::App
         m_PointLight.Attenuation.Quadratic = 0.32f;
 
         // m_pBackpackModel = std::make_unique<Render::Model3D>(m_pRenderer, backpack_path);
+
+        return m_pWindow;
     }
 
     void Shutdown() override

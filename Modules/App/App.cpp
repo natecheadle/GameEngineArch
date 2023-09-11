@@ -1,18 +1,19 @@
 #include "App.h"
 
+#include "IWorld.h"
+
 #include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <thread>
 
 namespace Ignosi::Modules::App
 {
 
-    App::App(Render::Renderer* pRenderer, const GUI::WindowSize& window_size, std::string window_name, Physics::PhysicsSystem* pPhysics)
-        : m_pRenderer(pRenderer)
-        , m_pWindow(pRenderer->InitializeWindow(window_size, std::move(window_name)))
-        , m_pPhysics(pPhysics)
+    App::App(std::unique_ptr<ECS::IWorld> pWorld)
+        : m_pWorld(std::move(pWorld))
     {
     }
 
@@ -26,22 +27,18 @@ namespace Ignosi::Modules::App
         try
         {
 
-            Initialize();
+            m_pWindow = Initialize();
 
-            double            period{0};
-            std::future<void> swap_future;
+            double period{0};
             while (!m_pWindow->ShouldClose())
             {
                 std::chrono::time_point<std::chrono::high_resolution_clock> begin = std::chrono::high_resolution_clock::now();
-                m_pRenderer->ClearColorBuffer();
-                m_pRenderer->ClearDepthBuffer();
 
                 if (m_pWindow->ShouldClose())
                     break;
 
                 UpdateApp(period);
-
-                m_pRenderer->SwapBuffers();
+                m_pWorld->Update(period);
 
                 std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
                 period                                                          = std::chrono::duration<double>(end - begin).count();

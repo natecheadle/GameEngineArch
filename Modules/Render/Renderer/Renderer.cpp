@@ -22,6 +22,9 @@ namespace Ignosi::Modules::Render
 
     void Renderer::Update(double dt)
     {
+        ClearColorBuffer();
+        ClearDepthBuffer();
+
         m_pCamera->Update(std::chrono::nanoseconds((unsigned long long)(dt * 1e9)));
         auto& meshpool   = GetPool<Mesh3D>();
         auto& spritepool = GetPool<Sprite>();
@@ -53,6 +56,8 @@ namespace Ignosi::Modules::Render
                 sprite.Draw();
             }
         }
+
+        SwapBuffers();
     }
 
 } // namespace Ignosi::Modules::Render

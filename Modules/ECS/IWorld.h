@@ -9,6 +9,8 @@ namespace Ignosi::Modules::ECS
     class IWorld
     {
       public:
+        virtual ~IWorld() = default;
+
         virtual void Update(double dt) = 0;
 
         virtual const std::vector<EntityID>& AllEntities() const                                                   = 0;
