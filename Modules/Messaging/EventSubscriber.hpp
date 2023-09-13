@@ -36,7 +36,7 @@ namespace Ignosi::Modules::Messaging
         bool IsAlive() const { return m_pParent != nullptr; }
 
       private:
-        void Invoke(Args&&... args) const { m_OnEvent(std::forward(args)...); }
+        void Invoke(Args&&... args) const { m_OnEvent(args...); }
         void OnParentDestroyed() { m_pParent = nullptr; }
     };
 } // namespace Ignosi::Modules::Messaging

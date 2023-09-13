@@ -12,6 +12,6 @@ add_library(${PROJECT_NAME} STATIC
     "KinematicData.cpp"
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC Modules_ECS)
+target_link_libraries(${PROJECT_NAME} PUBLIC Modules_ECS Modules_Messaging)
 target_link_libraries(${PROJECT_NAME} PRIVATE  Modules_Generic )
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "EventSubscriber.hpp"
 #include "HitShape.h"
 #include "KinematicData.h"
 
+#include <Event.hpp>
 #include <LinearAlgebra/Vector2.hpp>
 
 #include <algorithm>
@@ -20,7 +22,7 @@ namespace Ignosi::Modules::Physics
         bool                               m_IsFixed{true};
         KinematicData*                     m_pPosition;
 
-        std::function<void(const RigidBody2D& other)> m_OnCollision;
+        Messaging::Event<const RigidBody2D&> m_OnCollisionEvent;
 
         friend PhysicsSystem;
 
@@ -28,10 +30,19 @@ namespace Ignosi::Modules::Physics
         RigidBody2D() = default;
         RigidBody2D(KinematicData* pPosition);
 
+        RigidBody2D(const RigidBody2D& other) = delete;
+        RigidBody2D(RigidBody2D&& other)      = default;
+
+        RigidBody2D& operator=(const RigidBody2D& other) = delete;
+        RigidBody2D& operator=(RigidBody2D&& other)      = default;
+
         void Update(float dt);
 
-        void AttachOnCollision(std::function<void(const RigidBody2D& other)>&& func) { m_OnCollision = std::move(func); }
-        void ClearCallbacks();
+        std::unique_ptr<Messaging::EventSubscriber<const RigidBody2D&>> SubscribeOnCollision(
+            std::function<void(const RigidBody2D& other)> func)
+        {
+            return m_OnCollisionEvent.Subscribe(std::move(func));
+        }
 
         void IsFixed(bool val) { m_IsFixed = val; }
         bool IsFixed() const { return m_IsFixed; }
