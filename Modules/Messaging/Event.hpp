@@ -43,11 +43,6 @@ namespace Ignosi::Modules::Messaging
             });
         }
 
-        friend std::unique_ptr<EventSubscriber<Args...>> operator+=(Event<Args...>& ev, std::function<void(Args...)> onEvent)
-        {
-            return ev.Subscribe(std::move(onEvent));
-        }
-
         void Unsubscribe(EventSubscriber<Args...>* pSubscriber)
         {
             m_Subscribers.execute([&](std::vector<EventSubscriber<Args...>*>& subscribers) {

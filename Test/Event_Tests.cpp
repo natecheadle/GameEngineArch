@@ -58,4 +58,5 @@ namespace Ignosi::Test
         testEvent();
         ASSERT_FALSE(callbackReceived);
     }
+
 } // namespace Ignosi::Test
