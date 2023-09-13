@@ -87,8 +87,8 @@ namespace Ignosi::Test
         auto pRigidBody1 = m_Entities[0]->GetComponent<Physics::RigidBody2D>();
         auto pRigidBody2 = m_Entities[1]->GetComponent<Physics::RigidBody2D>();
 
-        pRigidBody2->AttachOnCollision(onCollision);
-        pRigidBody1->AttachOnCollision(onCollision);
+        auto onCollision2 = pRigidBody2->SubscribeOnCollision(onCollision);
+        auto onCollision1 = pRigidBody1->SubscribeOnCollision(onCollision);
 
         std::unique_ptr<Physics::HitRectangle> pRect1  = std::make_unique<Physics::HitRectangle>(KinematicData1);
         std::unique_ptr<Physics::HitCircle>    pCircle = std::make_unique<Physics::HitCircle>(KinematicData2);

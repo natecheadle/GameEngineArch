@@ -13,12 +13,7 @@ namespace Ignosi::Modules::Physics
 
     void RigidBody2D::CollisionOccurred(const RigidBody2D& other)
     {
-        if (m_OnCollision)
-            m_OnCollision(other);
+        m_OnCollisionEvent(other);
     }
 
-    void RigidBody2D::ClearCallbacks()
-    {
-        m_OnCollision = nullptr;
-    }
 } // namespace Ignosi::Modules::Physics

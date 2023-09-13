@@ -18,6 +18,35 @@ namespace Ignosi::Modules
         {
         }
 
+        MutexProtected(const MutexProtected& other)
+        {
+            std::unique_lock<MUTEX> lock(other.m_Mutex);
+            m_Data = other.m_Data;
+        }
+
+        MutexProtected(MutexProtected&& other)
+        {
+            std::unique_lock<MUTEX> lock(other.m_Mutex);
+            m_Data = std::move(other.m_Data);
+        }
+
+        MutexProtected& operator=(const MutexProtected& other)
+        {
+            if (*this == other)
+                return *this;
+
+            std::unique_lock<MUTEX> lock(other.m_Mutex);
+            m_Data = other.m_Data;
+            return *this;
+        }
+
+        MutexProtected& operator=(MutexProtected&& other)
+        {
+            std::unique_lock<MUTEX> lock(other.m_Mutex);
+            m_Data = std::move(other.m_Data);
+            return *this;
+        }
+
         void execute(std::function<void(LOCKED_ITEM& val)> func)
         {
             std::unique_lock<MUTEX> lock(m_Mutex);
