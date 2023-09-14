@@ -2,7 +2,7 @@
 
 #include "Vector.hpp"
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector4 : public Vector<4, T>
@@ -22,13 +22,8 @@ namespace nate::Modules
         {
         }
 
-        Vector4(T x, T y, T z, T w)
-            : BASE({x, y, z, w})
-        {
-        }
-
-        Vector4(BASE&& other)
-            : BASE(std::move(other))
+        constexpr Vector4(T x, T y, T z, T w) noexcept
+            : Vector<4, T>({x, y, z, w})
         {
         }
 
@@ -39,6 +34,11 @@ namespace nate::Modules
 
         Vector4(const Vector<3, T>& other, T w = 1)
             : BASE({other[0], other[1], other[2], w})
+        {
+        }
+
+        Vector4(const Vector<4, T>& other)
+            : Vector<4, T>(other)
         {
         }
 
@@ -62,4 +62,4 @@ namespace nate::Modules
 
         Vector3<T> ToVector3() const { return Vector3<T>(x(), y(), z()); }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

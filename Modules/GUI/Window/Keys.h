@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
     enum class MouseButton : std::uint16_t
     {
@@ -89,4 +89,4 @@ namespace nate::Modules::GUI
 
         LAST
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

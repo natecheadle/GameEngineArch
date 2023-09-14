@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class ImageFile
     {
@@ -26,4 +26,4 @@ namespace nate::Modules::Render
         const std::filesystem::path& Path() const { return m_Path; }
         double                       AspectRatio() const { return double(m_Width) / double(m_Height); }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

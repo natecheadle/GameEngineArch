@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <limits>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class CursorPosition {
         double m_XPos{0};
         double m_YPos{0};
@@ -29,4 +29,4 @@ namespace nate::Modules::GUI {
         double XPos() const { return m_XPos; }
         double YPos() const { return m_YPos; }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

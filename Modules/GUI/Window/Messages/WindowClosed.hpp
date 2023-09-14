@@ -4,7 +4,7 @@
 
 #include <Message.hpp>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     class WindowClosed : public Messaging::Message<WindowMessages> {
       public:
         WindowClosed()
@@ -12,4 +12,4 @@ namespace nate::Modules::GUI {
         {
         }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

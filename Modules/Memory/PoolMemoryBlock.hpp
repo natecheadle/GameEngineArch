@@ -5,11 +5,12 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <map>
 #include <memory>
 #include <vector>
 
-namespace nate::Modules::Memory
+namespace Ignosi::Modules::Memory
 {
     template <class T>
     class PoolMemoryBlock
@@ -35,19 +36,12 @@ namespace nate::Modules::Memory
         {
             friend PoolMemoryBlock<T>;
 
-            PoolMemoryBlock<T>* m_pPool;
-            size_t              m_PoolIndex;
+            PoolMemoryBlock<T>* m_pPool{nullptr};
+            size_t              m_PoolIndex{std::numeric_limits<size_t>::max()};
 
           public:
-            ~pointer()
-            {
-                if (m_pPool)
-                {
-                    m_pPool->DestroyObject(m_PoolIndex);
-                    m_pPool->UnsubscribeOnDestroy(this);
-                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
-                }
-            }
+            pointer() = default;
+            ~pointer() { reset(); }
 
             pointer(const pointer& other)            = delete;
             pointer& operator=(const pointer& other) = delete;
@@ -76,13 +70,26 @@ namespace nate::Modules::Memory
                 m_pPool     = other.m_pPool;
 
                 other.m_pPool = nullptr;
-                m_pPool->UnsubscribeOnDestroy(&other);
-                m_pPool->SubscribeOnDestroy(this, [this]() { this->OnPoolParentDestroyed(); });
+                if (m_pPool)
+                {
+                    m_pPool->UnsubscribeOnDestroy(&other);
+                    m_pPool->SubscribeOnDestroy(this, [this]() { OnPoolParentDestroyed(); });
 
-                m_pPool->UnsubscribeOnMove(m_PoolIndex);
-                m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                    m_pPool->SubscribeOnMove(m_PoolIndex, [this](size_t newIndex) { OnObjectMoved(newIndex); });
+                }
 
                 return *this;
+            }
+
+            void reset()
+            {
+                if (m_pPool)
+                {
+                    m_pPool->DestroyObject(m_PoolIndex);
+                    m_pPool->UnsubscribeOnDestroy(this);
+                    m_pPool->UnsubscribeOnMove(m_PoolIndex);
+                }
             }
 
             bool IsPoolDestroyed() { return !m_pPool; }
@@ -191,10 +198,7 @@ namespace nate::Modules::Memory
                 return tmp;
             }
 
-            friend bool operator==(const iterator& a, const iterator& b)
-            {
-                return a.m_Index == b.m_Index && a.m_pPool == b.m_pPool;
-            };
+            friend bool operator==(const iterator& a, const iterator& b) { return a.m_Index == b.m_Index && a.m_pPool == b.m_pPool; };
             friend bool operator!=(const iterator& a, const iterator& b) { return !(a == b); };
         };
 
@@ -326,7 +330,7 @@ namespace nate::Modules::Memory
             else if (m_FirstDataIndex > newObjLocation)
             {
                 m_Data[newObjLocation].PreviousObject   = m_Data.size();
-                m_Data[newObjLocation].NextObject       = newObjLocation;
+                m_Data[newObjLocation].NextObject       = m_FirstDataIndex;
                 m_Data[m_FirstDataIndex].PreviousObject = newObjLocation;
                 m_FirstDataIndex                        = newObjLocation;
             }
@@ -335,7 +339,11 @@ namespace nate::Modules::Memory
                 size_t previousObj                    = FindPreviousRealObject(newObjLocation);
                 m_Data[newObjLocation].PreviousObject = previousObj;
                 m_Data[newObjLocation].NextObject     = m_Data[previousObj].NextObject;
-                m_Data[previousObj].NextObject        = newObjLocation;
+                if (m_Data[newObjLocation].NextObject < m_Data.size())
+                {
+                    m_Data[m_Data[newObjLocation].NextObject].PreviousObject = newObjLocation;
+                }
+                m_Data[previousObj].NextObject = newObjLocation;
             }
 
             return newObj;
@@ -474,10 +482,7 @@ namespace nate::Modules::Memory
             return searchI;
         }
 
-        void SubscribeOnDestroy(void* pSub, std::function<void()> callback)
-        {
-            m_OnDestroySubs.insert_or_assign(pSub, std::move(callback));
-        }
+        void SubscribeOnDestroy(void* pSub, std::function<void()> callback) { m_OnDestroySubs.insert_or_assign(pSub, std::move(callback)); }
 
         void UnsubscribeOnDestroy(void* pSub)
         {
@@ -488,10 +493,7 @@ namespace nate::Modules::Memory
             }
         }
 
-        void SubscribeOnMove(size_t sub, std::function<void(size_t)> callback)
-        {
-            m_OnMoveSubs.insert_or_assign(sub, std::move(callback));
-        }
+        void SubscribeOnMove(size_t sub, std::function<void(size_t)> callback) { m_OnMoveSubs.insert_or_assign(sub, std::move(callback)); }
 
         void UnsubscribeOnMove(size_t sub)
         {
@@ -505,4 +507,4 @@ namespace nate::Modules::Memory
 
     template <class T>
     using pool_pointer = typename PoolMemoryBlock<T>::pointer;
-} // namespace nate::Modules::Memory
+} // namespace Ignosi::Modules::Memory

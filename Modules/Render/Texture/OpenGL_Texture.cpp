@@ -6,7 +6,7 @@
 #include <cassert>
 #include <filesystem>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& path, enum TextureUnit unit)
         : Texture(unit)
@@ -102,4 +102,4 @@ namespace nate::Modules::Render
         return GL_TEXTURE0;
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

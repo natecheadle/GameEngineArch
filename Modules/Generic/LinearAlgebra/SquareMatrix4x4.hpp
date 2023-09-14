@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LinearAlgebra/Vector.hpp"
 #include "SquareMatrix.hpp"
 #include "Units/Radian.hpp"
 #include "Vector3.hpp"
@@ -7,7 +8,7 @@
 
 #include <stdexcept>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T = float>
     class SquareMatrix4x4 : public SquareMatrix<4, T>
@@ -115,8 +116,7 @@ namespace nate::Modules
                 return rslt;
             };
 
-            return std::abs(rotAxis.length() - 1.0) > 1e-9 ? createMatrix(rotAxis.normalize(), theta)
-                                                           : createMatrix(rotAxis, theta);
+            return std::abs(rotAxis.length() - 1.0) > 1e-9 ? createMatrix(rotAxis.normalize(), theta) : createMatrix(rotAxis, theta);
         }
 
         static SquareMatrix4x4 rotate_x_init(Radian<T> theta)
@@ -268,23 +268,4 @@ namespace nate::Modules
         }
     };
 
-    template <class T>
-    Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector4<T>& rhs)
-    {
-        Vector4<T> rslt;
-        for (size_t i = 0; i < Vector4<T>::size(); ++i)
-        {
-            for (size_t j = 0; j < Vector4<T>::size(); ++j)
-            {
-                rslt[i] += lhs[j][i] * rhs[i];
-            }
-        }
-        return rslt;
-    }
-
-    template <class T>
-    Vector4<T> operator*(const SquareMatrix4x4<T>& lhs, const Vector3<T>& rhs)
-    {
-        return lhs * Vector4<T>(rhs);
-    }
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

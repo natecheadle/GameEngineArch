@@ -13,8 +13,8 @@
 #include <future>
 #include <vector>
 
-using namespace nate::Modules;
-namespace nate::Test
+using namespace Ignosi::Modules;
+namespace Ignosi::Test
 {
     namespace
     {
@@ -187,6 +187,58 @@ namespace nate::Test
         myObject->Validate(10, *myObject);
         myObject1->Validate(40, *myObject1);
         myObject2->Validate(50, *myObject2);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockOutOfOrderCreateDelete)
+    {
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(8);
+
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10);
+
+        myObject->Validate(10, *myObject);
+
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject1 = memBlock.CreateObject<size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject2 = memBlock.CreateObject<size_t>(30);
+        myObject2->Validate(30, *myObject2);
+
+        ASSERT_EQ(3, memBlock.UsedSize());
+
+        myObject1.reset();
+
+        myObject1 = memBlock.CreateObject<size_t>(40);
+        myObject1->Validate(40, *myObject1);
+        ASSERT_EQ(3, memBlock.UsedSize());
+
+        myObject->Validate(10, *myObject);
+        myObject1->Validate(40, *myObject1);
+        myObject2->Validate(30, *myObject2);
+    }
+
+    TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryBlockCreateDeleteFirstObject)
+    {
+        Memory::PoolMemoryBlock<TestObject<2>> memBlock(8);
+
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject = memBlock.CreateObject<size_t>(10);
+
+        myObject->Validate(10, *myObject);
+
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject1 = memBlock.CreateObject<size_t>(20);
+        myObject1->Validate(20, *myObject1);
+        Memory::PoolMemoryBlock<TestObject<2>>::pointer myObject2 = memBlock.CreateObject<size_t>(30);
+        myObject2->Validate(30, *myObject2);
+
+        ASSERT_EQ(3, memBlock.UsedSize());
+
+        myObject.reset();
+
+        myObject = memBlock.CreateObject<size_t>(40);
+        myObject->Validate(40, *myObject);
+        ASSERT_EQ(3, memBlock.UsedSize());
+
+        myObject->Validate(40, *myObject);
+        myObject1->Validate(20, *myObject1);
+        myObject2->Validate(30, *myObject2);
     }
 
     TEST(StaticMemoryBlock_Tests, ValidatePoolMemoryExceedSize)
@@ -557,4 +609,4 @@ namespace nate::Test
 
         ASSERT_EQ(0, memBlock.UsedSize());
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

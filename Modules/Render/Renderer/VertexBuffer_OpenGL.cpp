@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     VertexBuffer_OpenGL::VertexBuffer_OpenGL(
         const VertexDataConfig&        config,
@@ -121,4 +121,4 @@ namespace nate::Modules::Render
         default: assert(false); return 0;
         }
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

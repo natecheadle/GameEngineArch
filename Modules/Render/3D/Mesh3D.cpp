@@ -1,5 +1,6 @@
 #include "Mesh3D.h"
 
+#include "KinematicData.h"
 #include "Renderer/Renderer.h"
 #include "Shader/ShaderProgram.h"
 
@@ -10,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     const VertexData Mesh3D::m_CubePoints[] = {
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {{0.0f, 0.0f}}},
@@ -52,25 +53,33 @@ namespace nate::Modules::Render
     };
 
     Mesh3D::Mesh3D(
-        Renderer*                      pRenderer,
-        const VertexDataConfig&        config,
-        std::span<const float>         vertexes,
-        std::span<const std::uint32_t> indeces)
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes,
+        std::span<const std::uint32_t>                    indeces)
         : m_pRenderer(pRenderer)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes, indeces))
     {
     }
 
-    Mesh3D::Mesh3D(Renderer* pRenderer, const VertexDataConfig& config, std::span<const float> vertexes)
+    Mesh3D::Mesh3D(
+        Renderer*                                         pRenderer,
+        ECS::WeakComponentPointer<Physics::KinematicData> pPosition,
+        const VertexDataConfig&                           config,
+        std::span<const float>                            vertexes)
         : m_pRenderer(pRenderer)
+        , m_pPosition(std::move(pPosition))
         , m_pBuffer(pRenderer->CreateBuffer(config, vertexes))
     {
     }
 
-    Mesh3D Mesh3D::CreateCube(Renderer* pRenderer)
+    Mesh3D Mesh3D::CreateCube(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
     {
         return Mesh3D(
             pRenderer,
+            std::move(pPosition),
             VertexData::describe(),
             std::span<const float>(
                 reinterpret_cast<const float*>(m_CubePoints),
@@ -79,15 +88,8 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Mesh3D::ModelMatrix() const
     {
-        if (m_Rotation == Vector3<Radian<float>>(0.0, 0.0, 0.0) && m_Origin == Vector3<float>(0.0, 0.0, 0.0) &&
-            m_Scale == Vector3<float>(1.0, 1.0, 1.0))
-        {
-            return SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>();
-        }
-
-        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_Origin));
-        rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
-        rslt *= SquareMatrix4x4<float>::scale_init(m_Scale);
+        SquareMatrix4x4<float> rslt(SquareMatrix4x4<float>::translate_init(m_pPosition->Position()));
+        rslt *= SquareMatrix4x4<float>::rotate_zyx_init(m_pPosition->Angle());
         return rslt;
     }
 
@@ -99,28 +101,29 @@ namespace nate::Modules::Render
         return norm.to_3x3();
     }
 
-    void Mesh3D::Draw(ShaderProgram* pShader)
-    {
-        pShader->SetShaderVar("model", ModelMatrix());
-        pShader->SetShaderVar("norm_mat", NormalMatrix());
-
-        Draw();
-    }
-
     void Mesh3D::Draw()
     {
-        auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
-            if (texs)
+        if (m_pShader)
+        {
+            m_pShader->SetShaderVar("model", ModelMatrix());
+            m_pShader->SetShaderVar("norm_mat", NormalMatrix());
+            if (m_pMaterial)
             {
-                texs->Activate();
-                texs->Bind();
+                m_pShader->SetShaderVar("material", *m_pMaterial);
+                auto activeTexture = [](const std::shared_ptr<Texture>& texs) {
+                    if (texs)
+                    {
+                        texs->Activate();
+                        texs->Bind();
+                    }
+                };
+                activeTexture(m_pMaterial->Diffuse);
+                activeTexture(m_pMaterial->Specular);
+                activeTexture(m_pMaterial->Height);
+                activeTexture(m_pMaterial->Normal);
             }
-        };
-        activeTexture(m_pMaterial->Diffuse);
-        activeTexture(m_pMaterial->Specular);
-        activeTexture(m_pMaterial->Height);
-        activeTexture(m_pMaterial->Normal);
+        }
 
         m_pBuffer->Draw();
     }
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

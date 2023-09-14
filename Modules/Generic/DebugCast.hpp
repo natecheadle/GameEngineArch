@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename D_T, typename B_T>
     D_T DebugCast(B_T pBase)
@@ -15,4 +15,4 @@ namespace nate::Modules
         return reinterpret_cast<D_T>(pBase);
 #endif
     }
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

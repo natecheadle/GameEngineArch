@@ -2,7 +2,7 @@
 
 #include "Vector.hpp"
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector2 : public Vector<2, T>
@@ -10,25 +10,25 @@ namespace nate::Modules
         using BASE = Vector<2, T>;
 
       public:
-        Vector2() noexcept = default;
+        constexpr Vector2() noexcept = default;
 
-        Vector2(T x, T y)
+        constexpr Vector2(const BASE& other)
+            : BASE(other)
+        {
+        }
+
+        constexpr Vector2(T x, T y) noexcept
             : BASE({x, y})
         {
         }
 
-        Vector2(T val)
+        constexpr Vector2(T val)
             : BASE(val)
         {
         }
 
-        Vector2(std::initializer_list<T> vals) noexcept
+        constexpr Vector2(std::initializer_list<T> vals) noexcept
             : BASE(std::move(vals))
-        {
-        }
-
-        Vector2(BASE&& val)
-            : BASE(std::move(val))
         {
         }
 
@@ -38,10 +38,25 @@ namespace nate::Modules
         Vector2& operator=(const Vector2& other) noexcept = default;
         Vector2& operator=(Vector2&& other) noexcept      = default;
 
-        T    x() const { return BASE::at(0); }
-        void x(T val) { BASE::at(0) = val; }
+        constexpr T    x() const { return Vector<2, T>::at(0U); }
+        constexpr void x(T val) { Vector<2, T>::at(0U) = val; }
 
-        T    y() const { return BASE::at(1); }
-        void y(T val) { BASE::at(1) = val; }
+        constexpr T    y() const { return Vector<2, T>::at(1U); }
+        constexpr void y(T val) { Vector<2, T>::at(1U) = val; }
+
+        Vector2<T> perp() const
+        {
+            Vector2<T> perp(T(1), T(1));
+            if (x() != T(0))
+            {
+                perp[0] = -y() / x();
+            }
+            else
+            {
+                perp[1] = -x() / y();
+            }
+
+            return perp;
+        }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

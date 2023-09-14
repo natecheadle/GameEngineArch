@@ -7,7 +7,7 @@
 #include <iterator>
 #include <mutex>
 
-namespace nate::Modules::Memory {
+namespace Ignosi::Modules::Memory {
     template <std::uint8_t* BEGIN, size_t SIZE, typename MUTEX = NullMutex>
     class StaticLinearMemoryBlock {
       private:
@@ -57,4 +57,4 @@ namespace nate::Modules::Memory {
         size_t PrivUsedSize() { return std::distance(m_InitialLoc, m_CurrentLoc); }
         size_t PrivRemainingSize() { return std::distance(m_CurrentLoc, END); }
     };
-} // namespace nate::Modules::Memory
+} // namespace Ignosi::Modules::Memory

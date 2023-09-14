@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class OpenGL_Shader : public Shader
     {
@@ -34,4 +34,4 @@ namespace nate::Modules::Render
         void ID(unsigned int val) { m_ID = val; }
         void Compile(const std::vector<std::filesystem::path>& inc_paths);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

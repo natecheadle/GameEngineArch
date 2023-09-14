@@ -3,7 +3,7 @@
 #include <exception>
 #include <mutex>
 
-namespace nate::Modules::Jobs
+namespace Ignosi::Modules::Jobs
 {
     Job::~Job()
     {
@@ -59,4 +59,4 @@ namespace nate::Modules::Jobs
             m_YieldCondition.wait_for(lock, std::chrono::milliseconds(10));
         }
     }
-} // namespace nate::Modules::Jobs
+} // namespace Ignosi::Modules::Jobs

@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Fly_Camera : public Camera
     {
@@ -104,4 +104,4 @@ namespace nate::Modules::Render
 
         void ExecuteKeyMappings(const GUI::KeyStateMap& keyStates);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

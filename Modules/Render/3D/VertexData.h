@@ -5,7 +5,7 @@
 #include <LinearAlgebra/Vector2.hpp>
 #include <LinearAlgebra/Vector3.hpp>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     struct VertexData
     {
@@ -31,4 +31,4 @@ namespace nate::Modules::Render
     };
 
     static_assert(sizeof(VertexData) == sizeof(float) * 14, "VertexData must be tightly packed");
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

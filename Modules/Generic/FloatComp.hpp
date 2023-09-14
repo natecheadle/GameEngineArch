@@ -4,7 +4,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T, typename... Args>
     T max(T a, T b, Args... args)
@@ -28,4 +28,4 @@ namespace nate::Modules
         }
         return lhs == rhs;
     }
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

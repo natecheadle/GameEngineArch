@@ -14,7 +14,7 @@
 #include <cmath>
 #include <functional>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Camera
     {
@@ -57,4 +57,4 @@ namespace nate::Modules::Render
       protected:
         const GUI::IWindow* Window() const { return m_pWindow; }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <typename T>
     class Vector3 : public Vector<3, T>
@@ -14,17 +14,22 @@ namespace nate::Modules
       public:
         Vector3() noexcept = default;
 
-        Vector3(T x, T y, T z) noexcept
+        constexpr Vector3(T x, T y, T z) noexcept
             : BASE({x, y, z})
         {
         }
 
-        Vector3(const Vector<3, T>& other) noexcept
+        constexpr Vector3(std::initializer_list<T> vals) noexcept
+            : BASE(std::move(vals))
+        {
+        }
+
+        constexpr Vector3(const Vector<3, T>& other) noexcept
             : BASE(other)
         {
         }
 
-        Vector3(T val)
+        constexpr Vector3(T val)
             : Vector<3, T>(val)
         {
         }
@@ -65,17 +70,5 @@ namespace nate::Modules
 
             return rslt;
         }
-
-        Vector3 normalize() const
-        {
-            Vector3 rslt(*this);
-            return rslt / BASE::magnitude();
-        }
-
-        Vector3& normalize_this()
-        {
-            *this /= BASE::magnitude();
-            return *this;
-        }
     };
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

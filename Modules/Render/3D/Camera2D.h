@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Camera2D : public Camera
     {
@@ -76,4 +76,4 @@ namespace nate::Modules::Render
 
         void ExecuteKeyMappings(const GUI::KeyStateMap& keyStates);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

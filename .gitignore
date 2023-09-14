@@ -13,3 +13,7 @@ bin
 CMakeSettings.json
 *.bin
 .DS_Store
+
+#python
+.venv
+*.ipynb

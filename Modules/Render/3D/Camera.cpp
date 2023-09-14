@@ -11,7 +11,7 @@
 #include <cassert>
 #include <chrono>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     Camera::Camera(GUI::IWindow* pWindow)
         : m_pWindow(pWindow)
@@ -27,8 +27,8 @@ namespace nate::Modules::Render
 
     SquareMatrix4x4<float> Camera::ViewPerspective() const
     {
-        auto right = m_Direction.cross(m_WorldUp).normalize_this();
-        auto up    = right.cross(m_Direction).normalize_this();
+        Vector3<float> right = m_Direction.cross(m_WorldUp).normalize_this();
+        auto           up    = right.cross(m_Direction).normalize_this();
         return SquareMatrix4x4<float>::lookat(m_Position, m_Position + m_Direction, up);
     }
 
@@ -64,4 +64,4 @@ namespace nate::Modules::Render
         m_Position += value;
     }
 
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

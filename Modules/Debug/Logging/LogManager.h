@@ -17,7 +17,7 @@
 #include <memory>
 #include <string>
 
-namespace nate::Modules::Debug::Logging
+namespace Ignosi::Modules::Debug::Logging
 {
     class LogManager : public ILogManager
     {
@@ -69,4 +69,4 @@ namespace nate::Modules::Debug::Logging
       private:
         std::list<std::unique_ptr<LogBuffer>>::iterator GetBufferLogger(ILogBuffer* pLogger);
     };
-} // namespace nate::Modules::Debug::Logging
+} // namespace Ignosi::Modules::Debug::Logging

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
     class WindowSize
     {
@@ -9,7 +9,7 @@ namespace nate::Modules::GUI
 
       public:
         WindowSize() = default;
-        WindowSize(int width, int height)
+        constexpr WindowSize(int width, int height)
             : m_Width(width)
             , m_Height(height)
         {
@@ -29,4 +29,4 @@ namespace nate::Modules::GUI
 
         float AspectRatio() const { return float(m_Width) / float(m_Height); }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

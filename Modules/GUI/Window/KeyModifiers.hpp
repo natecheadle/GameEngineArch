@@ -5,7 +5,7 @@
 #include <array>
 #include <bitset>
 
-namespace nate::Modules::GUI {
+namespace Ignosi::Modules::GUI {
     enum class KeyModifier
     {
         Shift,
@@ -58,4 +58,4 @@ namespace nate::Modules::GUI {
             return (m_Modifiers.to_ulong() & other.m_Modifiers.to_ulong()) != 0;
         }
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

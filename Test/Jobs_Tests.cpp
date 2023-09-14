@@ -7,7 +7,7 @@
 #include <thread>
 #include <variant>
 
-namespace nate::Test
+namespace Ignosi::Test
 {
 
     class TestJob : public Modules::Jobs::Job
@@ -120,4 +120,4 @@ namespace nate::Test
         testJob.Start();
         ASSERT_TRUE(testJob.IsExecuting());
     }
-} // namespace nate::Test
+} // namespace Ignosi::Test

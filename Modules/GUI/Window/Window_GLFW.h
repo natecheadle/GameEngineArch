@@ -17,7 +17,7 @@
 #include <mutex>
 
 typedef struct GLFWwindow GLFWwindow;
-namespace nate::Modules::GUI
+namespace Ignosi::Modules::GUI
 {
     class Window_GLFW : public IWindow
     {
@@ -103,4 +103,4 @@ namespace nate::Modules::GUI
         static KeyModifiers TranslateKeyMods(int mods);
         static MouseButton  TranslateMouseButton(int button);
     };
-} // namespace nate::Modules::GUI
+} // namespace Ignosi::Modules::GUI

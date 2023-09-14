@@ -11,7 +11,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-namespace nate::Modules
+namespace Ignosi::Modules
 {
     template <size_t SIZE, typename T = float>
     class SquareMatrix
@@ -230,6 +230,19 @@ namespace nate::Modules
             return rslt;
         }
 
+        friend Vector<SIZE, T> operator*(const SquareMatrix<SIZE, T>& lhs, const Vector<SIZE, T>& rhs)
+        {
+            Vector<SIZE, T> rslt;
+            for (size_t i = 0; i < SIZE; ++i)
+            {
+                for (size_t j = 0; j < SIZE; ++j)
+                {
+                    rslt[i] += lhs[j][i] * rhs[i];
+                }
+            }
+            return rslt;
+        }
+
         friend SquareMatrix& operator*=(SquareMatrix& lhs, T rhs)
         {
             for (size_t i = 0; i < SIZE; ++i)
@@ -381,4 +394,4 @@ namespace nate::Modules
 
     template <typename T = float>
     using SquareMatrix3x3 = SquareMatrix<3, T>;
-} // namespace nate::Modules
+} // namespace Ignosi::Modules

@@ -4,7 +4,7 @@
 #include <cassert>
 #include <chrono>
 
-namespace nate::Modules {
+namespace Ignosi::Modules {
     class DebugMutex {
 #ifdef DEBUG
         std::atomic<bool> m_FakeMutex;
@@ -45,4 +45,4 @@ namespace nate::Modules {
             return try_lock();
         }
     };
-}; // namespace nate::Modules
+}; // namespace Ignosi::Modules

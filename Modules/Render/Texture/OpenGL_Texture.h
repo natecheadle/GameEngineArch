@@ -2,7 +2,7 @@
 
 #include "Texture.h"
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class OpenGL_Texture : public Texture
     {
@@ -30,4 +30,4 @@ namespace nate::Modules::Render
       private:
         static unsigned int TranslateTextureUnit(enum TextureUnit unit);
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

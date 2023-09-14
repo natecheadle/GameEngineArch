@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class VertexBuffer
     {
@@ -14,4 +14,4 @@ namespace nate::Modules::Render
 
         virtual void Draw() = 0;
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

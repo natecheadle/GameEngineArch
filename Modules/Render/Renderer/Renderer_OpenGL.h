@@ -3,77 +3,74 @@
 #include "../3D/Mesh3D.h"
 #include "Renderer.h"
 #include "Renderer/VertexBuffer.h"
+#include "Shader/Shader.h"
+#include "Shader/ShaderProgram.h"
+#include "Tag.h"
+#include "Texture/Texture.h"
 
 #include <Window_GLFW.h>
 
 #include <memory>
+#include <string_view>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
 
     class Renderer_OpenGL : public Renderer
     {
         std::unique_ptr<GUI::Window_GLFW> m_pWin;
+        ECS::Tag                          m_Tag;
+        static constexpr std::string_view NAME = "Renderer_OpenGL";
 
       public:
-        Renderer_OpenGL(Memory::PoolMemoryBlock<Mesh3D>* pMeshPool, Memory::PoolMemoryBlock<Sprite>* pSpritePool);
+        Renderer_OpenGL(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool);
 
         ~Renderer_OpenGL() override;
 
         GUI::IWindow* Window() const override { return m_pWin.get(); }
 
-        GUI::IWindow* Initialize(const GUI::WindowSize& size, std::string name) override;
+        GUI::IWindow* InitializeWindow(const GUI::WindowSize& size, std::string name) override;
 
-        VertexBuffer_ptr CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) override;
-        VertexBuffer_ptr CreateBuffer(
+        std::unique_ptr<VertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) override;
+        std::unique_ptr<VertexBuffer> CreateBuffer(
             const VertexDataConfig&        config,
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) override;
 
-        Shader_ptr CreateShader(
+        std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
-        Shader_ptr CreateShader(
+        std::unique_ptr<Shader> CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
 
-        ShaderProgram_ptr CreateShaderProgram(
+        std::unique_ptr<ShaderProgram> CreateShaderProgram(
             const Shader* pFragmentShader,
             const Shader* pGeometryShader,
             const Shader* pVertexShader) final;
 
-        Texture_ptr CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
-        Texture_ptr CreateTexture(const ImageFile& image, TextureUnit unit) final;
+        std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
+        std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit) final;
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
         void SwapBuffers() override;
+
+        std::string_view Name() const override { return NAME; }
+        std::uint32_t    Priority() const override { return 32; }
+        const ECS::Tag&  Tag() const override { return m_Tag; }
 
       private:
         static bool Validate(void* pVoid);
 
         void OnWindowResized(const GUI::WindowMessage* pMessage);
 
-        void Destroy(VertexBuffer* pObj);
-        void Destroy(Shader* pShader);
-        void Destroy(Texture* pTex);
-        void Destroy(ShaderProgram* pProgram);
-
         template <class T>
         void SetShaderVar_T(ShaderProgram* pShader, const std::string& name, const T& value)
         {
             assert(pShader);
-            ExecuteFunction([&]() -> void { pShader->SetShaderVar(name, value); });
-        }
-
-        template <class T>
-        void DeleteObj(T* pObj)
-        {
-            if (Validate(pObj))
-            {
-                ExecuteFunction([pObj]() { delete pObj; });
-            }
+            pShader->SetShaderVar(name, value);
         }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render

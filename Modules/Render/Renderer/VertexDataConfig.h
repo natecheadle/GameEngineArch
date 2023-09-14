@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class VertexDataConfig
     {
@@ -92,4 +92,4 @@ namespace nate::Modules::Render
             return size;
         }
     };
-} // namespace nate::Modules::Render
+} // namespace Ignosi::Modules::Render
