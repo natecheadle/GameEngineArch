@@ -71,7 +71,8 @@ namespace Ignosi::Modules::ECS
             return m_pWorld->m_Entities[m_EntityID.ID];
         }
 
-        void reset()
+        World<ComponentTypes...>* World() const { return m_pWorld; }
+        void                      reset()
         {
             if (m_pWorld && m_EntityID.ID < m_pWorld->m_Entities.size())
                 m_pWorld->DestroyEntity(m_EntityID);

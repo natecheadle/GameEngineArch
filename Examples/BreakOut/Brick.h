@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BreakOutEntity.h"
-#include "Physics/RigidBody2D.h"
+#include "Renderer/Renderer.h"
 
 #include <utility>
 
-namespace nate::BreakOut
+namespace Ignosi::BreakOut
 {
     enum class BrickType
     {
@@ -15,15 +15,13 @@ namespace nate::BreakOut
         Green    = 3,
     };
 
-    class Brick : public BreakOutEntity
+    class Brick : public CustomBreakOutEntity
     {
-        BrickType m_Type;
+        BrickType                                                                                  m_Type;
+        std::unique_ptr<Modules::Messaging::EventSubscriber<const Modules::Physics::RigidBody2D&>> m_Subscription;
 
       public:
-        Brick(
-            Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
-            Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
-
+        Brick(BreakOutEntityPointer&& entity, Modules::Render::Renderer* pRenderer);
         ~Brick();
 
         Brick(Brick&& other);
@@ -32,24 +30,22 @@ namespace nate::BreakOut
         BrickType Type() const { return m_Type; }
         void      Type(BrickType val) { m_Type = val; }
 
-        void                           Position(const Modules::Vector2<float>& pos);
-        const Modules::Vector2<float>& Position() const { return Body().Position(); }
-
-        const Modules::Vector2<float>& HitBox() const { return Body().HitBox(); }
-        void                           HitBox(const Modules::Vector2<float>& val) { Body().HitBox(val); }
-
-        void Draw(Modules::Render::ShaderProgram* pProgram) { Sprite().Draw(pProgram); }
-
-      private:
-        Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
-        const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
-
-        Modules::Physics::RigidBody2D&       Body() { return BreakOutEntity::Get<Modules::Physics::RigidBody2D>(); }
-        const Modules::Physics::RigidBody2D& Body() const
+        Modules::ECS::WeakComponentPointer<Modules::Physics::KinematicData> KinematicData() const
         {
-            return BreakOutEntity::Get<Modules::Physics::RigidBody2D>();
+            return GetComponent<Modules::Physics::KinematicData>();
         }
 
+        Modules::ECS::WeakComponentPointer<Modules::Render::Sprite> Sprite() const { return GetComponent<Modules::Render::Sprite>(); }
+
+        Modules::ECS::WeakComponentPointer<Modules::Physics::RigidBody2D> Body() const
+        {
+            return GetComponent<Modules::Physics::RigidBody2D>();
+        }
+
+      protected:
+        void OnUpdate(double dt) override {}
+
+      private:
         void OnCollision(const Modules::Physics::RigidBody2D& other);
     };
-} // namespace nate::BreakOut
+} // namespace Ignosi::BreakOut

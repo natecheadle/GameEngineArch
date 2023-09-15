@@ -4,7 +4,7 @@
 
 namespace Ignosi::Modules::Physics
 {
-    RigidBody2D::RigidBody2D(KinematicData* pPosition)
+    RigidBody2D::RigidBody2D(ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
         : m_pPosition(pPosition)
     {
     }

@@ -1,34 +1,37 @@
 #pragma once
 
 #include "BreakOutEntity.h"
-#include "Entity.h"
-#include "Physics/RigidBody2D.h"
+
+#include <World.h>
 
 #include <utility>
 
-namespace nate::BreakOut
+namespace Ignosi::BreakOut
 {
-    class Wall : public Modules::ECS::Entity<Modules::Physics::RigidBody2D>
+    class Wall : CustomBreakOutEntity
     {
-        using BASE = Modules::ECS::Entity<Modules::Physics::RigidBody2D>;
-
       public:
-        Wall(Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body)
-            : BASE(std::move(body))
+        Wall(BreakOutEntityPointer&& entity)
+            : CustomBreakOutEntity(std::move(entity))
         {
+            World()->AddComponent<Modules::Physics::KinematicData>(Entity());
+            World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
         }
 
         Wall(Wall&& other)            = default;
         Wall& operator=(Wall&& other) = default;
 
-        void                           Position(const Modules::Vector2<float>& pos) { Body().Position(pos); }
-        const Modules::Vector2<float>& Position() const { return Body().Position(); }
+        Modules::ECS::WeakComponentPointer<Modules::Physics::KinematicData> KinematicData() const
+        {
+            return GetComponent<Modules::Physics::KinematicData>();
+        }
 
-        const Modules::Vector2<float>& HitBox() const { return Body().HitBox(); }
-        void                           HitBox(const Modules::Vector2<float>& val) { Body().HitBox(val); }
+        Modules::ECS::WeakComponentPointer<Modules::Physics::RigidBody2D> Body() const
+        {
+            return GetComponent<Modules::Physics::RigidBody2D>();
+        }
 
-      private:
-        Modules::Physics::RigidBody2D&       Body() { return BASE::Get<Modules::Physics::RigidBody2D>(); }
-        const Modules::Physics::RigidBody2D& Body() const { return BASE::Get<Modules::Physics::RigidBody2D>(); }
+      protected:
+        void OnUpdate(double dt) override {}
     };
-} // namespace nate::BreakOut
+} // namespace Ignosi::BreakOut

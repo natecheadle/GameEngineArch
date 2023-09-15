@@ -1,24 +1,32 @@
 #pragma once
 
 #include "BreakOutEntity.h"
+#include "KinematicData.h"
 
-namespace nate::BreakOut
+#include <3D/Sprite.h>
+#include <World.h>
+
+namespace Ignosi::BreakOut
 {
-    class Background : Modules::ECS::Entity<Modules::Render::Sprite>
+    class Background : public CustomBreakOutEntity
     {
       public:
-        Background(Modules::Memory::pool_pointer<Modules::Render::Sprite>&& val)
-            : Modules::ECS::Entity<Modules::Render::Sprite>(std::move(val))
+        Background(BreakOutEntityPointer&& val, Modules::Render::Renderer* pRenderer, float aspectRatio)
+            : CustomBreakOutEntity(std::move(val))
         {
+            World()->AddComponent<Modules::Physics::KinematicData>(Entity());
+            World()->AddComponent<Modules::Render::Sprite>(
+                Entity(),
+                Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>(), aspectRatio));
         }
 
-        Modules::Render::Sprite& Sprite()
+        Modules::ECS::WeakComponentPointer<Modules::Render::Sprite> Sprite() const { return GetComponent<Modules::Render::Sprite>(); }
+        Modules::ECS::WeakComponentPointer<Modules::Physics::KinematicData> KinematicData() const
         {
-            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
+            return GetComponent<Modules::Physics::KinematicData>();
         }
-        const Modules::Render::Sprite& Sprite() const
-        {
-            return Modules::ECS::Entity<Modules::Render::Sprite>::Get<Modules::Render::Sprite>();
-        }
+
+      protected:
+        void OnUpdate(double dt) override {}
     };
-} // namespace nate::BreakOut
+} // namespace Ignosi::BreakOut

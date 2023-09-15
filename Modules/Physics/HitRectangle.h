@@ -20,6 +20,7 @@ namespace Ignosi::Modules::Physics
 
       public:
         HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition);
+        HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition, float width, float height);
         ~HitRectangle() override = default;
 
         float Radius() const override { return m_Radius; }

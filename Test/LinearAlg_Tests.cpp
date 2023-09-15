@@ -29,11 +29,7 @@ namespace Ignosi::Test
       public:
         SquareMatrix4x4<float> test;
         MatrixTests()
-            : test(
-                  {{{{{1.0, 2.0, 3.0, 4.0}},
-                     {{5.0, 6.0, 7.0, 8.0}},
-                     {{9.0, 10.0, 11.0, 12.0}},
-                     {{13.0, 14.0, 15.0, 16.0}}}}})
+            : test({{{{{1.0, 2.0, 3.0, 4.0}}, {{5.0, 6.0, 7.0, 8.0}}, {{9.0, 10.0, 11.0, 12.0}}, {{13.0, 14.0, 15.0, 16.0}}}}})
         {
         }
 
@@ -78,18 +74,14 @@ namespace Ignosi::Test
     TEST_F(MatrixTests, ValidateAddition)
     {
         SquareMatrix4x4<float> rslt{
-            {{{{2.0, 4.0, 6.0, 8.0}},
-              {{10.0, 12.0, 14.0, 16.0}},
-              {{18.0, 20.0, 22.0, 24.0}},
-              {{26.0, 28.0, 30.0, 32.0}}}}};
+            {{{{2.0, 4.0, 6.0, 8.0}}, {{10.0, 12.0, 14.0, 16.0}}, {{18.0, 20.0, 22.0, 24.0}}, {{26.0, 28.0, 30.0, 32.0}}}}};
 
         ASSERT_EQ(rslt, test + test);
     }
 
     TEST_F(MatrixTests, ValidateSubtraction)
     {
-        SquareMatrix4x4<float> rslt{
-            {{{{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}}}};
+        SquareMatrix4x4<float> rslt{{{{{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}}}};
 
         ASSERT_EQ(rslt, test - test);
     }
@@ -118,8 +110,7 @@ namespace Ignosi::Test
 
     TEST_F(MatrixTests, ValidateIdentity)
     {
-        SquareMatrix4x4<float> rslt{
-            {{{{1.0, 0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0, 0.0}}, {{0.0, 0.0, 1.0, 0.0}}, {{0.0, 0.0, 0.0, 1.0}}}}};
+        SquareMatrix4x4<float> rslt{{{{{1.0, 0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0, 0.0}}, {{0.0, 0.0, 1.0, 0.0}}, {{0.0, 0.0, 0.0, 1.0}}}}};
         ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
     }
 
@@ -133,7 +124,7 @@ namespace Ignosi::Test
     TEST_F(MatrixTests, ValidatePerspective)
     {
         SquareMatrix4x4<float> input(SquareMatrix4x4<float>::perspective(M_PI_4, 800.0 / 600.0, 0.1, 100.0));
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
+        glm::mat4              projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
 
         ASSERT_EQ(TranslateMatrix(projection), input);
     }
@@ -141,7 +132,7 @@ namespace Ignosi::Test
     TEST_F(MatrixTests, ValidateLookAt)
     {
         SquareMatrix4x4<float> input(SquareMatrix4x4<float>::lookat({0.0, 0.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0}));
-        glm::mat4 look_at = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+        glm::mat4              look_at = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
         ASSERT_EQ(TranslateMatrix(look_at), input);
     }
@@ -149,7 +140,7 @@ namespace Ignosi::Test
     TEST_F(MatrixTests, ValidateOrthographic)
     {
         glm::mat4              ortho_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
-        SquareMatrix4x4<float> ortho = SquareMatrix4x4<float>::orthographic(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
+        SquareMatrix4x4<float> ortho     = SquareMatrix4x4<float>::orthographic(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
         ASSERT_EQ(TranslateMatrix(ortho_mat), ortho);
     }
 
@@ -195,7 +186,7 @@ namespace Ignosi::Test
         ASSERT_EQ(TranslateMatrix(model), rslt);
 
         rslt *= SquareMatrix4x4<float>::rotate_z_init(rotation);
-        model = glm::rotate(model, rotation.Radians(), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, rotation.Value(), glm::vec3(0.0f, 0.0f, 1.0f));
         ASSERT_EQ(TranslateMatrix(model), rslt);
 
         rslt *= SquareMatrix4x4<float>::translate_init(Vector3<float>(size[0] * -0.5f, size[1] * -0.5f, 0.0));

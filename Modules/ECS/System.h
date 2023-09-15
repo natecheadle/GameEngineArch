@@ -58,11 +58,5 @@ namespace Ignosi::Modules::ECS
         {
             return *std::get<ComponentPool<ComponentType>*>(m_ComponentPools);
         }
-
-        template <typename T>
-        const Memory::PoolMemoryBlock<T>& GetPool() const
-        {
-            return *(std::get<Memory::PoolMemoryBlock<T>*>(m_Pools));
-        }
     };
 } // namespace Ignosi::Modules::ECS

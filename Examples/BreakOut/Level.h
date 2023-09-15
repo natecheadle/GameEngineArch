@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Ball.h"
-#include "BreakOutWorld.h"
 #include "Brick.h"
 #include "Paddle.h"
 #include "Shader/ShaderProgram.h"
@@ -10,12 +9,12 @@
 #include <filesystem>
 #include <vector>
 
-namespace nate::Modules::Render
+namespace Ignosi::Modules::Render
 {
     class Renderer;
 }
 
-namespace nate::BreakOut
+namespace Ignosi::BreakOut
 {
     class Level
     {
@@ -35,4 +34,4 @@ namespace nate::BreakOut
       private:
         void Initialize(std::vector<std::vector<unsigned int>> tileData, unsigned int lvlWidth, unsigned int lvlHeight);
     };
-} // namespace nate::BreakOut
+} // namespace Ignosi::BreakOut

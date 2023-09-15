@@ -24,15 +24,11 @@ namespace Ignosi::Modules::Render
          }
     };
 
-    Sprite::Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition)
+    Sprite::Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition, float aspectRatio)
         : m_pRenderer(pRenderer)
         , m_pPosition(std::move(pPosition))
-        , m_pBuffer(pRenderer->CreateBuffer(
-              SpriteVertexData::describe(),
-              std::span<const float>(
-                  reinterpret_cast<const float*>(m_BasicSpritePoints),
-                  reinterpret_cast<const float*>(m_BasicSpritePoints) + sizeof(m_BasicSpritePoints) / (sizeof(float)))))
     {
+
         if (aspectRatio != 1.0)
         {
             std::array<SpriteVertexData, s_SpritePointsSize> spritePoints;

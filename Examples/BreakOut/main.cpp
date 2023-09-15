@@ -1,17 +1,14 @@
 #include "BreakOutApp.h"
-#include "Physics/PhysicsSystem.h"
+#include "BreakOutEntity.h"
 
-using namespace nate::Modules;
+using namespace Ignosi::Modules;
 
 int main()
 {
     try
     {
-        nate::BreakOut::BreakOutApp app(
-            std::make_unique<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D>>(),
-            {800, 600},
-            "Test Window");
-        int code = app.Run();
+        Ignosi::BreakOut::BreakOutApp app(std::make_unique<Ignosi::BreakOut::BreakOutWorld>(), {800, 600}, "Test Window");
+        int                           code = app.Run();
         app.Close();
         return code;
     }

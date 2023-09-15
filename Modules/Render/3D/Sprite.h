@@ -37,7 +37,7 @@ namespace Ignosi::Modules::Render
 
       public:
         Sprite() = default;
-        Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition);
+        Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition, float aspectRatio = 1.0);
         Sprite(
             Renderer*                                         pRenderer,
             ECS::WeakComponentPointer<Physics::KinematicData> pPosition,

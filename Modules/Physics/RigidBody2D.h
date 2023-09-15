@@ -18,9 +18,9 @@ namespace Ignosi::Modules::Physics
 
     class RigidBody2D
     {
-        std::unique_ptr<Physics::HitShape> m_HitShape;
-        bool                               m_IsFixed{true};
-        KinematicData*                     m_pPosition;
+        std::unique_ptr<Physics::HitShape>                m_HitShape;
+        bool                                              m_IsFixed{true};
+        ECS::WeakComponentPointer<Physics::KinematicData> m_pPosition;
 
         Messaging::Event<const RigidBody2D&> m_OnCollisionEvent;
 
@@ -28,7 +28,7 @@ namespace Ignosi::Modules::Physics
 
       public:
         RigidBody2D() = default;
-        RigidBody2D(KinematicData* pPosition);
+        RigidBody2D(ECS::WeakComponentPointer<Physics::KinematicData> pPosition);
 
         RigidBody2D(const RigidBody2D& other) = delete;
         RigidBody2D(RigidBody2D&& other)      = default;

@@ -21,6 +21,17 @@ namespace Ignosi::Modules::Physics
         UpdatePrivateVectors();
     }
 
+    HitRectangle::HitRectangle(ECS::WeakComponentPointer<KinematicData> pPosition, float width, float height)
+        : HitShape(std::move(pPosition))
+        , m_Width(width)
+        , m_Height(height)
+    {
+        m_TestAxes.resize(2);
+        m_Corners.resize(4);
+
+        UpdatePrivateVectors();
+    }
+
     void HitRectangle::Width(float value)
     {
         m_Width  = value;

@@ -1,27 +1,28 @@
 #pragma once
 
 #include "BreakOutEntity.h"
+#include "Renderer/Renderer.h"
 
-namespace nate::BreakOut
+namespace Ignosi::BreakOut
 {
-    class Paddle : public BreakOutEntity
+    class Paddle : public CustomBreakOutEntity
     {
       public:
-        Paddle(
-            Modules::Memory::pool_pointer<Modules::Render::Sprite>&&       sprite,
-            Modules::Memory::pool_pointer<Modules::Physics::RigidBody2D>&& body);
+        Paddle(BreakOutEntityPointer&& entity, Modules::Render::Renderer* pRenderer, float aspectRatio);
 
-        void                           Position(const Modules::Vector2<float>& pos);
-        const Modules::Vector2<float>& Position() const { return Body().Position(); }
-
-      private:
-        Modules::Render::Sprite&       Sprite() { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
-        const Modules::Render::Sprite& Sprite() const { return BreakOutEntity::Get<Modules::Render::Sprite>(); }
-
-        Modules::Physics::RigidBody2D&       Body() { return BreakOutEntity::Get<Modules::Physics::RigidBody2D>(); }
-        const Modules::Physics::RigidBody2D& Body() const
+        Modules::ECS::WeakComponentPointer<Modules::Physics::KinematicData> KinematicData() const
         {
-            return BreakOutEntity::Get<Modules::Physics::RigidBody2D>();
+            return GetComponent<Modules::Physics::KinematicData>();
         }
+
+        Modules::ECS::WeakComponentPointer<Modules::Render::Sprite> Sprite() const { return GetComponent<Modules::Render::Sprite>(); }
+
+        Modules::ECS::WeakComponentPointer<Modules::Physics::RigidBody2D> Body() const
+        {
+            return GetComponent<Modules::Physics::RigidBody2D>();
+        }
+
+      protected:
+        void OnUpdate(double dt) override {}
     };
-} // namespace nate::BreakOut
+} // namespace Ignosi::BreakOut

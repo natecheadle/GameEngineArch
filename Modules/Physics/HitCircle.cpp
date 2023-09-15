@@ -14,6 +14,12 @@ namespace Ignosi::Modules::Physics
     {
     }
 
+    HitCircle::HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition, float radius)
+        : HitShape(std::move(pPosition))
+        , m_Radius(radius)
+    {
+    }
+
     std::array<Vector2<float>, 2> HitCircle::ProjectShape(const Vector2<float>& axis)
     {
         Vector3<float>                origin = Origin();

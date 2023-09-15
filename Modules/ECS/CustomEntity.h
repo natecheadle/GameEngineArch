@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ComponentPointer.h"
+#include "Entity.h"
 #include "EntityPointer.h"
+#include "IWorld.h"
 
 using namespace std::placeholders;
 
@@ -35,10 +37,11 @@ namespace Ignosi::Modules::ECS
             }
         }
 
-        const IEntity*          Entity() const { return m_pEntity.get(); }
-        EntityID                ID() const { return m_pEntity->ID(); }
-        bool                    IsAlive() const { return m_pEntity->IsAlive(); }
-        const std::vector<Tag>& Tags() const { return m_pEntity->Tags(); }
+        const Entity<ComponentTypes...>* Entity() const { return m_pEntity.get(); }
+        World<ComponentTypes...>*        World() const { return m_pEntity.World(); }
+        EntityID                         ID() const { return m_pEntity->ID(); }
+        bool                             IsAlive() const { return m_pEntity->IsAlive(); }
+        const std::vector<Tag>&          Tags() const { return m_pEntity->Tags(); }
 
       protected:
         template <typename Component>

@@ -12,13 +12,15 @@ namespace Ignosi::Modules::Physics
 {
     class HitCircle : public HitShape
     {
-        float m_Radius;
+        float m_Radius{1.0};
 
         std::vector<Vector2<float>> m_TestAxes;
         std::vector<Vector2<float>> m_Corners;
 
       public:
         HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition);
+        HitCircle(ECS::WeakComponentPointer<KinematicData> pPosition, float radius);
+
         ~HitCircle() override = default;
 
         float Radius() const override { return m_Radius; }

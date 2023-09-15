@@ -8,6 +8,8 @@
 
 namespace Ignosi::Modules::ECS
 {
+    class IWorld;
+
     class EntityID : public ClassID<EntityID>
     {
       public:

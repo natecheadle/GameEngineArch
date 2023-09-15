@@ -2,6 +2,7 @@
 
 #include "ComponentPool.h"
 #include "IEntity.h"
+#include "IWorld.h"
 #include "Tag.h"
 #include "WeakComponentPointer.h"
 
@@ -98,7 +99,6 @@ namespace Ignosi::Modules::ECS
         const std::vector<Tag>& Tags() const override { return m_Tags; }
         bool HasTag(const Tag& tag) const override { return std::find(m_Tags.begin(), m_Tags.end(), tag) != m_Tags.end(); }
 
-      protected:
         template <typename T>
         void InitializeComponent(ComponentPointer<T>&& value)
         {

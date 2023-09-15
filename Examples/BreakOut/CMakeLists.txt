@@ -10,8 +10,7 @@ add_executable(${PROJECT_NAME}
     "Brick.cpp"
     "Level.cpp"
     "Paddle.cpp"
-    "Physics/PhysicsSystem.cpp"
-    "Physics/RigidBody2D.cpp")
+    )
 
 
 add_compile_definitions(SHADER_DIR=R"\(${CMAKE_CURRENT_SOURCE_DIR}\)")
