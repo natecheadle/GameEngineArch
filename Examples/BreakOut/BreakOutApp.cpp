@@ -65,12 +65,12 @@ namespace Ignosi::BreakOut
         auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
         m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
-        m_pCamera = std::make_unique<Render::Camera>(GetWindow());
+        m_pCamera = std::make_unique<Render::Camera>(m_pWindow);
         m_pCamera->Near(-1.0);
         m_pCamera->Far(1.0);
 
-        float winWidth   = static_cast<float>(GetWindow()->GetLastWindowSize().Width());
-        float windHeight = static_cast<float>(GetWindow()->GetLastWindowSize().Height());
+        float winWidth   = static_cast<float>(m_pWindow->GetLastWindowSize().Width());
+        float windHeight = static_cast<float>(m_pWindow->GetLastWindowSize().Height());
 
         m_pBackground = std::make_unique<Background>(m_pWorld->CreateEntity(), pRenderer, static_cast<float>(background.AspectRatio()));
         m_pBackground->Sprite()->AttachedMaterial((std::move(pBackMat)));
@@ -110,7 +110,7 @@ namespace Ignosi::BreakOut
 
     void BreakOutApp::UpdateApp(double time)
     {
-        GetWindow()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
+        m_pWindow->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
             if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Left].first == GUI::KeyState::Repeat))
             {
                 if (m_pPaddle->KinematicData()->Position()[0] > 0.0)
