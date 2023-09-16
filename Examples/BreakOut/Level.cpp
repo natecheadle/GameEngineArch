@@ -105,7 +105,7 @@ namespace Ignosi::BreakOut
                 pHitRectangle->Height(unit_height);
                 pHitRectangle->Width(unit_width);
                 brick.Body()->HitShape(std::move(pHitRectangle));
-                brick.Type(static_cast<BrickType>(tileData[x][y]));
+                brick.Type(static_cast<BrickType>(tileData[y][x]));
 
                 // check block type from level data (2D level array)
                 if (tileData[y][x] == 1) // solid

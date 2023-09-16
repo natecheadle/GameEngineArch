@@ -22,7 +22,7 @@ namespace Ignosi::Modules::Physics
         bool                                              m_IsFixed{true};
         ECS::WeakComponentPointer<Physics::KinematicData> m_pPosition;
 
-        Messaging::Event<const RigidBody2D&> m_OnCollisionEvent;
+        std::unique_ptr<Messaging::Event<const RigidBody2D&>> m_pOnCollisionEvent;
 
         friend PhysicsSystem;
 
@@ -41,7 +41,8 @@ namespace Ignosi::Modules::Physics
         std::unique_ptr<Messaging::EventSubscriber<const RigidBody2D&>> SubscribeOnCollision(
             std::function<void(const RigidBody2D& other)> func)
         {
-            return m_OnCollisionEvent.Subscribe(std::move(func));
+            assert(m_pOnCollisionEvent);
+            return m_pOnCollisionEvent->Subscribe(std::move(func));
         }
 
         void IsFixed(bool val) { m_IsFixed = val; }

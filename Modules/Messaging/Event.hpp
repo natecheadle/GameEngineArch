@@ -19,11 +19,21 @@ namespace Ignosi::Modules::Messaging
       public:
         Event() = default;
 
+        ~Event()
+        {
+            m_Subscribers.execute([&](std::vector<EventSubscriber<Args...>*>& subscribers) {
+                for (auto subscriber : subscribers)
+                {
+                    subscriber->OnParentDestroyed();
+                }
+            });
+        }
+
         Event(const Event& other) = delete;
-        Event(Event&& other)      = default;
+        Event(Event&& other)      = delete;
 
         Event& operator=(const Event& other) = delete;
-        Event& operator=(Event&& other)      = default;
+        Event& operator=(Event&& other)      = delete;
 
         std::unique_ptr<EventSubscriber<Args...>> Subscribe(std::function<void(Args...)> onEvent)
         {
