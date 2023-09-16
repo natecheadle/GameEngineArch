@@ -24,7 +24,7 @@ namespace Ignosi::Modules
             m_Data = other.m_Data;
         }
 
-        MutexProtected(MutexProtected&& other)
+        MutexProtected(MutexProtected&& other) noexcept
         {
             std::unique_lock<MUTEX> lock(other.m_Mutex);
             m_Data = std::move(other.m_Data);
@@ -40,7 +40,7 @@ namespace Ignosi::Modules
             return *this;
         }
 
-        MutexProtected& operator=(MutexProtected&& other)
+        MutexProtected& operator=(MutexProtected&& other) noexcept
         {
             std::unique_lock<MUTEX> lock(other.m_Mutex);
             m_Data = std::move(other.m_Data);

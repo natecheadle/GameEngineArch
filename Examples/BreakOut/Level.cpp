@@ -52,9 +52,9 @@ namespace Ignosi::BreakOut
         float lvl_width_flt  = static_cast<float>(lvlWidth);
         float lvl_height_flt = static_cast<float>(lvlHeight);
 
-        Wall top(m_pWorld->CreateEntity<Wall>());
-        Wall left(m_pWorld->CreateEntity<Wall>());
-        Wall right(m_pWorld->CreateEntity<Wall>());
+        Wall top(m_pWorld->CreateEntity());
+        Wall left(m_pWorld->CreateEntity());
+        Wall right(m_pWorld->CreateEntity());
         left.KinematicData()->Position({-0.5f * wall_thickness, lvl_width_flt / 2.0f});
         right.KinematicData()->Position({0.5f * wall_thickness + lvl_width_flt, lvl_width_flt / 2.0f});
         top.KinematicData()->Position({lvl_width_flt / 2.0f, -0.5f * wall_thickness});

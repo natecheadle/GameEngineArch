@@ -20,10 +20,13 @@ using namespace std::chrono_literals;
 namespace Ignosi::BreakOut
 {
     BreakOutApp::BreakOutApp(std::unique_ptr<BreakOutWorld> pWorld, const GUI::WindowSize& window_size, std::string window_name)
-        : App(pWorld->CreateSystem<Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>(), window_size, std::move(window_name))
-        , m_pWorld(std::move(pWorld))
-        , m_pPhysicsSys(m_pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Modules::Physics::RigidBody2D>())
+        : App(std::move(pWorld))
     {
+        m_pWorld = dynamic_cast<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>*>(App::GetWorld());
+        m_pRenderer = m_pWorld->CreateSystem<Modules::Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>();
+        m_pPhysics  = m_pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>();
+        m_pWindow   = m_pRenderer->InitializeWindow(window_size, std::move(window_name));
+
         std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
         m_LevelDir = shader_dir / "Levels";
     }
@@ -74,7 +77,7 @@ namespace Ignosi::BreakOut
         m_pBackground->KinematicData()->Position({0.0f, 0.0f});
         m_pBackground->Sprite()->Size({winWidth, windHeight});
 
-        m_pLevel = std::make_unique<Level>(m_pWorld.get(), pRenderer);
+        m_pLevel = std::make_unique<Level>(m_pWorld, pRenderer);
         m_pLevel->Load(m_LevelDir / "One.lvl", static_cast<unsigned int>(winWidth), static_cast<unsigned int>(windHeight) / 2U);
 
         Vector2<float> paddleSize{100.0f, 20.0f};
@@ -91,6 +94,8 @@ namespace Ignosi::BreakOut
         Vector2<float> ballPos = playerPos + Vector2<float>({paddleSize[0] / 2.0f - m_pBall->Radius(), -m_pBall->Radius() * 2.0f});
         m_pBall->KinematicData()->Position(ballPos);
         m_pBall->WindowWidth(winWidth);
+
+        return m_pWindow;
     }
 
     void BreakOutApp::Shutdown()
@@ -105,39 +110,36 @@ namespace Ignosi::BreakOut
 
     void BreakOutApp::UpdateApp(double time)
     {
-        // TODO this should be handled automatically
-        m_pCamera->Update(time);
-        m_pPhysicsSys->Update(time);
-
         GetWindow()->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
             if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Left].first == GUI::KeyState::Repeat))
             {
-                if (m_pPaddle->Position()[0] > 0.0)
+                if (m_pPaddle->KinematicData()->Position()[0] > 0.0)
                 {
-                    auto pos = m_pPaddle->Position();
+                    auto pos = m_pPaddle->KinematicData()->Position();
                     pos.x(pos.x() - PADDLE_SPEED);
-                    m_pPaddle->Position(pos);
+                    m_pPaddle->KinematicData()->Position(pos);
                     if (m_pBall->IsStuck())
                     {
-                        pos = m_pBall->Position();
+                        pos = m_pBall->KinematicData()->Position();
                         pos.x(pos.x() - PADDLE_SPEED);
-                        m_pBall->Position(pos);
+                        m_pBall->KinematicData()->Position(pos);
                     }
                 }
             }
 
             if ((keyStates[GUI::Key::Right].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Right].first == GUI::KeyState::Repeat))
             {
-                if (m_pPaddle->Position()[0] < static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->Position()[0])
+                if (m_pPaddle->KinematicData()->Position()[0] <
+                    static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->KinematicData()->Position()[0])
                 {
-                    auto pos = m_pPaddle->Position();
+                    auto pos = m_pPaddle->KinematicData()->Position();
                     pos.x(pos.x() + PADDLE_SPEED);
-                    m_pPaddle->Position(pos);
+                    m_pPaddle->KinematicData()->Position(pos);
                     if (m_pBall->IsStuck())
                     {
-                        auto pos = m_pBall->Position();
+                        auto pos = m_pBall->KinematicData()->Position();
                         pos.x(pos.x() + PADDLE_SPEED);
-                        m_pBall->Position(pos);
+                        m_pBall->KinematicData()->Position(pos);
                     }
                 }
             }
@@ -147,14 +149,5 @@ namespace Ignosi::BreakOut
                 m_pBall->Release();
             }
         });
-
-        auto renderUpdate = [&]() -> void {
-            m_pShader->Use();
-            m_pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
-
-            GetRenderer()->DrawAllSprites(m_pShader.get());
-        };
-
-        GetRenderer()->ExecuteFunction(renderUpdate);
     }
 } // namespace Ignosi::BreakOut

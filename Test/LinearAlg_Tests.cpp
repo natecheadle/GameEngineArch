@@ -17,8 +17,7 @@
 
 #include <cmath>
 #include <iostream>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <numbers>
 
 using namespace Ignosi::Modules;
 
@@ -48,7 +47,7 @@ namespace Ignosi::Test
 
         static glm::mat4 TranslateMatrix(const SquareMatrix4x4<float>& in)
         {
-            glm::mat4 rslt;
+            glm::mat4 rslt{0};
             for (size_t i = 0; i < SquareMatrix4x4<float>::size(); ++i)
             {
                 for (size_t j = 0; j < SquareMatrix4x4<float>::size(); ++j)
@@ -97,12 +96,12 @@ namespace Ignosi::Test
         ASSERT_EQ(rslt, test * test);
         ASSERT_EQ(TranslateMatrix(TranslateMatrix(test) * TranslateMatrix(test)), test * test);
 
-        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, 0.0, 0.0});
+        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({std::numbers::pi_v<float> / 4.0f, 0.0, 0.0});
 
-        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, M_PI_4, 0.0});
+        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, std::numbers::pi_v<float> / 4.0f, 0.0});
 
-        auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(1, 0, 0));
-        auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(0, 1, 0));
+        auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), std::numbers::pi_v<float> / 4.0f, glm::vec3(1, 0, 0));
+        auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), std::numbers::pi_v<float> / 4.0f, glm::vec3(0, 1, 0));
 
         ASSERT_EQ(TranslateMatrix(rot_x_glm * rot_y_glm), rot_x * rot_y);
         ASSERT_EQ(TranslateMatrix(rot_y_glm * rot_x_glm), rot_y * rot_x);
@@ -123,7 +122,7 @@ namespace Ignosi::Test
 
     TEST_F(MatrixTests, ValidatePerspective)
     {
-        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::perspective(M_PI_4, 800.0 / 600.0, 0.1, 100.0));
+        SquareMatrix4x4<float> input(SquareMatrix4x4<float>::perspective(std::numbers::pi_v<float> / 4.0f, 800.0 / 600.0, 0.1, 100.0));
         glm::mat4              projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
 
         ASSERT_EQ(TranslateMatrix(projection), input);
@@ -146,17 +145,18 @@ namespace Ignosi::Test
 
     TEST_F(MatrixTests, ValidateRotationMatrix)
     {
-        auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, M_PI_4, M_PI_4});
+        auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init(
+            {std::numbers::pi_v<float> / 4.0f, std::numbers::pi_v<float> / 4.0f, std::numbers::pi_v<float> / 4.0f});
 
-        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, 0.0, 0.0});
+        auto rot_x = SquareMatrix4x4<float>::rotate_zyx_init({std::numbers::pi_v<float> / 4.0f, 0.0, 0.0});
 
-        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, M_PI_4, 0.0});
+        auto rot_y = SquareMatrix4x4<float>::rotate_zyx_init({0.0, std::numbers::pi_v<float> / 4.0f, 0.0});
 
-        auto rot_z = SquareMatrix4x4<float>::rotate_zyx_init({0.0, 0.0, M_PI_4});
+        auto rot_z = SquareMatrix4x4<float>::rotate_zyx_init({0.0, 0.0, std::numbers::pi_v<float> / 4.0f});
 
-        auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(1, 0, 0));
-        auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(0, 1, 0));
-        auto rot_z_glm = glm::rotate<float>(glm::mat4(1.0), M_PI_4, glm::vec3(0, 0, 1));
+        auto rot_x_glm = glm::rotate<float>(glm::mat4(1.0), std::numbers::pi_v<float> / 4.0f, glm::vec3(1, 0, 0));
+        auto rot_y_glm = glm::rotate<float>(glm::mat4(1.0), std::numbers::pi_v<float> / 4.0f, glm::vec3(0, 1, 0));
+        auto rot_z_glm = glm::rotate<float>(glm::mat4(1.0), std::numbers::pi_v<float> / 4.0f, glm::vec3(0, 0, 1));
 
         ASSERT_EQ(TranslateMatrix(rot_x_glm), rot_x);
         ASSERT_EQ(TranslateMatrix(rot_y_glm), rot_y);
@@ -224,21 +224,21 @@ namespace Ignosi::Test
     TEST(LinearAlg_Tests, ValidateRotateX)
     {
         Vector3<float> init(0, 1, 1);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * Vector4<float>(init));
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(std::numbers::pi_v<float> / 4.0f) * Vector4<float>(init));
         ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateRotateY)
     {
         Vector3<float> init(1, 0, 1);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * Vector4<float>(init));
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(std::numbers::pi_v<float> / 4.0f) * Vector4<float>(init));
         ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated.ToVector3());
     }
 
     TEST(LinearAlg_Tests, ValidateRotateZ)
     {
         Vector3<float> init(1, 1, 0);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * Vector4<float>(init));
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(std::numbers::pi_v<float> / 4.0f) * Vector4<float>(init));
         ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated.ToVector3());
     }
 

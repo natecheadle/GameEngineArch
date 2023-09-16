@@ -36,6 +36,7 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <numbers>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -134,7 +135,7 @@ class TestApp : public App::App
             Vector3<float>(-1.3f, 1.0f, -1.5f)};
 
         static_assert(sizeof(cubePositions) / sizeof(Vector3<float>) == numOfCubes, "Incorrect number of cubes");
-        RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 10.0));
+        RadianPerSecond<float> rotSpeed(static_cast<float>(std::numbers::pi_v<float> / 10.0));
         for (size_t i = 0; i < numOfCubes; ++i)
         {
             m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity()));
@@ -200,7 +201,6 @@ class TestApp : public App::App
         m_pShader->SetShaderVar("spotLight", m_SpotLight);
 
         m_pWorld->Update(dt);
-        // m_pBackpackModel->RotY(M_PI / 500.0);
     }
 };
 

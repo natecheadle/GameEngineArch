@@ -82,7 +82,7 @@ namespace Ignosi::Test
 
     TEST_P(Rectangle_Physics_Tests, ValidateRectangleCollision)
     {
-        auto test = GetParam();
+        const auto& test = GetParam();
 
         bool collisionOccurred = false;
         auto onCollision       = [&](const Physics::RigidBody2D&) { collisionOccurred = true; };

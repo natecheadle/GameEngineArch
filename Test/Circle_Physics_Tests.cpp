@@ -49,7 +49,7 @@ namespace Ignosi::Test
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, true));
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, true));
             tests.push_back(CircleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, true));
-            tests.push_back(CircleCollisionInputData({0.5f, 0.5f}, -M_PI_4, {0.0f, 0.0f}, false));
+            tests.push_back(CircleCollisionInputData({0.5f, 0.5f}, -std::numbers::pi_v<float> / 4.0f, {0.0f, 0.0f}, false));
 
             return tests;
         }

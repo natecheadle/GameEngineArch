@@ -29,6 +29,7 @@ namespace Ignosi::Modules
         constexpr Vector(std::initializer_list<T> vals) noexcept
         {
             assert(vals.size() <= SIZE);
+            
             size_t i = 0;
             for (const auto& val : vals)
             {

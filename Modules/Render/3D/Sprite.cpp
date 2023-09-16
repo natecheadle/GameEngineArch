@@ -24,6 +24,8 @@ namespace Ignosi::Modules::Render
          }
     };
 
+    const size_t Sprite::s_SpritePointsFloatSize = sizeof(SpriteVertexData) / sizeof(float) * Sprite::s_SpritePointsSize;
+
     Sprite::Sprite(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition, float aspectRatio)
         : m_pRenderer(pRenderer)
         , m_pPosition(std::move(pPosition))
