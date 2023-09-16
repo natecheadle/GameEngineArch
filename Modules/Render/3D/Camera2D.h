@@ -27,7 +27,7 @@ namespace Ignosi::Modules::Render
 
         Radian<float> m_Pitch;
         Radian<float> m_Yaw;
-        Radian<float> m_MaxRot{M_PI_2};
+        Radian<float> m_MaxRot{std::numbers::pi_v<float> / 2.0f};
 
       public:
         Camera2D(GUI::IWindow* pWindow);

@@ -54,8 +54,8 @@ namespace Ignosi::Test
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {1.0f, 1.0f}, 0.0f, true));
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {0.5f, 0.5f}, 0.0f, true));
             tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, 0.0f, {3.0f, 3.0f}, 0.0f, false));
-            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, M_PI_4, {0.5f, 0.5f}, 0.0f, false));
-            tests.push_back(RectangleCollisionInputData({0.5f, 0.5f}, 0.0, {0.0f, 0.0f}, -M_PI_4, false));
+            tests.push_back(RectangleCollisionInputData({0.0f, 0.0f}, std::numbers::pi_v<float> / 4.0f, {0.5f, 0.5f}, 0.0f, false));
+            tests.push_back(RectangleCollisionInputData({0.5f, 0.5f}, 0.0, {0.0f, 0.0f}, -std::numbers::pi_v<float> / 4.0f, false));
 
             return tests;
         }

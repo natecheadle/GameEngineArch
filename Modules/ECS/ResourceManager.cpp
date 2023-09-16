@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 
+#include <cassert>
 #include <memory>
 
 namespace Ignosi::Modules::ECS

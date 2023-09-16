@@ -22,7 +22,7 @@ namespace Ignosi::Modules::Render
         Vector3<float> m_Direction{0.0, 0.0, -1.0};
         Vector3<float> m_WorldUp{0.0, 1.0, 0.0};
 
-        Radian<float> m_FOV{M_PI_4};
+        Radian<float> m_FOV{std::numbers::pi_v<float> / 4.0f};
         float         m_Near{0.1};
         float         m_Far{100.0};
 

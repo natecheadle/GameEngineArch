@@ -29,11 +29,11 @@ namespace Ignosi::Modules::Render
 
         float m_ZoomSpeed{0.1};
         float m_PanSpeed{0.1};
-        float m_RotateSpeed{M_PI_2 / 100.0};
+        float m_RotateSpeed{(std::numbers::pi_v<float> / 2.0f) / 100.0};
 
         Radian<float> m_Pitch;
         Radian<float> m_Yaw;
-        Radian<float> m_MaxRot{M_PI_2};
+        Radian<float> m_MaxRot{std::numbers::pi_v<float> / 2.0f};
 
       public:
         Fly_Camera(GUI::IWindow* pWindow);

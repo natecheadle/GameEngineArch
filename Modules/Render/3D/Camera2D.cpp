@@ -19,7 +19,7 @@ namespace Ignosi::Modules::Render
         , m_ZoomInMap([this]() { ZoomIn(); })
         , m_ZoomOutMap([this]() { ZoomOut(); })
         , m_Pitch(0.0)
-        , m_Yaw(-M_PI_2)
+        , m_Yaw(-std::numbers::pi_v<float> / 2.0f)
     {
         m_PanUpMap.KeyMappings({
             {{GUI::Key::W, GUI::KeyModifiers()}, {GUI::Key::Up, GUI::KeyModifiers()}}
