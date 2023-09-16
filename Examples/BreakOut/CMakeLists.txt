@@ -10,6 +10,7 @@ add_executable(${PROJECT_NAME}
     "Brick.cpp"
     "Level.cpp"
     "Paddle.cpp"
+    "Wall.cpp"
     )
 
 

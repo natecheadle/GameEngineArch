@@ -58,6 +58,9 @@ namespace Ignosi::Modules::Physics
         HitShape* pHitShape1 = one.HitShape().get();
         HitShape* pHitShape2 = two.HitShape().get();
 
+        if (!pHitShape1 || !pHitShape2)
+            return false;
+
         if ((pHitShape2->Origin() - pHitShape1->Origin()).magnitude() > (pHitShape1->Radius() + pHitShape2->Radius()))
             return false;
 

@@ -6,6 +6,7 @@
 #include "Brick.h"
 #include "HitRectangle.h"
 #include "Renderer/Renderer.h"
+#include "Shader/ShaderProgram.h"
 #include "Texture/Texture.h"
 
 #include <filesystem>
@@ -24,7 +25,11 @@ namespace Ignosi::BreakOut
     {
     }
 
-    void Level::Load(const std::filesystem::path& file, unsigned int lvlWidth, unsigned int lvlHeight)
+    void Level::Load(
+        const std::filesystem::path&           file,
+        unsigned int                           lvlWidth,
+        unsigned int                           lvlHeight,
+        std::shared_ptr<Render::ShaderProgram> pProgram)
     {
         assert(std::filesystem::is_regular_file(file));
         // clear old data
@@ -45,7 +50,7 @@ namespace Ignosi::BreakOut
                 tileData.push_back(row);
             }
             if (!tileData.empty())
-                Initialize(tileData, lvlWidth, lvlHeight);
+                Initialize(tileData, lvlWidth, lvlHeight, pProgram);
         }
 
         float wall_thickness = 50.0;
@@ -68,9 +73,11 @@ namespace Ignosi::BreakOut
         m_Walls.push_back(std::move(right));
     }
 
-    void Level::Draw(Modules::Render::ShaderProgram* pProgram) {}
-
-    void Level::Initialize(std::vector<std::vector<unsigned int>> tileData, unsigned int lvlWidth, unsigned int lvlHeight)
+    void Level::Initialize(
+        std::vector<std::vector<unsigned int>> tileData,
+        unsigned int                           lvlWidth,
+        unsigned int                           lvlHeight,
+        std::shared_ptr<Render::ShaderProgram> pProgram)
     { // calculate dimensions
         unsigned int height      = tileData.size();
         unsigned int width       = tileData[0].size();
@@ -100,6 +107,7 @@ namespace Ignosi::BreakOut
                 Brick brick(m_pWorld->CreateEntity(), m_pRenderer);
                 brick.Sprite()->AttachedMaterial(pSolidBlockMat);
                 brick.Sprite()->Size(size);
+                brick.Sprite()->Shader(pProgram);
                 brick.KinematicData()->Position(pos);
                 auto pHitRectangle = std::make_unique<Physics::HitRectangle>(brick.KinematicData());
                 pHitRectangle->Height(unit_height);

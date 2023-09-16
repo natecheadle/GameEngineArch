@@ -21,8 +21,7 @@ namespace Ignosi::BreakOut
     class BreakOutApp : public Modules::App::App
     {
 
-        std::unique_ptr<Modules::Render::Camera>        m_pCamera;
-        std::unique_ptr<Modules::Render::ShaderProgram> m_pShader;
+        std::shared_ptr<Modules::Render::ShaderProgram> m_pShader;
         BreakOutWorld*                                  m_pWorld;
         std::unique_ptr<Background>                     m_pBackground;
         std::unique_ptr<Level>                          m_pLevel;

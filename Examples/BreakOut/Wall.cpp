@@ -1,23 +1,18 @@
-#include "Paddle.h"
+#include "Wall.h"
 
 #include "BreakOutEntity.h"
 
 #include <PhysicsSystem.h>
-#include <Renderer/Renderer.h>
 #include <World.h>
 
 namespace Ignosi::BreakOut
 {
-    Paddle::Paddle(BreakOutEntityPointer&& entity, Modules::Render::Renderer* pRenderer, float aspectRatio)
+    Wall::Wall(BreakOutEntityPointer&& entity)
         : CustomBreakOutEntity(std::move(entity))
     {
         World()->AddComponent<Modules::Physics::KinematicData>(Entity());
-        World()->AddComponent<Modules::Render::Sprite>(
-            Entity(),
-            Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>(), aspectRatio));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
 
-        World()->RegisterEntityInSystem(*pRenderer, Entity());
         World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
     }
 

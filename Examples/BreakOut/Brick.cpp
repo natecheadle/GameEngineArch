@@ -1,7 +1,7 @@
 #include "Brick.h"
 
-#include "Renderer/Renderer.h"
-
+#include <PhysicsSystem.h>
+#include <Renderer/Renderer.h>
 #include <World.h>
 
 #include <utility>
@@ -18,6 +18,9 @@ namespace Ignosi::BreakOut
             Entity(),
             Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>()));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
+
+        World()->RegisterEntityInSystem(*pRenderer, Entity());
+        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
 
         m_Subscription = Body()->SubscribeOnCollision(std::bind(&Brick::OnCollision, this, _1));
     }

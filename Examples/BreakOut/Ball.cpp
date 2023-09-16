@@ -1,9 +1,12 @@
 #include "Ball.h"
 
+#include "3D/Model3D.h"
 #include "BreakOutEntity.h"
 #include "RigidBody2D.h"
 
 #include <HitCircle.h>
+#include <PhysicsSystem.h>
+#include <Renderer/Renderer.h>
 #include <World.h>
 
 #include <memory>
@@ -21,6 +24,9 @@ namespace Ignosi::BreakOut
             Entity(),
             Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>()));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
+
+        World()->RegisterEntityInSystem(*pRenderer, Entity());
+        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
 
         Sprite()->SizeX(m_Radius * 2);
         Sprite()->SizeY(m_Radius * 2);

@@ -7,6 +7,7 @@
 #include "Wall.h"
 
 #include <filesystem>
+#include <memory>
 #include <vector>
 
 namespace Ignosi::Modules::Render
@@ -26,12 +27,18 @@ namespace Ignosi::BreakOut
       public:
         Level(BreakOutWorld* pWorld, Modules::Render::Renderer* pRenderer);
 
-        void Load(const std::filesystem::path& file, unsigned int lvlWidth, unsigned int lvlHeight);
+        void Load(
+            const std::filesystem::path&                    file,
+            unsigned int                                    lvlWidth,
+            unsigned int                                    lvlHeight,
+            std::shared_ptr<Modules::Render::ShaderProgram> pProgram);
         bool IsCompleted();
 
-        void Draw(Modules::Render::ShaderProgram* pProgram);
-
       private:
-        void Initialize(std::vector<std::vector<unsigned int>> tileData, unsigned int lvlWidth, unsigned int lvlHeight);
+        void Initialize(
+            std::vector<std::vector<unsigned int>>          tileData,
+            unsigned int                                    lvlWidth,
+            unsigned int                                    lvlHeight,
+            std::shared_ptr<Modules::Render::ShaderProgram> pProgram);
     };
 } // namespace Ignosi::BreakOut

@@ -11,12 +11,7 @@ namespace Ignosi::BreakOut
     class Wall : CustomBreakOutEntity
     {
       public:
-        Wall(BreakOutEntityPointer&& entity)
-            : CustomBreakOutEntity(std::move(entity))
-        {
-            World()->AddComponent<Modules::Physics::KinematicData>(Entity());
-            World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
-        }
+        Wall(BreakOutEntityPointer&& entity);
 
         Wall(Wall&& other)            = default;
         Wall& operator=(Wall&& other) = default;

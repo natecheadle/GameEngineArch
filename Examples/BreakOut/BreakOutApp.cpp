@@ -1,5 +1,6 @@
 #include "BreakOutApp.h"
 
+#include "HitRectangle.h"
 #include "IWindow.h"
 #include "Renderer/Renderer.h"
 
@@ -65,9 +66,10 @@ namespace Ignosi::BreakOut
         auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
         m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
 
-        m_pCamera = std::make_unique<Render::Camera>(m_pWindow);
-        m_pCamera->Near(-1.0);
-        m_pCamera->Far(1.0);
+        auto pCamera = std::make_unique<Render::Camera>(m_pWindow);
+        pCamera->Near(-1.0);
+        pCamera->Far(1.0);
+        m_pRenderer->AttachedCamera(std::move(pCamera));
 
         float winWidth   = static_cast<float>(m_pWindow->GetLastWindowSize().Width());
         float windHeight = static_cast<float>(m_pWindow->GetLastWindowSize().Height());
@@ -76,9 +78,10 @@ namespace Ignosi::BreakOut
         m_pBackground->Sprite()->AttachedMaterial((std::move(pBackMat)));
         m_pBackground->KinematicData()->Position({0.0f, 0.0f});
         m_pBackground->Sprite()->Size({winWidth, windHeight});
+        m_pBackground->Sprite()->Shader(m_pShader);
 
         m_pLevel = std::make_unique<Level>(m_pWorld, pRenderer);
-        m_pLevel->Load(m_LevelDir / "One.lvl", static_cast<unsigned int>(winWidth), static_cast<unsigned int>(windHeight) / 2U);
+        m_pLevel->Load(m_LevelDir / "One.lvl", static_cast<unsigned int>(winWidth), static_cast<unsigned int>(windHeight) / 2U, m_pShader);
 
         Vector2<float> paddleSize{100.0f, 20.0f};
         Vector2<float> playerPos{winWidth / 2.0f - paddleSize[0] / 2.0f, windHeight - paddleSize[1]};
@@ -87,9 +90,13 @@ namespace Ignosi::BreakOut
         m_pPaddle->Sprite()->Size(paddleSize);
         m_pPaddle->Sprite()->AttachedMaterial(std::move(pPaddleMat));
         m_pPaddle->KinematicData()->Position(playerPos);
+        m_pPaddle->Body()->HitShape(
+            std::make_unique<Modules::Physics::HitRectangle>(m_pPaddle->KinematicData(), paddleSize[0], paddleSize[1]));
+        m_pPaddle->Sprite()->Shader(m_pShader);
 
         m_pBall = std::make_unique<Ball>(m_pWorld->CreateEntity(), pRenderer);
         m_pBall->Sprite()->AttachedMaterial(std::move(pBallMat));
+        m_pBall->Sprite()->Shader(m_pShader);
 
         Vector2<float> ballPos = playerPos + Vector2<float>({paddleSize[0] / 2.0f - m_pBall->Radius(), -m_pBall->Radius() * 2.0f});
         m_pBall->KinematicData()->Position(ballPos);
@@ -100,7 +107,6 @@ namespace Ignosi::BreakOut
 
     void BreakOutApp::Shutdown()
     {
-        m_pCamera.reset();
         m_pLevel.reset();
         m_pBackground.reset();
         m_pShader.reset();
