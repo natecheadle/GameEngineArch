@@ -1,16 +1,16 @@
 #pragma once
 
-#include "ComponentID.h"
+#include "IComponent.h"
 
 namespace Ignosi::Modules::ECS
 {
-    template <class T>
+    template <ComponentObject T>
     class ComponentPool;
 
-    template <class T>
+    template <ComponentObject T>
     class WeakComponentPointer;
 
-    template <class T>
+    template <ComponentObject T>
     class ComponentPointer
     {
         ComponentID       m_ID;

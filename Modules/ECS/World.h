@@ -3,6 +3,7 @@
 #include "ComponentPool.h"
 #include "Entity.h"
 #include "EntityPointer.h"
+#include "IComponent.h"
 #include "IEntity.h"
 #include "ISystem.h"
 #include "ResourceManager.h"
@@ -20,7 +21,7 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class World : public IWorld
     {
         std::tuple<ComponentPool<ComponentTypes>...> m_Pools;
@@ -108,9 +109,8 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
-            (pEntity->template InitializeComponent<Components>(
-                 std::move(CreateComponent<Components>(pEntity->ID(), std::move(components)))),
-             ...);
+
+            (AddComponent<Components>(pEntity, std::move(components)), ...);
 
             return {pEntity->ID(), this};
         }
@@ -135,7 +135,8 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
-            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>(pEntity->ID()))), ...);
+
+            (AddComponent<Components>(pEntity), ...);
 
             return {pEntity->ID(), this};
         }
@@ -164,13 +165,6 @@ namespace Ignosi::Modules::ECS
             return pReturn;
         }
 
-        template <class... Components>
-        void RegisterEntityInSystem(const System<Components...>& system, EntityPointer<ComponentTypes...>& pEntity)
-        {
-            RegisterEntityInSystem(system, pEntity.get());
-        }
-        void RegisterEntityInSystem(const ISystem& system, const IEntity* pEntity) override { AddTag(system.Tag(), pEntity->ID()); }
-
         bool AddTag(const Tag& tag, EntityID entity) override
         {
             if (m_Entities.at(entity.ID).AddTag(tag))
@@ -196,7 +190,12 @@ namespace Ignosi::Modules::ECS
         bool RemoveTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
 
         const std::vector<EntityID>& AllEntities() const override { return m_LivingEntities; }
-        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const override { return m_TaggedLists.at(tag); }
+        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const override
+        {
+            static const std::vector<EntityID> emptyVector;
+            auto                               it = m_TaggedLists.find(tag);
+            return it != m_TaggedLists.end() ? m_TaggedLists.at(tag) : emptyVector;
+        }
 
         const ResourceManager& Resources() const override { return m_ResourceManager; }
         ResourceManager&       Resources() override { return m_ResourceManager; }
@@ -204,19 +203,17 @@ namespace Ignosi::Modules::ECS
         template <class ComponentType>
         void AddComponent(const IEntity* pEntity)
         {
-            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
-            {
-                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
-                    std::move(CreateComponent<ComponentType>(pEntity->ID())));
-            }
+            AddComponent(pEntity, ComponentType());
         }
+
         template <class ComponentType>
         void AddComponent(const IEntity* pEntity, ComponentType value)
         {
             if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
             {
-                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
-                    std::move(CreateComponent<ComponentType>(pEntity->ID(), std::move(value))));
+                auto component = CreateComponent<ComponentType>(pEntity->ID(), std::move(value));
+                AddTag(component->Tag(), pEntity->ID());
+                m_Entities[pEntity->ID().ID].template InitializeComponent(std::move(component));
             }
         }
 

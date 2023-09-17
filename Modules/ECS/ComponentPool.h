@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ComponentID.h"
 #include "ComponentPointer.h"
+#include "IComponent.h"
 #include "IEntity.h"
 
 #include <algorithm>
@@ -14,7 +14,7 @@
 namespace Ignosi::Modules::ECS
 {
 
-    template <class T>
+    template <ComponentObject T>
     class ComponentPool
     {
         std::queue<ComponentID>  m_FreedComponents;
@@ -24,6 +24,12 @@ namespace Ignosi::Modules::ECS
         friend ComponentPointer<T>;
 
       public:
+        static const Tag& ComponentTag()
+        {
+            static T component;
+            return component.Tag();
+        }
+
         bool HasComponent(const IEntity* pEntity) const
         {
             return m_EntityLookup.size() > pEntity->ID().ID && m_EntityLookup[pEntity->ID().ID].ID < m_Components.size();

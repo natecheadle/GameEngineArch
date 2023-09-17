@@ -19,7 +19,6 @@ namespace Ignosi::Modules::Render
     class Renderer_OpenGL : public Renderer
     {
         std::unique_ptr<GUI::Window_GLFW> m_pWin;
-        ECS::Tag                          m_Tag;
         static constexpr std::string_view NAME = "Renderer_OpenGL";
 
       public:
@@ -59,7 +58,6 @@ namespace Ignosi::Modules::Render
 
         std::string_view Name() const override { return NAME; }
         std::uint32_t    Priority() const override { return 32; }
-        const ECS::Tag&  Tag() const override { return m_Tag; }
 
       private:
         static bool Validate(void* pVoid);

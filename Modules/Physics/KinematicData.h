@@ -4,11 +4,12 @@
 #include "Units/AngularAcceleration.hpp"
 #include "Units/AngularVelocity.hpp"
 
+#include <IComponent.h>
 #include <LinearAlgebra/Vector3.hpp>
 
 namespace Ignosi::Modules::Physics
 {
-    class KinematicData final
+    class KinematicData final : ECS::IComponent
     {
       public:
         struct Data
@@ -36,6 +37,12 @@ namespace Ignosi::Modules::Physics
 
         KinematicData& operator=(const KinematicData& other) = default;
         KinematicData& operator=(KinematicData&& other)      = default;
+
+        const ECS::Tag& Tag() const override
+        {
+            static const ECS::Tag s_tag = ECS::Tag::Create("KinematicData");
+            return s_tag;
+        }
 
         const Vector3<float>&         Position() const { return m_Data.Position; }
         const Vector3<Radian<float>>& Angle() const { return m_Data.Angle; }
