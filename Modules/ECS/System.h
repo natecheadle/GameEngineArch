@@ -10,7 +10,7 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class System : public ISystem
     {
         SystemID                                      m_ID;
@@ -42,13 +42,13 @@ namespace Ignosi::Modules::ECS
       protected:
         IWorld* World() const { return m_pWorld; }
 
-        template <class ComponentType>
+        template <ComponentObject ComponentType>
         ComponentPool<ComponentType>& GetPool()
         {
             return *std::get<ComponentPool<ComponentType>*>(m_ComponentPools);
         }
 
-        template <class ComponentType>
+        template <ComponentObject ComponentType>
         const ComponentPool<ComponentType>& GetPool() const
         {
             return *std::get<ComponentPool<ComponentType>*>(m_ComponentPools);

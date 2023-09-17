@@ -21,7 +21,7 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class World : public IWorld
     {
         std::tuple<ComponentPool<ComponentTypes>...> m_Pools;

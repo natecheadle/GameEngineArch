@@ -8,7 +8,7 @@ namespace Ignosi::Modules::ECS
     template <ComponentObject T>
     class ComponentPool;
 
-    template <class T>
+    template <ComponentObject T>
     class WeakComponentPointer
     {
         ComponentID       m_ID;

@@ -18,10 +18,10 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class World;
 
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class Entity : public IEntity
     {
         friend class World<ComponentTypes...>;
@@ -104,20 +104,20 @@ namespace Ignosi::Modules::ECS
             std::get<ComponentPointer<T>>(m_Components) = std::move(value);
         }
 
-        template <typename T>
+        template <ComponentObject T>
         void ClearComponent()
         {
             std::get<ComponentPointer<T>>(m_Components).reset();
         }
 
-        template <typename T>
+        template <ComponentObject T>
         void SetComponent(const T& val)
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
             *pComponent      = val;
         }
 
-        template <typename T>
+        template <ComponentObject T>
         WeakComponentPointer<T> GetComponent() const
         {
             auto& pComponent = std::get<ComponentPointer<T>>(m_Components);
