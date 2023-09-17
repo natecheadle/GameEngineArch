@@ -40,7 +40,7 @@ namespace Ignosi::Modules::Physics
 
         const ECS::Tag& Tag() const override
         {
-            static const ECS::Tag s_tag = ECS::Tag::Create("RigidBody2D");
+            static const ECS::Tag s_tag = ECS::Tag::Create("KinematicData");
             return s_tag;
         }
 

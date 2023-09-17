@@ -190,7 +190,12 @@ namespace Ignosi::Modules::ECS
         bool RemoveTag(const Tag& tag, EntityPointer<ComponentTypes...>& pEntity) { return RemoveTag(tag, pEntity.get()); }
 
         const std::vector<EntityID>& AllEntities() const override { return m_LivingEntities; }
-        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const override { return m_TaggedLists.at(tag); }
+        const std::vector<EntityID>& GetEntitiesByTag(const Tag& tag) const override
+        {
+            static const std::vector<EntityID> emptyVector;
+            auto                               it = m_TaggedLists.find(tag);
+            return it != m_TaggedLists.end() ? m_TaggedLists.at(tag) : emptyVector;
+        }
 
         const ResourceManager& Resources() const override { return m_ResourceManager; }
         ResourceManager&       Resources() override { return m_ResourceManager; }
@@ -198,37 +203,21 @@ namespace Ignosi::Modules::ECS
         template <class ComponentType>
         void AddComponent(const IEntity* pEntity)
         {
-            if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
-            {
-                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
-                    std::move(CreateComponent<ComponentType>(pEntity->ID())));
-            }
+            AddComponent(pEntity, ComponentType());
         }
+
         template <class ComponentType>
         void AddComponent(const IEntity* pEntity, ComponentType value)
         {
             if (!std::get<ComponentPool<ComponentType>>(m_Pools).HasComponent(pEntity))
             {
-                m_Entities[pEntity->ID().ID].template InitializeComponent<ComponentType>(
-                    std::move(CreateComponent<ComponentType>(pEntity->ID(), std::move(value))));
+                auto component = CreateComponent<ComponentType>(pEntity->ID(), std::move(value));
+                AddTag(component->Tag(), pEntity->ID());
+                m_Entities[pEntity->ID().ID].template InitializeComponent(std::move(component));
             }
         }
 
       private:
-        template <ComponentObject T>
-        void AddComponent(IEntity* pEntity)
-        {
-            AddComponent(pEntity, T());
-        }
-
-        template <ComponentObject T>
-        void AddComponent(IEntity* pEntity, T&& val)
-        {
-            auto component = CreateComponent<T>(pEntity->ID(), std::move(val));
-            AddTag(component->Tag(), pEntity->ID());
-            m_Entities[pEntity->ID().ID].template InitializeComponent<T>(std::move(component));
-        }
-
         void DestroyEntity(EntityID id)
         {
             assert(id.ID < m_Entities.size());
