@@ -2,7 +2,9 @@
 
 #include "ComponentPointer.h"
 #include "HitShape.h"
+#include "IEntity.h"
 #include "KinematicData.h"
+#include "LinearAlgebra/Vector3.hpp"
 #include "RigidBody2D.h"
 #include "Tag.h"
 
@@ -21,19 +23,24 @@ namespace Ignosi::Modules::Physics
 
     void PhysicsSystem::Update(double dt)
     {
-        float del_t             = static_cast<float>(dt);
-        auto& rigidBodyPool     = GetPool<RigidBody2D>();
-        auto& kinematicDataPool = GetPool<KinematicData>();
-
-        const auto& kinematicEntities = World()->GetEntitiesByTag(ECS::ComponentPool<KinematicData>::ComponentTag());
+        float                      del_t             = static_cast<float>(dt);
+        auto&                      rigidBodyPool     = GetPool<RigidBody2D>();
+        auto&                      kinematicDataPool = GetPool<KinematicData>();
+        std::vector<ECS::EntityID> movingEntities;
+        const auto&                kinematicEntities = World()->GetEntitiesByTag(ECS::ComponentPool<KinematicData>::ComponentTag());
         for (const auto& entity : kinematicEntities)
         {
             auto& kinematicData = kinematicDataPool.GetComponent(World()->GetEntity(entity));
             kinematicData.Update(dt);
+            if (kinematicData.Velocity() != Vector3<float>(0.0f, 0.0f, 0.0f))
+            {
+                movingEntities.push_back(entity);
+            }
         }
 
         const auto& rigidBodyEntities = World()->GetEntitiesByTag(ECS::ComponentPool<RigidBody2D>::ComponentTag());
-        for (const auto& entity1 : rigidBodyEntities)
+
+        for (const auto& entity1 : movingEntities)
         {
             for (const auto& entity2 : rigidBodyEntities)
             {
