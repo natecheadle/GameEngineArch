@@ -57,20 +57,14 @@ namespace Ignosi::BreakOut
         float lvl_width_flt  = static_cast<float>(lvlWidth);
         float lvl_height_flt = static_cast<float>(lvlHeight);
 
-        Wall top(m_pWorld->CreateEntity());
-        Wall left(m_pWorld->CreateEntity());
-        Wall right(m_pWorld->CreateEntity());
-        left.KinematicData()->Position({-0.5f * wall_thickness, lvl_width_flt / 2.0f});
-        right.KinematicData()->Position({0.5f * wall_thickness + lvl_width_flt, lvl_width_flt / 2.0f});
-        top.KinematicData()->Position({lvl_width_flt / 2.0f, -0.5f * wall_thickness});
-
-        top.Body()->HitShape(std::make_unique<Modules::Physics::HitRectangle>(top.KinematicData(), lvl_width_flt, wall_thickness));
-        left.Body()->HitShape(std::make_unique<Modules::Physics::HitRectangle>(left.KinematicData(), wall_thickness, lvl_height_flt));
-        right.Body()->HitShape(std::make_unique<Modules::Physics::HitRectangle>(right.KinematicData(), wall_thickness, lvl_height_flt));
-
-        m_Walls.push_back(std::move(top));
-        m_Walls.push_back(std::move(left));
-        m_Walls.push_back(std::move(right));
+        m_Walls.push_back(
+            Wall(*m_pWorld, Vector2<float>(lvl_width_flt, wall_thickness), Vector2<float>(lvl_width_flt / 2.0f, -0.5f * wall_thickness)));
+        m_Walls.push_back(Wall(
+            *m_pWorld,
+            Vector2<float>(wall_thickness, lvl_height_flt),
+            Vector2<float>(0.5f * wall_thickness + lvl_width_flt, lvl_width_flt / 2.0f)));
+        m_Walls.push_back(
+            Wall(*m_pWorld, Vector2<float>(wall_thickness, lvl_height_flt), Vector2<float>(-0.5f * wall_thickness, lvl_width_flt / 2.0f)));
     }
 
     void Level::Initialize(
@@ -101,39 +95,23 @@ namespace Ignosi::BreakOut
         {
             for (unsigned int x = 0; x < width; ++x)
             {
+                if (tileData[y][x] == 0)
+                    continue;
+
                 Vector2<float> pos({unit_width * static_cast<float>(x), unit_height * static_cast<float>(y)});
                 Vector2<float> size({unit_width, unit_height});
 
-                Brick brick(m_pWorld->CreateEntity(), m_pRenderer);
-                brick.Sprite()->AttachedMaterial(pSolidBlockMat);
-                brick.Sprite()->Size(size);
+                Brick brick(*m_pWorld, size, pos, BrickType(tileData[y][x]));
                 brick.Sprite()->Shader(pProgram);
-                brick.KinematicData()->Position(pos);
-                auto pHitRectangle = std::make_unique<Physics::HitRectangle>(brick.KinematicData());
-                pHitRectangle->Height(unit_height);
-                pHitRectangle->Width(unit_width);
-                brick.Body()->HitShape(std::move(pHitRectangle));
-                brick.Type(static_cast<BrickType>(tileData[y][x]));
-
-                // check block type from level data (2D level array)
-                if (tileData[y][x] == 1) // solid
+                if (brick.Type() == BrickType::Solid)
                 {
-                    brick.Sprite()->Color({0.8f, 0.8f, 0.7f});
+                    brick.Sprite()->AttachedMaterial(pSolidBlockMat);
                 }
-                else if (tileData[y][x] > 1)
+                else
                 {
-                    Render::RGB_Color color = Render::RGB_Color(1.0f, 1.0f, 1.0f); // original: white
-                    if (tileData[y][x] == 2)
-                        color = Render::RGB_Color(0.2f, 0.6f, 1.0f);
-                    else if (tileData[y][x] == 3)
-                        color = Render::RGB_Color(0.0f, 0.7f, 0.0f);
-                    else if (tileData[y][x] == 4)
-                        color = Render::RGB_Color(0.8f, 0.8f, 0.4f);
-                    else if (tileData[y][x] == 5)
-                        color = Render::RGB_Color(1.0f, 0.5f, 0.0f);
-
                     brick.Sprite()->AttachedMaterial(pBlockMat);
                 }
+
                 m_Bricks.push_back(std::move(brick));
             }
         }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BreakOutEntity.h"
-#include "Renderer/Renderer.h"
 
 #include <utility>
 
@@ -9,10 +8,12 @@ namespace Ignosi::BreakOut
 {
     enum class BrickType
     {
-        None     = 0,
-        Solid    = 1,
-        BabyBlue = 2,
-        Green    = 3,
+        None      = 0,
+        Solid     = 1,
+        BabyBlue  = 2,
+        Green     = 3,
+        LightBlue = 4,
+        Orange    = 5
     };
 
     class Brick : public CustomBreakOutEntity
@@ -21,7 +22,7 @@ namespace Ignosi::BreakOut
         std::unique_ptr<Modules::Messaging::EventSubscriber<const Modules::Physics::RigidBody2D&>> m_Subscription;
 
       public:
-        Brick(BreakOutEntityPointer&& entity, Modules::Render::Renderer* pRenderer);
+        Brick(BreakOutWorld& world, Modules::Vector2<float> size, Modules::Vector2<float> position, BrickType type);
         ~Brick();
 
         Brick(Brick&& other);

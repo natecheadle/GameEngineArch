@@ -1,5 +1,6 @@
 #include "Brick.h"
 
+#include <HitRectangle.h>
 #include <PhysicsSystem.h>
 #include <Renderer/Renderer.h>
 #include <World.h>
@@ -10,9 +11,13 @@ using namespace std::placeholders;
 
 namespace Ignosi::BreakOut
 {
-    Brick::Brick(BreakOutEntityPointer&& entity, Modules::Render::Renderer* pRenderer)
-        : CustomBreakOutEntity(std::move(entity))
+    Brick::Brick(BreakOutWorld& world, Modules::Vector2<float> size, Modules::Vector2<float> position, BrickType type)
+        : CustomBreakOutEntity(world.CreateEntity())
+        , m_Type(type)
     {
+        assert(m_Type != BrickType::None);
+
+        Modules::Render::Renderer* pRenderer = World()->GetSystem<Modules::Render::Renderer>();
         World()->AddComponent<Modules::Physics::KinematicData>(Entity());
         World()->AddComponent<Modules::Render::Sprite>(
             Entity(),
@@ -21,8 +26,20 @@ namespace Ignosi::BreakOut
 
         World()->RegisterEntityInSystem(*pRenderer, Entity());
         World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
-
         m_Subscription = Body()->SubscribeOnCollision(std::bind(&Brick::OnCollision, this, _1));
+
+        Sprite()->Size(size);
+        Body()->HitShape(std::make_unique<Modules::Physics::HitRectangle>(KinematicData(), size.x(), size.y()));
+        KinematicData()->Position(position);
+
+        switch (m_Type)
+        {
+        case BrickType::Solid: Sprite()->Color({0.8f, 0.8f, 0.7f}); break;
+        case BrickType::BabyBlue: Sprite()->Color({0.2f, 0.6f, 1.0f}); break;
+        case BrickType::Green: Sprite()->Color({0.0f, 0.7f, 0.0f}); break;
+        case BrickType::LightBlue: Sprite()->Color({0.8f, 0.8f, 0.4f}); break;
+        case BrickType::Orange: Sprite()->Color({1.0f, 0.5f, 0.0f}); break;
+        }
     }
 
     Brick::~Brick() {}

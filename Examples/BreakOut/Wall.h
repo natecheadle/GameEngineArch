@@ -2,6 +2,7 @@
 
 #include "BreakOutEntity.h"
 
+#include <LinearAlgebra/Vector2.hpp>
 #include <World.h>
 
 #include <utility>
@@ -11,7 +12,7 @@ namespace Ignosi::BreakOut
     class Wall : CustomBreakOutEntity
     {
       public:
-        Wall(BreakOutEntityPointer&& entity);
+        Wall(BreakOutWorld& world, Modules::Vector2<float> size, Modules::Vector2<float> position);
 
         Wall(Wall&& other)            = default;
         Wall& operator=(Wall&& other) = default;
