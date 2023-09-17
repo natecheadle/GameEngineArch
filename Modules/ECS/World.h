@@ -110,9 +110,7 @@ namespace Ignosi::Modules::ECS
 
             pEntity->Revive();
 
-            (pEntity->template InitializeComponent<Components>(
-                 std::move(CreateComponent<Components>(pEntity->ID(), std::move(components)))),
-             ...);
+            (AddComponent<Components>(pEntity, std::move(components)), ...);
 
             return {pEntity->ID(), this};
         }
@@ -220,7 +218,13 @@ namespace Ignosi::Modules::ECS
         template <ComponentObject T>
         void AddComponent(IEntity* pEntity)
         {
-            auto component = CreateComponent<T>(pEntity->ID());
+            AddComponent(pEntity, T());
+        }
+
+        template <ComponentObject T>
+        void AddComponent(IEntity* pEntity, T&& val)
+        {
+            auto component = CreateComponent<T>(pEntity->ID(), std::move(val));
             AddTag(component->Tag(), pEntity->ID());
             m_Entities[pEntity->ID().ID].template InitializeComponent<T>(std::move(component));
         }

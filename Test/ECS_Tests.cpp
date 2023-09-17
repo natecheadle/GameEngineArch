@@ -78,7 +78,10 @@ namespace Ignosi::Test
 
         ASSERT_NO_THROW(World.Update(1.0));
 
-        ASSERT_EQ(*(entity->GetComponent<KinematicData>()), init);
+        KinematicData expected;
+        expected.Pos = Modules::Vector3<float>({0.0, 2.0, 4.0});
+        expected.Vel = Modules::Vector3<float>({-1.0, 0.0, 1.0});
+        ASSERT_EQ(*(entity->GetComponent<KinematicData>()), expected);
     }
 
     TEST(ECS_Tests, ValidateBasicEntityCreateDelete)
