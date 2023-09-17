@@ -1,7 +1,9 @@
 #include "PhysicsSystem.h"
 
+#include "ComponentPointer.h"
 #include "HitShape.h"
 #include "KinematicData.h"
+#include "RigidBody2D.h"
 #include "Tag.h"
 
 #include <LinearAlgebra/Vector2.hpp>
@@ -14,7 +16,6 @@ namespace Ignosi::Modules::Physics
 {
     PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, ECS::ComponentPool<KinematicData>* pKinematicDataPool)
         : ECS::System<RigidBody2D, KinematicData>(pRigidBodyPool, pKinematicDataPool)
-        , m_SystemTag(ECS::Tag::Create(PhysicsSystem::NAME))
     {
     }
 
@@ -24,16 +25,17 @@ namespace Ignosi::Modules::Physics
         auto& rigidBodyPool     = GetPool<RigidBody2D>();
         auto& kinematicDataPool = GetPool<KinematicData>();
 
-        const auto& entities = World()->GetEntitiesByTag(Tag());
-        for (const auto& entity : entities)
+        const auto& kinematicEntities = World()->GetEntitiesByTag(ECS::ComponentPool<KinematicData>::ComponentTag());
+        for (const auto& entity : kinematicEntities)
         {
             auto& kinematicData = kinematicDataPool.GetComponent(World()->GetEntity(entity));
             kinematicData.Update(dt);
         }
 
-        for (const auto& entity1 : entities)
+        const auto& rigidBodyEntities = World()->GetEntitiesByTag(ECS::ComponentPool<RigidBody2D>::ComponentTag());
+        for (const auto& entity1 : rigidBodyEntities)
         {
-            for (const auto& entity2 : entities)
+            for (const auto& entity2 : rigidBodyEntities)
             {
                 if (entity1 == entity2)
                     continue;

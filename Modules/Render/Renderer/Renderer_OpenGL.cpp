@@ -27,7 +27,6 @@ namespace Ignosi::Modules::Render
 {
     Renderer_OpenGL::Renderer_OpenGL(ECS::ComponentPool<Mesh3D>* pMeshPool, ECS::ComponentPool<Sprite>* pSpritePool)
         : Renderer(pMeshPool, pSpritePool)
-        , m_Tag(ECS::Tag::Create(NAME))
     {
     }
 

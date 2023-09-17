@@ -127,7 +127,6 @@ namespace Ignosi::Modules::ECS
       private:
         bool AddTag(const Tag& value)
         {
-
             if (std::find(m_Tags.begin(), m_Tags.end(), value) == m_Tags.end())
             {
                 m_Tags.push_back(value);

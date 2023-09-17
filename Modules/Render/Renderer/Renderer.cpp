@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "3D/Sprite.h"
+#include "ComponentPool.h"
 #include "Renderer_OpenGL.h"
 
 #include <algorithm>
@@ -29,32 +31,30 @@ namespace Ignosi::Modules::Render
         auto& meshpool   = GetPool<Mesh3D>();
         auto& spritepool = GetPool<Sprite>();
 
-        const auto& entities = World()->GetEntitiesByTag(Tag());
-        for (const auto& entity : entities)
+        const auto& meshEntities   = World()->GetEntitiesByTag(ECS::ComponentPool<Mesh3D>::ComponentTag());
+        const auto& spriteEntities = World()->GetEntitiesByTag(ECS::ComponentPool<Sprite>::ComponentTag());
+        for (const auto& entity : meshEntities)
         {
-            if (meshpool.HasComponent(World()->GetEntity(entity)))
-            {
-                auto&       mesh    = meshpool.GetComponent(World()->GetEntity(entity));
-                const auto& pShader = mesh.Shader();
+            auto&       mesh    = meshpool.GetComponent(World()->GetEntity(entity));
+            const auto& pShader = mesh.Shader();
 
-                pShader->Use();
-                pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
-                pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
-                pShader->SetShaderVar("projection", m_pCamera->Projection());
+            pShader->Use();
+            pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
+            pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+            pShader->SetShaderVar("projection", m_pCamera->Projection());
 
-                mesh.Draw();
-            }
-            if (spritepool.HasComponent(World()->GetEntity(entity)))
-            {
-                auto& sprite = spritepool.GetComponent(World()->GetEntity(entity));
+            mesh.Draw();
+        }
+        for (const auto& entity : spriteEntities)
+        {
+            auto& sprite = spritepool.GetComponent(World()->GetEntity(entity));
 
-                const auto& pShader = sprite.Shader();
-                pShader->Use();
-                pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
-                pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
-                pShader->SetShaderVar("projection", m_pCamera->Projection());
-                sprite.Draw();
-            }
+            const auto& pShader = sprite.Shader();
+            pShader->Use();
+            pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
+            pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+            pShader->SetShaderVar("projection", m_pCamera->Projection());
+            sprite.Draw();
         }
 
         SwapBuffers();

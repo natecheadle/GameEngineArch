@@ -5,6 +5,7 @@
 #include "KinematicData.h"
 
 #include <Event.hpp>
+#include <IComponent.h>
 #include <LinearAlgebra/Vector2.hpp>
 
 #include <algorithm>
@@ -16,7 +17,7 @@ namespace Ignosi::Modules::Physics
 {
     class PhysicsSystem;
 
-    class RigidBody2D
+    class RigidBody2D : ECS::IComponent
     {
         std::unique_ptr<Physics::HitShape> m_HitShape;
         bool                               m_IsFixed{true};
@@ -37,6 +38,12 @@ namespace Ignosi::Modules::Physics
         RigidBody2D& operator=(RigidBody2D&& other)      = default;
 
         void Update(float dt);
+
+        const ECS::Tag& Tag() const override
+        {
+            static const ECS::Tag s_tag = ECS::Tag::Create("RigidBody2D");
+            return s_tag;
+        }
 
         std::unique_ptr<Messaging::EventSubscriber<const RigidBody2D&>> SubscribeOnCollision(
             std::function<void(const RigidBody2D& other)> func)

@@ -148,9 +148,6 @@ class TestApp : public App::App
             m_Cubes[i].KinematicData()->AngularVelocity({rotSpeed, 0.0, 0.0});
             m_Cubes[i].Mesh()->Shader(m_pShader);
             m_Cubes[i].Mesh()->AttachedMaterial(cubeMaterial);
-
-            m_pWorld->RegisterEntityInSystem(*m_pRenderer, m_Cubes[i].Entity());
-            m_pWorld->RegisterEntityInSystem(*m_pPhysicsSystem, m_Cubes[i].Entity());
         }
 
         m_pCamera = std::make_shared<Render::Fly_Camera>(m_pWindow);

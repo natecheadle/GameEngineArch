@@ -74,9 +74,6 @@ namespace Ignosi::Test
         {
             m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
             m_Entities.push_back(m_World.CreateEntity<Physics::RigidBody2D, Physics::KinematicData>());
-
-            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[0]);
-            m_World.RegisterEntityInSystem(*m_PhysicsSystem, m_Entities[1]);
         }
     };
 

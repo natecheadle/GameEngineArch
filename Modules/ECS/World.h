@@ -3,6 +3,7 @@
 #include "ComponentPool.h"
 #include "Entity.h"
 #include "EntityPointer.h"
+#include "IComponent.h"
 #include "IEntity.h"
 #include "ISystem.h"
 #include "ResourceManager.h"
@@ -108,6 +109,7 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
+
             (pEntity->template InitializeComponent<Components>(
                  std::move(CreateComponent<Components>(pEntity->ID(), std::move(components)))),
              ...);
@@ -135,7 +137,8 @@ namespace Ignosi::Modules::ECS
             m_ToAdd.push_back(pEntity->ID());
 
             pEntity->Revive();
-            (pEntity->template InitializeComponent<Components>(std::move(CreateComponent<Components>(pEntity->ID()))), ...);
+
+            (AddComponent<Components>(pEntity), ...);
 
             return {pEntity->ID(), this};
         }
@@ -163,13 +166,6 @@ namespace Ignosi::Modules::ECS
 
             return pReturn;
         }
-
-        template <class... Components>
-        void RegisterEntityInSystem(const System<Components...>& system, EntityPointer<ComponentTypes...>& pEntity)
-        {
-            RegisterEntityInSystem(system, pEntity.get());
-        }
-        void RegisterEntityInSystem(const ISystem& system, const IEntity* pEntity) override { AddTag(system.Tag(), pEntity->ID()); }
 
         bool AddTag(const Tag& tag, EntityID entity) override
         {
@@ -221,6 +217,14 @@ namespace Ignosi::Modules::ECS
         }
 
       private:
+        template <ComponentObject T>
+        void AddComponent(IEntity* pEntity)
+        {
+            auto component = CreateComponent<T>(pEntity->ID());
+            AddTag(component->Tag(), pEntity->ID());
+            m_Entities[pEntity->ID().ID].template InitializeComponent<T>(std::move(component));
+        }
+
         void DestroyEntity(EntityID id)
         {
             assert(id.ID < m_Entities.size());

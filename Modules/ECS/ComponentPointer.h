@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ComponentID.h"
+#include "IComponent.h"
 
 namespace Ignosi::Modules::ECS
 {
-    template <class T>
+    template <ComponentObject T>
     class ComponentPool;
 
     template <class T>
