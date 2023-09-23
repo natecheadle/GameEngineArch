@@ -8,7 +8,7 @@
 
 namespace Ignosi::Modules::Render
 {
-    void Shader::LoadShaderCode(const std::filesystem::path& shaderLoc)
+    Shader::Shader(const std::filesystem::path& shaderLoc)
     {
         std::ifstream shaderFile(shaderLoc);
         if (!shaderFile.is_open())

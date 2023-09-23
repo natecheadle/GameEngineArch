@@ -26,7 +26,7 @@ namespace Ignosi::Modules::Render
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>());
 
       protected:
-        OpenGL_Shader() = default;
+        OpenGL_Shader(const std::filesystem::path& shaderLoc);
 
         virtual unsigned int CreateGLShader() = 0;
 

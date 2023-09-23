@@ -15,6 +15,11 @@
 
 namespace Ignosi::Modules::Render
 {
+    OpenGL_Shader::OpenGL_Shader(const std::filesystem::path& shaderLoc)
+        : Shader(shaderLoc)
+    {
+    }
+
     OpenGL_Shader::~OpenGL_Shader()
     {
         glDeleteShader(m_ID);
@@ -24,7 +29,7 @@ namespace Ignosi::Modules::Render
         const std::filesystem::path&              shaderLoc,
         const std::vector<std::filesystem::path>& inc_paths)
     {
-        std::string extension = shaderLoc.extension().string();
+        const std::string& extension = shaderLoc.extension().string();
         if (extension == ".vert")
         {
             return Create(shaderLoc, ShaderType::Vertex, inc_paths);
@@ -56,14 +61,13 @@ namespace Ignosi::Modules::Render
 
         switch (type)
         {
-        case ShaderType::Fragment: pNewObj = std::make_unique<Fragment_OpenGL_Shader>(); break;
-        case ShaderType::Vertex: pNewObj = std::make_unique<Vertex_OpenGL_Shader>(); break;
-        case ShaderType::Compute: pNewObj = std::make_unique<Compute_OpenGL_Shader>(); break;
-        case ShaderType::Geometry: pNewObj = std::make_unique<Geometry_OpenGL_Shader>(); break;
+        case ShaderType::Fragment: pNewObj = std::make_unique<Fragment_OpenGL_Shader>(shaderLoc); break;
+        case ShaderType::Vertex: pNewObj = std::make_unique<Vertex_OpenGL_Shader>(shaderLoc); break;
+        case ShaderType::Compute: pNewObj = std::make_unique<Compute_OpenGL_Shader>(shaderLoc); break;
+        case ShaderType::Geometry: pNewObj = std::make_unique<Geometry_OpenGL_Shader>(shaderLoc); break;
         default: throw std::invalid_argument(fmt::format("Unsupported Shader Type {}.", int(type)));
         }
 
-        pNewObj->LoadShaderCode(shaderLoc);
         pNewObj->ID(pNewObj->CreateGLShader());
         pNewObj->Compile(inc_paths);
 
