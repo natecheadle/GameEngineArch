@@ -7,6 +7,8 @@ bin
 *.profraw
 
 #ignore IDE specific files
+.cache
+compile_commands.json
 .vscode
 .vs
 .idea
@@ -17,3 +19,4 @@ CMakeSettings.json
 #python
 .venv
 *.ipynb
+
