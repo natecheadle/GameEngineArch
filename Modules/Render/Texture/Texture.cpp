@@ -2,8 +2,9 @@
 
 namespace Ignosi::Modules::Render
 {
-    Texture::Texture(enum TextureUnit unit)
-        : m_Unit(unit)
+    Texture::Texture(const std::string& name, enum TextureUnit unit)
+        : ECS::Resource(name)
+        , m_Unit(unit)
     {
     }
 

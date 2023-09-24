@@ -72,8 +72,11 @@ namespace Ignosi::Modules::Render
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(
+            const std::string&           textureName,
+            const std::filesystem::path& path,
+            TextureUnit                  unit)                                                                                                    = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) = 0;
 
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;

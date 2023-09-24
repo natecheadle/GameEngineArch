@@ -5,12 +5,13 @@
 #include <filesystem>
 #include <map>
 #include <memory>
+#include <string_view>
 
 namespace Ignosi::Modules::ECS
 {
     class ResourceManager
     {
-        std::map<std::filesystem::path, std::unique_ptr<Resource>> m_Resources;
+        std::map<std::string_view, std::unique_ptr<Resource>> m_Resources;
 
       public:
         ResourceManager() = default;
@@ -22,7 +23,7 @@ namespace Ignosi::Modules::ECS
         ResourceManager& operator=(ResourceManager&& other)      = default;
 
         Resource*                 LoadResource(std::unique_ptr<Resource> pResource);
-        std::unique_ptr<Resource> UnloadResource(std::filesystem::path& path);
-        Resource*                 GetResource(const std::filesystem::path& path) const;
+        std::unique_ptr<Resource> UnloadResource(std::string_view name);
+        Resource*                 GetResource(std::string_view name) const;
     };
 } // namespace Ignosi::Modules::ECS

@@ -9,7 +9,7 @@
 namespace Ignosi::Modules::Render
 {
     Shader::Shader(const std::filesystem::path& shaderLoc)
-        : ECS::Resource(shaderLoc)
+        : ECS::Resource(shaderLoc.string())
     {
         const std::ifstream shaderFile(shaderLoc);
         if (!shaderFile.is_open())

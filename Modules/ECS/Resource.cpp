@@ -3,8 +3,8 @@
 namespace Ignosi::Modules::ECS
 {
 
-    Resource::Resource(const std::filesystem::path& path)
-        : m_ResourcePath(path)
+    Resource::Resource(const std::string& name)
     {
+        m_ID.Name = name;
     }
 } // namespace Ignosi::Modules::ECS

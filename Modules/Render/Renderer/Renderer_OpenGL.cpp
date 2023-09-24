@@ -71,7 +71,7 @@ namespace Ignosi::Modules::Render
 
     Shader* Renderer_OpenGL::CreateShader(const std::filesystem::path& path, const std::vector<std::filesystem::path>& inc_paths)
     {
-        auto pResource = World()->Resources().GetResource(path);
+        auto pResource = World()->Resources().GetResource(path.string());
         if (pResource)
         {
             return DebugCast<Shader*>(pResource);
@@ -84,7 +84,7 @@ namespace Ignosi::Modules::Render
         ShaderType                                type,
         const std::vector<std::filesystem::path>& inc_paths)
     {
-        auto pResource = World()->Resources().GetResource(path);
+        auto pResource = World()->Resources().GetResource(path.string());
         if (pResource)
         {
             return DebugCast<Shader*>(pResource);
@@ -100,14 +100,17 @@ namespace Ignosi::Modules::Render
         return std::make_unique<OpenGL_ShaderProgram>(pFragmentShader, pGeometryShader, pVertexShader);
     }
 
-    std::unique_ptr<Texture> Renderer_OpenGL::CreateTexture(const std::filesystem::path& path, TextureUnit unit)
+    std::unique_ptr<Texture> Renderer_OpenGL::CreateTexture(
+        const std::string&           textureName,
+        const std::filesystem::path& path,
+        TextureUnit                  unit)
     {
-        return std::make_unique<OpenGL_Texture>(path, unit);
+        return std::make_unique<OpenGL_Texture>(textureName, path, unit);
     }
 
-    std::unique_ptr<Texture> Renderer_OpenGL::CreateTexture(const ImageFile& image, TextureUnit unit)
+    std::unique_ptr<Texture> Renderer_OpenGL::CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit)
     {
-        return std::make_unique<OpenGL_Texture>(image, unit);
+        return std::make_unique<OpenGL_Texture>(textureName, image, unit);
     }
 
     void Renderer_OpenGL::ClearDepthBuffer()
