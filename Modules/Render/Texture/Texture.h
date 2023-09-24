@@ -1,5 +1,8 @@
 #pragma once
+
 #include "ImageFile.h"
+
+#include <Resource.h>
 
 #include <filesystem>
 #include <string>
@@ -27,13 +30,13 @@ namespace Ignosi::Modules::Render
         Texture16,
     };
 
-    class Texture
+    class Texture : ECS::Resource
     {
       private:
         const TextureUnit m_Unit;
 
       protected:
-        Texture(TextureUnit unit);
+        Texture(const std::string& name, TextureUnit unit);
 
       public:
         virtual ~Texture() = default;

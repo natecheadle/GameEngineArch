@@ -8,17 +8,17 @@
 
 namespace Ignosi::Modules::Render
 {
-    OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& path, enum TextureUnit unit)
-        : Texture(unit)
+    OpenGL_Texture::OpenGL_Texture(const std::string& textureName, const std::filesystem::path& imagePath, enum TextureUnit unit)
+        : Texture(textureName, unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
     {
-        ImageFile image(path);
+        const ImageFile image(imagePath);
         InitializeFromImage(image);
     }
 
-    OpenGL_Texture::OpenGL_Texture(const ImageFile& image, enum TextureUnit unit)
-        : Texture(unit)
+    OpenGL_Texture::OpenGL_Texture(const std::string& textureName, const ImageFile& image, enum TextureUnit unit)
+        : Texture(textureName, unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
     {
@@ -49,16 +49,7 @@ namespace Ignosi::Modules::Render
 
         assert(image.GetData());
 
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGB,
-            image.GetWidth(),
-            image.GeHeight(),
-            0,
-            image.GetFormat(),
-            GL_UNSIGNED_BYTE,
-            image.GetData());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.GetWidth(), image.GeHeight(), 0, image.GetFormat(), GL_UNSIGNED_BYTE, image.GetData());
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 

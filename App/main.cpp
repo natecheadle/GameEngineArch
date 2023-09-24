@@ -112,18 +112,19 @@ class TestApp : public App::App
 
         auto cubeMaterial = std::make_shared<Render::Material>();
 
-        cubeMaterial->Diffuse   = m_pRenderer->CreateTexture(cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
-        cubeMaterial->Specular  = m_pRenderer->CreateTexture(cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
+        cubeMaterial->Diffuse = m_pRenderer->CreateTexture("cube_material_1", cont_path, Ignosi::Modules::Render::TextureUnit::Texture0);
+        cubeMaterial->Specular =
+            m_pRenderer->CreateTexture("cube_material_2", cont_spec_path, Ignosi::Modules::Render::TextureUnit::Texture1);
         cubeMaterial->Shininess = 64.0;
 
-        auto pVertexShader   = m_pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
-        auto pFragmentShader = m_pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = m_pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto* pVertexShader   = m_pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto* pFragmentShader = m_pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader             = m_pRenderer->CreateShaderProgram(pFragmentShader, nullptr, pVertexShader);
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
 
-        Vector3<float> cubePositions[] = {
+        const Vector3<float> cubePositions[] = {
             Vector3<float>(0.0f, 0.0f, 0.0f),
             Vector3<float>(2.0f, 5.0f, -15.0f),
             Vector3<float>(-1.5f, -2.2f, -2.5f),
@@ -136,7 +137,7 @@ class TestApp : public App::App
             Vector3<float>(-1.3f, 1.0f, -1.5f)};
 
         static_assert(sizeof(cubePositions) / sizeof(Vector3<float>) == numOfCubes, "Incorrect number of cubes");
-        RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 10.0));
+        const RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 10.0));
         for (size_t i = 0; i < numOfCubes; ++i)
         {
             m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity()));

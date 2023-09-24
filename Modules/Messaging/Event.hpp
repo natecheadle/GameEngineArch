@@ -4,6 +4,7 @@
 
 #include <MutexProtected.hpp>
 
+#include <cassert>
 #include <functional>
 #include <memory>
 #include <vector>

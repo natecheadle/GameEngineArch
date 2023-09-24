@@ -15,6 +15,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 namespace Ignosi::Modules::Render
@@ -184,7 +185,9 @@ namespace Ignosi::Modules::Render
             }
             else
             {
-                std::shared_ptr<Texture> pTex = m_pRenderer->CreateTexture(texPath, static_cast<TextureUnit>(texUnit));
+                std::stringstream ss;
+                ss << "texture" << i;
+                std::shared_ptr<Texture> pTex = m_pRenderer->CreateTexture(ss.str(), texPath, static_cast<TextureUnit>(texUnit));
                 texUnit++;
                 m_LoadedTextures.insert({texPath, pTex});
                 textures.push_back(pTex);

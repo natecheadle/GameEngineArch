@@ -7,7 +7,8 @@ namespace Ignosi::Modules::Render
     class Fragment_OpenGL_Shader : public OpenGL_Shader
     {
       public:
-        Fragment_OpenGL_Shader() = default;
+        Fragment_OpenGL_Shader(const std::filesystem::path& shaderLoc);
+
         ShaderType Type() const override { return ShaderType::Fragment; };
 
       protected:

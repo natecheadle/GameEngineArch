@@ -1,15 +1,24 @@
 #pragma once
 
+#include <UID.hpp>
+
+#include <cstdint>
 #include <filesystem>
 
 namespace Ignosi::Modules::ECS
 {
+    struct ResourceID
+    {
+        std::uint64_t ID = UID();
+        std::string   Name;
+    };
+
     class Resource
     {
-        std::filesystem::path m_ResourcePath;
+        ResourceID m_ID;
 
       protected:
-        Resource(std::filesystem::path path);
+        Resource(const std::string& name);
 
       public:
         virtual ~Resource() = default;
@@ -20,6 +29,6 @@ namespace Ignosi::Modules::ECS
         Resource& operator=(const Resource& other)     = delete;
         Resource& operator=(Resource&& other) noexcept = default;
 
-        const std::filesystem::path& ResourcePath() const { return m_ResourcePath; }
+        const ResourceID& ID() const { return m_ID; }
     };
 } // namespace Ignosi::Modules::ECS
