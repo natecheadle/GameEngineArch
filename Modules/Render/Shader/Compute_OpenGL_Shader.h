@@ -7,7 +7,8 @@ namespace Ignosi::Modules::Render
     class Compute_OpenGL_Shader : public OpenGL_Shader
     {
       public:
-        Compute_OpenGL_Shader() = default;
+        Compute_OpenGL_Shader(const std::filesystem::path& shaderLoc);
+
         ShaderType Type() const override { return ShaderType::Compute; };
 
       protected:

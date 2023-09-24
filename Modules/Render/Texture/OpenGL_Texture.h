@@ -12,8 +12,8 @@ namespace Ignosi::Modules::Render
         const unsigned int m_UnitID;
 
       public:
-        OpenGL_Texture(const std::filesystem::path& path, enum TextureUnit unit);
-        OpenGL_Texture(const ImageFile& image, enum TextureUnit unit);
+        OpenGL_Texture(const std::string& textureName, const std::filesystem::path& imagePath, enum TextureUnit unit);
+        OpenGL_Texture(const std::string& textureName, const ImageFile& image, enum TextureUnit unit);
 
         ~OpenGL_Texture() override;
 

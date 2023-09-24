@@ -4,10 +4,12 @@
 #include "KinematicData.h"
 #include "Renderer/VertexBuffer.h"
 #include "Shader/ShaderProgram.h"
+#include "Tag.h"
 #include "Texture/Texture.h"
 #include "Units/Radian.hpp"
 #include "VertexData.h"
 
+#include <IComponent.h>
 #include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <LinearAlgebra/Vector3.hpp>
 #include <WeakComponentPointer.h>
@@ -21,7 +23,7 @@ namespace Ignosi::Modules::Render
 {
     class Renderer;
 
-    class Mesh3D
+    class Mesh3D : ECS::IComponent
     {
 
         Renderer*                                         m_pRenderer{nullptr};
@@ -55,6 +57,12 @@ namespace Ignosi::Modules::Render
         static Mesh3D CreateCube(Renderer* pRenderer, ECS::WeakComponentPointer<Physics::KinematicData> pPosition);
 
         virtual ~Mesh3D() = default;
+
+        const ECS::Tag& Tag() const override
+        {
+            static const ECS::Tag s_tag = ECS::Tag::Create("Mesh3D");
+            return s_tag;
+        }
 
         void                                  Shader(std::shared_ptr<ShaderProgram> pProgram) { m_pShader = std::move(pProgram); }
         const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }

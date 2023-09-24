@@ -1,7 +1,11 @@
 #include "PhysicsSystem.h"
 
+#include "ComponentPointer.h"
 #include "HitShape.h"
+#include "IEntity.h"
 #include "KinematicData.h"
+#include "LinearAlgebra/Vector3.hpp"
+#include "RigidBody2D.h"
 #include "Tag.h"
 
 #include <LinearAlgebra/Vector2.hpp>
@@ -14,26 +18,31 @@ namespace Ignosi::Modules::Physics
 {
     PhysicsSystem::PhysicsSystem(ECS::ComponentPool<RigidBody2D>* pRigidBodyPool, ECS::ComponentPool<KinematicData>* pKinematicDataPool)
         : ECS::System<RigidBody2D, KinematicData>(pRigidBodyPool, pKinematicDataPool)
-        , m_SystemTag(ECS::Tag::Create(PhysicsSystem::NAME))
     {
     }
 
     void PhysicsSystem::Update(double dt)
     {
-        float del_t             = static_cast<float>(dt);
-        auto& rigidBodyPool     = GetPool<RigidBody2D>();
-        auto& kinematicDataPool = GetPool<KinematicData>();
-
-        const auto& entities = World()->GetEntitiesByTag(Tag());
-        for (const auto& entity : entities)
+        float                      del_t             = static_cast<float>(dt);
+        auto&                      rigidBodyPool     = GetPool<RigidBody2D>();
+        auto&                      kinematicDataPool = GetPool<KinematicData>();
+        std::vector<ECS::EntityID> movingEntities;
+        const auto&                kinematicEntities = World()->GetEntitiesByTag(ECS::ComponentPool<KinematicData>::ComponentTag());
+        for (const auto& entity : kinematicEntities)
         {
             auto& kinematicData = kinematicDataPool.GetComponent(World()->GetEntity(entity));
             kinematicData.Update(dt);
+            if (kinematicData.Velocity() != Vector3<float>(0.0f, 0.0f, 0.0f))
+            {
+                movingEntities.push_back(entity);
+            }
         }
 
-        for (const auto& entity1 : entities)
+        const auto& rigidBodyEntities = World()->GetEntitiesByTag(ECS::ComponentPool<RigidBody2D>::ComponentTag());
+
+        for (const auto& entity1 : movingEntities)
         {
-            for (const auto& entity2 : entities)
+            for (const auto& entity2 : rigidBodyEntities)
             {
                 if (entity1 == entity2)
                     continue;

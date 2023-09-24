@@ -6,10 +6,10 @@
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class World;
 
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class EntityPointer
     {
         friend World<ComponentTypes...>;

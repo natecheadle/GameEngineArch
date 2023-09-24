@@ -32,7 +32,7 @@ namespace Ignosi::Modules::App
             double period{0};
             while (!m_pWindow->ShouldClose())
             {
-                std::chrono::time_point<std::chrono::high_resolution_clock> begin = std::chrono::high_resolution_clock::now();
+                const std::chrono::time_point<std::chrono::high_resolution_clock> begin = std::chrono::high_resolution_clock::now();
 
                 if (m_pWindow->ShouldClose())
                     break;
@@ -40,8 +40,8 @@ namespace Ignosi::Modules::App
                 UpdateApp(period);
                 m_pWorld->Update(period);
 
-                std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
-                period                                                          = std::chrono::duration<double>(end - begin).count();
+                const std::chrono::time_point<std::chrono::high_resolution_clock> end = std::chrono::high_resolution_clock::now();
+                period                                                                = std::chrono::duration<double>(end - begin).count();
             }
         }
         catch (const std::exception& e)

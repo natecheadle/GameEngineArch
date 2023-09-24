@@ -9,7 +9,7 @@ using namespace std::placeholders;
 
 namespace Ignosi::Modules::ECS
 {
-    template <typename... ComponentTypes>
+    template <ComponentObject... ComponentTypes>
     class CustomEntity
     {
         EntityPointer<ComponentTypes...> m_pEntity;
@@ -44,7 +44,7 @@ namespace Ignosi::Modules::ECS
         const std::vector<Tag>&          Tags() const { return m_pEntity->Tags(); }
 
       protected:
-        template <typename Component>
+        template <ComponentObject Component>
         WeakComponentPointer<Component> GetComponent() const
         {
             return m_pEntity->template GetComponent<Component>();

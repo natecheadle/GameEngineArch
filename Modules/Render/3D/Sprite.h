@@ -2,6 +2,7 @@
 
 #include "3D/Material.h"
 #include "3D/RGB_Color.h"
+#include "IComponent.h"
 #include "KinematicData.h"
 #include "LinearAlgebra/Vector3.hpp"
 #include "Renderer/VertexBuffer.h"
@@ -20,7 +21,7 @@ namespace Ignosi::Modules::Render
 {
     class Renderer;
 
-    class Sprite
+    class Sprite : ECS::IComponent
     {
 
         Renderer*                                         m_pRenderer{nullptr};
@@ -58,6 +59,11 @@ namespace Ignosi::Modules::Render
         Sprite& operator=(const Sprite& other)     = default;
         Sprite& operator=(Sprite&& other) noexcept = default;
 
+        const ECS::Tag& Tag() const override
+        {
+            static const ECS::Tag s_tag = ECS::Tag::Create("Sprite");
+            return s_tag;
+        }
         void                                  Shader(std::shared_ptr<ShaderProgram> pProgram) { m_pShader = std::move(pProgram); }
         const std::shared_ptr<ShaderProgram>& Shader() const { return m_pShader; }
 

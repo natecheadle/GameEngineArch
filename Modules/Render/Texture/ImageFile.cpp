@@ -11,8 +11,9 @@
 
 namespace Ignosi::Modules::Render
 {
-    ImageFile::ImageFile(const std::filesystem::path& path)
-        : m_Width(0)
+    ImageFile::ImageFile(const std::filesystem::path& path, bool flipVerticallyOnLoad)
+        : ECS::Resource(path.string())
+        , m_Width(0)
         , m_Height(0)
         , m_Channels(0)
         , m_Format(GL_RED)

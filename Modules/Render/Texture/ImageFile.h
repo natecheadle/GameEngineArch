@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Resource.h>
+
 #include <filesystem>
 
 namespace Ignosi::Modules::Render
 {
-    class ImageFile
+    class ImageFile : ECS::Resource
     {
 
         int                   m_Width;

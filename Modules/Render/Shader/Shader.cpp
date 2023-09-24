@@ -8,9 +8,10 @@
 
 namespace Ignosi::Modules::Render
 {
-    void Shader::LoadShaderCode(const std::filesystem::path& shaderLoc)
+    Shader::Shader(const std::filesystem::path& shaderLoc)
+        : ECS::Resource(shaderLoc.string())
     {
-        std::ifstream shaderFile(shaderLoc);
+        const std::ifstream shaderFile(shaderLoc);
         if (!shaderFile.is_open())
             throw std::invalid_argument(fmt::format("Shader file [{}] does not exist.", shaderLoc.string()));
 

@@ -1,4 +1,6 @@
+#include "ComponentPointer.h"
 #include "EntityPointer.h"
+#include "IComponent.h"
 #include "LinearAlgebra/Vector3.hpp"
 #include "PoolMemoryBlock.hpp"
 #include "System.h"
@@ -12,11 +14,18 @@
 
 namespace Ignosi::Test
 {
-    struct KinematicData
+    class KinematicData : Modules::ECS::IComponent
     {
+      public:
         Modules::Vector3<float> Pos;
         Modules::Vector3<float> Vel;
-        friend bool             operator==(const KinematicData& lhs, const KinematicData& rhs) = default;
+        friend bool operator==(const KinematicData& lhs, const KinematicData& rhs) { return lhs.Pos == rhs.Pos && lhs.Vel == rhs.Vel; }
+
+        const Modules::ECS::Tag& Tag() const override
+        {
+            static const Modules::ECS::Tag s_tag = Modules::ECS::Tag::Create("KinematicData");
+            return s_tag;
+        }
     };
 
     class TestSystem : public Modules::ECS::System<KinematicData>
@@ -26,7 +35,6 @@ namespace Ignosi::Test
       public:
         TestSystem(Modules::ECS::ComponentPool<KinematicData>* pPool)
             : Modules::ECS::System<KinematicData>(pPool)
-            , m_TestTag(Modules::ECS::Tag::Create("Test System"))
         {
         }
 
@@ -35,7 +43,7 @@ namespace Ignosi::Test
         void             Update(double dt) override
         {
             auto&       pool     = GetPool<KinematicData>();
-            const auto& entities = World()->GetEntitiesByTag(m_TestTag);
+            const auto& entities = World()->GetEntitiesByTag(Modules::ECS::ComponentPool<KinematicData>::ComponentTag());
             for (const auto& enitity : entities)
             {
                 assert(pool.HasComponent(World()->GetEntity(enitity)));
@@ -43,14 +51,15 @@ namespace Ignosi::Test
                 data.Pos += data.Vel * (float)dt;
             }
         }
-        const Modules::ECS::Tag& Tag() const override { return m_TestTag; }
     };
 
     TEST(ECS_Tests, InitWorldAndEntity)
     {
         Modules::ECS::World<KinematicData> World;
 
-        KinematicData init({Modules::Vector3<float>({1.0, 2.0, 3.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
+        KinematicData init;
+        init.Pos = Modules::Vector3<float>({1.0, 2.0, 3.0});
+        init.Vel = Modules::Vector3<float>({-1.0, 0.0, 1.0});
 
         Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>(init);
 
@@ -61,16 +70,19 @@ namespace Ignosi::Test
     {
         Modules::ECS::World<KinematicData> World;
 
-        TestSystem*                                system = World.CreateSystem<TestSystem, KinematicData>();
-        Modules::ECS::EntityPointer<KinematicData> entity =
-            World.CreateEntity<KinematicData>({Modules::Vector3<float>({1.0, 2.0, 3.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
+        KinematicData init;
+        init.Pos = Modules::Vector3<float>({1.0, 2.0, 3.0});
+        init.Vel = Modules::Vector3<float>({-1.0, 0.0, 1.0});
 
-        World.RegisterEntityInSystem(*system, entity);
+        TestSystem*                                system = World.CreateSystem<TestSystem, KinematicData>();
+        Modules::ECS::EntityPointer<KinematicData> entity = World.CreateEntity<KinematicData>(init);
+
         ASSERT_NO_THROW(World.Update(1.0));
 
-        KinematicData expect({Modules::Vector3<float>({0.0, 2.0, 4.0}), Modules::Vector3<float>({-1.0, 0.0, 1.0})});
-
-        ASSERT_EQ(*(entity->GetComponent<KinematicData>()), expect);
+        KinematicData expected;
+        expected.Pos = Modules::Vector3<float>({0.0, 2.0, 4.0});
+        expected.Vel = Modules::Vector3<float>({-1.0, 0.0, 1.0});
+        ASSERT_EQ(*(entity->GetComponent<KinematicData>()), expected);
     }
 
     TEST(ECS_Tests, ValidateBasicEntityCreateDelete)

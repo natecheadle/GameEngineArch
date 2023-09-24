@@ -19,7 +19,6 @@ namespace Ignosi::Modules::Render
     class Renderer_OpenGL : public Renderer
     {
         std::unique_ptr<GUI::Window_GLFW> m_pWin;
-        ECS::Tag                          m_Tag;
         static constexpr std::string_view NAME = "Renderer_OpenGL";
 
       public:
@@ -37,10 +36,10 @@ namespace Ignosi::Modules::Render
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) override;
 
-        std::unique_ptr<Shader> CreateShader(
+        Shader* CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
-        std::unique_ptr<Shader> CreateShader(
+        Shader* CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
@@ -50,8 +49,8 @@ namespace Ignosi::Modules::Render
             const Shader* pGeometryShader,
             const Shader* pVertexShader) final;
 
-        std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) final;
-        std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit) final;
+        std::unique_ptr<Texture> CreateTexture(const std::string& textureName, const std::filesystem::path& path, TextureUnit unit) final;
+        std::unique_ptr<Texture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) final;
 
         void ClearDepthBuffer() override;
         void ClearColorBuffer() override;
@@ -59,7 +58,6 @@ namespace Ignosi::Modules::Render
 
         std::string_view Name() const override { return NAME; }
         std::uint32_t    Priority() const override { return 32; }
-        const ECS::Tag&  Tag() const override { return m_Tag; }
 
       private:
         static bool Validate(void* pVoid);

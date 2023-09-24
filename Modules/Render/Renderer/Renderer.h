@@ -59,10 +59,10 @@ namespace Ignosi::Modules::Render
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) = 0;
 
-        virtual std::unique_ptr<Shader> CreateShader(
+        virtual Shader* CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
-        virtual std::unique_ptr<Shader> CreateShader(
+        virtual Shader* CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
@@ -72,8 +72,11 @@ namespace Ignosi::Modules::Render
             const Shader* pGeometryShader,
             const Shader* pVertexShader) = 0;
 
-        virtual std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) = 0;
-        virtual std::unique_ptr<Texture> CreateTexture(const ImageFile& image, TextureUnit unit)            = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(
+            const std::string&           textureName,
+            const std::filesystem::path& path,
+            TextureUnit                  unit)                                                                                                    = 0;
+        virtual std::unique_ptr<Texture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) = 0;
 
         virtual void ClearDepthBuffer() = 0;
         virtual void ClearColorBuffer() = 0;

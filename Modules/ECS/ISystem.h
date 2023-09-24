@@ -29,10 +29,8 @@ namespace Ignosi::Modules::ECS
         virtual SystemID ID() const                              = 0;
         virtual void     Initialize(SystemID id, IWorld* pWorld) = 0;
 
-        virtual std::string_view Name() const                                         = 0;
-        virtual const Tag&       Tag() const                                          = 0;
-        virtual std::uint32_t    Priority() const                                     = 0;
-        virtual void             Update(double dt)                                    = 0;
-        virtual bool             EntityHasNecessaryComponents(IEntity* pEntity) const = 0;
+        virtual std::string_view Name() const      = 0;
+        virtual std::uint32_t    Priority() const  = 0;
+        virtual void             Update(double dt) = 0;
     };
 } // namespace Ignosi::Modules::ECS
