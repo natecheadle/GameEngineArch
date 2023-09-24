@@ -47,9 +47,9 @@ namespace Ignosi::Modules::Render
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        assert(image.GetData());
+        assert(image.Data());
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.GetWidth(), image.GeHeight(), 0, image.GetFormat(), GL_UNSIGNED_BYTE, image.GetData());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.Width(), image.Height(), 0, image.Format(), GL_UNSIGNED_BYTE, image.Data());
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 

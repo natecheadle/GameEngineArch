@@ -11,7 +11,7 @@
 
 namespace Ignosi::Modules::Render
 {
-    ImageFile::ImageFile(const std::filesystem::path& path, bool flipVerticallyOnLoad)
+    ImageFile::ImageFile(const std::filesystem::path& path)
         : ECS::Resource(path.string())
         , m_Width(0)
         , m_Height(0)
