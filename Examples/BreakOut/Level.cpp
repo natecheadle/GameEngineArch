@@ -87,8 +87,8 @@ namespace Ignosi::BreakOut
         std::shared_ptr<Render::Material> pBlockMat      = std::make_shared<Render::Material>();
         std::shared_ptr<Render::Material> pSolidBlockMat = std::make_shared<Render::Material>();
 
-        pBlockMat->Diffuse      = m_pRenderer->CreateTexture(block_path, Render::TextureUnit::Texture0);
-        pSolidBlockMat->Diffuse = m_pRenderer->CreateTexture(solid_block_path, Render::TextureUnit::Texture0);
+        pBlockMat->Diffuse      = m_pRenderer->CreateTexture("block_texture", block_path, Render::TextureUnit::Texture0);
+        pSolidBlockMat->Diffuse = m_pRenderer->CreateTexture("solid_block_texture", solid_block_path, Render::TextureUnit::Texture0);
 
         // initialize level tiles based on tileData
         for (unsigned int y = 0; y < height; ++y)

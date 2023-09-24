@@ -24,8 +24,6 @@ namespace Ignosi::BreakOut
             Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>()));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
 
-        World()->RegisterEntityInSystem(*pRenderer, Entity());
-        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
         m_Subscription = Body()->SubscribeOnCollision(std::bind(&Brick::OnCollision, this, _1));
 
         Sprite()->Size(size);
@@ -39,6 +37,7 @@ namespace Ignosi::BreakOut
         case BrickType::Green: Sprite()->Color({0.0f, 0.7f, 0.0f}); break;
         case BrickType::LightBlue: Sprite()->Color({0.8f, 0.8f, 0.4f}); break;
         case BrickType::Orange: Sprite()->Color({1.0f, 0.5f, 0.0f}); break;
+        default: break;
         }
     }
 

@@ -54,17 +54,17 @@ namespace Ignosi::BreakOut
         auto* pRenderer = m_pWorld->GetSystem<Render::Renderer>();
 
         Modules::Render::ImageFile background(background_path);
-        pBackMat->Diffuse = pRenderer->CreateTexture(background, Modules::Render::TextureUnit::Texture0);
+        pBackMat->Diffuse = pRenderer->CreateTexture("background", background, Modules::Render::TextureUnit::Texture0);
 
         Modules::Render::ImageFile paddle(paddle_path);
-        pPaddleMat->Diffuse = pRenderer->CreateTexture(paddle, Render::TextureUnit::Texture0);
+        pPaddleMat->Diffuse = pRenderer->CreateTexture("paddle", paddle, Render::TextureUnit::Texture0);
 
         Modules::Render::ImageFile ball(ball_path);
-        pBallMat->Diffuse = pRenderer->CreateTexture(ball, Render::TextureUnit::Texture0);
+        pBallMat->Diffuse = pRenderer->CreateTexture("ball", ball, Render::TextureUnit::Texture0);
 
-        auto pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
-        auto pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        auto* pVertexShader   = pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
+        auto* pFragmentShader = pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
+        m_pShader             = pRenderer->CreateShaderProgram(pFragmentShader, nullptr, pVertexShader);
 
         auto pCamera = std::make_unique<Render::Camera>(m_pWindow);
         pCamera->Near(-1.0);

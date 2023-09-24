@@ -14,8 +14,6 @@ namespace Ignosi::BreakOut
         World()->AddComponent<Modules::Physics::KinematicData>(Entity());
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
 
-        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
-
         Body()->HitShape(std::make_unique<Modules::Physics::HitRectangle>(KinematicData(), size.x(), size.y()));
         KinematicData()->Position(position);
     }

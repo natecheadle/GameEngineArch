@@ -16,9 +16,6 @@ namespace Ignosi::BreakOut
             Entity(),
             Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>(), aspectRatio));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
-
-        World()->RegisterEntityInSystem(*pRenderer, Entity());
-        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
     }
 
 } // namespace Ignosi::BreakOut

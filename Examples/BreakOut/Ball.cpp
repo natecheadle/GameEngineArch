@@ -25,9 +25,6 @@ namespace Ignosi::BreakOut
             Modules::Render::Sprite(pRenderer, GetComponent<Modules::Physics::KinematicData>()));
         World()->AddComponent<Modules::Physics::RigidBody2D>(Entity(), GetComponent<Modules::Physics::KinematicData>());
 
-        World()->RegisterEntityInSystem(*pRenderer, Entity());
-        World()->RegisterEntityInSystem(*(World()->GetSystem<Modules::Physics::PhysicsSystem>()), Entity());
-
         Sprite()->SizeX(m_Radius * 2);
         Sprite()->SizeY(m_Radius * 2);
         Body()->HitShape(std::make_unique<Modules::Physics::HitCircle>(KinematicData(), m_Radius));
