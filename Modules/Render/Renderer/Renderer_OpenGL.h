@@ -36,10 +36,10 @@ namespace Ignosi::Modules::Render
             std::span<const float>         vertexes,
             std::span<const std::uint32_t> indeces) override;
 
-        std::unique_ptr<Shader> CreateShader(
+        Shader* CreateShader(
             const std::filesystem::path&              path,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;
-        std::unique_ptr<Shader> CreateShader(
+        Shader* CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) final;

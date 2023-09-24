@@ -69,19 +69,27 @@ namespace Ignosi::Modules::Render
         return std::make_unique<VertexBuffer_OpenGL>(config, vertexes, indeces);
     }
 
-    std::unique_ptr<Shader> Renderer_OpenGL::CreateShader(
-        const std::filesystem::path&              path,
-        const std::vector<std::filesystem::path>& inc_paths)
+    Shader* Renderer_OpenGL::CreateShader(const std::filesystem::path& path, const std::vector<std::filesystem::path>& inc_paths)
     {
-        return OpenGL_Shader::Create(path, inc_paths);
+        auto pResource = World()->Resources().GetResource(path);
+        if (pResource)
+        {
+            return DebugCast<Shader*>(pResource);
+        }
+        return DebugCast<Shader*>(World()->Resources().LoadResource(OpenGL_Shader::Create(path, inc_paths)));
     }
 
-    std::unique_ptr<Shader> Renderer_OpenGL::CreateShader(
+    Shader* Renderer_OpenGL::CreateShader(
         const std::filesystem::path&              path,
         ShaderType                                type,
         const std::vector<std::filesystem::path>& inc_paths)
     {
-        return OpenGL_Shader::Create(path, type, inc_paths);
+        auto pResource = World()->Resources().GetResource(path);
+        if (pResource)
+        {
+            return DebugCast<Shader*>(pResource);
+        }
+        return DebugCast<Shader*>(World()->Resources().LoadResource(OpenGL_Shader::Create(path, type, inc_paths)));
     }
 
     std::unique_ptr<ShaderProgram> Renderer_OpenGL::CreateShaderProgram(

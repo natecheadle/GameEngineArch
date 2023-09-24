@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Resource.h"
+
 #include <filesystem>
 #include <string>
 
@@ -15,7 +17,7 @@ namespace Ignosi::Modules::Render
         LAST
     };
 
-    class Shader
+    class Shader : public ECS::Resource
     {
       private:
         std::filesystem::path m_ShaderLoc;

@@ -17,14 +17,10 @@
 
 namespace Ignosi::Modules::Render
 {
-    OpenGL_ShaderProgram::OpenGL_ShaderProgram(
-        const Shader* pFragmentShader,
-        const Shader* pGeometryShader,
-        const Shader* pVertexShader)
+    OpenGL_ShaderProgram::OpenGL_ShaderProgram(const Shader* pFragmentShader, const Shader* pGeometryShader, const Shader* pVertexShader)
         : m_ID(glCreateProgram())
     {
-        std::stringstream error;
-        int               success{0};
+        int success{0};
 
         if (pFragmentShader)
         {

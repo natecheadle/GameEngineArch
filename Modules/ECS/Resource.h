@@ -9,7 +9,7 @@ namespace Ignosi::Modules::ECS
         std::filesystem::path m_ResourcePath;
 
       protected:
-        Resource(std::filesystem::path path);
+        Resource(const std::filesystem::path& path);
 
       public:
         virtual ~Resource() = default;

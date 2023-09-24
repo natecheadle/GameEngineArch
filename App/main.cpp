@@ -118,7 +118,7 @@ class TestApp : public App::App
 
         auto pVertexShader   = m_pRenderer->CreateShader(vertex_shader_path, {shader_inc_dir});
         auto pFragmentShader = m_pRenderer->CreateShader(fragment_shader_path, {shader_inc_dir});
-        m_pShader            = m_pRenderer->CreateShaderProgram(pFragmentShader.get(), nullptr, pVertexShader.get());
+        m_pShader            = m_pRenderer->CreateShaderProgram(pFragmentShader, nullptr, pVertexShader);
 
         const size_t numOfCubes{10};
         m_Cubes.reserve(numOfCubes);
