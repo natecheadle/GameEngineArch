@@ -44,7 +44,7 @@ namespace Ignosi::Modules::Render
             }
             else
             {
-                float asp_inv = 1.0f / aspectRatio;
+                const float asp_inv = 1.0f / aspectRatio;
                 for (auto& point : spritePoints)
                 {
                     point.Position[0] *= asp_inv;
@@ -114,7 +114,8 @@ namespace Ignosi::Modules::Render
         if (m_pShader)
         {
             m_pShader->SetShaderVar("model", ModelMatrix());
-            m_pShader->SetShaderVar("norm_mat", NormalMatrix());
+            m_pShader->SetShaderVar("spriteColor", Color().Data());
+
             if (m_pMaterial)
             {
                 m_pShader->SetShaderVar("material", *m_pMaterial);

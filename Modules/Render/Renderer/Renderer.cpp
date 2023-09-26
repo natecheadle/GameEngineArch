@@ -51,9 +51,7 @@ namespace Ignosi::Modules::Render
 
             const auto& pShader = sprite.Shader();
             pShader->Use();
-            pShader->SetShaderVar("view", m_pCamera->ViewPerspective());
-            pShader->SetShaderVar("viewPos", m_pCamera->CameraPosition());
-            pShader->SetShaderVar("projection", m_pCamera->Projection());
+            pShader->SetShaderVar("projection", m_pCamera->ViewOrthographic());
             sprite.Draw();
         }
 
