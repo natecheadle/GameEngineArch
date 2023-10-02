@@ -22,11 +22,20 @@ namespace Ignosi::Modules::ECS
             m_pEntity->AttachOnUpdate(std::bind(&CustomEntity<ComponentTypes...>::OnUpdate, this, _1));
         }
 
-        CustomEntity(CustomEntity& other)           = delete;
-        CustomEntity(CustomEntity&& other) noexcept = default;
+        CustomEntity(CustomEntity& other) = delete;
+        CustomEntity(CustomEntity&& other) noexcept
+        {
+            m_pEntity = std::move(other.m_pEntity);
+            m_pEntity->AttachOnUpdate(std::bind(&CustomEntity<ComponentTypes...>::OnUpdate, this, _1));
+        }
 
-        CustomEntity& operator=(const CustomEntity& other)     = delete;
-        CustomEntity& operator=(CustomEntity&& other) noexcept = default;
+        CustomEntity& operator=(const CustomEntity& other) = delete;
+        CustomEntity& operator=(CustomEntity&& other) noexcept
+        {
+            m_pEntity = std::move(other.m_pEntity);
+            m_pEntity->AttachOnUpdate(std::bind(&CustomEntity<ComponentTypes...>::OnUpdate, this, _1));
+            return *this;
+        }
 
       public:
         virtual ~CustomEntity()

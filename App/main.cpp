@@ -136,7 +136,7 @@ class TestApp : public App::App
             Vector3<float>(-1.3f, 1.0f, -1.5f)};
 
         static_assert(sizeof(cubePositions) / sizeof(Vector3<float>) == numOfCubes, "Incorrect number of cubes");
-        const RadianPerSecond<float> rotSpeed(static_cast<float>(M_PI / 10.0));
+        const RadianPerSecond<float> rotSpeed(static_cast<float>(std::numbers::pi_v<float> / 10.0));
         for (size_t i = 0; i < numOfCubes; ++i)
         {
             m_Cubes.push_back(TestAppEntity(m_pWorld->CreateEntity()));

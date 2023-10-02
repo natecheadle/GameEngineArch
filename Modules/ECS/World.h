@@ -223,7 +223,7 @@ namespace Ignosi::Modules::ECS
             {
                 auto component = CreateComponent<ComponentType>(pEntity->ID(), std::move(value));
                 AddTag(component->Tag(), pEntity->ID());
-                m_Entities[pEntity->ID().ID].template InitializeComponent(std::move(component));
+                m_Entities[pEntity->ID().ID].InitializeComponent(std::move(component));
             }
         }
 
