@@ -27,6 +27,7 @@ namespace Ignosi::BreakOut
         m_pRenderer = m_pWorld->CreateSystem<Modules::Render::Renderer_OpenGL, Render::Mesh3D, Render::Sprite>();
         m_pPhysics  = m_pWorld->CreateSystem<Modules::Physics::PhysicsSystem, Physics::RigidBody2D, Physics::KinematicData>();
         m_pWindow   = m_pRenderer->InitializeWindow(window_size, std::move(window_name));
+        m_pWorld->Window(m_pWindow);
 
         std::filesystem::path shader_dir(std::string_view(SHADER_DIR));
         m_LevelDir = shader_dir / "Levels";
@@ -114,42 +115,9 @@ namespace Ignosi::BreakOut
         m_pBall.reset();
     }
 
-    void BreakOutApp::UpdateApp(double time)
+    void BreakOutApp::UpdateApp(double /* time */)
     {
         m_pWindow->ExecuteWithKeyStates([this](const GUI::KeyStateMap& keyStates) {
-            if ((keyStates[GUI::Key::Left].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Left].first == GUI::KeyState::Repeat))
-            {
-                if (m_pPaddle->KinematicData()->Position()[0] > 0.0)
-                {
-                    auto pos = m_pPaddle->KinematicData()->Position();
-                    pos.x(pos.x() - PADDLE_SPEED);
-                    m_pPaddle->KinematicData()->Position(pos);
-                    if (m_pBall->IsStuck())
-                    {
-                        pos = m_pBall->KinematicData()->Position();
-                        pos.x(pos.x() - PADDLE_SPEED);
-                        m_pBall->KinematicData()->Position(pos);
-                    }
-                }
-            }
-
-            if ((keyStates[GUI::Key::Right].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Right].first == GUI::KeyState::Repeat))
-            {
-                if (m_pPaddle->KinematicData()->Position()[0] <
-                    static_cast<float>(GetWindow()->GetLastWindowSize().Width()) - m_pPaddle->KinematicData()->Position()[0])
-                {
-                    auto pos = m_pPaddle->KinematicData()->Position();
-                    pos.x(pos.x() + PADDLE_SPEED);
-                    m_pPaddle->KinematicData()->Position(pos);
-                    if (m_pBall->IsStuck())
-                    {
-                        auto pos = m_pBall->KinematicData()->Position();
-                        pos.x(pos.x() + PADDLE_SPEED);
-                        m_pBall->KinematicData()->Position(pos);
-                    }
-                }
-            }
-
             if ((keyStates[GUI::Key::Space].first == GUI::KeyState::Pressed || keyStates[GUI::Key::Space].first == GUI::KeyState::Repeat))
             {
                 m_pBall->Release();

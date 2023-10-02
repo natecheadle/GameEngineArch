@@ -6,6 +6,7 @@
 #include "IComponent.h"
 #include "IEntity.h"
 #include "ISystem.h"
+#include "IWindow.h"
 #include "ResourceManager.h"
 #include "System.h"
 #include "Tag.h"
@@ -40,6 +41,7 @@ namespace Ignosi::Modules::ECS
         std::vector<std::unique_ptr<ISystem>> m_Systems;
 
         ResourceManager m_ResourceManager;
+        GUI::IWindow*   m_pWindow;
 
         friend EntityPointer<ComponentTypes...>;
 
@@ -148,6 +150,11 @@ namespace Ignosi::Modules::ECS
             {
                 pSystem->Update(dt);
             }
+
+            for (auto& entity : m_LivingEntities)
+            {
+                m_Entities[entity.ID].Update(dt);
+            }
         }
 
         template <typename T, class... Components>
@@ -199,6 +206,9 @@ namespace Ignosi::Modules::ECS
 
         const ResourceManager& Resources() const override { return m_ResourceManager; }
         ResourceManager&       Resources() override { return m_ResourceManager; }
+
+        GUI::IWindow* Window() const override { return m_pWindow; }
+        void          Window(GUI::IWindow* value) override { m_pWindow = value; }
 
         template <class ComponentType>
         void AddComponent(const IEntity* pEntity)

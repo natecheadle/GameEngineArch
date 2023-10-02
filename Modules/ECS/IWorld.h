@@ -4,6 +4,11 @@
 #include "ISystem.h"
 #include "ResourceManager.h"
 
+namespace Ignosi::Modules::GUI
+{
+    class IWindow;
+}
+
 namespace Ignosi::Modules::ECS
 {
     class IWorld
@@ -22,5 +27,7 @@ namespace Ignosi::Modules::ECS
         virtual bool                         AddTag(const Tag& tag, EntityID entity)    = 0;
         virtual const ResourceManager&       Resources() const                          = 0;
         virtual ResourceManager&             Resources()                                = 0;
+        virtual GUI::IWindow*                Window() const                             = 0;
+        virtual void                         Window(GUI::IWindow* value)                = 0;
     };
 } // namespace Ignosi::Modules::ECS
