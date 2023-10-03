@@ -32,7 +32,7 @@ namespace Ignosi::BreakOut
         Modules::Physics::PhysicsSystem*                m_pPhysics;
         Modules::GUI::IWindow*                          m_pWindow;
 
-        static constexpr float PADDLE_SPEED = 6.0f; // pixels per update
+        static constexpr float PADDLE_SPEED = 360.0f; // pixels per second
 
       public:
         BreakOutApp(std::unique_ptr<BreakOutWorld> pWorld, const Modules::GUI::WindowSize& window_size, std::string window_name);

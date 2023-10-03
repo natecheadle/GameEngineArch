@@ -94,6 +94,7 @@ namespace Ignosi::BreakOut
         m_pPaddle->Body()->HitShape(
             std::make_unique<Modules::Physics::HitRectangle>(m_pPaddle->KinematicData(), paddleSize[0], paddleSize[1]));
         m_pPaddle->Sprite()->Shader(m_pShader);
+        m_pPaddle->PaddleMoveSpeed(PADDLE_SPEED);
 
         m_pBall = std::make_unique<Ball>(m_pWorld->CreateEntity(), pRenderer);
         m_pBall->Sprite()->AttachedMaterial(std::move(pBallMat));

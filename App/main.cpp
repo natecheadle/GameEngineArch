@@ -210,7 +210,7 @@ int main()
             std::make_unique<ECS::World<Render::Mesh3D, Render::Sprite, Physics::RigidBody2D, Physics::KinematicData>>(),
             {800, 600},
             "Test Window");
-        int code = app.Run();
+        const int code = app.Run();
         app.Close();
         return code;
     }
