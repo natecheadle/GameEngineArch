@@ -124,5 +124,12 @@ namespace Ignosi::BreakOut
                 m_pBall->Release();
             }
         });
+        if (m_pBall->IsStuck())
+        {
+            auto pos = m_pBall->KinematicData()->Position();
+            pos.x(
+                m_pPaddle->KinematicData()->Position().x() + m_pPaddle->Sprite()->Size().x() / 2.0f - m_pBall->Sprite()->Size().x() / 2.0f);
+            m_pBall->KinematicData()->Position(pos);
+        }
     }
 } // namespace Ignosi::BreakOut
