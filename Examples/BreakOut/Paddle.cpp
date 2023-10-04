@@ -21,16 +21,16 @@ namespace Ignosi::BreakOut
 
     void Paddle::OnUpdate(double dt)
     {
-        auto* pWin = World()->Window();
-        float vel  = static_cast<float>(m_PaddleMoveSpeed * dt);
+        auto*                   pWin = World()->Window();
+        Modules::Vector3<float> pos  = KinematicData()->Position();
+        float                   vel  = static_cast<float>(m_PaddleMoveSpeed * dt);
 
         pWin->ExecuteWithKeyStates([&](const Modules::GUI::KeyStateMap& keyStates) {
             if ((keyStates[Modules::GUI::Key::Left].first == Modules::GUI::KeyState::Pressed ||
                  keyStates[Modules::GUI::Key::Left].first == Modules::GUI::KeyState::Repeat))
             {
-                if (KinematicData()->Position()[0] > 0.0)
+                if (pos[0] > 0.0)
                 {
-                    auto pos = KinematicData()->Position();
                     pos.x(pos.x() - vel);
                     KinematicData()->Position(pos);
                 }
@@ -39,9 +39,8 @@ namespace Ignosi::BreakOut
             if ((keyStates[Modules::GUI::Key::Right].first == Modules::GUI::KeyState::Pressed ||
                  keyStates[Modules::GUI::Key::Right].first == Modules::GUI::KeyState::Repeat))
             {
-                if (KinematicData()->Position()[0] < static_cast<float>(pWin->GetLastWindowSize().Width()) - KinematicData()->Position()[0])
+                if (pos[0] < static_cast<float>(pWin->GetLastWindowSize().Width()) - Sprite()->Size()[0])
                 {
-                    auto pos = KinematicData()->Position();
                     pos.x(pos.x() + vel);
                     KinematicData()->Position(pos);
                 }
