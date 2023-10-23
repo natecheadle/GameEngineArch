@@ -13,7 +13,7 @@ namespace Ignosi::BreakOut
     {
         float                   m_Radius{12.5};
         float                   m_WinWidth{600.0};
-        Modules::Vector3<float> m_InitialVel{.1f, -1.0f, 0.0};
+        Modules::Vector3<float> m_InitialVel{50.0f, -250.0f, 0.0};
 
         std::unique_ptr<Modules::Messaging::EventSubscriber<const Modules::Physics::RigidBody2D&>> m_Subscription;
 

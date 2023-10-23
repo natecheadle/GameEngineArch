@@ -55,8 +55,12 @@ namespace Ignosi::BreakOut
         return *this;
     }
 
-    void Ball::OnCollision(const Modules::Physics::RigidBody2D& other)
+    void Ball::OnCollision(const Modules::Physics::RigidBody2D& /*other*/)
     {
-        // TODO - Need To Implement
+        std::cout << "Collision" << std::endl;
+        auto vel = KinematicData()->Velocity();
+        vel.y(vel.y() * -1);
+
+        KinematicData()->Velocity(vel);
     }
 } // namespace Ignosi::BreakOut
