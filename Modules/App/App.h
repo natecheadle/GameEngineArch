@@ -15,7 +15,7 @@ namespace Ignosi::Modules::App
 
       public:
         App(std::unique_ptr<ECS::IWorld> pWorld);
-        ~App() = default;
+        virtual ~App() = default;
 
         int  Run();
         void Close();
