@@ -1,16 +1,17 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-    "name": "shared",
-    "version": "0.15.2",
-    "dependencies": [
-        "gtest",
-        "glfw3",
-        "spdlog",
-        "fmt",
-        "glad",
-        "glm",
-        "stb",
-        "assimp",
-        "gcem"
-    ]
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "shared",
+  "version": "0.15.2",
+  "dependencies": [
+    "gtest",
+    "glfw3",
+    "spdlog",
+    "fmt",
+    "glad",
+    "glm",
+    "stb",
+    "assimp",
+    "gcem"
+  ],
+  "builtin-baseline": "0c20b2a97c390e106150837042d921b0939e7ecb"
 }
