@@ -12,7 +12,6 @@
       "displayName": "Default Config",
       "description": "Default build using Ninja generator",
       "generator": "Ninja",
-      "toolchainFile": "${sourceDir}/../vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
@@ -24,6 +23,7 @@
       "inherits": "Desktop-Default",
       "displayName": "OSX-only configuration",
       "description": "This build is only available on OSX",
+      "toolchainFile": "${sourceDir}/../vcpkg/scripts/buildsystems/vcpkg.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",

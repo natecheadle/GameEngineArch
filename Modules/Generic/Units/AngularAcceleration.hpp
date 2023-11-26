@@ -17,7 +17,7 @@ namespace Ignosi::Modules
 
       public:
         constexpr AngularAcceleration(T val)
-            : BASE(BASE::ToBase(val))
+            : BASE(val / PerBase())
         {
         }
 

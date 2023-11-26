@@ -6,6 +6,7 @@ enable_testing()
 add_compile_definitions(
     PUBLIC
       $<$<CONFIG:Debug>:DEBUG>
+      "_USE_MATH_DEFINES"
 )
 
 add_subdirectory("Modules")
