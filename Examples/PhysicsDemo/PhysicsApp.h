@@ -2,7 +2,7 @@
 
 namespace Ignosi::Examples::PhysicsDemo
 {
-    class Wall
+    class PhysicsApp
     {
     };
 }
