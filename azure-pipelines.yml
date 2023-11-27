@@ -10,7 +10,7 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
--script: apt install ninja
+- script: sudo apt install ninja
   displayName: "Install Ninja"
 
 # CMake v1
