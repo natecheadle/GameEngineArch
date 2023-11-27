@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "version": "0.15.2",
-  "builtin-baseline": "0c20b2a97c390e106150837042d921b0939e7ecb",
+  "builtin-baseline": "2b14b606cea54573eec11080a3ac00737958b6d6",
   "dependencies": [
     "fmt",
     "gtest"
