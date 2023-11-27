@@ -1,0 +1,11 @@
+#build outputs
+[Oo]ut/
+[Bb]in/
+
+#IDE folders
+.vscode
+.vs
+.cache
+
+#LSP Files
+compile_commands.json
