@@ -6,6 +6,11 @@
 .vscode
 .vs
 .cache
+CMakeUserPresets.json
 
 #LSP Files
 compile_commands.json
+
+#Platform Specific Files
+.DS_Store
+

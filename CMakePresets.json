@@ -1,0 +1,157 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "Desktop-Default",
+      "hidden": true,
+      "displayName": "Default Config",
+      "description": "Default build using Ninja generator",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "OSX-Only",
+      "hidden": true,
+      "inherits": "Desktop-Default",
+      "displayName": "OSX-only configuration",
+      "description": "This build is only available on OSX",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "OSX-LLVM",
+      "hidden": true,
+      "inherits": "OSX-Only",
+      "displayName": "OSX-LLVM-Base",
+      "description": "OSX Configuration Using LLVM",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-osx"
+      }
+    },
+    {
+      "name": "OSX-LLVM-Debug",
+      "hidden": true,
+      "displayName": "Mac LLVM Debug Configuration",
+      "inherits": "OSX-LLVM",
+      "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "OSX-LLVM-Release",
+      "hidden": true,
+      "displayName": "Mac LLVM Release Configuration",
+      "inherits": "OSX-LLVM",
+      "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "Windows-Only",
+      "inherits": "Desktop-Default",
+      "hidden": true,
+      "displayName": "Windows-only configuration",
+      "description": "This build is only available on Windows",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "Windows-MSVC",
+      "inherits": "Windows-Only",
+      "hidden": true,
+      "displayName": "Windows-only configuration",
+      "description": "This build is only available on Windows",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-windows"
+        },
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
+    {
+      "name": "Windows-MSVC-Debug",
+      "hidden": true,
+      "displayName": "Windows MSVC Debug Configuration",
+      "inherits": "Windows-MSVC",
+      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Windows-MSVC-Release",
+      "hidden": true,
+      "displayName": "Windows MSVC Release Configuration",
+      "inherits": "Windows-MSVC",
+      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+ {
+      "name": "Linux-Only",
+      "inherits": "Desktop-Default",
+      "hidden": true,
+      "displayName": "Linux-only configuration",
+      "description": "This build is only available on Linux",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "Linux-GCC",
+      "inherits": "Linux-Only",
+      "displayName": "Linux-only configuration",
+      "hidden": true,
+      "description": "Linux only GCC configuration ",
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-linux"
+        },
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "Linux-GCC-Debug",
+      "hidden": true,
+      "displayName": "Linux GCC Debug Configuration",
+      "inherits": "Linux-GCC",
+      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Linux-GCC-Release",
+      "hidden": true,
+      "displayName": "Linux GCC Release Configuration",
+      "inherits": "Linux-GCC",
+      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ]
+}
