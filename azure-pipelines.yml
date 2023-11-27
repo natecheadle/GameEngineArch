@@ -15,6 +15,6 @@ steps:
 - task: CMake@1
   inputs:
     workingDirectory: '.' # string. Alias: cwd. Working Directory. Default: build.
-    cmakeArgs: -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_ROOT)/scripts/buildsystems/vcpkg.cmake --preset Linux-GCC-Release
+    cmakeArgs: -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake --preset Linux-GCC-Release
   # Advanced
     #runInsideShell: false # boolean. Run cmake command inside shell. Default: false.
