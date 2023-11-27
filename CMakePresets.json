@@ -41,7 +41,6 @@
     },
     {
       "name": "OSX-LLVM-Debug",
-      "hidden": true,
       "displayName": "Mac LLVM Debug Configuration",
       "inherits": "OSX-LLVM",
       "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
@@ -51,7 +50,6 @@
     },
     {
       "name": "OSX-LLVM-Release",
-      "hidden": true,
       "displayName": "Mac LLVM Release Configuration",
       "inherits": "OSX-LLVM",
       "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
@@ -88,7 +86,6 @@
     },
     {
       "name": "Windows-MSVC-Debug",
-      "hidden": true,
       "displayName": "Windows MSVC Debug Configuration",
       "inherits": "Windows-MSVC",
       "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Debug",
@@ -98,7 +95,6 @@
     },
     {
       "name": "Windows-MSVC-Release",
-      "hidden": true,
       "displayName": "Windows MSVC Release Configuration",
       "inherits": "Windows-MSVC",
       "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Release",
@@ -135,7 +131,6 @@
     },
     {
       "name": "Linux-GCC-Debug",
-      "hidden": true,
       "displayName": "Linux GCC Debug Configuration",
       "inherits": "Linux-GCC",
       "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
@@ -145,7 +140,6 @@
     },
     {
       "name": "Linux-GCC-Release",
-      "hidden": true,
       "displayName": "Linux GCC Release Configuration",
       "inherits": "Linux-GCC",
       "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
