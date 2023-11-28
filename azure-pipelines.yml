@@ -33,7 +33,7 @@ steps:
     workingDirectory: '.' 
     cmakeArgs: --build $(Build.BinariesDirectory) 
     
-- script: build/Test/Ignosi.Test
+- script: $(Build.BinariesDirectory)/build/Test/Ignosi.Test
   displayName: "Run Unit Tests"
 
 - task: PublishTestResults@2
