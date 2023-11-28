@@ -21,11 +21,11 @@ steps:
   displayName: "Install Ninja"
 
 - name: 'Setup NuGet Credentials'
-    shell: 'bash'
-    run: |
-      mono `./vcpkg/vcpkg fetch nuget | tail -n 1` \
-        setapikey "AzureDevops" \
-        -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+  shell: 'bash'
+  run: |
+    mono `./vcpkg/vcpkg fetch nuget | tail -n 1` \
+      setapikey "AzureDevops" \
+      -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
 
 - task: NuGetAuthenticate@1
 
