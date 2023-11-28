@@ -21,6 +21,7 @@ steps:
   displayName: "Install Ninja"
 
 - script: mono `vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+  displayName: "Configure API Key"
 
 - task: NuGetAuthenticate@1
 
