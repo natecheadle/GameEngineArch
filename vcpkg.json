@@ -3,7 +3,6 @@
   "version": "0.15.2",
   "builtin-baseline": "2b14b606cea54573eec11080a3ac00737958b6d6",
   "dependencies": [
-    "fmt",
     "gtest"
   ]
 }

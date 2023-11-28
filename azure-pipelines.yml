@@ -13,7 +13,7 @@ variables:
 - name: VCPKG_BINARY_SOURCES
   value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
 - name: GTEST_OUTPUT
-  value: 'xml:$(System.DefaultWorkingDirectory)/TEST_REPORT.xml'
+  value: 'xml:$(System.DefaultWorkingDirectory)/TEST-REPORT.xml'
 
 steps:
 - script: sudo apt-get install ninja-build
