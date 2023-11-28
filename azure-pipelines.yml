@@ -9,16 +9,33 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+- name: VCPKG_BINARY_SOURCES
+  value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
+- name: GTEST_OUTPUT
+  value: 'xml:$(System.DefaultWorkingDirectory)/TEST_REPORT.xml'
+
 steps:
 - script: sudo apt-get install ninja-build
   displayName: "Install Ninja"
 
-# CMake v1
-# Build with the CMake cross-platform build system.
+- task: CMake@1
+  displayName: "Configure All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja
+
 - task: CMake@1
   displayName: "Build All"
   inputs:
-    workingDirectory: '.' # string. Alias: cwd. Working Directory. Default: build.
-    cmakeArgs: -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake --preset Linux-GCC-Release
-  # Advanced
-    #runInsideShell: false # boolean. Run cmake command inside shell. Default: false.
+    workingDirectory: '.' 
+    cmakeArgs: --build $(Build.BinariesDirectory) 
+    
+- script: build/Test/Ignosi.Test
+  displayName: "Run Unit Tests"
+
+- task: PublishTestResults@2
+  displayName: "Publish Test Results"
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml' 

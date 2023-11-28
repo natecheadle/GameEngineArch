@@ -1,6 +1,7 @@
 #build outputs
 [Oo]ut/
 [Bb]in/
+[Bb]uild/
 
 #IDE folders
 .vscode
