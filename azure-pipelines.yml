@@ -19,6 +19,8 @@ steps:
 - script: sudo apt-get install ninja-build
   displayName: "Install Ninja"
 
+- task: NuGetAuthenticate@0
+
 - task: CMake@1
   displayName: "Configure All"
   inputs:
