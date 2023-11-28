@@ -17,8 +17,10 @@ variables:
   value: 'xml:$(System.DefaultWorkingDirectory)/TEST-REPORT.xml'
 
 steps:
-- script: sudo apt-get install ninja-build
+- script: sudo apt-get install ninja-build 
   displayName: "Install Ninja"
+
+- script: vcpkg fetch nuget | read NUGET_EXE | $NUGET_EXE setapikey "AzureDevops" -Source https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json
 
 - task: NuGetAuthenticate@1
 
