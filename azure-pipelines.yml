@@ -20,7 +20,7 @@ steps:
 - script: sudo apt-get install ninja-build
   displayName: "Install Ninja"
 
-- script: mono `./vcpkg/vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+- script: mono `vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
 
 - task: NuGetAuthenticate@1
 
