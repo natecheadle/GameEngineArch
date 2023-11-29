@@ -39,10 +39,8 @@ steps:
 - task: NuGetCommand@2
   command: 'custom'
   arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
-  displayName: "Configure API Key"
 
 - task: NuGetAuthenticate@1
-  displayName: "Authenticate Nuget to Azure Packages"
 
 - task: CMake@1
   displayName: "Configure All"
