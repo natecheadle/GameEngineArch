@@ -8,15 +8,15 @@ trigger:
 
 strategy:
   matrix:
-    linux-gcc:
+    linux:
       imageName: 'ubuntu-latest'
       preset: Linux-Release
       install-ninja: sudo apt-get install ninja-build
-    mac-llvm:
-      imageName: 'macOS-latest'
-      preset: OSX-Release
-      install-ninja: brew install ninja
-    windows-msvc:
+    #osx:
+      #imageName: 'macOS-latest'
+      #preset: OSX-Release
+      #install-ninja: brew install ninja
+    windows:
       imageName: 'windows-latest'
       preset: Windows-Release
       install-ninja: choco install ninja
