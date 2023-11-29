@@ -29,7 +29,7 @@ steps:
   displayName: "Configure All"
   inputs:
     workingDirectory: '.' 
-    cmakeArgs: -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja 
+    cmakeArgs: --preset Linux-GCC-Release -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja 
 
 - task: CMake@1
   displayName: "Build All"
