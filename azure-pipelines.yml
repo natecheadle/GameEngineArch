@@ -1,0 +1,76 @@
+trigger:
+  - master-2
+
+strategy:
+  matrix:
+    linux-gcc:
+      imageName: 'ubuntu-latest'
+      preset: Linux-GCC-Release
+      install-ninja: sudo apt-get install ninja-build
+      visual-studio-dir:
+    linux-llvm:
+      imageName: 'ubuntu-latest'
+      preset: Linux-LLVM-Release
+      install-ninja: sudo apt-get install ninja-build
+      visual-studio-dir:
+    #osx:
+      #imageName: 'macOS-latest'
+      #preset: OSX-Release
+      #install-ninja: brew install ninja
+    windows:
+      imageName: 'windows-latest'
+      preset: Windows-MSVC-Release
+      install-ninja: choco install ninja
+      visual-studio-dir: C:\Program Files\Microsoft Visual Studio\2022\Enterprise
+
+pool:
+  vmImage: $(imageName)
+
+variables:
+- name: VCPKG_BINARY_SOURCES
+  value: 'clear;nuget,https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json,readwrite'
+
+- name: GTEST_OUTPUT
+  value: 'xml:$(System.DefaultWorkingDirectory)/TEST-REPORT.xml'
+
+steps:
+- task: BatchScript@1
+  inputs:
+    filename: '$(visual-studio-dir)\Common7\Tools\VsDevCmd.bat'
+    arguments: '-arch=amd64'
+    modifyEnvironment: true
+  displayName: "Initialize Visual Studio Environment"
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+
+- script: $(install-ninja)
+  displayName: "Install Ninja"
+
+- task: NuGetCommand@2
+  displayName: "Configure API Key"
+  inputs:
+    command: 'custom'
+    arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+
+- task: NuGetAuthenticate@1
+  displayName: "Autheticate to Artifact Feed"
+
+- task: CMake@1
+  displayName: "Configure All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: --preset $(preset) -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) 
+
+- task: CMake@1
+  displayName: "Build All"
+  inputs:
+    workingDirectory: '.' 
+    cmakeArgs: --build $(Build.BinariesDirectory) 
+    
+- script: $(Build.BinariesDirectory)/Test/Ignosi.Test
+  displayName: "Run Unit Tests"
+
+- task: PublishTestResults@2
+  displayName: "Publish Test Results"
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/TEST-*.xml' 

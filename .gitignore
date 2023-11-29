@@ -1,11 +1,17 @@
 #build outputs
 [Oo]ut/
 [Bb]in/
+[Bb]uild/
 
 #IDE folders
 .vscode
 .vs
 .cache
+CMakeUserPresets.json
 
 #LSP Files
 compile_commands.json
+
+#Platform Specific Files
+.DS_Store
+
