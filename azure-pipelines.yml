@@ -1,7 +1,4 @@
 trigger:
-  pr:
-  - master-2
-  branches:
   - master-2
 
 strategy:
