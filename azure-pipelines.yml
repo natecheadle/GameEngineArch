@@ -10,16 +10,15 @@ strategy:
   matrix:
     linux-gcc:
       imageName: 'ubuntu-latest'
-      preset: Linux-GCC-Release
+      preset: Linux-Release
       install-ninja: sudo apt-get install ninja-build
-    #mac-llvm:
-      #imageName: 'macOS-latest'
-      #preset: OSX-LLVM-Release
-      #mono: mono
-      #install-ninja: brew install ninja
+    mac-llvm:
+      imageName: 'macOS-latest'
+      preset: OSX-Release
+      install-ninja: brew install ninja
     windows-msvc:
       imageName: 'windows-latest'
-      preset: Windows-MSVC-Release
+      preset: Windows-Release
       install-ninja: choco install ninja
 
 pool:
