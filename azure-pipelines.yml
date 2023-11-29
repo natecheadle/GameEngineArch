@@ -13,11 +13,11 @@ strategy:
       preset: Linux-GCC-Release
       mono: mono
       install-ninja: sudo apt-get install ninja-build
-    mac-llvm:
-      imageName: 'macOS-latest'
-      preset: OSX-LLVM-Release
-      mono: mono
-      install-ninja: brew install ninja
+    #mac-llvm:
+      #imageName: 'macOS-latest'
+      #preset: OSX-LLVM-Release
+      #mono: mono
+      #install-ninja: brew install ninja
     windows-msvc:
       imageName: 'windows-latest'
       preset: Windows-MSVC-Release
