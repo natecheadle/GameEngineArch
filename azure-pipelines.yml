@@ -37,8 +37,9 @@ steps:
   displayName: "Install Ninja"
 
 - task: NuGetCommand@2
-  command: 'custom'
-  arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+  inputs:
+    command: 'custom'
+    arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
 
 - task: NuGetAuthenticate@1
 
