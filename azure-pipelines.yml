@@ -37,11 +37,13 @@ steps:
   displayName: "Install Ninja"
 
 - task: NuGetCommand@2
+  displayName: "Configure API Key"
   inputs:
     command: 'custom'
     arguments: setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
 
 - task: NuGetAuthenticate@1
+  displayName: "Autheticate to Artifact Feed"
 
 - task: CMake@1
   displayName: "Configure All"
