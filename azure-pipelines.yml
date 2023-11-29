@@ -1,11 +1,8 @@
 trigger:
-  branches:
-    include:
-    - master-2
   pr:
-    branches:
-      include:
-      - master-2
+  - master-2
+  branches:
+  - master-2
 
 strategy:
   matrix:
