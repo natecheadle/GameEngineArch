@@ -17,6 +17,21 @@
       }
     },
     {
+      "name": "Debug",
+      "cacheVariables":{
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "binaryDir": "${sourceDir}/out/build/Debug"
+    },
+    {
+      "name": "Release",
+      "cacheVariables":{
+        "CMAKE_BUILD_TYPE": "Relase"
+      },
+      "binaryDir": "${sourceDir}/out/build/Release"
+    },
+
+    {
       "name": "OSX",
       "hidden": true,
       "inherits": "Desktop-Default",
@@ -26,28 +41,17 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
-      },
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "arm64-osx"
       }
     },
     {
       "name": "OSX-Debug",
       "displayName": "Mac Debug Configuration",
-      "inherits": "OSX",
-      "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "inherits": ["OSX", "Debug"]
     },
     {
       "name": "OSX-Release",
       "displayName": "Mac Release Configuration",
-      "inherits": "OSX",
-      "binaryDir": "${sourceDir}/out/build/Desktop/LLVM/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "inherits": ["OSX", "Release"]
     },
     {
       "name": "Windows",
@@ -67,20 +71,12 @@
     {
       "name": "Windows-Debug",
       "displayName": "Windows Debug Configuration",
-      "inherits": "Windows",
-      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "inherits": ["Windows", "Debug"]
     },
     {
       "name": "Windows-Release",
       "displayName": "Windows MSVC Release Configuration",
-      "inherits": "Windows",
-      "binaryDir": "${sourceDir}/out/build/Desktop/MSVC/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "inherits": ["Windows", "Release"]
     },
     {
       "name": "Linux",
@@ -92,28 +88,17 @@
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
-      },
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-linux"
       }
     },
     {
       "name": "Linux-Debug",
       "displayName": "Linux Debug Configuration",
-      "inherits": "Linux",
-      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
+      "inherits": ["Linux", "Debug"]
     },
     {
       "name": "Linux-Release",
       "displayName": "Linux Release Configuration",
-      "inherits": "Linux",
-      "binaryDir": "${sourceDir}/out/build/Desktop/GCC/Release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
+      "inherits": ["Linux", "Release"]
     }
   ]
 }

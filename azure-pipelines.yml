@@ -49,7 +49,7 @@ steps:
   displayName: "Configure All"
   inputs:
     workingDirectory: '.' 
-    cmakeArgs: --preset $(preset) -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja 
+    cmakeArgs: --preset $(preset) -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) 
 
 - task: CMake@1
   displayName: "Build All"
