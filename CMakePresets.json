@@ -80,7 +80,6 @@
       "name": "OSX-GCC-Release",
       "inherits": ["OSX", "GCC", "Release"]
     },
-
     {
       "name": "Windows",
       "inherits": "Desktop-Default",
