@@ -13,6 +13,7 @@ strategy:
       preset: Linux-GCC-Release
       mono: mono
       install-ninja: sudo apt-get install ninja-build
+      vcpkg: vcpkg
     #mac-llvm:
       #imageName: 'macOS-latest'
       #preset: OSX-LLVM-Release
@@ -23,6 +24,7 @@ strategy:
       preset: Windows-MSVC-Release
       mono: 
       install-ninja: choco install ninja
+      vcpkg: vcpkg.exe
 
 pool:
   vmImage: $(imageName)
@@ -38,7 +40,7 @@ steps:
 - script: $(install-ninja)
   displayName: "Install Ninja"
 
-- script: $(mono) `vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+- script: $(mono) `$(vcpkg) fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
   displayName: "Configure API Key"
 
 - task: NuGetAuthenticate@1
