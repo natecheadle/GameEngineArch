@@ -6,8 +6,26 @@
 trigger:
 - master-2
 
+strategy:
+  matrix:
+    linux-gcc:
+      imageName: 'ubuntu-latest'
+      preset: Linux-GCC-Release
+      mono: mono
+      install-ninja: sudo apt-get install ninja-build
+    mac-llvm:
+      imageName: 'macOS-latest'
+      preset: OSX-LLVM-Release
+      mono: mono
+      install-ninja: brew install ninja
+    windows-msvc:
+      imageName: 'windows-latest'
+      preset: Windows-MSVC-Release
+      mono: 
+      install-ninja: choco install ninja
+
 pool:
-  vmImage: ubuntu-latest
+  vmImage: $(imageName)
 
 variables:
 - name: VCPKG_BINARY_SOURCES
@@ -17,10 +35,10 @@ variables:
   value: 'xml:$(System.DefaultWorkingDirectory)/TEST-REPORT.xml'
 
 steps:
-- script: sudo apt-get install ninja-build
+- script: $(install-ninja)
   displayName: "Install Ninja"
 
-- script: mono `vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
+- script: $(mono) `vcpkg fetch nuget | tail -n 1` setapikey "AzureDevops" -source "https://pkgs.dev.azure.com/natecheadle/IgnosiGameEngine/_packaging/VCPKG_CACHE/nuget/v3/index.json"
   displayName: "Configure API Key"
 
 - task: NuGetAuthenticate@1
@@ -29,7 +47,7 @@ steps:
   displayName: "Configure All"
   inputs:
     workingDirectory: '.' 
-    cmakeArgs: --preset Linux-GCC-Release -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja 
+    cmakeArgs: --preset $(preset) -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -B$(Build.BinariesDirectory) -GNinja 
 
 - task: CMake@1
   displayName: "Build All"
