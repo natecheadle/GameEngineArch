@@ -9,8 +9,6 @@
     {
       "name": "Desktop-Default",
       "hidden": true,
-      "displayName": "Default Config",
-      "description": "Default build using Ninja generator",
       "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
@@ -18,6 +16,7 @@
     },
     {
       "name": "Debug",
+      "hidden": true,
       "cacheVariables":{
         "CMAKE_BUILD_TYPE": "Debug"
       },
@@ -25,18 +24,40 @@
     },
     {
       "name": "Release",
+      "hidden": true,
       "cacheVariables":{
         "CMAKE_BUILD_TYPE": "Relase"
       },
       "binaryDir": "${sourceDir}/out/build/Release"
     },
-
+    {
+      "name": "GCC",
+      "hidden": true,
+      "cacheVariables":{
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "LLVM",
+      "hidden": true,
+      "cacheVariables":{
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "MSVC",
+      "hidden": true,
+      "cacheVariables":{
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
     {
       "name": "OSX",
       "hidden": true,
       "inherits": "Desktop-Default",
-      "displayName": "OSX configuration",
-      "description": "This build is only available on OSX",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -44,21 +65,26 @@
       }
     },
     {
-      "name": "OSX-Debug",
-      "displayName": "Mac Debug Configuration",
-      "inherits": ["OSX", "Debug"]
+      "name": "OSX-LLVM-Debug",
+      "inherits": ["OSX", "LLVM", "Debug"]
     },
     {
-      "name": "OSX-Release",
-      "displayName": "Mac Release Configuration",
-      "inherits": ["OSX", "Release"]
+      "name": "OSX-LLVM-Release",
+      "inherits": ["OSX", "Release", "LLVM"]
     },
+    {
+      "name": "OSX-GCC-Debug",
+      "inherits": ["OSX", "GCC", "Debug"]
+    },
+    {
+      "name": "OSX-GCC-Release",
+      "inherits": ["OSX", "GCC", "Release"]
+    },
+
     {
       "name": "Windows",
       "inherits": "Desktop-Default",
       "hidden": true,
-      "displayName": "Windows configuration",
-      "description": "This build is only available on Windows",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -69,21 +95,17 @@
       }
     },
     {
-      "name": "Windows-Debug",
-      "displayName": "Windows Debug Configuration",
-      "inherits": ["Windows", "Debug"]
+      "name": "Windows-MSVC-Debug",
+      "inherits": ["Windows", "MSVC", "Debug"]
     },
     {
-      "name": "Windows-Release",
-      "displayName": "Windows MSVC Release Configuration",
-      "inherits": ["Windows", "Release"]
+      "name": "Windows-MSVC-Release",
+      "inherits": ["Windows", "MSVC", "Release"]
     },
     {
       "name": "Linux",
       "inherits": "Desktop-Default",
       "hidden": true,
-      "displayName": "Linux configuration",
-      "description": "This build is only available on Linux",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -91,14 +113,21 @@
       }
     },
     {
-      "name": "Linux-Debug",
-      "displayName": "Linux Debug Configuration",
-      "inherits": ["Linux", "Debug"]
+      "name": "Linux-GCC-Debug",
+      "inherits": ["Linux", "GCC", "Debug"]
     },
     {
-      "name": "Linux-Release",
-      "displayName": "Linux Release Configuration",
-      "inherits": ["Linux", "Release"]
+      "name": "Linux-GCC-Release",
+      "inherits": ["Linux", "GCC", "Release", "GCC"]
+    },
+    {
+      "name": "Linux-LLVM-Debug",
+      "inherits": ["Linux", "LLVM", "Debug"]
+    },
+    {
+      "name": "Linux-LLVM-Release",
+      "inherits": ["Linux", "LLVM", "Release"]
     }
+
   ]
 }

@@ -8,9 +8,13 @@ trigger:
 
 strategy:
   matrix:
-    linux:
+    linux-gcc:
       imageName: 'ubuntu-latest'
-      preset: Linux-Release
+      preset: Linux-GCC-Release
+      install-ninja: sudo apt-get install ninja-build
+    linux-llvm:
+      imageName: 'ubuntu-latest'
+      preset: Linux-LLVM-Release
       install-ninja: sudo apt-get install ninja-build
     #osx:
       #imageName: 'macOS-latest'
