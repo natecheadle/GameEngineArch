@@ -1,8 +1,6 @@
 #include <IWindow.h>
-#include <chrono>
 #include <iostream>
 #include <memory>
-#include <thread>
 
 int main(int argc, char **argv)
 {
