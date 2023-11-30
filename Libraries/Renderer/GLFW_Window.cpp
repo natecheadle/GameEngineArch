@@ -1,5 +1,6 @@
 #include "GLFW_Window.h"
 #include <GLFW/glfw3.h>
+#include <cstdint>
 #include <fmt/format.h>
 #include <stdexcept>
 
@@ -71,11 +72,11 @@ void *GLFW_Window::NativeHandle() const
 {
 
 #if __linux__
-    return static_cast<void *>(glfwGetX11Window(m_pWindow));
+    return reinterpret_cast<void *>(glfwGetX11Window(m_pWindow));
 #elif __APPLE__
-    return static_cast<void *>(glfwGetCocoaWindow(m_pWindow));
+    return reinterpret_cast<void *>(glfwGetCocoaWindow(m_pWindow));
 #elif WIN32
-    return static_cast<void *>(glfwGetWin32Window(m_pWindow));
+    return reinterpret_cast<void *>(glfwGetWin32Window(m_pWindow));
 #else
     static_assert(false, "Invalid native environment.");
 #endif
