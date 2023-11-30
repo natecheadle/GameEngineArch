@@ -55,20 +55,6 @@ void GLFW_Window::Name(std::string name)
     glfwSetWindowTitle(m_pWindow, m_WindowName.c_str());
 }
 
-void *GLFW_Window::NativeHandle() const
-{
-
-#if __linux__
-    return glfwGetX11Window(m_pWindow);
-#elif __APPLE__
-    return glfwGetCocoaWindow(m_pWindow);
-#elif WIN32
-    return glfwGetWin32Window(m_pWindow);
-#else
-    static_assert(false, "Invalid native environment.");
-#endif
-}
-
 WindowSize GLFW_Window::ActualWindowSize() const
 {
     int width{0};
@@ -79,6 +65,20 @@ WindowSize GLFW_Window::ActualWindowSize() const
         .Width = width,
         .Height = height,
     };
+}
+
+void *GLFW_Window::NativeHandle() const
+{
+
+#if __linux__
+    return static_cast<void *>(glfwGetX11Window(m_pWindow));
+#elif __APPLE__
+    return static_cast<void *>(glfwGetCocoaWindow(m_pWindow));
+#elif WIN32
+    return static_cast<void *>(glfwGetWin32Window(m_pWindow));
+#else
+    static_assert(false, "Invalid native environment.");
+#endif
 }
 
 bool GLFW_Window::ShouldClose() const
