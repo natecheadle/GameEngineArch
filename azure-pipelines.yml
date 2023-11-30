@@ -6,12 +6,12 @@ strategy:
     linux-gcc:
       imageName: 'ubuntu-latest'
       preset: Linux-GCC-Release
-      install-ninja: sudo apt-get install ninja-build
+      install-depends: sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
       visual-studio-dir:
     linux-llvm:
       imageName: 'ubuntu-latest'
       preset: Linux-LLVM-Release
-      install-ninja: sudo apt-get install ninja-build
+      install-depends: sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
       visual-studio-dir:
     #osx:
       #imageName: 'macOS-latest'
@@ -20,7 +20,7 @@ strategy:
     windows:
       imageName: 'windows-latest'
       preset: Windows-MSVC-Release
-      install-ninja: choco install ninja
+      install-depends: choco install ninja
       visual-studio-dir: C:\Program Files\Microsoft Visual Studio\2022\Enterprise
 
 pool:
@@ -42,12 +42,8 @@ steps:
   displayName: "Initialize Visual Studio Environment"
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
-- script: sudo apt-get install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
-  displayName: "Install Linux specific Dependencies" 
-  condition: eq( variables['Agent.OS'], 'Linux' )
-
-- script: $(install-ninja)
-  displayName: "Install Ninja"
+- script: $(install-depends)
+  displayName: "Install Dependencies"
 
 - task: NuGetCommand@2
   displayName: "Configure API Key"
