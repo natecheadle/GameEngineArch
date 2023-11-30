@@ -42,6 +42,10 @@ steps:
   displayName: "Initialize Visual Studio Environment"
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
+- script: sudo apt install libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+  displayName: "Install Linux specific Dependencies" 
+  condition: eq( variables['Agent.OS'], 'Linux' )
+
 - script: $(install-ninja)
   displayName: "Install Ninja"
 
