@@ -5,6 +5,8 @@
   "dependencies": [
     "gtest",
     "glfw3",
-    "fmt"
+    "fmt",
+    "glm",
+    "gcem"
   ]
 }
