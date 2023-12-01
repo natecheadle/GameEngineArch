@@ -4,11 +4,11 @@
 
 namespace Ignosi::Libraries::Math
 {
-    template <class T, class Derived>
-    class Time : public Unit<T, UnitType::Time, Derived>
+    template <class T, StringLiteral Units, class Derived>
+    class Time : public Unit<T, UnitType::Time, Units, Derived>
     {
       protected:
-        using BASE = Unit<T, UnitType::Time, Derived>;
+        using BASE = Unit<T, UnitType::Time, Units, Derived>;
 
         constexpr Time(T val)
             : BASE(val)

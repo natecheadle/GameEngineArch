@@ -5,9 +5,9 @@
 namespace Ignosi::Libraries::Math
 {
     template <class T>
-    class Radian : public Angle<T, Radian<T>>
+    class Radian : public Angle<T, "rad", Radian<T>>
     {
-        using BASE = Angle<T, Radian<T>>;
+        using BASE = Angle<T, "rad", Radian<T>>;
 
       public:
         constexpr Radian(T val)
@@ -23,15 +23,15 @@ namespace Ignosi::Libraries::Math
         Radian& operator=(const Radian& other) = default;
         Radian& operator=(Radian&& other)      = default;
 
-        template <class OtherDerived>
-        Radian(const Angle<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Radian(const Angle<T, OtherUnits, OtherDerived>& other)
             : BASE(0)
         {
             BASE::BASE::BaseValue(other.BaseValue());
         }
 
-        template <class OtherDerived>
-        Radian& operator=(const Angle<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Radian& operator=(const Angle<T, OtherUnits, OtherDerived>& other)
         {
             BASE::BASE::BaseValue(other.BaseValue());
             return *this;

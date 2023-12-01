@@ -7,9 +7,9 @@
 namespace Ignosi::Libraries::Math
 {
     template <class T>
-    class Degree : public Angle<T, Degree<T>>
+    class Degree : public Angle<T, "deg", Degree<T>>
     {
-        using BASE = Angle<T, Degree<T>>;
+        using BASE = Angle<T, "deg", Degree<T>>;
 
       public:
         constexpr Degree(T val)
@@ -25,15 +25,15 @@ namespace Ignosi::Libraries::Math
         Degree& operator=(const Degree& other) = default;
         Degree& operator=(Degree&& other)      = default;
 
-        template <class OtherDerived>
-        Degree(const Angle<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Degree(const Angle<T, OtherUnits, OtherDerived>& other)
             : BASE(0)
         {
             BASE::BASE::BaseValue(other.BaseValue());
         }
 
-        template <class OtherDerived>
-        Degree& operator=(const Angle<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Degree& operator=(const Angle<T, OtherUnits, OtherDerived>& other)
         {
             BASE::BASE::BaseValue(other.BaseValue());
             return *this;

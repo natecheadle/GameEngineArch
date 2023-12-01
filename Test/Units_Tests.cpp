@@ -1,3 +1,4 @@
+#include <Units/AngularVelocity.hpp>
 #include <Units/Degree.hpp>
 #include <Units/Radian.hpp>
 
@@ -9,7 +10,7 @@ using namespace Ignosi::Libraries::Math;
 
 namespace Ignosi::Test
 {
-    TEST(Units_Tests, ValidateConstruction)
+    TEST(UnitsFixture, ValidateConstruction)
     {
         Degree<float> deg_val(180.0);
         Radian<float> rad_val(std::numbers::pi_v<float>);
@@ -17,7 +18,7 @@ namespace Ignosi::Test
         ASSERT_EQ(deg_val, rad_val);
     }
 
-    TEST(Units_Tests, ValidateAddition)
+    TEST(UnitsFixture, ValidateAddition)
     {
         Degree<float> deg_val(180.0);
         Radian<float> rad_val(std::numbers::pi_v<float>);
@@ -29,7 +30,7 @@ namespace Ignosi::Test
         ASSERT_EQ(deg_val, Radian<float>(std::numbers::pi_v<float> * 2.0f));
     }
 
-    TEST(Units_Tests, ValidateSubtraction)
+    TEST(UnitsFixture, ValidateSubtraction)
     {
         Degree<float> deg_val(180.0);
         Radian<float> rad_val(std::numbers::pi_v<float>);
@@ -41,7 +42,7 @@ namespace Ignosi::Test
         ASSERT_EQ(deg_val, Radian<float>(0.0));
     }
 
-    TEST(Units_Tests, ValidateDivision)
+    TEST(UnitsFixture, ValidateDivision)
     {
         Radian<float> rad_val(std::numbers::pi_v<float>);
 
@@ -52,7 +53,7 @@ namespace Ignosi::Test
         ASSERT_EQ(rad_val, Radian<float>(std::numbers::pi_v<float> / 2.0f));
     }
 
-    TEST(Units_Tests, ValidateMultiplication)
+    TEST(UnitsFixture, ValidateMultiplication)
     {
         Radian<float> rad_val(std::numbers::pi_v<float>);
 
@@ -63,7 +64,7 @@ namespace Ignosi::Test
         ASSERT_EQ(rad_val, Radian<float>(std::numbers::pi_v<float> * 2.0f));
     }
 
-    TEST(Units_Tests, ValidateComparison)
+    TEST(UnitsFixture, ValidateComparison)
     {
         Radian<float> rad_val(std::numbers::pi_v<float>);
         Degree<float> deg_val(180.0);
@@ -76,4 +77,14 @@ namespace Ignosi::Test
         ASSERT_LT(small_val, deg_val);
         ASSERT_GT(large_val, deg_val);
     }
+
+    TEST(UnitsFixture, ValidateConversion)
+    {
+        Radian<float>          rad_val(std::numbers::pi_v<float>);
+        RadianPerSecond<float> rad_per_sec_val(std::numbers::pi_v<float> * 2.0);
+        Second<float>          sec_val(0.5);
+
+        ASSERT_EQ(rad_per_sec_val * sec_val,  rad_val);
+    }
+
 } // namespace Ignosi::Test

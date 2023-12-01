@@ -20,11 +20,11 @@ using namespace Ignosi::Libraries::Math;
 
 namespace Ignosi::Test
 {
-    class MatrixTests : public testing::Test
+    class MatrixFixture : public testing::Test
     {
       public:
         SquareMatrix4x4<float> test;
-        MatrixTests()
+        MatrixFixture()
             : test({{{{{1.0, 2.0, 3.0, 4.0}}, {{5.0, 6.0, 7.0, 8.0}}, {{9.0, 10.0, 11.0, 12.0}}, {{13.0, 14.0, 15.0, 16.0}}}}})
         {
         }
@@ -56,18 +56,18 @@ namespace Ignosi::Test
         }
     };
 
-    TEST_F(MatrixTests, ValidateDeterminate)
+    TEST_F(MatrixFixture, ValidateDeterminate)
     {
         ASSERT_EQ(0, test.determinant());
     }
 
-    TEST_F(MatrixTests, ValidateTo3x3)
+    TEST_F(MatrixFixture, ValidateTo3x3)
     {
         SquareMatrix3x3<float> mat3 = {{{{{1.0, 2.0, 3.0}}, {{5.0, 6.0, 7.0}}, {{9.0, 10.0, 11.0}}}}};
         ASSERT_EQ(mat3, test.to_3x3());
     }
 
-    TEST_F(MatrixTests, ValidateAddition)
+    TEST_F(MatrixFixture, ValidateAddition)
     {
         SquareMatrix4x4<float> rslt{
             {{{{2.0, 4.0, 6.0, 8.0}}, {{10.0, 12.0, 14.0, 16.0}}, {{18.0, 20.0, 22.0, 24.0}}, {{26.0, 28.0, 30.0, 32.0}}}}};
@@ -75,14 +75,14 @@ namespace Ignosi::Test
         ASSERT_EQ(rslt, test + test);
     }
 
-    TEST_F(MatrixTests, ValidateSubtraction)
+    TEST_F(MatrixFixture, ValidateSubtraction)
     {
         SquareMatrix4x4<float> rslt{{{{{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}, {{0.0, 0.0, 0.0, 0.0}}}}};
 
         ASSERT_EQ(rslt, test - test);
     }
 
-    TEST_F(MatrixTests, ValidateMultiplication)
+    TEST_F(MatrixFixture, ValidateMultiplication)
     {
         SquareMatrix4x4<float> rslt{
             {{{{90.0, 100.0, 110.0, 120.0}},
@@ -104,20 +104,20 @@ namespace Ignosi::Test
         ASSERT_EQ(TranslateMatrix(rot_y_glm * rot_x_glm), rot_y * rot_x);
     }
 
-    TEST_F(MatrixTests, ValidateIdentity)
+    TEST_F(MatrixFixture, ValidateIdentity)
     {
         SquareMatrix4x4<float> rslt{{{{{1.0, 0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0, 0.0}}, {{0.0, 0.0, 1.0, 0.0}}, {{0.0, 0.0, 0.0, 1.0}}}}};
         ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
     }
 
-    TEST_F(MatrixTests, ValidateInverse)
+    TEST_F(MatrixFixture, ValidateInverse)
     {
         SquareMatrix3x3<float> input{{{{{2.0, 1.0, -1.0}}, {{-3.0, -1.0, 2.0}}, {{-2.0, 1.0, 2.0}}}}};
         SquareMatrix3x3<float> rslt{{{{{4.0, 3.0, -1.0}}, {{-2.0, -2.0, 1.0}}, {{5.0, 4.0, -1.0}}}}};
         ASSERT_EQ(rslt, input.invert());
     }
 
-    TEST_F(MatrixTests, ValidatePerspective)
+    TEST_F(MatrixFixture, ValidatePerspective)
     {
         SquareMatrix4x4<float> input(SquareMatrix4x4<float>::perspective(M_PI_4, 800.0 / 600.0, 0.1, 100.0));
         glm::mat4              projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
@@ -125,7 +125,7 @@ namespace Ignosi::Test
         ASSERT_EQ(TranslateMatrix(projection), input);
     }
 
-    TEST_F(MatrixTests, ValidateLookAt)
+    TEST_F(MatrixFixture, ValidateLookAt)
     {
         SquareMatrix4x4<float> input(SquareMatrix4x4<float>::lookat({0.0, 0.0, 3.0}, {0.0, 0.0, 0.0}, {0.0, 1.0, 0.0}));
         glm::mat4              look_at = glm::lookAt(glm::vec3(0.0, 0.0, 3.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
@@ -133,14 +133,14 @@ namespace Ignosi::Test
         ASSERT_EQ(TranslateMatrix(look_at), input);
     }
 
-    TEST_F(MatrixTests, ValidateOrthographic)
+    TEST_F(MatrixFixture, ValidateOrthographic)
     {
         glm::mat4              ortho_mat = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
         SquareMatrix4x4<float> ortho     = SquareMatrix4x4<float>::orthographic(0.0f, 800.0f, 600.0f, 0.0f, -1.0f, 1.0f);
         ASSERT_EQ(TranslateMatrix(ortho_mat), ortho);
     }
 
-    TEST_F(MatrixTests, ValidateRotationMatrix)
+    TEST_F(MatrixFixture, ValidateRotationMatrix)
     {
         auto rot_zyx = SquareMatrix4x4<float>::rotate_zyx_init({M_PI_4, M_PI_4, M_PI_4});
 
@@ -165,14 +165,14 @@ namespace Ignosi::Test
         ASSERT_EQ(rot_zyx, rot_z * rot_y * rot_x);
     }
 
-    TEST(VectorTests, ValidateDotProduct)
+    TEST(VectorFixture, ValidateDotProduct)
     {
         Vector3<float> vec(1.0, 2.0, 3.0);
         float          rslt = vec.dot(vec);
         ASSERT_EQ(14, rslt);
     }
 
-    TEST(VectorTests, ValidateCrossProduct)
+    TEST(VectorFixture, ValidateCrossProduct)
     {
         Vector3<float> vec1(1.0, 2.0, 3.0);
         Vector3<float> vec2(-1.0, -1.0, -1.0);
@@ -180,7 +180,7 @@ namespace Ignosi::Test
         ASSERT_EQ(Vector3<float>(1, -2, 1), rslt);
     }
 
-    TEST(VectorTests, ValidateSubtraction)
+    TEST(VectorFixture, ValidateSubtraction)
     {
         Vector3<float> vec1(1.0, 2.0, 3.0);
         Vector3<float> vec2(-1.0, -1.0, -1.0);
@@ -188,35 +188,35 @@ namespace Ignosi::Test
         ASSERT_EQ(Vector3<float>(2, 3, 4), rslt);
     }
 
-    TEST(LinearAlg_Tests, ValidateRotateX)
+    TEST(LinearAlgebraFixture, ValidateRotateX)
     {
         Vector3<float> init(0, 1, 1);
         Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * Vector4<float>(init));
         ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated.ToVector3());
     }
 
-    TEST(LinearAlg_Tests, ValidateRotateY)
+    TEST(LinearAlgebraFixture, ValidateRotateY)
     {
         Vector3<float> init(1, 0, 1);
         Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * Vector4<float>(init));
         ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated.ToVector3());
     }
 
-    TEST(LinearAlg_Tests, ValidateRotateZ)
+    TEST(LinearAlgebraFixture, ValidateRotateZ)
     {
         Vector3<float> init(1, 1, 0);
         Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * Vector4<float>(init));
         ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated.ToVector3());
     }
 
-    TEST(LinearAlg_Tests, ValidateScale)
+    TEST(LinearAlgebraFixture, ValidateScale)
     {
         Vector3<float> init(1, 1, 1);
         Vector4<float> scaled(SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * Vector4<float>(init));
         ASSERT_EQ(Vector3<float>(2.0, 2.0, 2.0), scaled.ToVector3());
     }
 
-    TEST(LinearAlg_Tests, ValidateTranslate)
+    TEST(LinearAlgebraFixture, ValidateTranslate)
     {
         Vector3<float> init(1.0f, 1.0f, 1.0f);
         Vector4<float> translated(SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * Vector4<float>(init));

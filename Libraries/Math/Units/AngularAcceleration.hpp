@@ -7,10 +7,11 @@
 
 namespace Ignosi::Libraries::Math
 {
-    template <class T, class AngleUnit, class VelTimeUnit, class AccelTimeUnit>
-    class AngularAcceleration : public Unit<T, UnitType::AngularAcceleration, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
+    template <class T, StringLiteral Units, class AngleUnit, class VelTimeUnit, class AccelTimeUnit>
+    class AngularAcceleration
+        : public Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
     {
-        using BASE = Unit<T, UnitType::AngularAcceleration, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
+        using BASE = Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
         static constexpr AngleUnit     angle;
         static constexpr VelTimeUnit   velTime;
         static constexpr AccelTimeUnit accelTime;
@@ -67,5 +68,5 @@ namespace Ignosi::Libraries::Math
     };
 
     template <class T>
-    using RadianPerSecondPerSecond = AngularAcceleration<T, Radian<T>, Second<T>, Second<T>>;
+    using RadianPerSecondPerSecond = AngularAcceleration<T, "rad/sec/sec", Radian<T>, Second<T>, Second<T>>;
 } // namespace Ignosi::Libraries::Math

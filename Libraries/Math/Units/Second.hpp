@@ -5,9 +5,9 @@
 namespace Ignosi::Libraries::Math
 {
     template <class T>
-    class Second : public Time<T, Second<T>>
+    class Second : public Time<T, "s", Second<T>>
     {
-        using BASE = Time<T, Second<T>>;
+        using BASE = Time<T, "s", Second<T>>;
 
       public:
         constexpr Second(T val)
@@ -23,15 +23,15 @@ namespace Ignosi::Libraries::Math
         Second& operator=(const Second& other) = default;
         Second& operator=(Second&& other)      = default;
 
-        template <class OtherDerived>
-        Second(const Time<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Second(const Time<T, OtherUnits, OtherDerived>& other)
             : BASE(0)
         {
             BASE::BASE::BaseValue(other.BaseValue());
         }
 
-        template <class OtherDerived>
-        Second& operator=(const Time<T, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Second& operator=(const Time<T, OtherUnits, OtherDerived>& other)
         {
             BASE::BASE::BaseValue(other.BaseValue());
             return *this;

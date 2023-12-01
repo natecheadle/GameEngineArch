@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FloatComp.hpp>
+#include <StringLiteral.hpp>
 
 #include <type_traits>
 
@@ -19,7 +20,7 @@ namespace Ignosi::Libraries::Math
         LAST
     };
 
-    template <class T, UnitType TYPE, class Derived>
+    template <class T, UnitType TYPE, StringLiteral Units, class Derived>
     class Unit
     {
         T m_BaseValue{0.0};
@@ -50,67 +51,75 @@ namespace Ignosi::Libraries::Math
         constexpr UnitType  Type() { return TYPE; }
         virtual constexpr T PerBase() const = 0;
 
-        template <class OtherDerived>
-        bool operator==(const Unit<T, TYPE, OtherDerived>& other) const
+        static constexpr std::string_view UnitString() { return Units.String(); }
+
+        friend std::ostream& operator<<(std::ostream& os, const Unit& value)
+        {
+            os << value.Value() << " " << UnitString();
+            return os;
+        }
+
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator==(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return almost_eq(m_BaseValue, other.BaseValue());
         }
 
-        template <class OtherDerived>
-        bool operator!=(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator!=(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return !(*this == other);
         }
 
-        template <class OtherDerived>
-        bool operator<(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator<(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return m_BaseValue < other.BaseValue();
         }
 
-        template <class OtherDerived>
-        bool operator>(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator>(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return m_BaseValue > other.BaseValue();
         }
 
-        template <class OtherDerived>
-        bool operator<=(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator<=(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return (*this < other) || (*this == other);
         }
 
-        template <class OtherDerived>
-        bool operator>=(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        bool operator>=(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             return (*this > other) || (*this == other);
         }
 
-        template <class OtherDerived>
-        Derived operator+(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Derived operator+(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             Derived rslt;
             rslt.m_BaseValue = m_BaseValue + other.BaseValue();
             return rslt;
         }
 
-        template <class OtherDerived>
-        Derived& operator+=(const Unit<T, TYPE, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Derived& operator+=(const Unit<T, TYPE, OtherUnits, OtherDerived>& other)
         {
             m_BaseValue += other.BaseValue();
             return static_cast<Derived&>(*this);
         }
 
-        template <class OtherDerived>
-        Derived operator-(const Unit<T, TYPE, OtherDerived>& other) const
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Derived operator-(const Unit<T, TYPE, OtherUnits, OtherDerived>& other) const
         {
             Derived rslt;
             rslt.m_BaseValue = m_BaseValue - other.BaseValue();
             return rslt;
         }
 
-        template <class OtherDerived>
-        Derived& operator-=(const Unit<T, TYPE, OtherDerived>& other)
+        template <class OtherDerived, StringLiteral OtherUnits>
+        Derived& operator-=(const Unit<T, TYPE, OtherUnits, OtherDerived>& other)
         {
             m_BaseValue -= other.BaseValue();
             return static_cast<Derived&>(*this);

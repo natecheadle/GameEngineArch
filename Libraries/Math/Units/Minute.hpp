@@ -5,9 +5,9 @@
 namespace Ignosi::Libraries::Math
 {
     template <class T>
-    class Minute : public Time<T, Minute<T>>
+    class Minute : public Time<T, "min", Minute<T>>
     {
-        using BASE = Time<T, Minute<T>>;
+        using BASE = Time<T, "min", Minute<T>>;
 
       public:
         constexpr Minute(T val)
