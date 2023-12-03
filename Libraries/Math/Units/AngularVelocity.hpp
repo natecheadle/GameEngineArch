@@ -9,9 +9,9 @@ namespace Ignosi::Libraries::Math
     template <class T, StringLiteral Units, class AngleUnit, class TimeUnit>
     class AngularVelocity : public Unit<T, UnitType::AngularVelocity, Units, AngularVelocity<T, Units, AngleUnit, TimeUnit>>
     {
-        using BASE = Unit<T, UnitType::AngularVelocity, Units, AngularVelocity<T, Units, AngleUnit, TimeUnit>>;
-        static constexpr AngleUnit angle;
-        static constexpr TimeUnit  time;
+        using BASE                       = Unit<T, UnitType::AngularVelocity, Units, AngularVelocity<T, Units, AngleUnit, TimeUnit>>;
+        static constexpr AngleUnit angle = AngleUnit(1.0);
+        static constexpr TimeUnit  time  = TimeUnit(1.0);
 
       public:
         constexpr AngularVelocity(T val)

@@ -12,9 +12,9 @@ namespace Ignosi::Libraries::Math
         : public Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
     {
         using BASE = Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
-        static constexpr AngleUnit     angle;
-        static constexpr VelTimeUnit   velTime;
-        static constexpr AccelTimeUnit accelTime;
+        static constexpr AngleUnit     angle     = AngleUnit(1.0);
+        static constexpr VelTimeUnit   velTime   = VelTimeUnit(1.0);
+        static constexpr AccelTimeUnit accelTime = AccelTimeUnit(1.0);
 
       public:
         constexpr AngularAcceleration(T val)
