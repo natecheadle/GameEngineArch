@@ -35,4 +35,16 @@ namespace Ignosi::Test
         auto          str_2(str_1);
         ASSERT_EQ(str_1, str_2);
     }
+
+    TEST(StringLiteralFixture, ValidateCompare)
+    {
+        StringLiteral str_1("This is a \n ");
+        StringLiteral str_2("This is a \n ");
+        StringLiteral str_3("This is a \n");
+
+        ASSERT_EQ(str_1, str_1);
+        ASSERT_EQ(str_1, str_2);
+        ASSERT_NE(str_3, str_2);
+    }
+
 } // namespace Ignosi::Test

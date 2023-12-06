@@ -37,9 +37,6 @@ namespace Ignosi::Libraries
             if (N != M)
                 return false;
 
-            if (rhs.Value == lhs.Value)
-                return true;
-
             for (size_t i = 0; i < N; ++i)
             {
                 if (rhs.Value[i] != lhs.Value[i])
