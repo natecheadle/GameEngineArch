@@ -4,5 +4,12 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(Ignosi.Libraries.Math)
 
-add_library(${PROJECT_NAME} STATIC "math_lib.cpp")
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+find_package(gcem CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME}
+                           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(${PROJECT_NAME} INTERFACE Ignosi.Libraries.Generic gcem
+                                                fmt::fmt-header-only )

@@ -1,7 +1,10 @@
 #include "GLFW_Window.h"
-#include <GLFW/glfw3.h>
-#include <cstdint>
+
 #include <fmt/format.h>
+
+#include <GLFW/glfw3.h>
+
+#include <cstdint>
 #include <stdexcept>
 
 #if __linux__
@@ -17,90 +20,92 @@
 namespace Ignosi::Libraries::Renderer
 {
 
-GLFW_Window::GLFW_Window(std::string name, const WindowSize &size) : m_pWindow(nullptr), m_WindowName(std::move(name))
-{
+    GLFW_Window::GLFW_Window(std::string name, const WindowSize& size)
+        : m_pWindow(nullptr)
+        , m_WindowName(std::move(name))
+    {
 
-    if (glfwInit() == GLFW_FALSE)
-        throw std::runtime_error(fmt::format("Failed to create window, received error {}", LastError()));
+        if (glfwInit() == GLFW_FALSE)
+            throw std::runtime_error(fmt::format("Failed to create window, received error {}", LastError()));
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    m_pWindow = glfwCreateWindow(size.Width, size.Height, m_WindowName.c_str(), nullptr, nullptr);
+        m_pWindow = glfwCreateWindow(size.Width, size.Height, m_WindowName.c_str(), nullptr, nullptr);
 
-    if (!m_pWindow)
-        throw std::runtime_error(fmt::format("Failed to create window, received error {}", LastError()));
+        if (!m_pWindow)
+            throw std::runtime_error(fmt::format("Failed to create window, received error {}", LastError()));
 
-    glfwMakeContextCurrent(m_pWindow);
-}
+        glfwMakeContextCurrent(m_pWindow);
+    }
 
-GLFW_Window::~GLFW_Window()
-{
-    glfwDestroyWindow(m_pWindow);
-    glfwTerminate();
-}
+    GLFW_Window::~GLFW_Window()
+    {
+        glfwDestroyWindow(m_pWindow);
+        glfwTerminate();
+    }
 
-const std::string &GLFW_Window::Name() const
-{
-    return m_WindowName;
-}
+    const std::string& GLFW_Window::Name() const
+    {
+        return m_WindowName;
+    }
 
-void GLFW_Window::Name(std::string name)
-{
-    m_WindowName = std::move(name);
-    glfwSetWindowTitle(m_pWindow, m_WindowName.c_str());
-}
+    void GLFW_Window::Name(std::string name)
+    {
+        m_WindowName = std::move(name);
+        glfwSetWindowTitle(m_pWindow, m_WindowName.c_str());
+    }
 
-WindowSize GLFW_Window::ActualWindowSize() const
-{
-    int width{0};
-    int height{0};
-    glfwGetWindowSize(m_pWindow, &width, &height);
+    WindowSize GLFW_Window::ActualWindowSize() const
+    {
+        int width{0};
+        int height{0};
+        glfwGetWindowSize(m_pWindow, &width, &height);
 
-    return {
-        .Width = width,
-        .Height = height,
-    };
-}
+        return {
+            .Width  = width,
+            .Height = height,
+        };
+    }
 
-void *GLFW_Window::NativeHandle() const
-{
+    void* GLFW_Window::NativeHandle() const
+    {
 
 #if __linux__
-    return reinterpret_cast<void *>(glfwGetX11Window(m_pWindow));
+        return reinterpret_cast<void*>(glfwGetX11Window(m_pWindow));
 #elif __APPLE__
-    return static_cast<void *>(glfwGetCocoaWindow(m_pWindow));
+        return static_cast<void*>(glfwGetCocoaWindow(m_pWindow));
 #elif WIN32
-    return static_cast<void *>(glfwGetWin32Window(m_pWindow));
+        return static_cast<void*>(glfwGetWin32Window(m_pWindow));
 #else
-    static_assert(false, "Invalid native environment.");
+        static_assert(false, "Invalid native environment.");
 #endif
-}
+    }
 
-bool GLFW_Window::ShouldClose() const
-{
-    return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE;
-}
+    bool GLFW_Window::ShouldClose() const
+    {
+        return glfwWindowShouldClose(m_pWindow) == GLFW_TRUE;
+    }
 
-void GLFW_Window::PollEvents() const
-{
-    glfwPollEvents();
-}
+    void GLFW_Window::PollEvents() const
+    {
+        glfwPollEvents();
+    }
 
-void GLFW_Window::SwapBuffers() const
-{
-    glfwSwapBuffers(m_pWindow);
-}
+    void GLFW_Window::SwapBuffers() const
+    {
+        glfwSwapBuffers(m_pWindow);
+    }
 
-std::string_view GLFW_Window::LastError()
-{
-    const char *error{nullptr};
-    glfwGetError(&error);
-    return error;
-}
+    std::string_view GLFW_Window::LastError()
+    {
+        const char* error{nullptr};
+        glfwGetError(&error);
+        return error;
+    }
 } // namespace Ignosi::Libraries::Renderer

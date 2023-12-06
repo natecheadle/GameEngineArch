@@ -1,3 +1,6 @@
+[![Build Status](https://dev.azure.com/natecheadle/IgnosiGameEngine/_apis/build/status%2Fnatecheadle.IgnosiGameEngine?branchName=refs%2Fpull%2F121%2Fmerge)](https://dev.azure.com/natecheadle/IgnosiGameEngine/_build/latest?definitionId=1&branchName=refs%2Fpull%2F121%2Fmerge)
+
+
 # Ignosi Game Engine
 As a learning excercise I am building a simple game engine. This is built in C++ using CMake and all the code should compile and run on Windows/Mac/Linux, but I only personally build and run on Windows/MSVC and Apple Silicon/Clang.
 
