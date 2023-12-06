@@ -1,3 +1,4 @@
+#include <Units/AngularAcceleration.hpp>
 #include <Units/AngularVelocity.hpp>
 #include <Units/Degree.hpp>
 #include <Units/Radian.hpp>
@@ -78,13 +79,25 @@ namespace Ignosi::Test
         ASSERT_GT(large_val, deg_val);
     }
 
-    TEST(UnitsFixture, ValidateConversion)
+    TEST(UnitsFixture, ValidateVelocityConversion)
     {
         Radian<float>          rad_val(std::numbers::pi_v<float>);
         RadianPerSecond<float> rad_per_sec_val(std::numbers::pi_v<float> * 2.0);
         Second<float>          sec_val(0.5);
 
-        ASSERT_EQ(rad_per_sec_val * sec_val,  rad_val);
+        ASSERT_EQ(rad_per_sec_val * sec_val, rad_val);
+        ASSERT_EQ(rad_val / sec_val, rad_per_sec_val);
+    }
+
+    TEST(UnitsFixture, ValidateAccelConversion)
+    {
+        RadianPerSecondPerSecond<float> rad_per_sec_per_sec_val(std::numbers::pi_v<float> * 2.0);
+        RadianPerSecond<float>          rad_per_sec_val(std::numbers::pi_v<float>);
+        Second<float>                   sec_val(0.5);
+        RadianPerSecondPerSecond<float> rslt = rad_per_sec_val / sec_val;
+
+        ASSERT_EQ(rad_per_sec_val / sec_val, rad_per_sec_per_sec_val);
+        ASSERT_EQ(rad_per_sec_val, rad_per_sec_per_sec_val * sec_val);
     }
 
 } // namespace Ignosi::Test

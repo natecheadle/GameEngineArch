@@ -7,11 +7,19 @@
 
 namespace Ignosi::Libraries::Math
 {
-    template <class T, StringLiteral Units, class AngleUnit, class VelTimeUnit, class AccelTimeUnit>
+    template <class T, class AngleUnit, class VelTimeUnit, class AccelTimeUnit>
     class AngularAcceleration
-        : public Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
+        : public Unit<
+              T,
+              UnitType::AngularAcceleration,
+              AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit() + StringLiteral("/") + AccelTimeUnit::StringLit(),
+              AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
     {
-        using BASE = Unit<T, UnitType::AngularAcceleration, Units, AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
+        using BASE = Unit<
+            T,
+            UnitType::AngularAcceleration,
+            AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit() + StringLiteral("/") + AccelTimeUnit::StringLit(),
+            AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
         static constexpr AngleUnit     angle     = AngleUnit(1.0);
         static constexpr VelTimeUnit   velTime   = VelTimeUnit(1.0);
         static constexpr AccelTimeUnit accelTime = AccelTimeUnit(1.0);
@@ -46,21 +54,11 @@ namespace Ignosi::Libraries::Math
             return *this;
         }
 
-        template <class OtherTimeUnit>
-        AngularVelocity<T, AngleUnit, VelTimeUnit> operator*(const Time<T, OtherTimeUnit>& other)
+        template <class OtherTimeUnit, StringLiteral STR_1>
+        AngularVelocity<T, AngleUnit, VelTimeUnit> operator*(const Time<T, STR_1, OtherTimeUnit>& other)
         {
             AngularVelocity<T, AngleUnit, VelTimeUnit> rslt;
             rslt.Value(rslt.FromBase(BASE::BaseValue() * other.BaseValue()));
-            return rslt;
-        }
-
-        template <class OtherAngleUnit, class OtherVelTimeUnit, class OtherAccelTimeUnit>
-        friend AngularAcceleration operator/(
-            const AngularVelocity<T, OtherAngleUnit, OtherVelTimeUnit>& lhs,
-            const Time<T, OtherAccelTimeUnit>&                          rhs)
-        {
-            AngularAcceleration rslt;
-            rslt.BaseValue(lhs.BaseValue() / rhs.BaseValue());
             return rslt;
         }
 
@@ -68,5 +66,15 @@ namespace Ignosi::Libraries::Math
     };
 
     template <class T>
-    using RadianPerSecondPerSecond = AngularAcceleration<T, "rad/sec/sec", Radian<T>, Second<T>, Second<T>>;
+    using RadianPerSecondPerSecond = AngularAcceleration<T, Radian<T>, Second<T>, Second<T>>;
+
+    template <class T, class OtherAngleUnit, class OtherVelTimeUnit, class OtherAccelTimeUnit, StringLiteral STR_1>
+    RadianPerSecondPerSecond<T> operator/(
+        const AngularVelocity<T, OtherAngleUnit, OtherVelTimeUnit>& lhs,
+        const Time<T, STR_1, OtherAccelTimeUnit>&                   rhs)
+    {
+        RadianPerSecondPerSecond<T> rslt(lhs.BaseValue() / rhs.BaseValue());
+        return rslt;
+    }
+
 } // namespace Ignosi::Libraries::Math

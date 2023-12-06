@@ -23,7 +23,8 @@ namespace Ignosi::Libraries::Math
     template <class T, UnitType TYPE, StringLiteral Units, class Derived>
     class Unit
     {
-        T m_BaseValue{0.0};
+        static constexpr StringLiteral UnitStringValue = Units;
+        T                              m_BaseValue{0.0};
 
       protected:
         constexpr Unit(T initValue)
@@ -52,6 +53,7 @@ namespace Ignosi::Libraries::Math
         virtual constexpr T PerBase() const = 0;
 
         static constexpr std::string_view UnitString() { return Units.String(); }
+        static constexpr const auto&      StringLit() { return UnitStringValue; }
 
         friend std::ostream& operator<<(std::ostream& os, const Unit& value)
         {
