@@ -12,13 +12,13 @@ namespace Ignosi::Libraries::Math
         : public Unit<
               T,
               UnitType::AngularAcceleration,
-              AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit() + StringLiteral("/") + AccelTimeUnit::StringLit(),
+              (AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit()) + (StringLiteral("/") + AccelTimeUnit::StringLit()),
               AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>
     {
         using BASE = Unit<
             T,
             UnitType::AngularAcceleration,
-            AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit() + StringLiteral("/") + AccelTimeUnit::StringLit(),
+            (AngleUnit::StringLit() + StringLiteral("/") + VelTimeUnit::StringLit()) + (StringLiteral("/") + AccelTimeUnit::StringLit()),
             AngularAcceleration<T, AngleUnit, VelTimeUnit, AccelTimeUnit>>;
         static constexpr AngleUnit     angle     = AngleUnit(1.0);
         static constexpr VelTimeUnit   velTime   = VelTimeUnit(1.0);
