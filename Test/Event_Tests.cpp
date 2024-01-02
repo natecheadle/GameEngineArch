@@ -20,28 +20,31 @@ namespace Ignosi::Test
         }
     };
 
-    TEST_F(EventFixture, ValidateSubscribe) {}
+    TEST_F(EventFixture, SubscribeSuccessful)
+    {
+        ASSERT_NE(nullptr, m_EventSub.get());
+    }
 
-    TEST_F(EventFixture, ValidateInokeOperator)
+    TEST_F(EventFixture, InvokeEventViaOperator)
     {
         m_Event();
         ASSERT_TRUE(m_EventInvoked);
     }
 
-    TEST_F(EventFixture, ValidateInokeExplicit)
+    TEST_F(EventFixture, InvokeEventViaInvokeFunction)
     {
         m_Event.Invoke();
         ASSERT_TRUE(m_EventInvoked);
     }
 
-    TEST_F(EventFixture, ValidateUnsubscribe)
+    TEST_F(EventFixture, UnsubscribeSuccessful)
     {
         m_EventSub.reset();
         m_Event.Invoke();
         ASSERT_FALSE(m_EventInvoked);
     }
 
-    TEST_F(EventFixture, ValidateMultipleSubscribe)
+    TEST_F(EventFixture, MultipleSubscribeSuccessful)
     {
         bool eventInvoked{false};
         auto event_sub2 = m_Event.Subscribe([&]() { eventInvoked = true; });
@@ -51,7 +54,7 @@ namespace Ignosi::Test
         ASSERT_TRUE(eventInvoked);
     }
 
-    TEST_F(EventFixture, ValidateMultipleSubscribeThenUnsuscribe)
+    TEST_F(EventFixture, MultipleSubscribeThenUnsuscribeSuccessful)
     {
         bool eventInvoked{false};
         auto event_sub2 = m_Event.Subscribe([&]() { eventInvoked = true; });
@@ -79,7 +82,7 @@ namespace Ignosi::Test
         }
     };
 
-    TEST_F(EventArgsFixture, ValidateInokeOperator)
+    TEST_F(EventArgsFixture, InvokeSuccessful)
     {
         m_Event(10, 20);
         ASSERT_EQ(m_EventArg1, 10);
@@ -112,7 +115,7 @@ namespace Ignosi::Test
         }
     };
 
-    TEST_F(EventBigArgsFixture, ValidateInoke)
+    TEST_F(EventBigArgsFixture, InvokeSuccessful)
     {
         BigEventData arg1 = {.First = 10, .Second = -20, .Third = 25};
         BigEventData arg2 = {.First = 30, .Second = -50, .Third = 125};
