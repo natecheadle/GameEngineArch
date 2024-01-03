@@ -2,34 +2,22 @@
 
 namespace Ignosi::Libraries
 {
-    template <class T>
+    template <class T, class PARENT, class RETURN = const T&>
     class Property_RW
     {
+        friend PARENT;
+
         T m_Field;
 
       public:
-        Property_RW(const T& value)
-            : m_Field(value)
-        {
-        }
+        virtual ~Property_RW() = default;
 
-        Property_RW() = default;
+        bool         operator==(const Property_RW& rhs) const { return *this == rhs.m_Field; }
+        virtual bool operator==(const T& rhs) const { return m_Field == rhs; }
 
-        ~Property_RW() = default;
+        virtual T& operator=(const T& value) { return m_Field = value; }
 
-        Property_RW(const Property_RW& other) = default;
-        Property_RW(Property_RW&& other)      = default;
-
-        Property_RW& operator=(const Property_RW& other) = default;
-        Property_RW& operator=(Property_RW&& other)      = default;
-
-        friend bool operator==(const Property_RW& lhs, const Property_RW& rhs) = default;
-
-        const T& operator()() { return GetValue(); }
-        void     operator()(const T& value) { SetValue(value); }
-
-      protected:
-        virtual const T& GetValue() const { return m_Field; }
-        virtual void     SetValue(const T& value) { m_Field = value; }
+        virtual RETURN operator()() const { return m_Field; }
+        explicit       operator RETURN() const { return m_Field; }
     };
 } // namespace Ignosi::Libraries
