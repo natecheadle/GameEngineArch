@@ -3,6 +3,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 using namespace Ignosi::Libraries;
 
 namespace Ignosi::Test
