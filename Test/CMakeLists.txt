@@ -8,8 +8,13 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(
   ${PROJECT_NAME}
-  "main.cpp" "LinearAlgebra_Tests.cpp" "Units_Tests.cpp"
-  "StringLiteral_Tests.cpp" "Event_Tests.cpp" "Property_Tests.cpp")
+  "main.cpp"
+  "LinearAlgebra_Tests.cpp"
+  "Units_Tests.cpp"
+  "StringLiteral_Tests.cpp"
+  "Event_Tests.cpp"
+  "Property_Tests.cpp"
+  "Stack_Tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -21,6 +26,7 @@ target_link_libraries(
           glm::glm
           Ignosi.Libraries.Math
           Ignosi.Libraries.Generic
+          Ignosi.Libraries.Container
           Boost::boost
           Boost::atomic)
 
