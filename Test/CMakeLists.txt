@@ -14,6 +14,7 @@ add_executable(
   "StringLiteral_Tests.cpp"
   "Event_Tests.cpp"
   "Property_Tests.cpp"
+  "Queue_Tests.cpp"
   "Stack_Tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
