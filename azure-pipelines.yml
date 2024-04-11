@@ -42,6 +42,15 @@ steps:
   displayName: "Initialize Visual Studio Environment"
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
+- task: CmdLine@2
+  inputs:
+    script: |
+      wget https://apt.llvm.org/llvm.sh
+      chmod +x llvm.sh
+      sudo ./llvm.sh 17
+  displayName: "Install LLVM-17"
+  condition: eq( variables['Agent.OS'], 'Linux' )
+
 - script: $(install-depends)
   displayName: "Install Dependencies"
 

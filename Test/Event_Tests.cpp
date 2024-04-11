@@ -3,6 +3,9 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <future>
+
 using namespace Ignosi::Libraries;
 
 namespace Ignosi::Test
@@ -34,6 +37,13 @@ namespace Ignosi::Test
     TEST_F(EventFixture, InvokeEventViaInvokeFunction)
     {
         m_Event.Invoke();
+        ASSERT_TRUE(m_EventInvoked);
+    }
+
+    TEST_F(EventFixture, InvokeEventAsync)
+    {
+        std::future<void> rslt = m_Event.InvokeAsync();
+        rslt.wait();
         ASSERT_TRUE(m_EventInvoked);
     }
 

@@ -11,7 +11,8 @@
       "hidden": true,
       "generator": "Ninja",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+       "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
+       "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
@@ -30,23 +31,7 @@
       },
       "binaryDir": "${sourceDir}/out/build/Release"
     },
-    {
-      "name": "GCC",
-      "hidden": true,
-      "cacheVariables":{
-        "CMAKE_C_COMPILER": "gcc",
-        "CMAKE_CXX_COMPILER": "g++"
-      }
-    },
-    {
-      "name": "LLVM",
-      "hidden": true,
-      "cacheVariables":{
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++"
-      }
-    },
-    {
+        {
       "name": "MSVC",
       "hidden": true,
       "cacheVariables":{
@@ -66,19 +51,31 @@
     },
     {
       "name": "OSX-LLVM-Debug",
-      "inherits": ["OSX", "LLVM", "Debug"]
+      "inherits": ["OSX", "Debug"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm-17"
+      }
     },
     {
       "name": "OSX-LLVM-Release",
-      "inherits": ["OSX", "Release", "LLVM"]
+      "inherits": ["OSX", "Release"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm-17"
+      }
     },
     {
       "name": "OSX-GCC-Debug",
-      "inherits": ["OSX", "GCC", "Debug"]
+      "inherits": ["OSX", "Debug"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc-13"
+      }
     },
     {
       "name": "OSX-GCC-Release",
-      "inherits": ["OSX", "GCC", "Release"]
+      "inherits": ["OSX", "Release"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc-13"
+      }
     },
     {
       "name": "Windows",
@@ -110,19 +107,31 @@
     },
     {
       "name": "Linux-GCC-Debug",
-      "inherits": ["Linux", "GCC", "Debug"]
+      "inherits": ["Linux", "Debug"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc-13"
+      }
     },
     {
       "name": "Linux-GCC-Release",
-      "inherits": ["Linux", "GCC", "Release", "GCC"]
+      "inherits": ["Linux", "Release"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc-13"
+      }
     },
     {
       "name": "Linux-LLVM-Debug",
-      "inherits": ["Linux", "LLVM", "Debug"]
+      "inherits": ["Linux", "Debug"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm-17"
+      }
     },
     {
       "name": "Linux-LLVM-Release",
-      "inherits": ["Linux", "LLVM", "Release"]
+      "inherits": ["Linux", "Release"],
+      "cacheVariables":{
+        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm-17"
+      }
     }
 
   ]

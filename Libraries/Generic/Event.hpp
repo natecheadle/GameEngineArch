@@ -25,8 +25,7 @@ namespace Ignosi::Libraries
 
         std::future<void> InvokeAsync(Args... args)
         {
-
-            std::async([&]() { Invoke(std::forward(args...)); });
+            return std::async([&]() { Invoke(std::forward<Args>(args)...); });
         }
 
         void Invoke(Args... args)
