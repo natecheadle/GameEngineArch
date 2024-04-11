@@ -13,9 +13,15 @@ add_executable(
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS atomic)
 
 target_link_libraries(
-  ${PROJECT_NAME} PRIVATE GTest::gtest glm::glm Ignosi.Libraries.Math
-                          Ignosi.Libraries.Generic)
+  ${PROJECT_NAME}
+  PRIVATE GTest::gtest
+          glm::glm
+          Ignosi.Libraries.Math
+          Ignosi.Libraries.Generic
+          Boost::boost
+          Boost::atomic)
 
 gtest_add_tests(TARGET ${PROJECT_NAME})
