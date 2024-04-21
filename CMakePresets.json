@@ -11,14 +11,30 @@
       "hidden": true,
       "generator": "Ninja",
       "cacheVariables": {
-       "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
-       "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "GCC",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "LLVM",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
       "name": "Debug",
       "hidden": true,
-      "cacheVariables":{
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       },
       "binaryDir": "${sourceDir}/out/build/Debug"
@@ -26,15 +42,15 @@
     {
       "name": "Release",
       "hidden": true,
-      "cacheVariables":{
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Relase"
       },
       "binaryDir": "${sourceDir}/out/build/Release"
     },
-        {
+    {
       "name": "MSVC",
       "hidden": true,
-      "cacheVariables":{
+      "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl"
       }
@@ -51,30 +67,46 @@
     },
     {
       "name": "OSX-LLVM-Debug",
-      "inherits": ["OSX", "Debug"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm-17"
+      "inherits": [
+        "OSX",
+        "Debug",
+        "LLVM"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm"
       }
     },
     {
       "name": "OSX-LLVM-Release",
-      "inherits": ["OSX", "Release"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm-17"
+      "inherits": [
+        "OSX",
+        "Release",
+        "LLVM"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-llvm"
       }
     },
     {
       "name": "OSX-GCC-Debug",
-      "inherits": ["OSX", "Debug"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc-13"
+      "inherits": [
+        "OSX",
+        "Debug",
+        "GCC"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc"
       }
     },
     {
       "name": "OSX-GCC-Release",
-      "inherits": ["OSX", "Release"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc-13"
+      "inherits": [
+        "OSX",
+        "Release",
+        "GCC"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "arm64-osx-gcc"
       }
     },
     {
@@ -89,11 +121,19 @@
     },
     {
       "name": "Windows-MSVC-Debug",
-      "inherits": ["Windows", "MSVC", "Debug"]
+      "inherits": [
+        "Windows",
+        "MSVC",
+        "Debug"
+      ]
     },
     {
       "name": "Windows-MSVC-Release",
-      "inherits": ["Windows", "MSVC", "Release"]
+      "inherits": [
+        "Windows",
+        "MSVC",
+        "Release"
+      ]
     },
     {
       "name": "Linux",
@@ -107,32 +147,47 @@
     },
     {
       "name": "Linux-GCC-Debug",
-      "inherits": ["Linux", "Debug"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc-13"
+      "inherits": [
+        "Linux",
+        "Debug",
+        "GCC"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc"
       }
     },
     {
       "name": "Linux-GCC-Release",
-      "inherits": ["Linux", "Release"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc-13"
+      "inherits": [
+        "Linux",
+        "Release",
+        "GCC"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-gcc"
       }
     },
     {
       "name": "Linux-LLVM-Debug",
-      "inherits": ["Linux", "Debug"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm-17"
+      "inherits": [
+        "Linux",
+        "Debug",
+        "LLVM"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm"
       }
     },
     {
       "name": "Linux-LLVM-Release",
-      "inherits": ["Linux", "Release"],
-      "cacheVariables":{
-        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm-17"
+      "inherits": [
+        "Linux",
+        "Release",
+        "LLVM"
+      ],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux-llvm"
       }
     }
-
   ]
 }

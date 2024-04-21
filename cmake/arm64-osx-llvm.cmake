@@ -6,4 +6,4 @@ set(VCPKG_CMAKE_SYSTEM_NAME Darwin)
 set(VCPKG_OSX_ARCHITECTURES arm64)
 
 set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE
-    ${CMAKE_CURRENT_LIST_DIR}/arm64-osx-gcc-13.toolchain.cmake)
+    ${CMAKE_CURRENT_LIST_DIR}/arm64-osx-llvm.toolchain.cmake)
