@@ -15,7 +15,8 @@ add_executable(
   "Event_Tests.cpp"
   "Property_Tests.cpp"
   "Queue_Tests.cpp"
-  "Stack_Tests.cpp")
+  "Stack_Tests.cpp"
+  "RingBuffer_Tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
