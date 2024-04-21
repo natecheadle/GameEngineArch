@@ -6,21 +6,38 @@ strategy:
     linux-gcc:
       imageName: 'ubuntu-latest'
       preset: Linux-GCC-Release
-      install-depends: sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+      install-depends: |
+        sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+      set-compiler-version: |
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 10
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 10
       visual-studio-dir:
+
     linux-llvm:
       imageName: 'ubuntu-latest'
       preset: Linux-LLVM-Release
-      install-depends: sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+      install-depends: |
+        sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 17
+      set-compiler-version: |
+        sudo rm /usr/bin/clang
+        sudo rm /usr/bin/clang++
+        sudo ln -s /usr/bin/clang-17 /usr/bin/clang
+        sudo ln -s /usr/bin/clang++-17 /usr/bin/clang++
       visual-studio-dir:
+
     #osx:
       #imageName: 'macOS-latest'
       #preset: OSX-Release
       #install-ninja: brew install ninja
+
     windows:
       imageName: 'windows-latest'
       preset: Windows-MSVC-Release
       install-depends: choco install ninja
+      set-compiler-version:
       visual-studio-dir: C:\Program Files\Microsoft Visual Studio\2022\Enterprise
 
 pool:
@@ -42,17 +59,11 @@ steps:
   displayName: "Initialize Visual Studio Environment"
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
-- task: CmdLine@2
-  inputs:
-    script: |
-      wget https://apt.llvm.org/llvm.sh
-      chmod +x llvm.sh
-      sudo ./llvm.sh 17
-  displayName: "Install LLVM-17"
-  condition: eq( variables['Agent.OS'], 'Linux' )
-
 - script: $(install-depends)
   displayName: "Install Dependencies"
+
+- script: $(set-compiler-version)
+  displayName: "Configure Compiler Version"
 
 - task: NuGetCommand@2
   displayName: "Configure API Key"

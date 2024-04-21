@@ -1,5 +1,5 @@
 set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "g++-13")
+set(CMAKE_CXX_COMPILER "g++")
 
 # if (BUILD_COVERAGE) SET(CLANG_COVERAGE_COMPILE_FLAGS "-fprofile-instr-generate
 # -fcoverage-mapping") SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}
