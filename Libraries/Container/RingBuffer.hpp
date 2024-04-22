@@ -43,6 +43,7 @@ namespace Ignosi::Libraries::Containers
             if (!empty())
             {
                 T rslt = std::move((*m_Front).value());
+                m_Front->reset();
                 m_Front++;
                 if (m_Front == m_Data.end())
                     m_Front = m_Data.begin();
