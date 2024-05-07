@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <expected>
-
 using namespace Ignosi::Libraries;
 
 namespace Ignosi::Test

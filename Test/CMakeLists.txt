@@ -4,7 +4,7 @@ project(Ignosi.Test)
 
 include(GoogleTest)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 
 add_executable(
   ${PROJECT_NAME}
