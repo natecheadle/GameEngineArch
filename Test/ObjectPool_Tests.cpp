@@ -1,7 +1,10 @@
 #include <ObjectPool.hpp>
 #include <RingBuffer.hpp>
+#include <fmt/format.h>
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
 
 using namespace Ignosi::Libraries;
 
@@ -19,6 +22,14 @@ namespace Ignosi::Test
 
             size_t Value1;
             double Value2;
+
+            friend bool operator==(const Data& lhs, const Data& rhs) = default;
+
+            friend std::ostream& operator<<(std::ostream& os, const Data& value)
+            {
+                os << fmt::format("Value1: {} Value2: {}", value.Value1, value.Value2);
+                return os;
+            }
         };
 
     } // namespace
@@ -34,8 +45,7 @@ namespace Ignosi::Test
     TEST_F(ObjectPoolFixture, CreateDestroySingle)
     {
         auto obj = m_Pool.Create(1, 1.25);
-        obj.reset();
-        m_Pool.Process();
+        obj.Reset();
     }
 
     TEST_F(ObjectPoolFixture, CreateDestroyMany)
@@ -69,8 +79,57 @@ namespace Ignosi::Test
                 val1_2++;
                 val2_2++;
             }
-
-            m_Pool.Process();
         }
     }
+
+    TEST_F(ObjectPoolFixture, ValidateIteratorLinear)
+    {
+        std::vector<Containers::PoolPointer<Data>> objects;
+        for (int i = 0; i < 10; ++i)
+        {
+            objects.push_back(m_Pool.Create(i, i));
+        }
+
+        int i = 0;
+
+        for (const auto& it : m_Pool)
+        {
+            ++i;
+            auto is_equal = [&](const Containers::PoolPointer<Data>& pObj) {
+                const Data& data = *pObj;
+                return data == it;
+            };
+
+            ASSERT_NE(objects.end(), std::find_if(objects.begin(), objects.end(), is_equal));
+        }
+
+        ASSERT_EQ(i, 10);
+    }
+
+    TEST_F(ObjectPoolFixture, ValidateIteratorNonLinear)
+    {
+        std::vector<Containers::PoolPointer<Data>> objects;
+        for (int i = 0; i < 10; ++i)
+        {
+            auto pObj = m_Pool.Create(i, i);
+            if (i != 2 && i != 6)
+                objects.push_back(std::move(pObj));
+        }
+
+        int i = 0;
+
+        for (const auto& it : m_Pool)
+        {
+            ++i;
+            auto is_equal = [&](const Containers::PoolPointer<Data>& pObj) {
+                const Data& data = *pObj;
+                return data == it;
+            };
+
+            ASSERT_NE(objects.end(), std::find_if(objects.begin(), objects.end(), is_equal));
+        }
+
+        ASSERT_EQ(i, 8);
+    }
+
 } // namespace Ignosi::Test
