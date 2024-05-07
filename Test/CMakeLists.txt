@@ -17,7 +17,9 @@ add_executable(
   "ObjectPool_Tests.cpp"
   "Queue_Tests.cpp"
   "Stack_Tests.cpp"
-  "RingBuffer_Tests.cpp")
+  "RingBuffer_Tests.cpp"
+  "ECS/System_Tests.cpp"
+  "ECS/Entity_Tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
@@ -30,6 +32,7 @@ target_link_libraries(
           Ignosi.Libraries.Math
           Ignosi.Libraries.Generic
           Ignosi.Libraries.Container
+          Ignosi.Libraries.ECS
           Boost::boost
           Boost::atomic)
 
