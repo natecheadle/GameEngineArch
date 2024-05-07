@@ -43,7 +43,7 @@
       "name": "Release",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Relase"
+        "CMAKE_BUILD_TYPE": "Release"
       },
       "binaryDir": "${sourceDir}/out/build/Release"
     },
