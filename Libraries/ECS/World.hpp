@@ -7,6 +7,7 @@
 #include <ObjectPool.hpp>
 
 #include <chrono>
+#include <concepts>
 #include <memory>
 #include <tuple>
 
@@ -21,10 +22,12 @@ namespace Ignosi::Libraries::ECS
       public:
         World() = default;
 
-        template <typename COMPONENT>
-        void Register(std::unique_ptr<System<COMPONENT>> system)
+        template <typename COMPONENT, std::derived_from<System<COMPONENT>> SYSTEM>
+        SYSTEM* Register(std::unique_ptr<SYSTEM> system)
         {
+            auto pSystem                                            = system.get();
             std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems) = std::move(system);
+            return pSystem;
         }
 
         void Update(std::chrono::milliseconds delta)
