@@ -4,4 +4,4 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(Ignosi.Examples)
 
-add_subdirectory("TestApp")
+add_subdirectory("HelloTriangle")
