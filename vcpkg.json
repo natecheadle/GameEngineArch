@@ -8,6 +8,8 @@
     "fmt",
     "glm",
     "gcem",
-    "boost-atomic"
+    "boost-atomic",
+    "glad",
+    "stb"
   ]
 }
