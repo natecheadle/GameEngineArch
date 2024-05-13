@@ -12,14 +12,25 @@ namespace Ignosi::Libraries::Renderer
         int Width;
         int Height;
 
+        float AspectRatio() { return static_cast<float>(Width) / static_cast<float>(Height); }
+
         friend bool          operator==(const WindowSize& lhs, const WindowSize& rhs) = default;
         friend std::ostream& operator<<(std::ostream& os, const WindowSize& value);
     };
 
+    std::string format_as(const WindowSize& value);
+
     class IWindow
     {
       public:
+        IWindow()          = default;
         virtual ~IWindow() = default;
+
+        IWindow(const IWindow& other)     = delete;
+        IWindow(IWindow&& other) noexcept = delete;
+
+        IWindow& operator=(const IWindow& other)     = delete;
+        IWindow& operator=(IWindow&& other) noexcept = delete;
 
         static std::unique_ptr<IWindow> Create(std::string name, const WindowSize& size = {.Width = 800, .Height = 600});
 
