@@ -2,12 +2,12 @@
 
 namespace Ignosi::Libraries::Renderer
 {
-    Mesh::Mesh(std::shared_ptr<IVertexBuffer> vertexes, std::shared_ptr<IShaderProgram> shader, std::shared_ptr<IMaterial> material)
-        : m_Vertexes(std::move(vertexes))
-        , m_Shader(std::move(shader))
-        , m_Material(std::move(material))
+    Mesh::Mesh(const IVertexBuffer* vertexes, const IShaderProgram* shader, const IMaterial* material)
+        : m_Vertexes(vertexes)
+        , m_Shader(shader)
+        , m_Material(material)
     {
-        assert(m_Vertexes.get());
-        assert(m_Shader.get());
+        assert(m_Vertexes);
+        assert(m_Shader);
     }
 } // namespace Ignosi::Libraries::Renderer

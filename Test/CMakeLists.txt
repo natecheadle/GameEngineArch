@@ -19,7 +19,8 @@ add_executable(
   "Stack_Tests.cpp"
   "RingBuffer_Tests.cpp"
   "ECS/System_Tests.cpp"
-  "ECS/Entity_Tests.cpp")
+  "ECS/Entity_Tests.cpp"
+  "ECS/ResourceManager_Tests.cpp")
 
 find_package(GTest CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)

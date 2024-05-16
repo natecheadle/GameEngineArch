@@ -11,15 +11,12 @@ namespace Ignosi::Libraries::Renderer
     {
         unsigned int m_ID;
 
-        std::shared_ptr<const IShader> m_pFragmentShader;
-        std::shared_ptr<const IShader> m_pGeometryShader;
-        std::shared_ptr<const IShader> m_pVertexShader;
+        const IShader* m_pFragmentShader;
+        const IShader* m_pGeometryShader;
+        const IShader* m_pVertexShader;
 
       public:
-        OpenGL_ShaderProgram(
-            std::shared_ptr<const IShader> pFragmentShader,
-            std::shared_ptr<const IShader> pGeometryShader,
-            std::shared_ptr<const IShader> pVertexShader);
+        OpenGL_ShaderProgram(const IShader* pFragmentShader, const IShader* pGeometryShader, const IShader* pVertexShader);
 
         ~OpenGL_ShaderProgram() override;
 

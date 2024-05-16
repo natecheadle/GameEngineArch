@@ -11,33 +11,30 @@
 
 namespace Ignosi::Libraries::Renderer
 {
-    OpenGL_ShaderProgram::OpenGL_ShaderProgram(
-        std::shared_ptr<const IShader> pFragmentShader,
-        std::shared_ptr<const IShader> pGeometryShader,
-        std::shared_ptr<const IShader> pVertexShader)
+    OpenGL_ShaderProgram::OpenGL_ShaderProgram(const IShader* pFragmentShader, const IShader* pGeometryShader, const IShader* pVertexShader)
         : m_ID(glCreateProgram())
-        , m_pFragmentShader(std::move(pFragmentShader))
-        , m_pGeometryShader(std::move(pGeometryShader))
-        , m_pVertexShader(std::move(pVertexShader))
+        , m_pFragmentShader(pFragmentShader)
+        , m_pGeometryShader(pGeometryShader)
+        , m_pVertexShader(pVertexShader)
 
     {
         int success{0};
 
         if (m_pFragmentShader)
         {
-            const auto* pGL_FragShader = dynamic_cast<const OpenGL_Shader*>(m_pFragmentShader.get());
+            const auto* pGL_FragShader = dynamic_cast<const OpenGL_Shader*>(m_pFragmentShader);
             glAttachShader(m_ID, pGL_FragShader->ID());
         }
 
         if (m_pVertexShader)
         {
-            const auto* pGL_VertShader = dynamic_cast<const OpenGL_Shader*>(m_pVertexShader.get());
+            const auto* pGL_VertShader = dynamic_cast<const OpenGL_Shader*>(m_pVertexShader);
             glAttachShader(m_ID, pGL_VertShader->ID());
         }
 
         if (m_pGeometryShader)
         {
-            const auto* pGL_GeoShader = dynamic_cast<const OpenGL_Shader*>(m_pGeometryShader.get());
+            const auto* pGL_GeoShader = dynamic_cast<const OpenGL_Shader*>(m_pGeometryShader);
             glAttachShader(m_ID, pGL_GeoShader->ID());
         }
 

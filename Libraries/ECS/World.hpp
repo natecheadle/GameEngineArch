@@ -2,12 +2,12 @@
 
 #include "Entity.hpp"
 #include "PoolPointer.hpp"
+#include "ResourceManager.h"
 #include "System.hpp"
 
 #include <ObjectPool.hpp>
 
 #include <chrono>
-#include <concepts>
 #include <memory>
 #include <tuple>
 
@@ -18,9 +18,13 @@ namespace Ignosi::Libraries::ECS
     {
         Containers::ObjectPool<Entity<Components...>>      m_EntityPool;
         std::tuple<std::unique_ptr<System<Components>>...> m_Systems;
+        ResourceManager                                    m_Resources;
 
       public:
         World() = default;
+
+        ResourceManager&       Resources() { return m_Resources; }
+        const ResourceManager& Resources() const { return m_Resources; }
 
         template <typename COMPONENT, std::derived_from<System<COMPONENT>> SYSTEM>
         SYSTEM* Register(std::unique_ptr<SYSTEM> system)
