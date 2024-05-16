@@ -7,7 +7,9 @@ strategy:
       imageName: 'ubuntu-latest'
       preset: Linux-GCC-Release
       install-depends: |
-        sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+        sudo apt-get update
+        sudo apt-get install ninja-build libxinerama-dev libxcursor-dev xorg-dev libglu1-mesa-dev pkg-config gcc-13 g++-13
       set-compiler-version: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 10
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 10
