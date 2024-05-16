@@ -52,9 +52,9 @@ namespace Ignosi::Libraries::Renderer
             const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
 
         virtual std::unique_ptr<IShaderProgram> CreateShaderProgram(
-            std::shared_ptr<const IShader> pFragmentShader,
-            std::shared_ptr<const IShader> pGeometryShader,
-            std::shared_ptr<const IShader> pVertexShader) = 0;
+            const IShader* pFragmentShader,
+            const IShader* pGeometryShader,
+            const IShader* pVertexShader) = 0;
 
         virtual std::unique_ptr<ITexture> CreateTexture(
             const std::string&           textureName,

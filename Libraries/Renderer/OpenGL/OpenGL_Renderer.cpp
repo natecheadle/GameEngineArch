@@ -74,11 +74,11 @@ namespace Ignosi::Libraries::Renderer
     }
 
     std::unique_ptr<IShaderProgram> OpenGL_Renderer::CreateShaderProgram(
-        std::shared_ptr<const IShader> pFragmentShader,
-        std::shared_ptr<const IShader> pGeometryShader,
-        std::shared_ptr<const IShader> pVertexShader)
+        const IShader* pFragmentShader,
+        const IShader* pGeometryShader,
+        const IShader* pVertexShader)
     {
-        return std::make_unique<OpenGL_ShaderProgram>(std::move(pFragmentShader), std::move(pGeometryShader), std::move(pVertexShader));
+        return std::make_unique<OpenGL_ShaderProgram>(pFragmentShader, pGeometryShader, pVertexShader);
     }
 
     std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(
