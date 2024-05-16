@@ -1,3 +1,4 @@
+#include "Entity.hpp"
 #include "Objects/Mesh.h"
 #include "Shader/IShader.h"
 #include "VertexDataConfig.h"
@@ -13,13 +14,15 @@
 using namespace Ignosi::Libraries;
 using namespace std::chrono_literals;
 
-using TestWorld = ECS::World<Renderer::Mesh>;
+using TestWorld  = ECS::World<Renderer::Mesh>;
+using TestEntity = ECS::Entity<Renderer::Mesh>;
 
 const std::filesystem::path OutDir(OUT_DIR);
 
 int main(int argc, char** argv)
 {
-    TestWorld world;
+    TestWorld                           world;
+    Containers::PoolPointer<TestEntity> entity = world.CreateEntity();
 
     std::unique_ptr<Renderer::IRenderer> pRendererUnique = Renderer::IRenderer::Create();
     Renderer::IRenderer*                 pRenderer       = world.Register<Renderer::Mesh>(std::move(pRendererUnique));
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
     ECS::Resource<Renderer::IShaderProgram>* pShaderProgram =
         resourceManager.CreateResource("ShaderProgram", pRenderer->CreateShaderProgram(pFragShader->get(), nullptr, pVertShader->get()));
 
-    auto pMesh = pRenderer->CreateComponent(Renderer::Mesh(pBuffer->get(), pShaderProgram->get(), nullptr));
+    entity->Set(Renderer::Mesh(pBuffer->get(), pShaderProgram->get(), nullptr));
 
     unsigned int              update = 0;
     std::chrono::milliseconds updatePeriod(1s / 60s);

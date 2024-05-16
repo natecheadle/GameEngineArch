@@ -14,11 +14,11 @@ namespace Ignosi::Test::ECS
             {
                 TestEntityPtr  newEntity = m_World.CreateEntity();
                 ComponentData1 componentData{i * 1.0, i * 2.0, i * 3.0};
-                newEntity->Initialize(m_World.CreateComponent<ComponentData1>(componentData));
+                newEntity->Set(componentData);
                 if (i % 2 == 0)
                 {
                     ComponentData2 componentData2{i, i * 2};
-                    newEntity->Initialize(m_World.CreateComponent<ComponentData2>(componentData2));
+                    newEntity->Set(componentData2);
                 }
                 m_Entities.push_back(std::move(newEntity));
             }

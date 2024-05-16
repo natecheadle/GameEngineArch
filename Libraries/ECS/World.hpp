@@ -20,6 +20,8 @@ namespace Ignosi::Libraries::ECS
         std::tuple<std::unique_ptr<System<Components>>...> m_Systems;
         ResourceManager                                    m_Resources;
 
+        friend Entity<Components...>;
+
       public:
         World() = default;
 
@@ -40,7 +42,12 @@ namespace Ignosi::Libraries::ECS
             std::apply([delta](auto&&... args) { ((args->Update(delta)), ...); }, m_Systems);
         }
 
-        Containers::PoolPointer<Entity<Components...>> CreateEntity() { return m_EntityPool.Create(Entity<Components...>(*this)); }
+        Containers::PoolPointer<Entity<Components...>> CreateEntity()
+        {
+            auto entity        = m_EntityPool.Create(Entity<Components...>(*this));
+            entity.Get()->m_ID = entity.ID();
+            return entity;
+        }
 
         template <typename COMPONENT>
         System<COMPONENT>* GetSystem()
@@ -48,22 +55,23 @@ namespace Ignosi::Libraries::ECS
             return std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get();
         }
 
+      private:
         template <typename COMPONENT>
-        Containers::PoolPointer<COMPONENT> CreateComponent()
+        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity)
         {
-            return GetSystem<COMPONENT>()->CreateComponent();
+            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), COMPONENT()));
         }
 
         template <typename COMPONENT>
-        Containers::PoolPointer<COMPONENT> CreateComponent(COMPONENT&& newComponent)
+        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity, COMPONENT&& newComponent)
         {
-            return GetSystem<COMPONENT>()->CreateComponent(newComponent);
+            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), std::forward<COMPONENT>(newComponent)));
         }
 
         template <typename COMPONENT>
-        Containers::PoolPointer<COMPONENT> CreateComponent(const COMPONENT& newComponent)
+        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity, const COMPONENT& newComponent)
         {
-            return GetSystem<COMPONENT>()->CreateComponent(newComponent);
+            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), newComponent));
         }
     };
 } // namespace Ignosi::Libraries::ECS

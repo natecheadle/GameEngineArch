@@ -36,11 +36,11 @@ namespace Ignosi::Test::ECS
       public:
         void Update(std::chrono::milliseconds delta) override
         {
-            for (ComponentData1& data : ComponentPool())
+            for (Libraries::ECS::Component<ComponentData1>& data : ComponentPool())
             {
-                data.X += delta / 1.0s;
-                data.Y += delta * 2 / 1.0s;
-                data.Z += delta * 4 / 1.0s;
+                data.Data().X += delta / 1.0s;
+                data.Data().Y += delta * 2 / 1.0s;
+                data.Data().Z += delta * 4 / 1.0s;
             }
         }
     };
@@ -51,16 +51,16 @@ namespace Ignosi::Test::ECS
         void Update(std::chrono::milliseconds delta) override
         {
 
-            for (ComponentData2& data : ComponentPool())
+            for (Libraries::ECS::Component<ComponentData2>& data : ComponentPool())
             {
 
-                if (data.CountOfHits > 5)
+                if (data.Data().CountOfHits > 5)
                 {
-                    data.CountOfHits = 5;
+                    data.Data().CountOfHits = 5;
                 }
-                if (data.CountOfMisses > 10)
+                if (data.Data().CountOfMisses > 10)
                 {
-                    data.CountOfMisses = 10;
+                    data.Data().CountOfMisses = 10;
                 }
             }
         }
