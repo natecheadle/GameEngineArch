@@ -55,6 +55,9 @@ namespace Ignosi::Libraries::ECS
             return std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get();
         }
 
+        std::optional<Entity<Components...>>&       GetEntity(size_t id) { return m_EntityPool[id]; }
+        const std::optional<Entity<Components...>>& GetEntity(size_t id) const { return m_EntityPool[id]; }
+
       private:
         template <typename COMPONENT>
         Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity)

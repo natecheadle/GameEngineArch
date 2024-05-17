@@ -176,6 +176,9 @@ namespace Ignosi::Libraries::Containers
         const_iterator end() const { return iterator(this, m_Objects.size()); }
         const_iterator cend() const { return iterator(this, m_Objects.size()); }
 
+        std::optional<T>&       operator[](size_t id) { return m_Objects[id].Value; }
+        const std::optional<T>& operator[](size_t id) const { return m_Objects[id].Value; }
+
         PoolPointer<T> Create() { return Create(T()); }
 
         PoolPointer<T> Create(T&& obj)

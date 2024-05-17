@@ -48,4 +48,22 @@ namespace Ignosi::Test::ECS
             }
         }
     }
+
+    TEST_F(SystemFixture, ValidateGetEntity)
+    {
+        for (size_t i = 0; i < m_Entities.size(); ++i)
+        {
+            auto& entity = m_World.GetEntity(m_Entities[i]->ID());
+            ASSERT_TRUE(entity.has_value());
+            ASSERT_EQ(entity.value().Get<ComponentData1>(), m_Entities[i]->Get<ComponentData1>());
+            if (i % 2 == 0)
+            {
+                ASSERT_EQ(entity.value().Get<ComponentData2>(), m_Entities[i]->Get<ComponentData2>());
+            }
+            else
+            {
+                ASSERT_FALSE(entity.value().Has<ComponentData2>());
+            }
+        }
+    }
 } // namespace Ignosi::Test::ECS
