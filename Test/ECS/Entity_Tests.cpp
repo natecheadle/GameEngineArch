@@ -15,13 +15,13 @@ namespace Ignosi::Test::ECS
 
     TEST_F(EntityFixture, AssignComponent)
     {
-        m_Entity->Initialize(m_World.CreateComponent<ComponentData1>());
+        m_Entity->Set(ComponentData1());
     }
 
     TEST_F(EntityFixture, UpdateComponent)
     {
 
-        m_Entity->Initialize(m_World.CreateComponent<ComponentData1>());
+        m_Entity->Set(ComponentData1());
         m_Entity->Get<ComponentData1>().X = 10.0;
         m_Entity->Get<ComponentData1>().Y = 20.0;
         m_Entity->Get<ComponentData1>().Z = 30.0;

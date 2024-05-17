@@ -2,6 +2,7 @@
 
 #include "PoolPointer.hpp"
 
+#include <Component.hpp>
 #include <ObjectPool.hpp>
 
 #include <tuple>
@@ -15,8 +16,9 @@ namespace Ignosi::Libraries::ECS
     template <typename... Components>
     class Entity
     {
-        World<Components...>&                              m_World;
-        std::tuple<Containers::PoolPointer<Components>...> m_Components;
+        World<Components...>&                                         m_World;
+        size_t                                                        m_ID;
+        std::tuple<Containers::PoolPointer<Component<Components>>...> m_Components;
 
         friend World<Components...>;
 
@@ -31,40 +33,45 @@ namespace Ignosi::Libraries::ECS
         Entity(Entity&& other) noexcept            = default;
         Entity& operator=(Entity&& other) noexcept = default;
 
-        template <typename T>
-        void Initialize(Containers::PoolPointer<T>&& value)
-        {
-            std::get<Containers::PoolPointer<T>>(m_Components) = std::forward<Containers::PoolPointer<T>>(value);
-        }
+        size_t ID() const { return m_ID; }
 
         template <typename T>
         void Clear()
         {
-            std::get<Containers::PoolPointer<T>>(m_Components)->Reset();
+            std::get<Containers::PoolPointer<Component<T>>>(m_Components)->Reset();
         }
 
         template <typename T>
         void Set(const T& val)
         {
-            *(std::get<Containers::PoolPointer<T>>(m_Components)) = val;
+            if (!Has<T>())
+            {
+                std::get<Containers::PoolPointer<Component<T>>>(m_Components) = std::move(m_World.template CreateComponent<T>(*this, val));
+            }
+            else
+            {
+                std::get<Containers::PoolPointer<Component<T>>>(m_Components)->Data() = val;
+            }
         }
 
         template <typename T>
         T& Get()
         {
-            return *(std::get<Containers::PoolPointer<T>>(m_Components));
+            return std::get<Containers::PoolPointer<Component<T>>>(m_Components)->Data();
         }
 
         template <typename T>
         const T& Get() const
         {
-            return *(std::get<Containers::PoolPointer<T>>(m_Components));
+            return std::get<Containers::PoolPointer<Component<T>>>(m_Components)->Data();
         }
 
         template <typename T>
         bool Has() const
         {
-            return std::get<Containers::PoolPointer<T>>(m_Components)->IsValid();
+            return std::get<Containers::PoolPointer<Component<T>>>(m_Components).IsValid();
         }
     };
 } // namespace Ignosi::Libraries::ECS
+
+#include "World.hpp"

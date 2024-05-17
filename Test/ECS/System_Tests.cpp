@@ -14,11 +14,11 @@ namespace Ignosi::Test::ECS
             {
                 TestEntityPtr  newEntity = m_World.CreateEntity();
                 ComponentData1 componentData{i * 1.0, i * 2.0, i * 3.0};
-                newEntity->Initialize(m_World.CreateComponent<ComponentData1>(componentData));
+                newEntity->Set(componentData);
                 if (i % 2 == 0)
                 {
                     ComponentData2 componentData2{i, i * 2};
-                    newEntity->Initialize(m_World.CreateComponent<ComponentData2>(componentData2));
+                    newEntity->Set(componentData2);
                 }
                 m_Entities.push_back(std::move(newEntity));
             }
@@ -45,6 +45,24 @@ namespace Ignosi::Test::ECS
                 }
 
                 ASSERT_EQ(exp, m_Entities[i]->Get<ComponentData2>());
+            }
+        }
+    }
+
+    TEST_F(SystemFixture, ValidateGetEntity)
+    {
+        for (size_t i = 0; i < m_Entities.size(); ++i)
+        {
+            auto& entity = m_World.GetEntity(m_Entities[i]->ID());
+            ASSERT_TRUE(entity.has_value());
+            ASSERT_EQ(entity.value().Get<ComponentData1>(), m_Entities[i]->Get<ComponentData1>());
+            if (i % 2 == 0)
+            {
+                ASSERT_EQ(entity.value().Get<ComponentData2>(), m_Entities[i]->Get<ComponentData2>());
+            }
+            else
+            {
+                ASSERT_FALSE(entity.value().Has<ComponentData2>());
             }
         }
     }

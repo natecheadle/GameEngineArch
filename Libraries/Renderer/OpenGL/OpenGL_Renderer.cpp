@@ -115,15 +115,15 @@ namespace Ignosi::Libraries::Renderer
 
     void OpenGL_Renderer::Update(std::chrono::milliseconds delta)
     {
-        for (const Mesh& var : ComponentPool())
+        for (const ECS::Component<Mesh>& var : ComponentPool())
         {
             // TODO - Material not yet supported
             // if (var.Material())
             // {
             //     var.Shader()->SetShaderVar("Material", *var.Material());
             // }
-            var.Shader()->Use();
-            var.Vertexes()->Draw();
+            var.Data().Shader()->Use();
+            var.Data().Vertexes()->Draw();
         }
 
         SwapBuffers();

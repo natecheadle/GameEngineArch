@@ -4,8 +4,6 @@
 #include "Shader/IShaderProgram.h"
 #include "Texture/IMaterial.h"
 
-#include <memory>
-
 namespace Ignosi::Libraries::Renderer
 {
     class Mesh
@@ -18,10 +16,10 @@ namespace Ignosi::Libraries::Renderer
         Mesh(const IVertexBuffer* vertexes, const IShaderProgram* shader, const IMaterial* material);
         virtual ~Mesh() = default;
 
-        Mesh(const Mesh& other) = delete;
+        Mesh(const Mesh& other) = default;
         Mesh(Mesh&& other)      = default;
 
-        Mesh& operator=(const Mesh& other) = delete;
+        Mesh& operator=(const Mesh& other) = default;
         Mesh& operator=(Mesh&& other)      = default;
 
         const IVertexBuffer*  Vertexes() const { return m_Vertexes; }
