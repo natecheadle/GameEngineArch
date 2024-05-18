@@ -18,7 +18,7 @@ namespace Ignosi::Example
     namespace
     {
         const std::filesystem::path OutDir(OUT_DIR);
-    }
+    } // namespace
 
     bool HelloCubeApp::KeepUpdating()
     {
@@ -35,11 +35,10 @@ namespace Ignosi::Example
 
         Libraries::Renderer::VertexDataConfig vertexData;
         vertexData.PushBackConfig(Libraries::Math::Vector3<float>());
-        std::array<float, 9> vertices{-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
 
         Libraries::ECS::ResourceManager&                              resourceManager = m_World.Resources();
         Libraries::ECS::Resource<Libraries::Renderer::IVertexBuffer>* pBuffer =
-            resourceManager.CreateResource("TriangleVertexes", pRenderer->CreateBuffer(vertexData, vertices));
+            resourceManager.CreateResource("CubeVertexes", Libraries::Renderer::Mesh::CreateCubeVertexes(pRenderer));
 
         Libraries::ECS::Resource<Libraries::Renderer::IShader>* pVertShader =
             resourceManager.CreateResource("VertexShader", pRenderer->CreateShader(OutDir / "assets/vert_shader.vert"));

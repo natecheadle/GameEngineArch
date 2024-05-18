@@ -3,11 +3,16 @@
 #include "IVertexBuffer.h"
 #include "Shader/IShaderProgram.h"
 #include "Texture/IMaterial.h"
+#include "VertexData.h"
 
 namespace Ignosi::Libraries::Renderer
 {
+    class IRenderer;
+
     class Mesh
     {
+        static const VertexData s_CubePoints[];
+
         const IVertexBuffer*  m_Vertexes;
         const IShaderProgram* m_Shader;
         const IMaterial*      m_Material;
@@ -25,5 +30,7 @@ namespace Ignosi::Libraries::Renderer
         const IVertexBuffer*  Vertexes() const { return m_Vertexes; }
         const IShaderProgram* Shader() const { return m_Shader; }
         const IMaterial*      Material() const { return m_Material; }
+
+        static std::unique_ptr<IVertexBuffer> CreateCubeVertexes(IRenderer* pRenderer);
     };
 } // namespace Ignosi::Libraries::Renderer
