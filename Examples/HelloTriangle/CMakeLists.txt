@@ -4,7 +4,7 @@ project(Ignosi.Examples.HelloTriangle)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} "main.cpp" "HelloTriangleApp.cpp")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Ignosi.Libraries.Renderer)
 
