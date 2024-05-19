@@ -54,7 +54,22 @@ namespace Ignosi::Libraries::Renderer
         assert(m_Shader);
     }
 
-    std::unique_ptr<IVertexBuffer> Mesh::CreateCubeVertexes(IRenderer* pRenderer)
+    Math::SquareMatrix4x4<float> Mesh::ModelMatrix() const
+    {
+        Math::SquareMatrix4x4<float> rslt(Math::SquareMatrix4x4<float>::translate_init(m_Translation));
+        rslt *= Math::SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
+        return rslt;
+    }
+
+    Math::SquareMatrix3x3<float> Mesh::NormalMatrix() const
+    {
+        auto norm = ModelMatrix();
+        norm.invert_this();
+        norm.transpose_this();
+        return norm.to_3x3();
+    }
+
+    std::unique_ptr<IVertexBuffer> Mesh::CreateCubeVertexes(const IRenderer* pRenderer)
     {
         return pRenderer->CreateBuffer(
             VertexData::describe(),

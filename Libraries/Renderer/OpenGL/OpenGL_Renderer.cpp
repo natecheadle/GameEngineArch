@@ -45,7 +45,7 @@ namespace Ignosi::Libraries::Renderer
         return m_pCamera;
     }
 
-    std::unique_ptr<IVertexBuffer> OpenGL_Renderer::CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes)
+    std::unique_ptr<IVertexBuffer> OpenGL_Renderer::CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) const
     {
         return std::make_unique<OpenGL_VertexBuffer>(config, vertexes);
     }
@@ -53,14 +53,14 @@ namespace Ignosi::Libraries::Renderer
     std::unique_ptr<IVertexBuffer> OpenGL_Renderer::CreateBuffer(
         const VertexDataConfig&        config,
         std::span<const float>         vertexes,
-        std::span<const std::uint32_t> indeces)
+        std::span<const std::uint32_t> indeces) const
     {
         return std::make_unique<OpenGL_VertexBuffer>(config, vertexes, indeces);
     }
 
     std::unique_ptr<IShader> OpenGL_Renderer::CreateShader(
         const std::filesystem::path&              path,
-        const std::vector<std::filesystem::path>& inc_paths)
+        const std::vector<std::filesystem::path>& inc_paths) const
     {
         return OpenGL_Shader::Create(path, inc_paths);
     }
@@ -68,7 +68,7 @@ namespace Ignosi::Libraries::Renderer
     std::unique_ptr<IShader> OpenGL_Renderer::CreateShader(
         const std::filesystem::path&              path,
         ShaderType                                type,
-        const std::vector<std::filesystem::path>& inc_paths)
+        const std::vector<std::filesystem::path>& inc_paths) const
     {
         return OpenGL_Shader::Create(path, type, inc_paths);
     }
@@ -76,7 +76,7 @@ namespace Ignosi::Libraries::Renderer
     std::unique_ptr<IShaderProgram> OpenGL_Renderer::CreateShaderProgram(
         const IShader* pFragmentShader,
         const IShader* pGeometryShader,
-        const IShader* pVertexShader)
+        const IShader* pVertexShader) const
     {
         return std::make_unique<OpenGL_ShaderProgram>(pFragmentShader, pGeometryShader, pVertexShader);
     }
@@ -84,27 +84,27 @@ namespace Ignosi::Libraries::Renderer
     std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(
         const std::string&           textureName,
         const std::filesystem::path& path,
-        TextureUnit                  unit)
+        TextureUnit                  unit) const
     {
         return std::make_unique<OpenGL_Texture>(textureName, path, unit);
     }
 
-    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit)
+    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) const
     {
         return std::make_unique<OpenGL_Texture>(textureName, image, unit);
     }
 
-    void OpenGL_Renderer::ClearDepthBuffer()
+    void OpenGL_Renderer::ClearDepthBuffer() const
     {
         glClear(GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGL_Renderer::ClearColorBuffer()
+    void OpenGL_Renderer::ClearColorBuffer() const
     {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void OpenGL_Renderer::SwapBuffers()
+    void OpenGL_Renderer::SwapBuffers() const
     {
         if (m_pWindow)
         {
@@ -123,6 +123,13 @@ namespace Ignosi::Libraries::Renderer
             //     var.Shader()->SetShaderVar("Material", *var.Material());
             // }
             var.Data().Shader()->Use();
+            if (m_pCamera)
+            {
+                var.Data().Shader()->SetShaderVar("view", m_pCamera->ViewPerspective());
+                var.Data().Shader()->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+                var.Data().Shader()->SetShaderVar("projection", m_pCamera->Projection());
+            }
+
             var.Data().Vertexes()->Draw();
         }
 

@@ -5,12 +5,12 @@
 #include "Shader/IShader.h"
 #include "VertexDataConfig.h"
 
+#include <Camera/Fly_Camera.h>
 #include <IRenderer.h>
 #include <IWindow.h>
 #include <World.hpp>
 #include <fmt/format.h>
 
-#include <array>
 #include <memory>
 
 namespace Ignosi::Example
@@ -48,6 +48,10 @@ namespace Ignosi::Example
         Libraries::ECS::Resource<Libraries::Renderer::IShaderProgram>* pShaderProgram = resourceManager.CreateResource(
             "ShaderProgram",
             pRenderer->CreateShaderProgram(pFragShader->get(), nullptr, pVertShader->get()));
+
+        auto pCamera = std::make_unique<Libraries::Renderer::Fly_Camera>(m_pWindow);
+
+        pRenderer->AttachedCamera(std::move(pCamera));
 
         m_Entity->Set(Libraries::Renderer::Mesh(pBuffer->get(), pShaderProgram->get(), nullptr));
     }
