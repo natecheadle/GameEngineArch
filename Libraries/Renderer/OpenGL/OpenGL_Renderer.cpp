@@ -115,22 +115,24 @@ namespace Ignosi::Libraries::Renderer
 
     void OpenGL_Renderer::Update(std::chrono::milliseconds delta)
     {
-        for (const ECS::Component<Mesh>& var : ComponentPool())
+        for (const ECS::Component<Mesh>& mesh : ComponentPool())
         {
             // TODO - Material not yet supported
             // if (var.Material())
             // {
             //     var.Shader()->SetShaderVar("Material", *var.Material());
             // }
-            var.Data().Shader()->Use();
+            mesh.Data().Shader()->Use();
+            mesh.Data().Shader()->SetShaderVar("model", mesh.Data().ModelMatrix());
+
             if (m_pCamera)
             {
-                var.Data().Shader()->SetShaderVar("view", m_pCamera->ViewPerspective());
-                var.Data().Shader()->SetShaderVar("viewPos", m_pCamera->CameraPosition());
-                var.Data().Shader()->SetShaderVar("projection", m_pCamera->Projection());
+                mesh.Data().Shader()->SetShaderVar("view", m_pCamera->ViewPerspective());
+                mesh.Data().Shader()->SetShaderVar("viewPos", m_pCamera->CameraPosition());
+                mesh.Data().Shader()->SetShaderVar("projection", m_pCamera->Projection());
             }
 
-            var.Data().Vertexes()->Draw();
+            mesh.Data().Vertexes()->Draw();
         }
 
         SwapBuffers();
