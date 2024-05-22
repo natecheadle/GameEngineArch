@@ -3,14 +3,23 @@
 #include "IVertexBuffer.h"
 #include "Shader/IShaderProgram.h"
 #include "Texture/IMaterial.h"
+#include "Units/Radian.hpp"
+#include "VertexData.h"
 
 namespace Ignosi::Libraries::Renderer
 {
+    class IRenderer;
+
     class Mesh
     {
+        static const VertexData s_CubePoints[];
+
         const IVertexBuffer*  m_Vertexes;
         const IShaderProgram* m_Shader;
         const IMaterial*      m_Material;
+
+        Math::Vector3<float>               m_Translation;
+        Math::Vector3<Math::Radian<float>> m_Rotation;
 
       public:
         Mesh(const IVertexBuffer* vertexes, const IShaderProgram* shader, const IMaterial* material);
@@ -25,5 +34,16 @@ namespace Ignosi::Libraries::Renderer
         const IVertexBuffer*  Vertexes() const { return m_Vertexes; }
         const IShaderProgram* Shader() const { return m_Shader; }
         const IMaterial*      Material() const { return m_Material; }
+
+        const Math::Vector3<float>&               Translation() const { return m_Translation; }
+        const Math::Vector3<Math::Radian<float>>& Rotation() const { return m_Rotation; }
+
+        void Translation(const Math::Vector3<float>& value) { m_Translation = value; }
+        void Rotation(const Math::Vector3<Math::Radian<float>>& value) { m_Rotation = value; }
+
+        static std::unique_ptr<IVertexBuffer> CreateCubeVertexes(const IRenderer* pRenderer);
+
+        Math::SquareMatrix4x4<float> ModelMatrix() const;
+        Math::SquareMatrix3x3<float> NormalMatrix() const;
     };
 } // namespace Ignosi::Libraries::Renderer

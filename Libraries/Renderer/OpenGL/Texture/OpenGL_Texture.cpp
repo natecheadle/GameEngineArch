@@ -10,8 +10,8 @@
 
 namespace Ignosi::Libraries::Renderer
 {
-    OpenGL_Texture::OpenGL_Texture(const std::string& textureName, const std::filesystem::path& imagePath, enum TextureUnit unit)
-        : Texture(textureName, unit)
+    OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& imagePath, enum TextureUnit unit)
+        : Texture(unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
     {
@@ -19,8 +19,8 @@ namespace Ignosi::Libraries::Renderer
         InitializeFromImage(image);
     }
 
-    OpenGL_Texture::OpenGL_Texture(const std::string& textureName, const IImageFile& image, enum TextureUnit unit)
-        : Texture(textureName, unit)
+    OpenGL_Texture::OpenGL_Texture(const IImageFile& image, enum TextureUnit unit)
+        : Texture(unit)
         , m_ID(CreateTexture())
         , m_UnitID(TranslateTextureUnit(unit))
     {

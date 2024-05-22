@@ -5,3 +5,4 @@ set(CMAKE_CXX_STANDARD 20)
 project(Ignosi.Examples)
 
 add_subdirectory("HelloTriangle")
+add_subdirectory("HelloCube")

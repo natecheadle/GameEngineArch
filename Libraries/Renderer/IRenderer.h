@@ -37,33 +37,30 @@ namespace Ignosi::Libraries::Renderer
         virtual void                           AttachedCamera(std::shared_ptr<Camera> camera) = 0;
         virtual const std::shared_ptr<Camera>& AttachedCamera() const                         = 0;
 
-        virtual std::unique_ptr<IVertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) = 0;
+        virtual std::unique_ptr<IVertexBuffer> CreateBuffer(const VertexDataConfig& config, std::span<const float> vertexes) const = 0;
         virtual std::unique_ptr<IVertexBuffer> CreateBuffer(
             const VertexDataConfig&        config,
             std::span<const float>         vertexes,
-            std::span<const std::uint32_t> indeces) = 0;
+            std::span<const std::uint32_t> indeces) const = 0;
 
         virtual std::unique_ptr<IShader> CreateShader(
             const std::filesystem::path&              path,
-            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) const = 0;
         virtual std::unique_ptr<IShader> CreateShader(
             const std::filesystem::path&              path,
             ShaderType                                type,
-            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) = 0;
+            const std::vector<std::filesystem::path>& inc_paths = std::vector<std::filesystem::path>()) const = 0;
 
         virtual std::unique_ptr<IShaderProgram> CreateShaderProgram(
             const IShader* pFragmentShader,
             const IShader* pGeometryShader,
-            const IShader* pVertexShader) = 0;
+            const IShader* pVertexShader) const = 0;
 
-        virtual std::unique_ptr<ITexture> CreateTexture(
-            const std::string&           textureName,
-            const std::filesystem::path& path,
-            TextureUnit                  unit)                                                                                                     = 0;
-        virtual std::unique_ptr<ITexture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) = 0;
+        virtual std::unique_ptr<ITexture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) const = 0;
+        virtual std::unique_ptr<ITexture> CreateTexture(const ImageFile& image, TextureUnit unit) const            = 0;
 
-        virtual void ClearDepthBuffer() = 0;
-        virtual void ClearColorBuffer() = 0;
-        virtual void SwapBuffers()      = 0;
+        virtual void ClearDepthBuffer() const = 0;
+        virtual void ClearColorBuffer() const = 0;
+        virtual void SwapBuffers() const      = 0;
     };
 } // namespace Ignosi::Libraries::Renderer
