@@ -56,9 +56,8 @@ namespace Ignosi::Libraries::Renderer
             const IShader* pGeometryShader,
             const IShader* pVertexShader) const = 0;
 
-        virtual std::unique_ptr<ITexture> CreateTexture(const std::string& textureName, const std::filesystem::path& path, TextureUnit unit)
-            const                                                                                                                       = 0;
-        virtual std::unique_ptr<ITexture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) const = 0;
+        virtual std::unique_ptr<ITexture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) const = 0;
+        virtual std::unique_ptr<ITexture> CreateTexture(const ImageFile& image, TextureUnit unit) const            = 0;
 
         virtual void ClearDepthBuffer() const = 0;
         virtual void ClearColorBuffer() const = 0;

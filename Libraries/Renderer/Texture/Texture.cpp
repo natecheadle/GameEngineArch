@@ -2,7 +2,7 @@
 
 namespace Ignosi::Libraries::Renderer
 {
-    Texture::Texture(const std::string& name, enum TextureUnit unit)
+    Texture::Texture(enum TextureUnit unit)
         : m_Unit(unit)
     {
     }

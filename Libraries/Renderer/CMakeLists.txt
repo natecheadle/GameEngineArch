@@ -26,6 +26,7 @@ add_library(
   "Shader/Preprocessor.cpp"
   "Shader/Shader.cpp"
   "Texture/ImageFile.cpp"
+  "Texture/Material.cpp"
   "Texture/stb_implementation.cpp"
   "Texture/Texture.cpp"
   "Camera/Camera.cpp"

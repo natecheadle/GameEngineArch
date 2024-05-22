@@ -40,9 +40,8 @@ namespace Ignosi::Libraries::Renderer
             const IShader* pGeometryShader,
             const IShader* pVertexShader) const override;
 
-        std::unique_ptr<ITexture> CreateTexture(const std::string& textureName, const std::filesystem::path& path, TextureUnit unit)
-            const override;
-        std::unique_ptr<ITexture> CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) const override;
+        std::unique_ptr<ITexture> CreateTexture(const std::filesystem::path& path, TextureUnit unit) const override;
+        std::unique_ptr<ITexture> CreateTexture(const ImageFile& image, TextureUnit unit) const override;
 
         void ClearDepthBuffer() const override;
         void ClearColorBuffer() const override;

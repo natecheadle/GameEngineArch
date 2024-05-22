@@ -32,6 +32,11 @@ namespace Ignosi::Libraries::Renderer
         WindowSize size = m_pWindow->ActualWindowSize();
         glViewport(0, 0, size.Width, size.Height);
 
+        // configure global opengl state
+        // -----------------------------
+        // TODO this should be user configurable.
+        glEnable(GL_DEPTH_TEST);
+
         return m_pWindow.get();
     }
 
@@ -81,17 +86,14 @@ namespace Ignosi::Libraries::Renderer
         return std::make_unique<OpenGL_ShaderProgram>(pFragmentShader, pGeometryShader, pVertexShader);
     }
 
-    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(
-        const std::string&           textureName,
-        const std::filesystem::path& path,
-        TextureUnit                  unit) const
+    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(const std::filesystem::path& path, TextureUnit unit) const
     {
-        return std::make_unique<OpenGL_Texture>(textureName, path, unit);
+        return std::make_unique<OpenGL_Texture>(path, unit);
     }
 
-    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(const std::string& textureName, const ImageFile& image, TextureUnit unit) const
+    std::unique_ptr<ITexture> OpenGL_Renderer::CreateTexture(const ImageFile& image, TextureUnit unit) const
     {
-        return std::make_unique<OpenGL_Texture>(textureName, image, unit);
+        return std::make_unique<OpenGL_Texture>(image, unit);
     }
 
     void OpenGL_Renderer::ClearDepthBuffer() const
@@ -115,6 +117,9 @@ namespace Ignosi::Libraries::Renderer
 
     void OpenGL_Renderer::Update(std::chrono::milliseconds delta)
     {
+        ClearDepthBuffer();
+        ClearColorBuffer();
+
         for (const ECS::Component<Mesh>& mesh : ComponentPool())
         {
             // TODO - Material not yet supported

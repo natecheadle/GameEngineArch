@@ -1,24 +1,24 @@
 
 #pragma once
 
+#include "IMaterial.h"
 #include "ITexture.h"
-#include "Texture/Texture.h"
-
-#include <memory>
 
 namespace Ignosi::Libraries::Renderer
 {
     class Material : public IMaterial
     {
-        std::shared_ptr<Texture> m_Diffuse;
-        std::shared_ptr<Texture> m_Specular;
-        std::shared_ptr<Texture> m_Normal;
-        std::shared_ptr<Texture> m_Height;
+        ITexture* m_Diffuse{nullptr};
+        ITexture* m_Specular{nullptr};
+        ITexture* m_Normal{nullptr};
+        ITexture* m_Height{nullptr};
 
-        float m_Shininess;
+        float m_Shininess{0.0};
 
       public:
-        Material()           = default;
+        Material() = default;
+        Material(ITexture* diffuse, ITexture* specular, ITexture* normal, ITexture* height, float shininess);
+
         ~Material() override = default;
 
         Material(Material&&)      = default;
@@ -27,10 +27,16 @@ namespace Ignosi::Libraries::Renderer
         Material& operator=(Material&&)      = default;
         Material& operator=(const Material&) = default;
 
-        ITexture* Diffuse() const override { return m_Diffuse.get(); }
-        ITexture* Specular() const override { return m_Specular.get(); }
-        ITexture* Normal() const override { return m_Normal.get(); }
-        ITexture* Height() const override { return m_Height.get(); }
-        float     Shininess() const override { return m_Shininess.get(); }
+        ITexture* Diffuse() const override { return m_Diffuse; }
+        ITexture* Specular() const override { return m_Specular; }
+        ITexture* Normal() const override { return m_Normal; }
+        ITexture* Height() const override { return m_Height; }
+        float     Shininess() const override { return m_Shininess; }
+
+        void Diffuse(ITexture* value) override { m_Diffuse = value; }
+        void Specular(ITexture* value) override { m_Specular = value; }
+        void Normal(ITexture* value) override { m_Normal = value; }
+        void Height(ITexture* value) override { m_Height = value; }
+        void Shininess(float value) override { m_Shininess = value; }
     };
 } // namespace Ignosi::Libraries::Renderer

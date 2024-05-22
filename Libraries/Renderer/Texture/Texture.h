@@ -2,8 +2,6 @@
 
 #include "ITexture.h"
 
-#include <string>
-
 namespace Ignosi::Libraries::Renderer
 {
     class Texture : public ITexture
@@ -12,7 +10,7 @@ namespace Ignosi::Libraries::Renderer
         const enum TextureUnit m_Unit;
 
       protected:
-        Texture(const std::string& name, enum TextureUnit unit);
+        Texture(enum TextureUnit unit);
 
       public:
         virtual ~Texture() = default;

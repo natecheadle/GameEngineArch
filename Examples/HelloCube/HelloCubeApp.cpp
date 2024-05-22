@@ -8,6 +8,7 @@
 #include <Camera/Fly_Camera.h>
 #include <IRenderer.h>
 #include <IWindow.h>
+#include <Texture/Material.h>
 #include <World.hpp>
 #include <fmt/format.h>
 
@@ -49,19 +50,26 @@ namespace Ignosi::Example
             "ShaderProgram",
             pRenderer->CreateShaderProgram(pFragShader->get(), nullptr, pVertShader->get()));
 
+        Libraries::ECS::Resource<Libraries::Renderer::ITexture>* pTexture = resourceManager.CreateResource(
+            "Texture",
+            pRenderer->CreateTexture(OutDir / "assets/container.jpg", Libraries::Renderer::TextureUnit::Texture0));
+        Libraries::ECS::Resource<Libraries::Renderer::IMaterial>* pMaterial = resourceManager.CreateResource(
+            "Material",
+            std::unique_ptr<Libraries::Renderer::IMaterial>(std::make_unique<Libraries::Renderer::Material>()));
+
+        pMaterial->get()->Diffuse(pTexture->get());
+
         auto pCamera = std::make_unique<Libraries::Renderer::Fly_Camera>(m_pWindow);
+        pCamera->PanLeft(1.0);
+        pCamera->PanUp(1.0);
 
         pRenderer->AttachedCamera(std::move(pCamera));
 
-        m_Entity->Set(Libraries::Renderer::Mesh(pBuffer->get(), pShaderProgram->get(), nullptr));
+        m_Entity->Set(Libraries::Renderer::Mesh(pBuffer->get(), pShaderProgram->get(), pMaterial->get()));
     }
+
     void HelloCubeApp::Update()
     {
-        if (m_Update % 60 == 0)
-        {
-            fmt::print("Window.Name: {} Window.Size: {}\n", m_pWindow->Name(), m_pWindow->ActualWindowSize());
-        }
-
         m_World.Update(m_UpdatePeriod);
         m_Update++;
     }
