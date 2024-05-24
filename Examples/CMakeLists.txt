@@ -6,3 +6,4 @@ project(Ignosi.Examples)
 
 add_subdirectory("HelloTriangle")
 add_subdirectory("HelloCube")
+add_subdirectory("KinematicsDemo")
