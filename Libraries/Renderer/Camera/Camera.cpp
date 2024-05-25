@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
 
 #include <cassert>
 

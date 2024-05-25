@@ -1,5 +1,4 @@
 #include <LinearAlgebra/SquareMatrix.hpp>
-#include <LinearAlgebra/SquareMatrix4x4.hpp>
 #include <LinearAlgebra/Vector.hpp>
 #include <LinearAlgebra/Vector3.hpp>
 #include <LinearAlgebra/Vector4.hpp>
@@ -107,7 +106,7 @@ namespace Ignosi::Test
     TEST_F(MatrixFixture, ValidateIdentity)
     {
         SquareMatrix4x4<float> rslt{{{{{1.0, 0.0, 0.0, 0.0}}, {{0.0, 1.0, 0.0, 0.0}}, {{0.0, 0.0, 1.0, 0.0}}, {{0.0, 0.0, 0.0, 1.0}}}}};
-        ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity<SquareMatrix4x4<float>>());
+        ASSERT_EQ(rslt, SquareMatrix4x4<float>::identity());
     }
 
     TEST_F(MatrixFixture, ValidateInverse)

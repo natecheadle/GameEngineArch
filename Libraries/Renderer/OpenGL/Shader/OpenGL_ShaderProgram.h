@@ -3,7 +3,7 @@
 #include "Shader/IShader.h"
 #include "Shader/IShaderProgram.h"
 
-#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
 
 namespace Ignosi::Libraries::Renderer
 {
@@ -26,8 +26,8 @@ namespace Ignosi::Libraries::Renderer
         void SetShaderVar(std::string_view name, bool value) const final;
         void SetShaderVar(std::string_view name, int value) const final;
         void SetShaderVar(std::string_view name, float value) const final;
-        void SetShaderVar(std::string_view name, const Math::SquareMatrix<4, float>& value) const final;
-        void SetShaderVar(std::string_view name, const Math::SquareMatrix<3, float>& value) const final;
+        void SetShaderVar(std::string_view name, const Math::SquareMatrix4x4<float>& value) const final;
+        void SetShaderVar(std::string_view name, const Math::SquareMatrix3x3<float>& value) const final;
         void SetShaderVar(std::string_view name, const Math::Vector<3, float>& value) const final;
         void SetShaderVar(std::string_view name, const Math::Vector<4, float>& value) const final;
         void SetShaderVar(std::string_view name, const IMaterial& value) const final;
