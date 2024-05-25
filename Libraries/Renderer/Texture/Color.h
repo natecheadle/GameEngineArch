@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 namespace Ignosi::Libraries::Renderer
 {
