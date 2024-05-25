@@ -2,8 +2,6 @@
 
 #include "Units/Radian.hpp"
 #include "Vector.hpp"
-#include "Vector3.hpp"
-#include "Vector4.hpp"
 
 #include <array>
 #include <cstddef>
@@ -155,13 +153,13 @@ namespace Ignosi::Libraries::Math
             Vector3<T> cam_up = dir.cross(right);
 
             SquareMatrix lookat(identity());
-            lookat[0] = Vector4<T>(right, 0.0);
-            lookat[1] = Vector4<T>(cam_up, 0.0);
-            lookat[2] = Vector4<T>(dir, 0.0);
+            lookat[0] = right.ToVector4(0.0f);
+            lookat[1] = cam_up.ToVector4(0.0f);
+            lookat[2] = dir.ToVector4(0.0f);
             lookat.transpose_this();
 
             SquareMatrix posMat(identity());
-            posMat[3] = Vector4<T>(-1 * pos);
+            posMat[3] = (-1 * pos).ToVector4(1.0f);
 
             lookat *= posMat;
             return lookat;
@@ -216,7 +214,7 @@ namespace Ignosi::Libraries::Math
             static_assert(SIZE == 4, "translate_init requires a 4x4 square matrix");
 
             SquareMatrix rslt = identity();
-            rslt[3]           = Vector4<T>(trans);
+            rslt[3]           = trans.ToVector4(1.0f);
 
             return rslt;
         }

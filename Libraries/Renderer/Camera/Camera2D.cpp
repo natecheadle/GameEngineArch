@@ -1,6 +1,6 @@
 #include "Camera2D.h"
 
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 namespace Ignosi::Libraries::Renderer
 {

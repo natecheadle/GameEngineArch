@@ -2,8 +2,7 @@
 
 #include "VertexDataConfig.h"
 
-#include <LinearAlgebra/Vector2.hpp>
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 namespace Ignosi::Libraries::Renderer
 {

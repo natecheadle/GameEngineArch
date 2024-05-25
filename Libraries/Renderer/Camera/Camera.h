@@ -3,7 +3,7 @@
 #include "IWindow.h"
 
 #include <LinearAlgebra/SquareMatrix.hpp>
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 #include <Units/Radian.hpp>
 
 namespace Ignosi::Libraries::Renderer
