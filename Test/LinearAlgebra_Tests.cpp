@@ -1,7 +1,5 @@
 #include <LinearAlgebra/SquareMatrix.hpp>
 #include <LinearAlgebra/Vector.hpp>
-#include <LinearAlgebra/Vector3.hpp>
-#include <LinearAlgebra/Vector4.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -166,60 +164,60 @@ namespace Ignosi::Test
 
     TEST(VectorFixture, ValidateDotProduct)
     {
-        Vector3<float> vec(1.0, 2.0, 3.0);
+        Vector3<float> vec(1.0f, 2.0f, 3.0f);
         float          rslt = vec.dot(vec);
         ASSERT_EQ(14, rslt);
     }
 
     TEST(VectorFixture, ValidateCrossProduct)
     {
-        Vector3<float> vec1(1.0, 2.0, 3.0);
-        Vector3<float> vec2(-1.0, -1.0, -1.0);
+        Vector3<float> vec1(1.0f, 2.0f, 3.0f);
+        Vector3<float> vec2(-1.0f, -1.0f, -1.0f);
         Vector3<float> rslt = vec1.cross(vec2);
-        ASSERT_EQ(Vector3<float>(1, -2, 1), rslt);
+        ASSERT_EQ(Vector3<float>(1.0f, -2.0f, 1.0f), rslt);
     }
 
     TEST(VectorFixture, ValidateSubtraction)
     {
-        Vector3<float> vec1(1.0, 2.0, 3.0);
-        Vector3<float> vec2(-1.0, -1.0, -1.0);
+        Vector3<float> vec1(1.0f, 2.0f, 3.0f);
+        Vector3<float> vec2(-1.0f, -1.0f, -1.0f);
         Vector3<float> rslt = vec1 - vec2;
-        ASSERT_EQ(Vector3<float>(2, 3, 4), rslt);
+        ASSERT_EQ(Vector3<float>(2.0f, 3.0f, 4.0f), rslt);
     }
 
     TEST(LinearAlgebraFixture, ValidateRotateX)
     {
-        Vector3<float> init(0, 1, 1);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * Vector4<float>(init));
-        ASSERT_EQ(Vector3(0.0f, 0.0f, std::sqrt(2.0f)), rotated.ToVector3());
+        Vector3<float> init(0.0f, 1.0f, 1.0f);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_x_init(M_PI_4) * init.ToVector4(1.0f));
+        ASSERT_EQ(Vector3<float>(0.0f, 0.0f, std::sqrt(2.0f)), rotated.ToVector3());
     }
 
     TEST(LinearAlgebraFixture, ValidateRotateY)
     {
-        Vector3<float> init(1, 0, 1);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * Vector4<float>(init));
-        ASSERT_EQ(Vector3(std::sqrt(2.0f), 0.0f, 0.0f), rotated.ToVector3());
+        Vector3<float> init(1.0f, 0.0f, 1.0f);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_y_init(M_PI_4) * init.ToVector4(1.0f));
+        ASSERT_EQ(Vector3<float>(std::sqrt(2.0f), 0.0f, 0.0f), rotated.ToVector3());
     }
 
     TEST(LinearAlgebraFixture, ValidateRotateZ)
     {
-        Vector3<float> init(1, 1, 0);
-        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * Vector4<float>(init));
-        ASSERT_EQ(Vector3<float>(0, std::sqrt(2.0f), 0), rotated.ToVector3());
+        Vector3<float> init(1.0f, 1.0f, 0.0f);
+        Vector4<float> rotated(SquareMatrix4x4<float>::rotate_z_init(M_PI_4) * init.ToVector4(1.0f));
+        ASSERT_EQ(Vector3<float>(0.0f, std::sqrt(2.0f), 0.0f), rotated.ToVector3());
     }
 
     TEST(LinearAlgebraFixture, ValidateScale)
     {
-        Vector3<float> init(1, 1, 1);
-        Vector4<float> scaled(SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * Vector4<float>(init));
-        ASSERT_EQ(Vector3<float>(2.0, 2.0, 2.0), scaled.ToVector3());
+        Vector3<float> init(1.0f, 1.0f, 1.0f);
+        Vector4<float> scaled(SquareMatrix4x4<float>::scale_init({2.0, 2.0, 2.0}) * init.ToVector4(1.0f));
+        ASSERT_EQ(Vector3<float>(2.0f, 2.0f, 2.0f), scaled.ToVector3());
     }
 
     TEST(LinearAlgebraFixture, ValidateTranslate)
     {
         Vector3<float> init(1.0f, 1.0f, 1.0f);
-        Vector4<float> translated(SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * Vector4<float>(init));
-        ASSERT_EQ(Vector3<float>(3.0, 3.0, 3.0), translated.ToVector3());
+        Vector4<float> translated(SquareMatrix4x4<float>::translate_init({2.0f, 2.0f, 2.0f}) * init.ToVector4(1.0f));
+        ASSERT_EQ(Vector3<float>(3.0f, 3.0f, 3.0f), translated.ToVector3());
     }
 
 } // namespace Ignosi::Test

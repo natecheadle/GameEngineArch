@@ -1,6 +1,6 @@
 #include "Fly_Camera.h"
 
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 #include <Units/Angle.hpp>
 
 namespace Ignosi::Libraries::Renderer

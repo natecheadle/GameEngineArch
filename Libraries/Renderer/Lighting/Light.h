@@ -2,8 +2,6 @@
 
 #include "Texture/RGB_Color.h"
 
-#include <LinearAlgebra/Vector3.hpp>
-
 namespace Ignosi::Libraries::Renderer
 {
     struct Light
@@ -12,4 +10,4 @@ namespace Ignosi::Libraries::Renderer
         RGB_Color Diffuse;
         RGB_Color Specular;
     };
-} // namespace Ignosi::Modules::Render
+} // namespace Ignosi::Libraries::Renderer
