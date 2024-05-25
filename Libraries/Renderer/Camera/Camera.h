@@ -2,7 +2,7 @@
 
 #include "IWindow.h"
 
-#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
 #include <LinearAlgebra/Vector3.hpp>
 #include <Units/Radian.hpp>
 

@@ -7,7 +7,7 @@
 #include "Lighting/Light_Spotlight.h"
 #include "Texture/IMaterial.h"
 
-#include <LinearAlgebra/SquareMatrix4x4.hpp>
+#include <LinearAlgebra/SquareMatrix.hpp>
 
 namespace Ignosi::Libraries::Renderer
 {
@@ -22,8 +22,8 @@ namespace Ignosi::Libraries::Renderer
         virtual void SetShaderVar(std::string_view name, bool value) const                                = 0;
         virtual void SetShaderVar(std::string_view name, int value) const                                 = 0;
         virtual void SetShaderVar(std::string_view name, float value) const                               = 0;
-        virtual void SetShaderVar(std::string_view name, const Math::SquareMatrix<4, float>& value) const = 0;
-        virtual void SetShaderVar(std::string_view name, const Math::SquareMatrix<3, float>& value) const = 0;
+        virtual void SetShaderVar(std::string_view name, const Math::SquareMatrix4x4<float>& value) const = 0;
+        virtual void SetShaderVar(std::string_view name, const Math::SquareMatrix3x3<float>& value) const = 0;
         virtual void SetShaderVar(std::string_view name, const Math::Vector<3, float>& value) const       = 0;
         virtual void SetShaderVar(std::string_view name, const Math::Vector<4, float>& value) const       = 0;
         virtual void SetShaderVar(std::string_view name, const IMaterial& value) const                    = 0;
