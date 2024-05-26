@@ -128,7 +128,10 @@ namespace Ignosi::Libraries::Renderer
             //     var.Shader()->SetShaderVar("Material", *var.Material());
             // }
             mesh.Data().Shader()->Use();
-            mesh.Data().Shader()->SetShaderVar("model", mesh.Data().ModelMatrix());
+            Math::Vector3<float>               position;
+            Math::Vector3<Math::Radian<float>> angle;
+
+            mesh.Data().Shader()->SetShaderVar("model", mesh.Data().ModelMatrix(position, angle));
 
             if (m_pCamera)
             {

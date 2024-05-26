@@ -65,16 +65,19 @@ namespace Ignosi::Libraries::Renderer
         assert(m_Shader);
     }
 
-    Math::SquareMatrix4x4<float> Mesh::ModelMatrix() const
+    Math::SquareMatrix4x4<float> Mesh::ModelMatrix(
+        const Math::Vector3<float>&              origin,
+        const Math::Vector3<Math::Radian<float>> origin_rotation) const
+
     {
-        Math::SquareMatrix4x4<float> rslt(Math::SquareMatrix4x4<float>::translate_init(m_Translation));
-        rslt *= Math::SquareMatrix4x4<float>::rotate_zyx_init(m_Rotation);
+        Math::SquareMatrix4x4<float> rslt(Math::SquareMatrix4x4<float>::translate_init(origin + m_Translation));
+        rslt *= Math::SquareMatrix4x4<float>::rotate_zyx_init(origin_rotation + m_Rotation);
         return rslt;
     }
 
-    Math::SquareMatrix3x3<float> Mesh::NormalMatrix() const
+    Math::SquareMatrix3x3<float> Mesh::NormalMatrix(const Math::SquareMatrix4x4<float>& model) const
     {
-        auto norm = ModelMatrix();
+        auto norm = model;
         norm.invert_this();
         norm.transpose_this();
         return norm.to_3x3();

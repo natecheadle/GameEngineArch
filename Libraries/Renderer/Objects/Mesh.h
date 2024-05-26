@@ -45,7 +45,9 @@ namespace Ignosi::Libraries::Renderer
         static std::unique_ptr<IVertexBuffer> CreateCubeVertexes(const IRenderer* pRenderer);
         static std::unique_ptr<IVertexBuffer> CreateSpriteVertexes(const IRenderer* pRenderer);
 
-        Math::SquareMatrix4x4<float> ModelMatrix() const;
-        Math::SquareMatrix3x3<float> NormalMatrix() const;
+        Math::SquareMatrix4x4<float> ModelMatrix(
+            const Math::Vector3<float>&              origin,
+            const Math::Vector3<Math::Radian<float>> origin_rotation) const;
+        Math::SquareMatrix3x3<float> NormalMatrix(const Math::SquareMatrix4x4<float>& model) const;
     };
 } // namespace Ignosi::Libraries::Renderer
