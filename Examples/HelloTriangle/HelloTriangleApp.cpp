@@ -1,12 +1,11 @@
 #include "HelloTriangleApp.h"
 
-#include "Entity.hpp"
-#include "Objects/Mesh.h"
-#include "Shader/IShader.h"
-#include "VertexDataConfig.h"
-
+#include <Entity.hpp>
 #include <IRenderer.h>
 #include <IWindow.h>
+#include <Objects/Mesh.h>
+#include <Shader/IShader.h>
+#include <VertexDataConfig.h>
 #include <World.hpp>
 #include <fmt/format.h>
 

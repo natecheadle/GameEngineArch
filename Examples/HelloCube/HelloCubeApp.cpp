@@ -1,14 +1,13 @@
 #include "HelloCubeApp.h"
 
-#include "Entity.hpp"
-#include "Objects/Mesh.h"
-#include "Shader/IShader.h"
-#include "VertexDataConfig.h"
-
 #include <Camera/Fly_Camera.h>
+#include <Entity.hpp>
 #include <IRenderer.h>
 #include <IWindow.h>
+#include <Objects/Mesh.h>
+#include <Shader/IShader.h>
 #include <Texture/Material.h>
+#include <VertexDataConfig.h>
 #include <World.hpp>
 #include <fmt/format.h>
 
