@@ -45,6 +45,17 @@ namespace Ignosi::Libraries::Renderer
         {{-0.5f, 0.5f, -0.5f},  {0.0f, 1.0f, 0.0f},  {{0.0f, 1.0f}}}
     };
 
+    const VertexData Mesh::s_SpritePoints[] = {
+
+        {{0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.0f, 0.0f}, {0.0f, 0.0f}},
+
+        {{0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{1.0f, 1.0f}, {1.0f, 1.0f}},
+        {{1.0f, 0.0f}, {1.0f, 0.0f}},
+    };
+
     Mesh::Mesh(const IVertexBuffer* vertexes, const IShaderProgram* shader, const IMaterial* material)
         : m_Vertexes(vertexes)
         , m_Shader(shader)
@@ -76,5 +87,14 @@ namespace Ignosi::Libraries::Renderer
             std::span<const float>(
                 reinterpret_cast<const float*>(s_CubePoints),
                 reinterpret_cast<const float*>(s_CubePoints) + sizeof(s_CubePoints) / (sizeof(float))));
+    }
+
+    std::unique_ptr<IVertexBuffer> Mesh::CreateSpriteVertexes(const IRenderer* pRenderer)
+    {
+        return pRenderer->CreateBuffer(
+            VertexData::describe(),
+            std::span<const float>(
+                reinterpret_cast<const float*>(s_SpritePoints),
+                reinterpret_cast<const float*>(s_SpritePoints) + sizeof(s_SpritePoints) / (sizeof(float))));
     }
 } // namespace Ignosi::Libraries::Renderer

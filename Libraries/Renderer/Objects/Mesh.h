@@ -13,6 +13,7 @@ namespace Ignosi::Libraries::Renderer
     class Mesh
     {
         static const VertexData s_CubePoints[];
+        static const VertexData s_SpritePoints[];
 
         const IVertexBuffer*  m_Vertexes;
         const IShaderProgram* m_Shader;
@@ -42,6 +43,7 @@ namespace Ignosi::Libraries::Renderer
         void Rotation(const Math::Vector3<Math::Radian<float>>& value) { m_Rotation = value; }
 
         static std::unique_ptr<IVertexBuffer> CreateCubeVertexes(const IRenderer* pRenderer);
+        static std::unique_ptr<IVertexBuffer> CreateSpriteVertexes(const IRenderer* pRenderer);
 
         Math::SquareMatrix4x4<float> ModelMatrix() const;
         Math::SquareMatrix3x3<float> NormalMatrix() const;

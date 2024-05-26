@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LinearAlgebra/Vector3.hpp>
+#include <LinearAlgebra/Vector.hpp>
 
 namespace Ignosi::Libraries::Physics
 {
@@ -15,8 +15,8 @@ namespace Ignosi::Libraries::Physics
         Math::Vector3<double> Velocity() const { return m_Velocity; }
         Math::Vector3<double> Acceleration() const { return m_Acceleration; }
 
-        void Position(Math::Vector3<double>& value) { m_Position = value; }
-        void Velocity(Math::Vector3<double>& value) { m_Velocity = value; }
-        void Acceleration(Math::Vector3<double>& value) { m_Acceleration = value; }
+        void Position(const Math::Vector3<double>& value) { m_Position = value; }
+        void Velocity(const Math::Vector3<double>& value) { m_Velocity = value; }
+        void Acceleration(const Math::Vector3<double>& value) { m_Acceleration = value; }
     };
 } // namespace Ignosi::Libraries::Physics
