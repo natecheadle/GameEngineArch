@@ -47,13 +47,13 @@ namespace Ignosi::Libraries::Renderer
 
     const VertexData Mesh::s_SpritePoints[] = {
 
-        {{0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 0.0f}, {1.0f, 0.0f}},
-        {{0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f},   {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{0.5f, -0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
 
-        {{0.0f, 1.0f}, {0.0f, 1.0f}},
-        {{1.0f, 1.0f}, {1.0f, 1.0f}},
-        {{1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
     };
 
     Mesh::Mesh(const IVertexBuffer* vertexes, const IShaderProgram* shader, const IMaterial* material)
