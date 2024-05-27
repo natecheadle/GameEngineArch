@@ -39,5 +39,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt OpenGL::GL glfw
                                               glad::glad)
-target_link_libraries(${PROJECT_NAME} PUBLIC Ignosi.Libraries.Math
-                                             Ignosi.Libraries.ECS)
+target_link_libraries(
+  ${PROJECT_NAME} PUBLIC Ignosi.Libraries.Math Ignosi.Libraries.Generic
+                         Ignosi.Libraries.ECS)

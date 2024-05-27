@@ -1,11 +1,11 @@
 #pragma once
 
+#include "ECSObject.hpp"
+#include "ECSPool.hpp"
 #include "Entity.hpp"
-#include "PoolPointer.hpp"
+#include "IWorld.h"
 #include "ResourceManager.h"
 #include "System.hpp"
-
-#include <ObjectPool.hpp>
 
 #include <chrono>
 #include <memory>
@@ -13,14 +13,15 @@
 
 namespace Ignosi::Libraries::ECS
 {
-    template <typename... Components>
-    class World
+    template <typename... COMPONENTS>
+    class World : public IWorld
     {
-        Containers::ObjectPool<Entity<Components...>>      m_EntityPool;
-        std::tuple<std::unique_ptr<System<Components>>...> m_Systems;
+        ECSPool<Entity<COMPONENTS...>>                     m_EntityPool;
+        std::tuple<ECSPool<Component<COMPONENTS>>...>      m_ComponentPools;
+        std::tuple<std::unique_ptr<System<COMPONENTS>>...> m_Systems;
         ResourceManager                                    m_Resources;
 
-        friend Entity<Components...>;
+        friend Entity<COMPONENTS...>;
 
       public:
         World() = default;
@@ -36,15 +37,32 @@ namespace Ignosi::Libraries::ECS
             return pSystem;
         }
 
-        void Update(std::chrono::milliseconds delta)
-
+        void Update(std::chrono::milliseconds delta) override
         {
             std::apply([delta](auto&&... args) { ((args->Update(delta)), ...); }, m_Systems);
+            m_EntityPool.Flush();
+
+            std::apply([](auto&&... args) { ((args.Flush()), ...); }, m_ComponentPools);
         }
 
-        Containers::PoolPointer<Entity<Components...>> CreateEntity()
+        IEntity* GetEntity(size_t id) override
         {
-            auto entity        = m_EntityPool.Create(Entity<Components...>(*this));
+            std::optional<Entity<COMPONENTS...>>& rslt = GetConcreteEntity(id);
+            return rslt.has_value() ? &rslt.value() : nullptr;
+        }
+
+        const IEntity* GetEntity(size_t id) const override
+        {
+            const std::optional<Entity<COMPONENTS...>>& rslt = GetConcreteEntity(id);
+            return rslt.has_value() ? &rslt.value() : nullptr;
+        }
+
+        IComponent*       GetComponent(size_t entityID, size_t typeID) override { return GetEntity(entityID)->Get(typeID); }
+        const IComponent* GetComponent(size_t entityID, size_t typeID) const override { return GetEntity(entityID)->Get(typeID); }
+
+        ECSObject<Entity<COMPONENTS...>> CreateEntity()
+        {
+            auto entity        = m_EntityPool.Create(Entity<COMPONENTS...>(*this));
             entity.Get()->m_ID = entity.ID();
             return entity;
         }
@@ -55,26 +73,27 @@ namespace Ignosi::Libraries::ECS
             return std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get();
         }
 
-        std::optional<Entity<Components...>>&       GetEntity(size_t id) { return m_EntityPool[id]; }
-        const std::optional<Entity<Components...>>& GetEntity(size_t id) const { return m_EntityPool[id]; }
+        std::optional<Entity<COMPONENTS...>>&       GetConcreteEntity(size_t id) { return m_EntityPool[id]; }
+        const std::optional<Entity<COMPONENTS...>>& GetConcreteEntity(size_t id) const { return m_EntityPool[id]; }
 
       private:
         template <typename COMPONENT>
-        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity)
+        ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity)
         {
-            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), COMPONENT()));
+            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools).Create(Component<COMPONENT>(entity.ID(), COMPONENT()));
         }
 
         template <typename COMPONENT>
-        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity, COMPONENT&& newComponent)
+        ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity, COMPONENT&& newComponent)
         {
-            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), std::forward<COMPONENT>(newComponent)));
+            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools)
+                .Create(Component<COMPONENT>(entity.ID(), std::forward<COMPONENT>(newComponent)));
         }
 
         template <typename COMPONENT>
-        Containers::PoolPointer<Component<COMPONENT>> CreateComponent(Entity<Components...>& entity, const COMPONENT& newComponent)
+        ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity, const COMPONENT& newComponent)
         {
-            return GetSystem<COMPONENT>()->m_ComponentPool.Create(Component<COMPONENT>(entity.ID(), newComponent));
+            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools).Create(Component<COMPONENT>(entity.ID(), newComponent));
         }
     };
 } // namespace Ignosi::Libraries::ECS

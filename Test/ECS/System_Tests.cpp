@@ -53,7 +53,7 @@ namespace Ignosi::Test::ECS
     {
         for (size_t i = 0; i < m_Entities.size(); ++i)
         {
-            auto& entity = m_World.GetEntity(m_Entities[i]->ID());
+            auto& entity = m_World.GetConcreteEntity(m_Entities[i]->ID());
             ASSERT_TRUE(entity.has_value());
             ASSERT_EQ(entity.value().Get<ComponentData1>(), m_Entities[i]->Get<ComponentData1>());
             if (i % 2 == 0)

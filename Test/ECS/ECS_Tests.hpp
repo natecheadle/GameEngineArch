@@ -1,3 +1,4 @@
+#include "ECSObject.hpp"
 #include "PoolPointer.hpp"
 
 #include <Entity.hpp>
@@ -67,7 +68,7 @@ namespace Ignosi::Test::ECS
     };
 
     using TestWorld     = Libraries::ECS::World<ComponentData1, ComponentData2>;
-    using TestEntityPtr = Containers::PoolPointer<Libraries::ECS::Entity<ComponentData1, ComponentData2>>;
+    using TestEntityPtr = Libraries::ECS::ECSObject<Libraries::ECS::Entity<ComponentData1, ComponentData2>>;
 
     class ECSFixture : public testing::Test
     {

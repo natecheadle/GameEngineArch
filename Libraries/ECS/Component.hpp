@@ -1,13 +1,16 @@
 #pragma once
 
+#include "IComponent.h"
+
 #include <cstddef>
 #include <utility>
 
 namespace Ignosi::Libraries::ECS
 {
     template <typename T>
-    class Component
+    class Component : public IComponent
     {
+        size_t m_TypeID;
         size_t m_EntityID;
         T      m_Data;
 
@@ -26,7 +29,8 @@ namespace Ignosi::Libraries::ECS
         Component& operator=(const Component& other) = delete;
         Component& operator=(Component&& other)      = default;
 
-        size_t EntityID() const { return m_EntityID; }
+        size_t TypeID() const override { return m_TypeID; }
+        size_t EntityID() const override { return m_EntityID; }
 
         const T& Data() const { return m_Data; }
         T&       Data() { return m_Data; }

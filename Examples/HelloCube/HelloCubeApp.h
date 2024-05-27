@@ -14,8 +14,8 @@ namespace Ignosi::Example
 
     class HelloCubeApp : public Libraries::ECS::App
     {
-        TestWorld                                      m_World;
-        Libraries::Containers::PoolPointer<TestEntity> m_Entity;
+        TestWorld                             m_World;
+        Libraries::ECS::ECSObject<TestEntity> m_Entity;
 
         std::chrono::milliseconds m_UpdatePeriod{17};
 
