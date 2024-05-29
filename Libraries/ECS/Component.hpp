@@ -15,8 +15,9 @@ namespace Ignosi::Libraries::ECS
         T      m_Data;
 
       public:
-        Component(size_t entityID, T data)
-            : m_EntityID(entityID)
+        Component(size_t typeID, size_t entityID, T data)
+            : m_TypeID(typeID)
+            , m_EntityID(entityID)
             , m_Data(std::move(data))
         {
         }

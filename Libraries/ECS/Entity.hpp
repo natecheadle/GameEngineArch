@@ -6,9 +6,9 @@
 
 #include <TupleElementIndex.hpp>
 
+#include <array>
 #include <tuple>
 #include <utility>
-#include <array>
 
 namespace Ignosi::Libraries::ECS
 {
@@ -56,7 +56,7 @@ namespace Ignosi::Libraries::ECS
                 std::get<ECSObject<Component<T>>>(m_Components)->Data() = val;
             }
 
-            size_t elementIndex = TupleElementIndex<ECSObject<Component<T>>, std::tuple<ECSObject<Component<COMPONENTS>>...>>::value;
+            size_t elementIndex             = GetComponentTypeID<T>();
             m_ComponentLookup[elementIndex] = std::get<ECSObject<Component<T>>>(m_Components).Get();
         }
 
@@ -64,6 +64,12 @@ namespace Ignosi::Libraries::ECS
         T& Get()
         {
             return std::get<ECSObject<Component<T>>>(m_Components)->Data();
+        }
+
+        template <typename T>
+        constexpr size_t GetComponentTypeID()
+        {
+            return TupleElementIndex<ECSObject<Component<T>>, std::tuple<ECSObject<Component<COMPONENTS>>...>>::value;
         }
 
         IComponent*       Get(size_t id) override { return m_ComponentLookup.at(id); }

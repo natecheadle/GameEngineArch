@@ -86,20 +86,21 @@ namespace Ignosi::Libraries::ECS
         template <typename COMPONENT>
         ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity)
         {
-            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools).Create(Component<COMPONENT>(entity.ID(), COMPONENT()));
+            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools)
+                .Create(Component<COMPONENT>(entity.GetComponentTypeID<COMPONENT>(), entity.ID(), COMPONENT()));
         }
 
         template <typename COMPONENT>
         ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity, COMPONENT&& newComponent)
         {
             return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools)
-                .Create(Component<COMPONENT>(entity.ID(), std::forward<COMPONENT>(newComponent)));
+                .Create(Component<COMPONENT>(entity.GetComponentTypeID<COMPONENT>(), entity.ID(), std::forward<COMPONENT>(newComponent)));
         }
 
         template <typename COMPONENT>
         ECSObject<Component<COMPONENT>> CreateComponent(Entity<COMPONENTS...>& entity, const COMPONENT& newComponent)
         {
-            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools).Create(Component<COMPONENT>(entity.ID(), newComponent));
+            return std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools).Create(Component<COMPONENT>(entity.GetComponentTypeID<COMPONENT>(), entity.ID(), newComponent));
         }
     };
 } // namespace Ignosi::Libraries::ECS
