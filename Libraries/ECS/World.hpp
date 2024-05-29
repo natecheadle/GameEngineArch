@@ -25,6 +25,11 @@ namespace Ignosi::Libraries::ECS
 
       public:
         World() = default;
+        ~World()
+        {
+            m_EntityPool.Flush();
+            std::apply([](auto&&... args) { ((args.Flush()), ...); }, m_ComponentPools);
+        }
 
         ResourceManager&       Resources() { return m_Resources; }
         const ResourceManager& Resources() const { return m_Resources; }
@@ -33,6 +38,7 @@ namespace Ignosi::Libraries::ECS
         SYSTEM* Register(std::unique_ptr<SYSTEM> system)
         {
             auto pSystem                                            = system.get();
+            pSystem->m_ComponentPool                                = &(std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools));
             std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems) = std::move(system);
             return pSystem;
         }

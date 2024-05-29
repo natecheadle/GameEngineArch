@@ -8,6 +8,7 @@
 
 #include <tuple>
 #include <utility>
+#include <array>
 
 namespace Ignosi::Libraries::ECS
 {

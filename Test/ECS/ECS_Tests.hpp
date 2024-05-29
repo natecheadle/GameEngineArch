@@ -81,5 +81,6 @@ namespace Ignosi::Test::ECS
             m_World.Register<ComponentData1>(std::make_unique<System1>());
             m_World.Register<ComponentData2>(std::make_unique<System2>());
         }
+        virtual ~ECSFixture() = default;
     };
 } // namespace Ignosi::Test::ECS

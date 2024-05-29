@@ -2,8 +2,7 @@
 
 #include "Component.hpp"
 #include "ISystem.h"
-#include "ObjectPool.hpp"
-#include "PoolPointer.hpp"
+#include "ECSPool.hpp"
 
 namespace Ignosi::Libraries::ECS
 {
@@ -14,8 +13,8 @@ namespace Ignosi::Libraries::ECS
         template <typename... COMPONENTS>
         friend class World;
 
-        Containers::ObjectPool<Component<T>>* m_ComponentPool;
-        size_t                                m_ID;
+        ECSPool<Component<T>>* m_ComponentPool;
+        size_t                 m_ID;
 
       public:
         virtual ~System() = default;
@@ -23,13 +22,13 @@ namespace Ignosi::Libraries::ECS
         size_t ID() const override { return m_ID; }
 
       protected:
-        Containers::ObjectPool<Component<T>>& ComponentPool()
+        ECSPool<Component<T>>& ComponentPool()
         {
             assert(m_ComponentPool);
             return *m_ComponentPool;
         }
 
-        const Containers::ObjectPool<Component<T>>& ComponentPool() const
+        const ECSPool<Component<T>>& ComponentPool() const
         {
             assert(m_ComponentPool);
             return *m_ComponentPool;

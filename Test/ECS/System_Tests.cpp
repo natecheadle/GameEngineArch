@@ -8,7 +8,7 @@ namespace Ignosi::Test::ECS
         std::vector<TestEntityPtr> m_Entities;
 
       public:
-        void SetUp()
+        SystemFixture()
         {
             for (int i = 0; i < 10; ++i)
             {
@@ -23,6 +23,7 @@ namespace Ignosi::Test::ECS
                 m_Entities.push_back(std::move(newEntity));
             }
         }
+        virtual ~SystemFixture() { m_Entities.clear(); }
     };
 
     TEST_F(SystemFixture, ValidateCreation) {}

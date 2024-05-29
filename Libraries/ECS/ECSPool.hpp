@@ -36,6 +36,14 @@ namespace Ignosi::Libraries::ECS
 
         void Flush() { m_ToFree.clear(); }
 
+        Containers::ObjectPool<T>::iterator       begin() { return m_Pool.begin(); }
+        Containers::ObjectPool<T>::const_iterator begin() const { return m_Pool.begin(); }
+        Containers::ObjectPool<T>::const_iterator cbegin() const { return m_Pool.cbegin(); }
+
+        Containers::ObjectPool<T>::iterator       end() { return m_Pool.end(); }
+        Containers::ObjectPool<T>::const_iterator end() const { return m_Pool.end(); }
+        Containers::ObjectPool<T>::const_iterator cend() const { return m_Pool.cend(); }
+
       private:
         void queueFree(Containers::PoolPointer<T>&& obj) { m_ToFree.push_back(std::forward<Containers::PoolPointer<T>>(obj)); }
     };
