@@ -1,7 +1,6 @@
 #pragma once
 
 #include <PoolPointer.hpp>
-#include <fmt/format.h>
 
 #include <cassert>
 #include <utility>
@@ -24,7 +23,6 @@ namespace Ignosi::Libraries::ECS
             : m_Parent(pParent)
             , m_ObjectPointer(std::forward<Containers::PoolPointer<T>>(obj))
         {
-            fmt::print("Creating object with ID = {} and Parent = {}\n", m_ObjectPointer.ID(), (std::uintptr_t)m_Parent);
         }
 
       public:
@@ -33,7 +31,6 @@ namespace Ignosi::Libraries::ECS
         {
             if (m_Parent && m_ObjectPointer.IsValid())
             {
-                fmt::print("Destroying object with ID = {} and Parent = {}\n", m_ObjectPointer.ID(), (std::uintptr_t)m_Parent);
                 m_Parent->queueFree(std::move(m_ObjectPointer));
             }
         }
@@ -43,7 +40,6 @@ namespace Ignosi::Libraries::ECS
             : m_Parent(other.m_Parent)
             , m_ObjectPointer(std::move(other.m_ObjectPointer))
         {
-            fmt::print("Move constructing object with ID = {} and Parent = {}\n", m_ObjectPointer.ID(), (std::uintptr_t)m_Parent);
             other.m_Parent = nullptr;
         }
 
@@ -54,7 +50,6 @@ namespace Ignosi::Libraries::ECS
             m_ObjectPointer = std::move(other.m_ObjectPointer);
             other.m_Parent  = nullptr;
 
-            fmt::print("Moving object with ID = {} and Parent = {}\n", m_ObjectPointer.ID(), (std::uintptr_t)m_Parent);
             return *this;
         }
 
