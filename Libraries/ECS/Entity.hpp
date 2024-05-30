@@ -67,7 +67,7 @@ namespace Ignosi::Libraries::ECS
         }
 
         template <typename T>
-        constexpr size_t GetComponentTypeID()
+        static constexpr size_t GetComponentTypeID()
         {
             return TupleElementIndex<ECSObject<Component<T>>, std::tuple<ECSObject<Component<COMPONENTS>>...>>::value;
         }

@@ -10,6 +10,7 @@
 #include <chrono>
 #include <memory>
 #include <tuple>
+#include <type_traits>
 
 namespace Ignosi::Libraries::ECS
 {
@@ -19,12 +20,13 @@ namespace Ignosi::Libraries::ECS
         ECSPool<Entity<COMPONENTS...>>                     m_EntityPool;
         std::tuple<ECSPool<Component<COMPONENTS>>...>      m_ComponentPools;
         std::tuple<std::unique_ptr<System<COMPONENTS>>...> m_Systems;
+        std::array<ISystem*, sizeof...(COMPONENTS)>        m_SystemLookup;
         ResourceManager                                    m_Resources;
 
         friend Entity<COMPONENTS...>;
 
       public:
-        World() = default;
+        World() { m_SystemLookup.fill(nullptr); }
         ~World()
         {
             m_EntityPool.Flush();
@@ -39,6 +41,9 @@ namespace Ignosi::Libraries::ECS
         {
             auto pSystem                                            = system.get();
             pSystem->m_ComponentPool                                = &(std::get<ECSPool<Component<COMPONENT>>>(m_ComponentPools));
+            pSystem->m_ID                                           = Entity<COMPONENTS...>::template GetComponentTypeID<COMPONENT>();
+            pSystem->m_pParent                                      = this;
+            m_SystemLookup[pSystem->ID()]                           = pSystem;
             std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems) = std::move(system);
             return pSystem;
         }
@@ -66,17 +71,26 @@ namespace Ignosi::Libraries::ECS
         IComponent*       GetComponent(size_t entityID, size_t typeID) override { return GetEntity(entityID)->Get(typeID); }
         const IComponent* GetComponent(size_t entityID, size_t typeID) const override { return GetEntity(entityID)->Get(typeID); }
 
+        template <typename T, typename COMPONENT>
+        T* GetSystem()
+        {
+            return dynamic_cast<T*>(std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get());
+        }
+
+        template <typename T, typename COMPONENT>
+        const T* GetSystem() const
+        {
+            return dynamic_cast<const T*>(std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get());
+        }
+
+        ISystem*       GetSystem(size_t typeID) override { return m_SystemLookup[typeID]; }
+        const ISystem* GetSystem(size_t typeID) const override { return m_SystemLookup[typeID]; }
+
         ECSObject<Entity<COMPONENTS...>> CreateEntity()
         {
             auto entity        = m_EntityPool.Create(Entity<COMPONENTS...>(*this));
             entity.Get()->m_ID = entity.ID();
             return entity;
-        }
-
-        template <typename COMPONENT>
-        System<COMPONENT>* GetSystem()
-        {
-            return std::get<std::unique_ptr<System<COMPONENT>>>(m_Systems).get();
         }
 
         std::optional<Entity<COMPONENTS...>>&       GetConcreteEntity(size_t id) { return m_EntityPool[id]; }

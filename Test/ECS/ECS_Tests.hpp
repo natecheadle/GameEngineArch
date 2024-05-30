@@ -32,6 +32,13 @@ namespace Ignosi::Test::ECS
         friend bool operator==(const ComponentData2& lhs, const ComponentData2& rhs) = default;
     };
 
+    struct ComponentData3
+    {
+        double Value1;
+
+        friend bool operator==(const ComponentData3& lhs, const ComponentData3& rhs) = default;
+    };
+
     class System1 : public Libraries::ECS::System<ComponentData1>
     {
       public:
@@ -67,8 +74,31 @@ namespace Ignosi::Test::ECS
         }
     };
 
-    using TestWorld     = Libraries::ECS::World<ComponentData1, ComponentData2>;
-    using TestEntityPtr = Libraries::ECS::ECSObject<Libraries::ECS::Entity<ComponentData1, ComponentData2>>;
+    class DependentSystem : public Libraries::ECS::System<ComponentData3>
+    {
+        System1* m_pDependentSystem;
+
+      public:
+        DependentSystem(System1* pDependentSystem)
+            : m_pDependentSystem(pDependentSystem)
+        {
+        }
+
+        void Update(std::chrono::milliseconds delta) override
+        {
+            for (Libraries::ECS::Component<ComponentData3>& data : ComponentPool())
+            {
+                const Libraries::ECS::Component<ComponentData1>* pDependent = m_pDependentSystem->GetEntityComponent(data.EntityID());
+                if (pDependent)
+                {
+                    data.Data().Value1 = pDependent->Data().X;
+                }
+            }
+        }
+    };
+
+    using TestWorld     = Libraries::ECS::World<ComponentData1, ComponentData2, ComponentData3>;
+    using TestEntityPtr = Libraries::ECS::ECSObject<Libraries::ECS::Entity<ComponentData1, ComponentData2, ComponentData3>>;
 
     class ECSFixture : public testing::Test
     {
@@ -80,6 +110,9 @@ namespace Ignosi::Test::ECS
         {
             m_World.Register<ComponentData1>(std::make_unique<System1>());
             m_World.Register<ComponentData2>(std::make_unique<System2>());
+
+            System1* pSystem1 = m_World.GetSystem<System1, ComponentData1>();
+            m_World.Register<ComponentData3>(std::make_unique<DependentSystem>(pSystem1));
         }
         virtual ~ECSFixture() = default;
     };

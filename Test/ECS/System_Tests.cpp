@@ -67,4 +67,6 @@ namespace Ignosi::Test::ECS
             }
         }
     }
+
+    TEST_F(SystemFixture, ValidateGetOtherSystemComponent) {}
 } // namespace Ignosi::Test::ECS

@@ -7,6 +7,7 @@
 
 namespace Ignosi::Libraries::ECS
 {
+    class ISystem;
 
     class IWorld
     {
@@ -20,5 +21,10 @@ namespace Ignosi::Libraries::ECS
 
         virtual IComponent*       GetComponent(size_t entityID, size_t typeID)       = 0;
         virtual const IComponent* GetComponent(size_t entityID, size_t typeID) const = 0;
+
+        virtual ISystem*       GetSystem(size_t typeID)       = 0;
+        virtual const ISystem* GetSystem(size_t typeID) const = 0;
     };
 } // namespace Ignosi::Libraries::ECS
+
+#include "ISystem.h"
